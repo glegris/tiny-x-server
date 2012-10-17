@@ -119,7 +119,10 @@ public class ResponseAdaptor implements Response {
 		}
 		
 		if(_headerSent) {
-			if(_outputStream.getCounter() != 32 + _extraLength) throw new IOException("Response message not correct length");
+			if(_outputStream.getCounter() > 32 + _extraLength) throw new IOException("Response message too long");
+			if(_outputStream.getCounter() < 32 + _extraLength) {
+				_outputStream.writePad(32 + _extraLength - _outputStream.getCounter());
+			}
 			_outputStream.send();
 		}
 		else {

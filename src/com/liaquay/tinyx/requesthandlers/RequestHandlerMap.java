@@ -59,13 +59,13 @@ public class RequestHandlerMap implements RequestHandler {
 				// This extension is available				
 				outputStream.writeByte(extensionOpCode);
 				
+				// TODO Write event base
+				// TODO Write error base
 //				  if(ext[i].eventcount==0) io.writeByte(0);
 //				  else io.writeByte(ext[i].eventbase);
 //				  if(ext[i].errorcount==0) io.writeByte(0);
 //				  else io.writeByte(ext[i].errorbase);
 			}
-			
-			outputStream.writePad(32 - outputStream.getCounter());
 		}
     }
 	
