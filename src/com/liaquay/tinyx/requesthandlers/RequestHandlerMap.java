@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.Response.ReplyCode;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
@@ -49,7 +48,7 @@ public class RequestHandlerMap implements RequestHandler {
 			System.out.println("Extension query for " + extensionName);
 			
 			final Integer extensionOpCode = _extensionNameToOpCode.get(extensionName);
-			final XOutputStream outputStream = response.respond(ReplyCode.Ok, 1, 0);
+			final XOutputStream outputStream = response.respond(1, 0);
 			
 			if(extensionOpCode == null) {
 				// Extension not installed
@@ -86,7 +85,7 @@ public class RequestHandlerMap implements RequestHandler {
 			_handlers[i] = UNIMPLEMENTED;
 		}
 		
-		// TODO use constants
+		_handlers[55] = new CreateGraphicsContext();
 		_handlers[98] = new QueryExtension();
 	}
 

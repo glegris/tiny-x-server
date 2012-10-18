@@ -48,4 +48,8 @@ public class Client {
 	public void free() {
 		_clientResources.free();
 	}
+	
+	public ClientResources getClientResources() {
+		return _clientResources;
+	}
 }

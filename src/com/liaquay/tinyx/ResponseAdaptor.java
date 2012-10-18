@@ -27,6 +27,11 @@ import com.liaquay.tinyx.io.XOutputStream;
 
 public class ResponseAdaptor implements Response {
 
+	public enum ReplyCode {
+		Error,
+		Ok
+	}
+
 	private final ByteArrayOutputStream _extra = new ByteArrayOutputStream();
 	private final XOutputStream _extraOutputStream;
 	private final XOutputStream _outputStream;
@@ -73,14 +78,15 @@ public class ResponseAdaptor implements Response {
 	 * @param responseCode the response code
 	 */
 	@Override
-	public XOutputStream respond(final ReplyCode replyCode, final int data) {
+	public XOutputStream respond(final int data) throws IOException {
+		if(_headerSent) {
+			throw new IOException("Attempt to re-send message header");			
+		}
 		_prepared = true;
-		_replyCode = replyCode;
+		_replyCode = ReplyCode.Ok;
 		_data = data;
 		return _extraOutputStream;
-		
 	}
-
 	
 	private int _extraLength = 0;
 	
@@ -89,14 +95,16 @@ public class ResponseAdaptor implements Response {
 	 * This method allows for an efficient response without double buffering...
 	 * but you have to know how much extra data is to be sent a priori.
 	 * 
-	 * @param responseCode the response code
 	 * @param extraLength the length of extra data to send in bytes
 	 * @throws IOException 
 	 */
 	@Override
-	public XOutputStream respond(final ReplyCode replyCode, final int data, final int extraLength) throws IOException {
+	public XOutputStream respond(final int data, final int extraLength) throws IOException {
+		if(_headerSent) {
+			throw new IOException("Attempt to re-send message header");			
+		}
 		_prepared = true;
-		_outputStream.writeByte(replyCode.getValue());
+		_outputStream.writeByte(ReplyCode.Ok.ordinal());
 		_outputStream.writeByte(data); 
 		_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
 		_outputStream.writeInt(extraLength);
@@ -126,7 +134,7 @@ public class ResponseAdaptor implements Response {
 			_outputStream.send();
 		}
 		else {
-			_outputStream.writeByte(_replyCode.getValue());
+			_outputStream.writeByte(_replyCode.ordinal());
 			_outputStream.writeByte(_data);
 			_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
 			_outputStream.writeInt(_extra.size() - 32); // Send the size of the extra bytes but do not include the 32 byte header.
@@ -135,5 +143,16 @@ public class ResponseAdaptor implements Response {
 				throw new IOException("Response message too short");
 			}
 		}
+	}
+
+	@Override
+	public void error(final ErrorCode errorCode, final int resourceId) throws IOException {
+		_outputStream.writeByte(ReplyCode.Error.ordinal());
+		_outputStream.writeByte(errorCode.ordinal());
+		_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
+		_outputStream.writeInt(resourceId);
+		_outputStream.writeShort(_request.getData());
+		_outputStream.writeByte(_request.getMajorOpCode());
+		_outputStream.writePad(32 - _outputStream.getCounter());
 	}
 }

@@ -65,6 +65,22 @@ public class ClientResources {
 		return _idToResourceMap.get(_scratchResourceKey);
 	}
 	
+	/**
+	 * Get a resource specified by the resourceId, but only
+	 * if assignable to the supplied class.
+	 * 
+	 * @param resourceId A resource identifier
+	 * @param clazz result will be assignable to this class (or null)
+	 * @return a resource
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Resource> T get(final int resourceId, final Class<T> clazz) {
+		final Resource resource = get(resourceId);
+		if(resource == null) return null;
+		if(!clazz.isAssignableFrom(resource.getClass())) return null;
+		return (T)resource;
+	}
+	
 	public void free() {
 		
 	}
