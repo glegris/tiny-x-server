@@ -115,4 +115,21 @@ public class Server extends Client {
 	public Keyboard getKeyboard() {
 		return _keyboard;
 	}
+	
+	/**
+	 * Get a resource specified by the resourceId, but only
+	 * if assignable to the supplied class.
+	 * 
+	 * @param resourceId A resource identifier
+	 * @param clazz result will be assignable to this class (or null)
+	 * @return a resource
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Resource> T getResourceForAnyClient(final int resourceId, final Class<T> clazz) {
+		final int clientId = resourceId >> Resource.CLIENTOFFSET;
+		final Client client = _clients.get(clientId);
+		if(client == null) return null; // TODO error reporting?
+		final ClientResources clientResources = client.getClientResources();
+		return clientResources.get(resourceId, clazz);
+	}
 }

@@ -28,6 +28,7 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 
 public class RequestHandlerMap implements RequestHandler {
 	
@@ -85,7 +86,8 @@ public class RequestHandlerMap implements RequestHandler {
 			_handlers[i] = UNIMPLEMENTED;
 		}
 		
-		_handlers[55] = new CreateGraphicsContext();
+		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
+		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[98] = new QueryExtension();
 	}
 
