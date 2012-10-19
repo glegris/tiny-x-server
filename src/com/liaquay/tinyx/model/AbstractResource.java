@@ -30,4 +30,6 @@ public abstract class AbstractResource implements Resource {
 	public int getId() {
 		return _id;
 	}
+	
+	public void free() {}
 }

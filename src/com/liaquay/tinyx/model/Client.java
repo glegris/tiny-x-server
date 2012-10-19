@@ -20,7 +20,6 @@ package com.liaquay.tinyx.model;
 
 public class Client {
 	private final int _clientId;
-	protected final ClientResources _clientResources = new ClientResources();
 	private final int _endFakeID;
 
 	private int _fakeID;
@@ -46,10 +45,5 @@ public class Client {
 	}	
 	
 	public void free() {
-		_clientResources.free();
-	}
-	
-	public ClientResources getClientResources() {
-		return _clientResources;
 	}
 }

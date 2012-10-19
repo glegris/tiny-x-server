@@ -18,7 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,7 +32,7 @@ import java.util.TreeMap;
  * 
  *  Very much not thread safe!
  */
-public class ClientResources {
+public class Resources {
 	
 	private static class ResourceKey {
 		private int _resourceId;
@@ -82,6 +84,22 @@ public class ClientResources {
 	}
 	
 	public void free() {
-		
+		for(final Map.Entry<ResourceKey, Resource> entry : _idToResourceMap.entrySet()) {
+			entry.getValue().free();
+		}
+	}
+
+	public void free(final Client client) {
+		final int maskedClientId = client.getClientId() << Resource.CLIENTOFFSET; 
+		final List<ResourceKey> keysToRemove = new ArrayList<ResourceKey>();
+		for(final Map.Entry<ResourceKey, Resource> entry : _idToResourceMap.entrySet()) {
+			if((entry.getKey()._resourceId & Resource.CLIENT_ID_MASK) == maskedClientId) {
+				keysToRemove.add(entry.getKey());
+				entry.getValue().free();
+			}
+		}
+		for(final ResourceKey resourceKey : keysToRemove) {
+			_idToResourceMap.remove(resourceKey);
+		}
 	}
 }

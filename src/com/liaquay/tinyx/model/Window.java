@@ -33,5 +33,7 @@ public class Window extends Tree<Window> implements Drawable {
 	public int getId() {
 		return _resourceId;
 	}
+	
+	public void free() {}
 
 }

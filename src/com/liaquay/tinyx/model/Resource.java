@@ -32,4 +32,6 @@ public interface Resource {
 	public static final int RESOURCE_ID_MASK=(1<<BITSFORRESOURCES)-1;
 	
 	public int getId();
+
+	public void free();
 }

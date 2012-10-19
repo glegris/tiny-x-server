@@ -47,7 +47,7 @@ public class CreateGraphicsContext implements RequestHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int graphicsContextId = inputStream.readInt();
 		final int drawableResourdeId = inputStream.readInt();
-		final Drawable drawable = server.getResourceForAnyClient(drawableResourdeId, Drawable.class);
+		final Drawable drawable = server.getResources().get(drawableResourdeId, Drawable.class);
 		if(drawable == null) {
 			response.error(Response.ErrorCode.Drawable, drawableResourdeId);
 		}
@@ -55,7 +55,7 @@ public class CreateGraphicsContext implements RequestHandler {
 			final GraphicsContext graphicsContext = new GraphicsContext(graphicsContextId, drawable);
 			final int attributeMask = inputStream.readInt();
 			_attributeHandlers.read(inputStream, graphicsContext, attributeMask);
-			client.getClientResources().add(graphicsContext);
+			server.getResources().add(graphicsContext);
 		}
 	}
 }

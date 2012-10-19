@@ -35,6 +35,7 @@ public class Server extends Client {
 	private Clients _clients = new Clients();
 	private Keyboard _keyboard = new Keyboard(); // TODO configurable
 	private Screen[] _screens = new Screen[1]; // TODO configure screens
+	private Resources _resources = new Resources();
 
 	public Server() {
 		// Create the server as a client with ID of 0
@@ -56,17 +57,17 @@ public class Server extends Client {
 	    // TODO all the stuff below needs to be configurable
 	    
 	    final Visual visual = new Visual(visualId);
-	    _clientResources.add(visual);
+	    _resources.add(visual);
 	    
 	    final Depth[] depths = new Depth[] {
 	    	new Depth(32, new Visual[] {visual})
 	    };
 	    
 	    final RootWindow rootWindow = new RootWindow(rootWindowResourceId);
-	    _clientResources.add(rootWindow);
+	    _resources.add(rootWindow);
 	    
 	    final ColorMap defaultColorMap = new TrueColorMap(colorMapResourceId);
-	    _clientResources.add(defaultColorMap);
+	    _resources.add(defaultColorMap);
 	    
 	    _screens[0] = new Screen(rootWindow, 
 	    		                 defaultColorMap,
@@ -98,6 +99,7 @@ public class Server extends Client {
 		}
 		client.free();
 		_clientIdAllocator.free(clientId);
+		_resources.free(client);
 	}
 	
 	public byte[] getVendor() {
@@ -116,20 +118,7 @@ public class Server extends Client {
 		return _keyboard;
 	}
 	
-	/**
-	 * Get a resource specified by the resourceId, but only
-	 * if assignable to the supplied class.
-	 * 
-	 * @param resourceId A resource identifier
-	 * @param clazz result will be assignable to this class (or null)
-	 * @return a resource
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends Resource> T getResourceForAnyClient(final int resourceId, final Class<T> clazz) {
-		final int clientId = resourceId >> Resource.CLIENTOFFSET;
-		final Client client = _clients.get(clientId);
-		if(client == null) return null; // TODO error reporting?
-		final ClientResources clientResources = client.getClientResources();
-		return clientResources.get(resourceId, clazz);
+	public Resources getResources() {
+		return _resources;
 	}
 }
