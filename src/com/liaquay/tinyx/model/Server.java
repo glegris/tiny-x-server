@@ -36,6 +36,7 @@ public class Server extends Client {
 	private Keyboard _keyboard = new Keyboard(); // TODO configurable
 	private Screen[] _screens = new Screen[1]; // TODO configure screens
 	private Resources _resources = new Resources();
+	private Atoms _atoms = new Atoms();
 
 	public Server() {
 		// Create the server as a client with ID of 0
@@ -86,6 +87,7 @@ public class Server extends Client {
 			return null;
 		}
 		else {
+			// TODO Should I really | Resource.SERVER_BIT here??
 			final Client client = new Client(clientId, (clientId<<Resource.CLIENTOFFSET) | Resource.SERVER_BIT);
 			_clients.add(client);
 			return client;
@@ -120,5 +122,9 @@ public class Server extends Client {
 	
 	public Resources getResources() {
 		return _resources;
+	}
+	
+	public Atoms getAtoms() {
+		return _atoms;
 	}
 }

@@ -19,10 +19,11 @@
 package com.liaquay.tinyx.model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+
+import com.liaquay.tinyx.util.IntMap;
+import com.liaquay.tinyx.util.IntMap.Key;
 
 /**
  * Store for resources. 
@@ -34,37 +35,18 @@ import java.util.TreeMap;
  */
 public class Resources {
 	
-	private static class ResourceKey {
-		private int _resourceId;
-		
-		public ResourceKey(final int resourceId) {
-			_resourceId = resourceId;
-		}
-	}
-	
-	private static final Comparator<ResourceKey> RESOURCE_KEY_COMPARATOR = new Comparator<ResourceKey>() {
-		@Override
-		public int compare(final ResourceKey arg0, final ResourceKey arg1) {
-			return arg0._resourceId - arg1._resourceId;
-		}		
-	};
-	
-	private final Map<ResourceKey, Resource> _idToResourceMap = new TreeMap<ResourceKey, Resource>(RESOURCE_KEY_COMPARATOR);
-	
-	private ResourceKey _scratchResourceKey = new ResourceKey(0);
+	private IntMap<Resource> _idToResourceMap = new IntMap<Resource>();
 	
 	public void add(final Resource resource){
-		_idToResourceMap.put(new ResourceKey(resource.getId()), resource);
+		_idToResourceMap.put(resource.getId(), resource);
 	}
 	
 	public Resource remove(final int resourceId) {
-		_scratchResourceKey._resourceId = resourceId;
-		return _idToResourceMap.remove(_scratchResourceKey);
+		return _idToResourceMap.remove(resourceId);
 	}
 	
 	public Resource get(final int resourceId) {
-		_scratchResourceKey._resourceId = resourceId;
-		return _idToResourceMap.get(_scratchResourceKey);
+		return _idToResourceMap.get(resourceId);
 	}
 	
 	/**
@@ -84,21 +66,21 @@ public class Resources {
 	}
 	
 	public void free() {
-		for(final Map.Entry<ResourceKey, Resource> entry : _idToResourceMap.entrySet()) {
+		for(final Map.Entry<Key, Resource> entry : _idToResourceMap.entrySet()) {
 			entry.getValue().free();
 		}
 	}
 
 	public void free(final Client client) {
 		final int maskedClientId = client.getClientId() << Resource.CLIENTOFFSET; 
-		final List<ResourceKey> keysToRemove = new ArrayList<ResourceKey>();
-		for(final Map.Entry<ResourceKey, Resource> entry : _idToResourceMap.entrySet()) {
-			if((entry.getKey()._resourceId & Resource.CLIENT_ID_MASK) == maskedClientId) {
+		final List<Key> keysToRemove = new ArrayList<Key>();
+		for(final Map.Entry<Key, Resource> entry : _idToResourceMap.entrySet()) {
+			if((entry.getKey().getValue() & Resource.CLIENT_ID_MASK) == maskedClientId) {
 				keysToRemove.add(entry.getKey());
 				entry.getValue().free();
 			}
 		}
-		for(final ResourceKey resourceKey : keysToRemove) {
+		for(final Key resourceKey : keysToRemove) {
 			_idToResourceMap.remove(resourceKey);
 		}
 	}

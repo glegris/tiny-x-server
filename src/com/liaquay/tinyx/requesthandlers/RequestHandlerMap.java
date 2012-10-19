@@ -87,6 +87,8 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
+		
+		_handlers[20] = new GetProperty(); 
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[98] = new QueryExtension();
 	}
