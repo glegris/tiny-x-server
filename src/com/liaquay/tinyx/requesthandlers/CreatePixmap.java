@@ -26,18 +26,11 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 
-public class CreateGraphicsContext implements RequestHandler {
+public class CreatePixmap implements RequestHandler {
 
-	private final GraphicsContextAttributeHandlers _attributeHandlers; 
-	
-	public CreateGraphicsContext(final GraphicsContextAttributeHandlers attributeHandlers) {
-		_attributeHandlers = attributeHandlers;
-	}
-	
 	@Override
 	public void handleRequest(final Server server, 
 			                   final Client client, 
@@ -45,18 +38,23 @@ public class CreateGraphicsContext implements RequestHandler {
 			                   final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-		final int graphicsContextId = inputStream.readInt();
-		final int drawableResourceId = inputStream.readInt();
+		final int depth = request.getData();
+	    final int pixmapResourceId = inputStream.readInt();
+	    final int drawableResourceId = inputStream.readInt();
+	    final int width = inputStream.readUnsignedShort();
+	    final int height = inputStream.readUnsignedShort();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
 		if(drawable == null) {
 			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
 		}
-		else {
-			final GraphicsContext graphicsContext = new GraphicsContext(graphicsContextId, drawable);
-			final int attributeMask = inputStream.readInt();
-			_attributeHandlers.read(inputStream, graphicsContext, attributeMask);
-			server.getResources().add(graphicsContext);
-		}
+		
+		// TODO Validation
+		
+		
+		
+		
+		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);
+		server.getResources().add(pixmap);
 	}
 }
-                                                                                                                                                                                                                         
