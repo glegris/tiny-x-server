@@ -45,6 +45,18 @@ public interface Response {
 	}
 	
 	public XOutputStream respond(final int data) throws IOException;
+	
+	/**
+	 * Send a response header along with the length of extra data.
+	 * This method allows for an efficient response without double buffering...
+	 * but you have to know how much extra data is to be sent a priori.
+	 * 
+	 * @param extraLength the length of extra data to send in bytes
+	 * @throws IOException 
+	 */
 	public XOutputStream respond(final int data,  final int length) throws IOException;
+	
+	public void padHeader() throws IOException;
+	
 	public void error(final ErrorCode errorCode, final int resourceId) throws IOException;
 }

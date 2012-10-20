@@ -18,6 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import com.liaquay.tinyx.util.IntMap;
 
 public class Atoms {
@@ -93,22 +96,30 @@ public class Atoms {
 		"WM_TRANSIENT_FOR"
 	};	
 
-	private IntMap<String> _atomMap = new IntMap<String>();
-	private int _nextId = BUILTIN.length + 1;
+	private IntMap<String> _idToAtomNameMap = new IntMap<String>();
+	private Map<String, Integer> _atomNameToIdMap = new TreeMap<String, Integer>();
+	
+	private int _nextId = 1;
 
 	public Atoms() {
 		for(int i = 0 ; i < BUILTIN.length; ++i ) {
-			_atomMap.put(i+1, BUILTIN[i]);
+			allocate(BUILTIN[i]);
 		}
 	}
 
 	public int allocate(final String atom) {
 		final int id = _nextId++;
-		_atomMap.put(id, atom);
+		_idToAtomNameMap.put(id, atom);
+		_atomNameToIdMap.put(atom, id);
 		return id;
 	}
 	
 	public String get(final int id) {
-		return _atomMap.get(id);
+		return _idToAtomNameMap.get(id);
+	}
+
+	public int get(final String atomName) {
+		final Integer id = _atomNameToIdMap.get(atomName);
+		return id == null ? 0 : id;
 	}
 }

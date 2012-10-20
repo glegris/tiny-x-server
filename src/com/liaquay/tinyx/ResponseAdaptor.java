@@ -153,6 +153,11 @@ public class ResponseAdaptor implements Response {
 		_outputStream.writeInt(resourceId);
 		_outputStream.writeShort(_request.getData());
 		_outputStream.writeByte(_request.getMajorOpCode());
+		padHeader();
+	}
+
+	@Override
+	public void padHeader() throws IOException {
 		_outputStream.writePad(32 - _outputStream.getCounter());
 	}
 }

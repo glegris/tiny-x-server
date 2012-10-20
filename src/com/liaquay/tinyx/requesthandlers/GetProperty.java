@@ -24,9 +24,14 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Property;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.properties.ByteProperty;
+import com.liaquay.tinyx.model.properties.IntProperty;
+import com.liaquay.tinyx.model.properties.ShortProperty;
 
 public class GetProperty implements RequestHandler {
 
@@ -43,22 +48,124 @@ public class GetProperty implements RequestHandler {
 			response.error(Response.ErrorCode.Window, windowId);			
 		}
 		else {
+			final boolean delete = request.getData() == 1;
 		    final int propertyId =inputStream.readInt(); 
 		    final int typeId = inputStream.readInt();
-		    final int longOffset =inputStream.readInt();
-		    final int longLength =inputStream.readInt();
+		    final int longOffset = inputStream.readInt();
+		    int longLength = inputStream.readInt();
 		    
-		    final String property = server.getAtoms().get(propertyId);
-		    if(property == null) {
+		    final String propertyName = server.getAtoms().get(propertyId);
+		    if(propertyName == null) {
 		    	response.error(Response.ErrorCode.Atom, propertyId);
 		    	return;
 		    }
 		    
-		    final String type = server.getAtoms().get(typeId);
-		    if(type == null) {
+		    final String typeName = server.getAtoms().get(typeId);
+		    if(typeName == null) {
 		    	response.error(Response.ErrorCode.Atom, typeId);
 		    	return;
 		    }
+		    
+		    int actualTypeAtomId = 0;
+		    int format = 0;
+		    int l = 0;
+		    int i = 0;
+		    int bytesAfter = 0;
+		    int valueLength = 0;
+		    final Property property = window.getProperty(propertyId);
+		    if(property != null) {
+		    	actualTypeAtomId = property.getTypeAtomId();
+		    	if(typeId != 0 && actualTypeAtomId != typeId) {
+		    		bytesAfter = property.getLengthInBytes();
+		    	}
+		    	else {
+					final int n = property.getLengthInBytes();
+					i = 4 * longOffset;
+					final int t = n - i;
+
+					if (longLength < 0 || longLength > 536870911)
+						longLength = 536870911;	// Prevent overflow.
+
+					if (t < longLength * 4) {
+						l = t;
+					} 
+					else {
+						l = longLength * 4;
+					}
+
+					bytesAfter = n - (i + l);
+
+					if (l < 0) {
+						response.error(Response.ErrorCode.Value, 0);
+						return;
+					}
+					else {
+						valueLength = property.getLength();
+					}
+		    	}
+		    }
+		    final int pad = -l & 3;
+		    final XOutputStream outputStream = response.respond(format, l+pad);
+		    outputStream.writeInt(actualTypeAtomId);	// Type.
+		    outputStream.writeInt(bytesAfter);	// Bytes after.
+		    outputStream.writeInt(valueLength);	// Value length. 
+		    response.padHeader();
+		    
+		    if(l > 0 && property != null) {
+		    	switch(property.getFormat()) {
+		    	case ByteFormat:
+		    		writeBytes(outputStream, ((ByteProperty)property).getData(), i, l);
+		    		break;
+		    	case ShortFormat:
+		    		writeShorts(outputStream, ((ShortProperty)property).getData(), i, l);
+		    		break;
+		    	case IntFormat:
+		    		writeInts(outputStream, ((IntProperty)property).getData(), i, l);
+		    		break;
+		    		default:
+		    			throw new RuntimeException("Undefined property format " + property.getFormat());
+		    	}
+		    }
+		    
+		    if(delete) {
+		    	window.deleteProperty(propertyId);
+		    }
+		}			
+
+	}
+	
+	private void writeBytes(
+			final XOutputStream outputStream,
+			final byte[] data, 
+			final int offsetInBytes,
+			final int lengthInBytes) throws IOException {
+		
+		outputStream.write(data, offsetInBytes, lengthInBytes);
+	}	
+
+	private void writeShorts(
+			final XOutputStream outputStream,
+			final short[] data, 
+			final int offsetInBytes,
+			final int lengthInBytes) throws IOException {
+
+		final int offsetInShorts = offsetInBytes >> 1;
+		final int lengthInShorts =  lengthInBytes >> 1;
+		for(int i = 0; i < lengthInShorts; ++ i){						
+			outputStream.writeShort(data[offsetInShorts + i]);
+		}
+	}	
+	
+	private void writeInts(
+			final XOutputStream outputStream,
+			final int[] data, 
+			final int offsetInBytes,
+			final int lengthInBytes) throws IOException {
+		
+		final int offsetInInts = offsetInBytes >> 2;
+		final int lengthInInts =  lengthInBytes >> 2;
+		for(int i = 0; i < lengthInInts; ++ i){						
+			outputStream.writeInt(data[offsetInInts + i]);
 		}
 	}
 }

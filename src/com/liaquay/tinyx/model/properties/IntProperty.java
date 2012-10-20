@@ -16,32 +16,39 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model;
+package com.liaquay.tinyx.model.properties;
 
-import com.liaquay.tinyx.util.Tree;
+import com.liaquay.tinyx.model.Property;
+import com.liaquay.tinyx.model.Property.Format;
 
-public class Window extends Tree<Window> implements Drawable {
 
-	private final int _resourceId;
-	private final Properties _properties = new Properties();
+public class IntProperty extends Property {
 	
-	public Window(final int resourceId, final Window parent) {
-		super(parent);
-		_resourceId = resourceId;
+	private int[] _data;
+
+	public IntProperty(final int propertyAtomId, final int typeAtomId, final int[] data) {
+		super(propertyAtomId, typeAtomId);
+		_data = data;
+		if((_data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");		
+	}
+	
+	@Override
+	public Format getFormat() {
+		return Format.IntFormat;
 	}
 
 	@Override
-	public int getId() {
-		return _resourceId;
+	public int getLengthInBytes() {
+		return _data.length << 2;
+	}	
+
+	@Override
+	public int getLength() {
+		return _data.length;
 	}
 	
-	public void free() {}
-
-	public Property getProperty(final int propertyId) {
-		return _properties.get(propertyId);
-	}
-
-	public Property deleteProperty(final int propertyId) {
-		return _properties.remove(propertyId);
-	}
+	public int[] getData() {
+		return _data;
+	}	
 }
+
