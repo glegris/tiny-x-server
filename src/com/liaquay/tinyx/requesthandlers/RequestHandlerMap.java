@@ -90,7 +90,9 @@ public class RequestHandlerMap implements RequestHandler {
 		
 		_handlers[16] = new InternAtom();
 		_handlers[20] = new GetProperty();
+		_handlers[43] = new GetInputFocus();
 		_handlers[53] = new CreatePixmap();
+		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[98] = new QueryExtension();
 	}

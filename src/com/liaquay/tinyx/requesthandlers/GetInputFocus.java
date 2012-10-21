@@ -23,21 +23,23 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
-public class Unimplemented implements RequestHandler {
+public class GetInputFocus implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final Focus focus = server.getFocus();
+	    final XOutputStream outputStream = response.respond(focus.getRevertTo().ordinal(), 0);
+	    final Window focusWindow = focus.getWindow();
+	    outputStream.writeInt(focusWindow == null ? 0 : focusWindow.getId());
 	}
 }

@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx.model;
 
+import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
+import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.util.IntegerAllocator;
 
 /**
@@ -31,12 +33,13 @@ public class Server extends Client {
 		new Format (32, 24, 8)
 	};
 	
-	private IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
-	private Clients _clients = new Clients();
-	private Keyboard _keyboard = new Keyboard(); // TODO configurable
-	private Screen[] _screens = new Screen[1]; // TODO configure screens
-	private Resources _resources = new Resources();
-	private Atoms _atoms = new Atoms();
+	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
+	private final Clients _clients = new Clients();
+	private final Keyboard _keyboard = new Keyboard(); // TODO configurable
+	private final Screen[] _screens = new Screen[1]; // TODO configure screens
+	private final Resources _resources = new Resources();
+	private final Atoms _atoms = new Atoms();
+	private final Focus _focus;
 
 	public Server() {
 		// Create the server as a client with ID of 0
@@ -58,7 +61,17 @@ public class Server extends Client {
 	    
 	    // TODO all the stuff below needs to be configurable
 	    
-	    final Visual visual = new Visual(visualId);
+	    final Visual visual = new Visual(
+	    		visualId, 
+	    		BackingStoreSupport.BackingStoreAlways,
+	    		VisualClass.TrueColor, 
+	    		8,  // Bits Per RGB
+	    		256, // TODO How do colour maps relate to visuals
+	    		0x000000ff, // Red mask
+	    		0x0000ff00, // Green mask
+	    		0x00ff0000  // Blue mask
+	    		);
+	    
 	    _resources.add(visual);
 	    
 	    final Depths depths = new Depths();
@@ -78,6 +91,8 @@ public class Server extends Client {
 	    		                 depths); // Save unders
 	    
 	    _resources.add(_screens[0].getRootWindow());
+	    
+	    _focus = new Focus(_screens[0].getRootWindow(), Focus.RevertTo.None);
 	}
 	
 	public Client allocateClient() {
@@ -125,5 +140,9 @@ public class Server extends Client {
 	
 	public Atoms getAtoms() {
 		return _atoms;
+	}
+	
+	public Focus getFocus() {
+		return _focus;
 	}
 }

@@ -56,7 +56,8 @@ public class Connection implements Runnable {
 			}
 		}
 		catch(final Exception e) {
-			
+			// TODO Logging
+			e.printStackTrace();
 		}
 		finally {
 			_server.freeClient(_client);

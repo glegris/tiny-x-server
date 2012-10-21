@@ -65,6 +65,14 @@ public class Resources {
 		return (T)resource;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T extends Resource> T remove(final int resourceId, final Class<T> clazz) {
+		final Resource resource = remove(resourceId);
+		if(resource == null) return null;
+		if(!clazz.isAssignableFrom(resource.getClass())) return null;
+		return (T)resource;
+	}
+	
 	public void free() {
 		for(final Map.Entry<Key, Resource> entry : _idToResourceMap.entrySet()) {
 			entry.getValue().free();

@@ -126,28 +126,20 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 	    }
 	}
 	
-	/**
-	 * TODO only works for True Colour
-	 * TODO Should fetch all parameters from visual!!!!!!
-	 * 
-	 * @param out
-	 * @param visual
-	 * @throws IOException
-	 */
 	private static void writeVisual(final XOutputStream out, final Visual visual) throws IOException {
 		out.writeInt (visual.getId());		// Visual ID.
-		out.writeByte (visual.getType());	// Class.
-		out.writeByte ((byte) 8);	// Bits per RGB value.
-		out.writeShort ((short) (1 << 8));	// Colormap entries.
-		out.writeInt (0x00ff0000);	// Red mask.
-		out.writeInt (0x0000ff00);	// Green mask.
-		out.writeInt (0x000000ff);	// Blue mask.
+		out.writeByte (visual.getVisualClass().ordinal());	// Class.
+		out.writeByte (visual.getBitsPerRGB());	// Bits per RGB value.
+		out.writeShort (visual.getColormapEntries());	// Colour-map entries.
+		out.writeInt (visual.getRedMask());	// Red mask.
+		out.writeInt (visual.getGreenMask());	// Green mask.
+		out.writeInt (visual.getBlueMask());	// Blue mask.
 		out.writePad (4);	// Unused.	
 	}
 	
 	private void writeScreen(final XOutputStream out, final Screen screen)  throws IOException {
 		out.writeInt(screen.getRootWindow().getId ());		// Root window ID.
-		out.writeInt(screen.getDefaultColorMap().getId ());	// Default colormap ID.
+		out.writeInt(screen.getDefaultColorMap().getId ());	// Default colour-map ID.
 		out.writeInt(screen.getDefaultColorMap().getWhitePixel ());	// White pixel.
 		out.writeInt(screen.getDefaultColorMap().getBlackPixel ());	// Black pixel.
 		out.writeInt(0);	// Current input masks. // TODO Almost certainly wrong!
@@ -158,7 +150,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		out.writeShort(screen.getMinInstalledMaps());	// Minimum installed maps.
 		out.writeShort(screen.getMaxInstalledMaps());	// Maximum installed maps.
 		out.writeInt(screen.getRootVisual().getId ());	// Root visual ID.
-		out.writeByte(screen.getRootVisual().getBackingStoreInfo ()); // TODO does this belong on a visual?
+		out.writeByte(screen.getRootVisual().getBackingStoreSupport().ordinal()); // TODO does this belong on a visual?
 		out.writeByte ((byte) (screen.getRootVisual().getSaveUnder () ? 1 : 0));// TODO does this belong on a visual?
 		out.writeByte (screen.getRootDepth ());	// Root depth.
 		writeDepths(out, screen.getDepths());

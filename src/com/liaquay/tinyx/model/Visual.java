@@ -20,58 +20,112 @@ package com.liaquay.tinyx.model;
 
 // TODO Make an abstract Visual and extend it with a true colour visual
 public class Visual extends AbstractResource {
-	public final static byte	BackingStoreNever = 0;
-	public final static byte	BackingStoreWhenMapped = 1;
-	public final static byte	BackingStoreAlways = 2;
 
-	public final static byte	StaticGray = 0;
-	public final static byte	GrayScale = 1;
-	public final static byte	StaticColor = 2;
-	public final static byte	PseudoColor = 3;
-	public final static byte	TrueColor = 4;
-	public final static byte	DirectColor = 5;
+	public enum BackingStoreSupport {
+		BackingStoreNever,
+		BackingStoreWhenMapped,
+		BackingStoreAlways,
+	}
+
+	public enum VisualClass {
+		StaticGray,
+		GrayScale,
+		StaticColor,
+		PseudoColor,
+		TrueColor,
+		DirectColor,
+	}
+
+	private final BackingStoreSupport _backingStoreSupport;
+	private final VisualClass _visualClass;
+	private final int _bitsPerRGB;
+	private final int _colormapEntries;
+	private final int _redMask;
+	private final int _greenMask;
+	private final int _blueMask;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param id	The visual ID.
+	 * @param id    The visual ID.
 	 */
-	public Visual (	int	id) {
-		super(id);
-	}
+	public Visual (
+			final int resourceId,
+			final BackingStoreSupport backingStoreSupport,
+			final VisualClass visualClass,
+			final int bitsPerRGB,
+			final int colormapEntries) {
 
-	public int getType() {
-		return TrueColor;
-	}
+		super(resourceId);
 
+		_backingStoreSupport = backingStoreSupport;
+		_visualClass = visualClass;
+		_bitsPerRGB = bitsPerRGB;
+		_colormapEntries = colormapEntries;
+		_redMask = 0;
+		_greenMask = 0;
+		_blueMask = 0;
+	}
 	/**
-	 * Return whether the visual supports a backing store.
+	 * Constructor.
 	 *
-	 * @return	Whether a backing store is supported.
+	 * @param id    The visual ID.
 	 */
-	public byte
-	getBackingStoreInfo () {
-		return BackingStoreAlways;
+	public Visual (
+			final int resourceId,
+			final BackingStoreSupport backingStoreSupport,
+			final VisualClass visualClass,
+			final int bitsPerRGB,
+			final int colormapEntries,
+			final int redMask,
+			final int greenMask,
+			final int blueMask) {
+
+		super(resourceId);
+
+		_backingStoreSupport = backingStoreSupport;
+		_visualClass = visualClass;
+		_bitsPerRGB = bitsPerRGB;
+		_colormapEntries = colormapEntries;
+		_redMask = redMask;
+		_greenMask = greenMask;
+		_blueMask = blueMask;
+	}
+
+	public VisualClass getVisualClass() {
+		return _visualClass;
+	}
+
+	public BackingStoreSupport getBackingStoreSupport () {
+		return _backingStoreSupport;
 	}
 
 	/**
 	 * Return whether the visual supports save-under.
 	 *
-	 * @return	Whether save-under is supported.
+	 * @return    Whether save-under is supported.
 	 */
-	public boolean
-	getSaveUnder () {
+	public boolean getSaveUnder () {
 		return false;
 	}
 
-	/**
-	 * Return the depth of the visual.
-	 * Under Android this is always 32.
-	 *
-	 * @return	The depth of the visual, in bits.
-	 */
-	public byte
-	getDepth () {
-		return 32;
+	public int getBitsPerRGB() {
+		return _bitsPerRGB;
+	}
+
+	public int getColormapEntries() {
+		return _colormapEntries;
+	}
+
+	public int getRedMask() {
+		return _redMask;
+	}
+
+	public int getGreenMask() {
+		return _greenMask;
+	}
+
+	public int getBlueMask() {
+		return _blueMask;
 	}
 }
