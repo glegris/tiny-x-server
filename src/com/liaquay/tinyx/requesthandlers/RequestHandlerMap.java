@@ -94,6 +94,9 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
+		_handlers[60] = new FreeGraphicsContext();
+		_handlers[72] = new PutImage();
+		_handlers[91] = new QueryColours();
 		_handlers[98] = new QueryExtension();
 	}
 
