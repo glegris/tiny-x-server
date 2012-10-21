@@ -48,4 +48,10 @@ public class Pixmap implements Drawable {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Screen getScreen() {
+		// TODO Not sure this is correct
+		return _drawable.getScreen();
+	}
 }

@@ -49,6 +49,7 @@ public class Server extends Client {
 	    // TODO How accessible should the server client be?
 	    _clients.add(this);
 	    
+	    // TODO Need to be able to make multiple screens!!!
 	    final int visualId = allocateFakeId();
 	    final int rootWindowResourceId = allocateFakeId();
 	    final int colorMapResourceId = allocateFakeId();
@@ -60,17 +61,13 @@ public class Server extends Client {
 	    final Visual visual = new Visual(visualId);
 	    _resources.add(visual);
 	    
-	    final Depth[] depths = new Depth[] {
-	    	new Depth(32, new Visual[] {visual})
-	    };
-	    
-	    final RootWindow rootWindow = new RootWindow(rootWindowResourceId);
-	    _resources.add(rootWindow);
+	    final Depths depths = new Depths();
+	    depths.add(new Depth(32, new Visual[] {visual}));   
 	    
 	    final ColorMap defaultColorMap = new TrueColorMap(colorMapResourceId);
 	    _resources.add(defaultColorMap);
 	    
-	    _screens[0] = new Screen(rootWindow, 
+	    _screens[0] = new Screen(rootWindowResourceId, 
 	    		                 defaultColorMap,
 	    		                 visual,
 	    		                 32,
@@ -79,6 +76,8 @@ public class Server extends Client {
 	    		                 1280,
 	    		                 800,
 	    		                 depths); // Save unders
+	    
+	    _resources.add(_screens[0].getRootWindow());
 	}
 	
 	public Client allocateClient() {

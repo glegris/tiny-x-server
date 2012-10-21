@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 
 import com.liaquay.tinyx.io.LsbXInputStream;
 import com.liaquay.tinyx.io.LsbXOutputStream;
@@ -31,6 +32,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Depth;
+import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Format;
 import com.liaquay.tinyx.model.Resource;
 import com.liaquay.tinyx.model.Screen;
@@ -116,10 +118,11 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 
 	}
 	
-	private static void writeDepths(final XOutputStream out, final Depth[] depths) throws IOException {
-	    out.writeByte(depths.length);
-	    for (int i=0; i < depths.length; i++) {
-	      writeDepth(out, depths[i]);
+	private static void writeDepths(final XOutputStream out, final Depths depths) throws IOException {
+		final Collection<Depth> values = depths.values();
+	    out.writeByte(values.size());
+	    for (final Depth depth : values) {
+	      writeDepth(out, depth);
 	    }
 	}
 	

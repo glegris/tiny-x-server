@@ -25,8 +25,10 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
 
 public class CreatePixmap implements RequestHandler {
@@ -49,10 +51,19 @@ public class CreatePixmap implements RequestHandler {
 			return;
 		}
 		
-		// TODO Validation
-		
-		
-		
+		if(width==0 || height==0){
+			response.error(Response.ErrorCode.Pixmap, 0);
+			return;
+		}
+
+		if(depth != 1){
+			final Screen screen = drawable.getScreen();
+			final Depths depths = screen.getDepths();
+			if(depths.get(depth) == null) {
+				response.error(Response.ErrorCode.Match, depth);
+				return;
+			}
+		}
 		
 		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);
 		server.getResources().add(pixmap);

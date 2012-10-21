@@ -20,4 +20,6 @@ package com.liaquay.tinyx.model;
 
 public interface Drawable extends Resource {
 
+	public Screen getScreen();
+
 }

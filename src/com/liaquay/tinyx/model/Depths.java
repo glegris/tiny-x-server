@@ -18,35 +18,22 @@
  */
 package com.liaquay.tinyx.model;
 
-import com.liaquay.tinyx.util.Tree;
+import java.util.Collection;
 
-public class Window extends Tree<Window> implements Drawable {
+import com.liaquay.tinyx.util.IntMap;
 
-	private final int _resourceId;
-	private final Properties _properties = new Properties();
+public class Depths {
+	private IntMap<Depth> _depthToDepthMap = new IntMap<Depth>();
 	
-	public Window(final int resourceId, final Window parent) {
-		super(parent);
-		_resourceId = resourceId;
-	}
-
-	@Override
-	public int getId() {
-		return _resourceId;
+	public void add(final Depth depth) {
+		_depthToDepthMap.put(depth.getDepth(), depth);
 	}
 	
-	public void free() {}
-
-	public Property getProperty(final int propertyId) {
-		return _properties.get(propertyId);
+	public Collection<Depth> values() {
+		return _depthToDepthMap.values();
 	}
 
-	public Property deleteProperty(final int propertyId) {
-		return _properties.remove(propertyId);
-	}
-
-	@Override
-	public Screen getScreen() {
-		return getParent().getScreen();
+	public Object get(final int depth) {
+		return _depthToDepthMap.get(depth);
 	}
 }

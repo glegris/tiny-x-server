@@ -20,8 +20,15 @@ package com.liaquay.tinyx.model;
 
 public class RootWindow extends Window {
 	
-	public RootWindow(final int resourceId) {
+	private final Screen _screen;
+
+	public RootWindow(final int resourceId, final Screen screen) {
 		super(resourceId, null);
+		_screen = screen;
 	}
 	
+	@Override
+	public Screen getScreen() {
+		return _screen;
+	}
 }

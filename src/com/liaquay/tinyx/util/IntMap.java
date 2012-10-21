@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.util;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
@@ -71,5 +72,9 @@ public class IntMap<T> {
 	
 	public Set<Map.Entry<Key, T>> entrySet() {
 		return _map.entrySet();
+	}
+	
+	public Collection<T> values() {
+		return _map.values();
 	}
 }

@@ -29,9 +29,9 @@ public class Screen {
 	private final int _heightMM;
 	private final int _minInstalledMaps = 1; // TODO What are these?
 	private final int _maxInstalledMaps = 1; // TODO What are these?
-	private final Depth[] _depths;           // TODO What are these?
+	private final Depths _depths;           
 
-	public Screen(final RootWindow rootWindow, 
+	public Screen(final int rootWindowResourceId, 
 			       final ColorMap defaultColorMap,
 			       final Visual rootVisual,
 			       final int rootDepth,
@@ -39,9 +39,8 @@ public class Screen {
 			       final int heightPixels,
 			       final int widthMM,
 			       final int heightMM,
-			       final Depth[] depths) {
+			       final Depths depths) {
 		
-		_rootWindow = rootWindow;
 		_defaultColorMap = defaultColorMap;
 		_rootVisual = rootVisual;
 		_rootDepth = rootDepth;
@@ -50,6 +49,9 @@ public class Screen {
 		_widthMM = widthMM;
 		_heightMM = heightMM;
 		_depths = depths;
+		
+		// Be careful here. Cyclic dependency between root window and screen
+		_rootWindow = new RootWindow(rootWindowResourceId, this);
 	}
 	
 	public Visual getRootVisual() {
@@ -88,7 +90,7 @@ public class Screen {
 		return _maxInstalledMaps;
 	}
 
-	public Depth[] getDepths() {
+	public Depths getDepths() {
 		return _depths;
 	}
 	
