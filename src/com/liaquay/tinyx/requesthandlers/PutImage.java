@@ -66,6 +66,11 @@ public class PutImage implements RequestHandler {
 		final int depth = inputStream.readUnsignedByte();
 		inputStream.skip(2);
 		
+		// TODO This test does not seem correct
+		if(depth != drawable.getDepth()) {
+			response.error(Response.ErrorCode.Match, drawableResourceId);
+			return;
+		}
 		// Process image data...
 		// TODO Process byte data...
 	}

@@ -54,4 +54,14 @@ public class Pixmap implements Drawable {
 		// TODO Not sure this is correct
 		return _drawable.getScreen();
 	}
+
+	@Override
+	public Visual getVisual() {
+		// TODO Not sure this is correct
+		return _drawable.getVisual();
+	}
+	
+	public int getDepth() {
+		return _depth;
+	}
 }

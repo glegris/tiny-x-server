@@ -22,4 +22,7 @@ public interface Drawable extends Resource {
 
 	public Screen getScreen();
 
+	public Visual getVisual();
+	
+	public int getDepth();
 }

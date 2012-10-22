@@ -22,6 +22,7 @@ package com.liaquay.tinyx.model;
  * TODO What is this! 
  *
  */
+/*
 public class Depth {
 	private final int _depth;
 	private final Visual[] _visuals;
@@ -39,3 +40,4 @@ public class Depth {
 		return _visuals;
 	}
 }
+*/

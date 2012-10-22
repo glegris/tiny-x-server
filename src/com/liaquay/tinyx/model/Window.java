@@ -23,11 +23,20 @@ import com.liaquay.tinyx.util.Tree;
 public class Window extends Tree<Window> implements Drawable {
 
 	private final int _resourceId;
+	private final Visual _visual;
 	private final Properties _properties = new Properties();
+	private final int _depth;
 	
-	public Window(final int resourceId, final Window parent) {
+	public Window(
+			final int resourceId, 
+			final Window parent, 
+			final Visual visual,
+			final int depth) {
+		
 		super(parent);
 		_resourceId = resourceId;
+		_visual = visual;
+		_depth = depth;
 	}
 
 	@Override
@@ -48,5 +57,14 @@ public class Window extends Tree<Window> implements Drawable {
 	@Override
 	public Screen getScreen() {
 		return getParent().getScreen();
+	}
+
+	@Override
+	public Visual getVisual() {
+		return _visual;
+	}
+	
+	public int getDepth() {
+		return _depth;
 	}
 }

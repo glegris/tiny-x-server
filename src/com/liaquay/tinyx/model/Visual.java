@@ -43,7 +43,7 @@ public class Visual extends AbstractResource {
 	private final int _redMask;
 	private final int _greenMask;
 	private final int _blueMask;
-
+	private final int _depth;
 	/**
 	 * Constructor.
 	 *
@@ -51,6 +51,7 @@ public class Visual extends AbstractResource {
 	 */
 	public Visual (
 			final int resourceId,
+			final int depth,
 			final BackingStoreSupport backingStoreSupport,
 			final VisualClass visualClass,
 			final int bitsPerRGB,
@@ -59,6 +60,7 @@ public class Visual extends AbstractResource {
 		super(resourceId);
 
 		_backingStoreSupport = backingStoreSupport;
+		_depth = depth;
 		_visualClass = visualClass;
 		_bitsPerRGB = bitsPerRGB;
 		_colormapEntries = colormapEntries;
@@ -73,6 +75,7 @@ public class Visual extends AbstractResource {
 	 */
 	public Visual (
 			final int resourceId,
+			final int depth,
 			final BackingStoreSupport backingStoreSupport,
 			final VisualClass visualClass,
 			final int bitsPerRGB,
@@ -84,6 +87,7 @@ public class Visual extends AbstractResource {
 		super(resourceId);
 
 		_backingStoreSupport = backingStoreSupport;
+		_depth = depth;
 		_visualClass = visualClass;
 		_bitsPerRGB = bitsPerRGB;
 		_colormapEntries = colormapEntries;
@@ -127,5 +131,9 @@ public class Visual extends AbstractResource {
 
 	public int getBlueMask() {
 		return _blueMask;
+	}
+	
+	public int getDepth() {
+		return _depth;
 	}
 }

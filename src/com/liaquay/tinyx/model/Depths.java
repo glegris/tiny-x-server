@@ -18,11 +18,34 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.liaquay.tinyx.util.IntMap;
 
 public class Depths {
+	
+	public static class Depth {
+		private final int _depth;
+		private final Collection<Visual> _visuals = new ArrayList<Visual>(1);
+		
+		private Depth(final int depth) {
+			_depth = depth;
+		}
+		
+		public int getDepth() {
+			return _depth;
+		}
+		
+		public Collection<Visual> getVisuals() {
+			return _visuals;
+		}
+		
+		private void add(final Visual visual) {
+			_visuals.add(visual);
+		}
+	}
+	
 	private IntMap<Depth> _depthToDepthMap = new IntMap<Depth>();
 	
 	public void add(final Depth depth) {
@@ -33,7 +56,16 @@ public class Depths {
 		return _depthToDepthMap.values();
 	}
 
-	public Object get(final int depth) {
+	public Depth get(final int depth) {
 		return _depthToDepthMap.get(depth);
+	}
+	
+	public void add(final Visual visual) {
+		Depth depth = _depthToDepthMap.get(visual.getDepth());
+		if(depth == null) {
+			depth = new Depth(visual.getDepth());
+			_depthToDepthMap.put(visual.getDepth(), depth);
+		}
+		depth.add(visual);
 	}
 }

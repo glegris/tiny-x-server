@@ -63,6 +63,7 @@ public class Server extends Client {
 	    
 	    final Visual visual = new Visual(
 	    		visualId, 
+	    		32,
 	    		BackingStoreSupport.BackingStoreAlways,
 	    		VisualClass.TrueColor, 
 	    		8,  // Bits Per RGB
@@ -75,7 +76,7 @@ public class Server extends Client {
 	    _resources.add(visual);
 	    
 	    final Depths depths = new Depths();
-	    depths.add(new Depth(32, new Visual[] {visual}));   
+	    depths.add(visual);   
 	    
 	    final ColorMap defaultColorMap = new TrueColorMap(colorMapResourceId);
 	    _resources.add(defaultColorMap);
