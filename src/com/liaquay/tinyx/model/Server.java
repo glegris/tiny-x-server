@@ -18,9 +18,11 @@
  */
 package com.liaquay.tinyx.model;
 
+import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.util.IntegerAllocator;
+
 
 /**
  * 
@@ -40,6 +42,10 @@ public class Server extends Client {
 	private final Resources _resources = new Resources();
 	private final Atoms _atoms = new Atoms();
 	private final Focus _focus;
+	private final ByteOrder _imageByteOrder = ByteOrder.LSB;
+	private final ByteOrder _bitmapBitOrder = ByteOrder.MSB;
+	private final int _bitmapScanLineUnit = 8; 
+	private final int _bitmapScanLinePad = 8; 
 
 	public Server() {
 		// Create the server as a client with ID of 0
@@ -145,5 +151,21 @@ public class Server extends Client {
 	
 	public Focus getFocus() {
 		return _focus;
+	}
+
+	public ByteOrder getImageByteOrder() {
+		return _imageByteOrder;
+	}
+
+	public ByteOrder getBitmapBitOrder() {
+		return _bitmapBitOrder;
+	}
+
+	public int getBitmapScanLineUnit() {
+		return _bitmapScanLineUnit;
+	}
+
+	public int getBitmapScanLinePad() {
+		return _bitmapScanLinePad;
 	}
 }

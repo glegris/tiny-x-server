@@ -74,10 +74,10 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		extraOutputStream.writeShort(0x7fff);	                  // Max request length. TODO Really?
 		extraOutputStream.writeByte(_server.getScreens().length);   // Number of screens.
 		extraOutputStream.writeByte(_server.getFormats().length);   // Number of formats
-		extraOutputStream.writeByte(0);	                      // Image byte order (0=LSB, 1=MSB).
-		extraOutputStream.writeByte(1);	                      // Bitmap bit order (0=LSB, 1=MSB).
-		extraOutputStream.writeByte(8);	                      // Bitmap format scan-line unit.
-		extraOutputStream.writeByte(8);	                      // Bitmap format scan-line pad.
+		extraOutputStream.writeByte(_server.getImageByteOrder().ordinal());   // Image byte order (0=LSB, 1=MSB).
+		extraOutputStream.writeByte(_server.getBitmapBitOrder().ordinal());   // Bitmap bit order (0=LSB, 1=MSB).
+		extraOutputStream.writeByte(_server.getBitmapScanLineUnit());         // Bitmap format scan-line unit.
+		extraOutputStream.writeByte(_server.getBitmapScanLinePad());          // Bitmap format scan-line pad.
 		extraOutputStream.writeByte(_server.getKeyboard().getMinKeyCode());// Minimum key code
 		extraOutputStream.writeByte(_server.getKeyboard().getMaxKeyCode());// Maximum key code
 		extraOutputStream.writePad (4);	                      // Unused.
