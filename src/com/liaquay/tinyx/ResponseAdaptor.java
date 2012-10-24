@@ -107,7 +107,7 @@ public class ResponseAdaptor implements Response {
 		_outputStream.writeByte(ReplyCode.Ok.ordinal());
 		_outputStream.writeByte(data); 
 		_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
-		_outputStream.writeInt(extraLength);
+		_outputStream.writeInt((extraLength+3)>>2);
 		_headerSent = true;
 		_extraLength = extraLength;
 		return _outputStream;
@@ -159,5 +159,10 @@ public class ResponseAdaptor implements Response {
 	@Override
 	public void padHeader() throws IOException {
 		_outputStream.writePad(32 - _outputStream.getCounter());
+	}
+
+	@Override
+	public void padAlign() throws IOException {
+		_outputStream.writePad(-_outputStream.getCounter() & 3);
 	}
 }

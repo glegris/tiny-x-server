@@ -18,7 +18,6 @@
  */
 package com.liaquay.tinyx.model;
 
-// TODO Make an abstract Visual and extend it with a true colour visual
 public class Visual extends AbstractResource {
 
 	public enum BackingStoreSupport {

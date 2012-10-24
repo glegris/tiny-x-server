@@ -25,24 +25,42 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Visual;
+import com.liaquay.tinyx.model.Window;
 
-public class FreeGraphicsContext implements RequestHandler {
+public class CreateColorMap implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-		final int graphicsContextResourceId = inputStream.readInt();
-		final GraphicsContext graphicsContext = server.getResources().remove(graphicsContextResourceId, GraphicsContext.class);
-		if(graphicsContext == null) {
-			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+		final ColorMap.AllocType[] allocationTypes = ColorMap.AllocType.values();
+		final int allocationTypeIndex = request.getData();
+		if(allocationTypeIndex < 0 || allocationTypeIndex >= allocationTypes.length) {
+			response.error(Response.ErrorCode.Value, allocationTypeIndex);
 			return;
 		}
-		graphicsContext.free();
+		final ColorMap.AllocType allocType = allocationTypes[allocationTypeIndex];
+		final int colorMapResourceId = inputStream.readInt();
+		final int windowResourceId = inputStream.readInt(); 		
+		final Window window = server.getResources().get(windowResourceId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowResourceId);	
+			return;
+		}
+		final int visualResourceId = inputStream.readInt();
+		final Visual visual = server.getResources().get(visualResourceId, Visual.class);
+		if(visual == null) {
+			response.error(Response.ErrorCode.Value, windowResourceId);	
+			return;			
+		}
+		
+		// TODO
+		
 	}
 }

@@ -58,5 +58,7 @@ public interface Response {
 	
 	public void padHeader() throws IOException;
 	
+	public void padAlign() throws IOException;
+	
 	public void error(final ErrorCode errorCode, final int resourceId) throws IOException;
 }

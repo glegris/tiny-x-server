@@ -52,6 +52,7 @@ public class Connection implements Runnable {
 				_response.setRequest(_request);
 				_requestHandler.handleRequest(_server, _client, _request, _response);
 				_request.skipRemaining();
+				_response.padAlign();
 				_response.send();
 			}
 		}

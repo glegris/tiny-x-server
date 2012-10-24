@@ -20,7 +20,7 @@ package com.liaquay.tinyx.model;
 
 public class TrueColorMap extends ColorMap {
 
-	public TrueColorMap(int id) {
+	public TrueColorMap(final int id) {
 		super(id);
 	}
 
@@ -32,6 +32,18 @@ public class TrueColorMap extends ColorMap {
 	@Override
 	public int getWhitePixel() {
 		return 0xffffffff;
+	}
+
+	@Override
+	public boolean isValidColor(final int pixel) {
+		return true;
+	}
+
+	@Override
+	public void getColor(final int pixel, final Color color) {
+		color._red = (pixel & 0xff) << 8;
+		color._green = pixel & 0xff00;
+		color._blue = (pixel & 0xff0000) >> 8;
 	}
 
 }

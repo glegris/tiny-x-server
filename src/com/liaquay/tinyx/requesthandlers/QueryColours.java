@@ -24,8 +24,10 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.ColorMap;
+import com.liaquay.tinyx.model.ColorMap.Color;
 import com.liaquay.tinyx.model.Server;
 
 public class QueryColours implements RequestHandler {
@@ -39,11 +41,34 @@ public class QueryColours implements RequestHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int colorMapResourceId = inputStream.readInt();
 		final ColorMap colorMap = server.getResources().get(colorMapResourceId, ColorMap.class);
-		final int remaingBytes = request.getLength() - 4;
+		if(colorMap == null) {
+			response.error(Response.ErrorCode.Colormap, colorMapResourceId);	
+			return;			
+		}
+		final int remaingBytes = request.getLength() - inputStream.getCounter();
 		final int n = remaingBytes >> 2;
-		// TODO not complete...
+		final Color color = new Color();
+		final int[] pixels = new int[n];		
 		for(int i = 0; i < n; ++i) {
-			final int colorIndex = inputStream.readInt();
+			final int pixel = inputStream.readInt();
+			if(colorMap.isValidColor(pixel)) {
+				pixels[i] = pixel;
+			}
+			else {
+				response.error(Response.ErrorCode.Value, pixel);
+				return;
+			}
+		}
+		final XOutputStream outputStream = response.respond(1, n<<3);
+		outputStream.writeShort(n);
+		response.padHeader();
+		for(int i = 0; i < n; ++i) {
+			final int pixel = pixels[i];
+			colorMap.getColor(pixel, color);
+			outputStream.writeShort(color._red);
+			outputStream.writeShort(color._green);
+			outputStream.writeShort(color._blue);
+			response.padAlign();
 		}
 	}
 }
