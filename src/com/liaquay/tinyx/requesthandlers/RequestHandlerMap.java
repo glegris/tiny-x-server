@@ -25,69 +25,51 @@ import java.util.TreeMap;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.extensions.BigRequestsExtension;
+import com.liaquay.tinyx.model.extensions.Extension;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 
 public class RequestHandlerMap implements RequestHandler {
-	
-	private static final Unimplemented UNIMPLEMENTED = new Unimplemented();
-	
-	private RequestHandler[] _handlers = new RequestHandler[256];
-	
-	private class QueryExtension implements RequestHandler {
 
-		@Override
-		public void handleRequest(final Server server, 
-				                   final Client client, 
-				                   final Request request, 
-				                   final Response response) throws IOException {
-			
-			final String extensionName = request.getInputStream().readString();
-			
-			System.out.println("Extension query for " + extensionName);
-			
-			final Integer extensionOpCode = _extensionNameToOpCode.get(extensionName);
-			final XOutputStream outputStream = response.respond(1, 0);
-			
-			if(extensionOpCode == null) {
-				// Extension not installed
-				outputStream.writeByte(0);
-			}
-			else {
-				// This extension is available				
-				outputStream.writeByte(extensionOpCode);
-				
-				// TODO Write event base
-				// TODO Write error base
-//				  if(ext[i].eventcount==0) io.writeByte(0);
-//				  else io.writeByte(ext[i].eventbase);
-//				  if(ext[i].errorcount==0) io.writeByte(0);
-//				  else io.writeByte(ext[i].errorbase);
-			}
-		}
-    }
-	
+	private static final Unimplemented UNIMPLEMENTED = new Unimplemented();
+
+	private RequestHandler[] _handlers = new RequestHandler[256];
+
+	private static int EXTENSION_BASE = 128;
+	private static int EXTENSION_EVENT_BASE = 64;
+
 	private int _currentExtension = 128;
-	private Map<String, Integer> _extensionNameToOpCode = new TreeMap<String, Integer>();
-	
-	private void addExtension(final String extensionName, final RequestHandler requestHandler) {
-		final int extensionOpCode = _currentExtension++;
-		if(extensionOpCode > 255) {
-			throw new RuntimeException("Too many extensions");
-		}
-		_extensionNameToOpCode.put(extensionName, extensionOpCode);
-		_handlers[extensionOpCode] = requestHandler;
+	private Map<String, Extension> _extensionMap = new TreeMap<String, Extension>();
+
+	private void addExtension(final String extensionName, final int numEvents, final int numErrors, final int minorOp, final Extension extension) {
+		//		final int extensionOpCode = _currentExtension++;
+		//		if(extensionOpCode > 255) {
+		//			throw new RuntimeException("Too many extensions");
+		//		}
+		_extensionMap.put(extensionName, extension);
+//		_handlers[EXTENSION_BASE+minorOp] = requestHandler;
 	}
-	
+
 	public RequestHandlerMap() {
 		for(int i = 0; i < _handlers.length; ++i) {
 			_handlers[i] = UNIMPLEMENTED;
 		}
 		
+		//		addExtension("RANDR", 0, 139, 72,0, null);
+		addExtension("BIG-REQUESTS", 0,0,0, new BigRequestsExtension());
+
+
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
-		
+
+		_handlers[1] = new CreateWindow();
+		_handlers[2] = new ChangeWindowAttributes();
+		_handlers[3] = new GetWindowAttributes();
+		_handlers[4] = new DestroyWindow();
+		_handlers[5] = new DestroyWindows();
+		_handlers[6] = new ChangeSaveSet();
+		_handlers[14] = new GetGeometry();
 		_handlers[16] = new InternAtom();
 		_handlers[20] = new GetProperty();
 		_handlers[43] = new GetInputFocus();
@@ -97,7 +79,10 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[60] = new FreeGraphicsContext();
 		_handlers[72] = new PutImage();
 		_handlers[91] = new QueryColours();
-		_handlers[98] = new QueryExtension();
+		_handlers[98] = new QueryExtension(_extensionMap);
+		_handlers[99] = new ListExtensions(_extensionMap);
+
+
 	}
 
 	@Override
@@ -105,13 +90,13 @@ public class RequestHandlerMap implements RequestHandler {
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
-		
+
 		final int majorOpCode = request.getMajorOpCode();
 		if(majorOpCode < 0 || majorOpCode > 255) {
 			throw new RuntimeException("Impossible majorOpCode " + majorOpCode);
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
-		
+
 		requestHandler.handleRequest(server, client, request, response);
 	}
 }
