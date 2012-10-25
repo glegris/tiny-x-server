@@ -9,6 +9,12 @@ public abstract class Property {
 		IntFormat
 	}
 	
+	public enum Mode {
+		PropModeReplace,
+		PropModePrepend,
+		PropModeAppend
+	}
+	
 	private final int _propertyAtomId;
 	private final int _typeAtomId;
 	
