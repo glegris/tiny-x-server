@@ -41,9 +41,11 @@ public class TrueColorMap extends ColorMap {
 
 	@Override
 	public void getColor(final int pixel, final Color color) {
-		color._red = (pixel & 0xff) << 8;
-		color._green = pixel & 0xff00;
-		color._blue = (pixel & 0xff0000) >> 8;
+		final int r = pixel & 0x0000ff;
+		final int g = pixel & 0x00ff00;
+		final int b = pixel & 0xff0000;
+		color._red = r | (r << 8);
+		color._green = g | (g >>8);
+		color._blue = (b >> 8) | (b >> 16);
 	}
-
 }
