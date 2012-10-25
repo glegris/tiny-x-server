@@ -24,7 +24,17 @@ public class RootWindow extends Window {
 
 	public RootWindow(final int resourceId, 
 			           final Screen screen) {
-		super(resourceId, null, screen.getRootVisual(), screen.getRootVisual().getDepth());
+		super(resourceId, 
+				null, 
+				screen.getRootVisual(), 
+				screen.getRootVisual().getDepth(),
+				screen.getWidthPixels(),
+				screen.getHeightPixels(),
+				0, 
+				0,
+				0,
+				WindowClass.InputOutput);
+		
 		_screen = screen;
 	}
 	

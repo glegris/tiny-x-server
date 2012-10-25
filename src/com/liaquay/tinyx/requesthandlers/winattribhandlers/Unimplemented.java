@@ -16,23 +16,24 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
+package com.liaquay.tinyx.requesthandlers.winattribhandlers;
 
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
-import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.AttributeHandler;
 
-public class BackgroundColour implements AttributeHandler<GraphicsContext> {
+public class Unimplemented implements AttributeHandler<Window> {
 
 	@Override
-	public void read(final XInputStream inputStream, final GraphicsContext graphicsContext) throws IOException {
-		graphicsContext.setBackgroundColour(inputStream.readInt());
+	public void read(final XInputStream inputStream, final Window window) throws IOException {
+		throw new RuntimeException("Unimplemented");
 	}
 
 	@Override
-	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeInt(graphicsContext.getBackgroundColour());
+	public void write(final XOutputStream outputStream, final Window window) throws IOException {
+		throw new RuntimeException("Unimplemented");
 	}
 }

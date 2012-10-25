@@ -30,6 +30,7 @@ import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.extensions.BigRequestsExtension;
 import com.liaquay.tinyx.model.extensions.Extension;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
+import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
 public class RequestHandlerMap implements RequestHandler {
 
@@ -62,8 +63,9 @@ public class RequestHandlerMap implements RequestHandler {
 
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
+		final WindowAttributeHandlers windowAttributeHandlers = new WindowAttributeHandlers();
 
-		_handlers[1] = new CreateWindow();
+		_handlers[1] = new CreateWindow(windowAttributeHandlers);
 		_handlers[2] = new ChangeWindowAttributes();
 		_handlers[3] = new GetWindowAttributes();
 		_handlers[4] = new DestroyWindow();
@@ -82,8 +84,6 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[91] = new QueryColours();
 		_handlers[98] = new QueryExtension(_extensionMap);
 		_handlers[99] = new ListExtensions(_extensionMap);
-
-
 	}
 
 	@Override

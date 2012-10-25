@@ -24,7 +24,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.GraphicsContext;
 
-public class ForegroundColour implements GraphicsContextAttributeHandler {
+public class ForegroundColour implements AttributeHandler<GraphicsContext> {
 
 	@Override
 	public void read(final XInputStream inputStream, final GraphicsContext graphicsContext) throws IOException {

@@ -18,55 +18,36 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-import java.io.IOException;
-
-import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.GraphicsContext;
 
-
-public class GraphicsContextAttributeHandlers {
+public class GraphicsContextAttributeHandlers extends AttributeHandlers<GraphicsContext> {
 	
-	private final GraphicsContextAttributeHandler[] _handlers = new GraphicsContextAttributeHandler[]{
-			new Function(),
-			new PlaneMask(),
-			new ForegroundColour(),
-			new BackgroundColour(),
-			new LineWidth(),
-			new LineStyle(),
-			new CapStyle(),
-			new JoinStyle(),
-			new FillStyle(),
-			new FillRule(),
-			new Tile(),
-			new Stipple(),
-			new TileStippleXOrigin(),
-			new TileStippleYOrigin(),
-			new Font(),
-			new SubWindowMode(),
-			new GraphicsExposures(),
-			new ClipXOrigin(),
-			new ClipYOrigin(),
-			new ClipMask(),
-			new DashOffset(),
-			new DashList(),
-			new ArcMode()
-	};
-	
-	public void read(final XInputStream inputStream, final GraphicsContext graphicsContext, final int attributeMask) throws IOException {
-		for(int i = 0; i < _handlers.length; ++i) {
-			if(((1<<i) & attributeMask) != 0) {
-				_handlers[i].read(inputStream, graphicsContext);
-			}
-		}
+	@SuppressWarnings("unchecked")
+	public GraphicsContextAttributeHandlers() {
+		super(new AttributeHandler[]{
+				new Function(),
+				new PlaneMask(),
+				new ForegroundColour(),
+				new BackgroundColour(),
+				new LineWidth(),
+				new LineStyle(),
+				new CapStyle(),
+				new JoinStyle(),
+				new FillStyle(),
+				new FillRule(),
+				new Tile(),
+				new Stipple(),
+				new TileStippleXOrigin(),
+				new TileStippleYOrigin(),
+				new Font(),
+				new SubWindowMode(),
+				new GraphicsExposures(),
+				new ClipXOrigin(),
+				new ClipYOrigin(),
+				new ClipMask(),
+				new DashOffset(),
+				new DashList(),
+				new ArcMode()
+		});
 	}
-	
-	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext, final int attributeMask) throws IOException {
-		for(int i = 0; i < _handlers.length; ++i) {
-			if(((1<<i) & attributeMask) != 0) {
-				_handlers[i].write(outputStream, graphicsContext);
-			}
-		}
-	}
-	
 }

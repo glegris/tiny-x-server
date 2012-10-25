@@ -22,15 +22,21 @@ import com.liaquay.tinyx.util.Tree;
 
 public class Window extends Tree<Window> implements Drawable {
 
+	public enum WindowClass {
+		CopyFromParent,
+		InputOutput,
+		InputOnly
+	}
+	
 	private final int _resourceId;
 	private final Visual _visual;
 	private final Properties _properties = new Properties();
 
 	private final int _depth;		/* depth of window */
-	private int _x, _y;				/* location of window */
+	private int _x, _y;			/* location of window */
 	private int _width, _height;	/* width and height of window */
-	private int _border_width;		/* border width of window */
-	
+	private int _borderWidth;		/* border width of window */
+	private WindowClass _windowClass;
 	private int _bit_gravity;		/* one of bit gravity values */
 	private int _win_gravity;		/* one of the window gravity values */
 
@@ -56,12 +62,24 @@ public class Window extends Tree<Window> implements Drawable {
 			final int resourceId, 
 			final Window parent, 
 			final Visual visual,
-			final int depth) {
+			final int depth,
+			final int width,
+			final int height,
+			final int x,
+			final int y,
+			final int borderWidth,
+			final WindowClass windowClass) {
 		
 		super(parent);
 		_resourceId = resourceId;
 		_visual = visual;
 		_depth = depth;
+		_width = width;
+		_height = height;
+		_x = x;
+		_y = y;
+		_borderWidth = borderWidth;
+		_windowClass = windowClass;
 	}
 
 	@Override

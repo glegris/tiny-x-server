@@ -24,7 +24,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.GraphicsContext;
 
-public class Unimplemented implements GraphicsContextAttributeHandler {
+public class Unimplemented implements AttributeHandler<GraphicsContext> {
 
 	@Override
 	public void read(final XInputStream inputStream, final GraphicsContext graphicsContext) throws IOException {
