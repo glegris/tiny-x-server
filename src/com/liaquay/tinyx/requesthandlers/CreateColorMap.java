@@ -39,13 +39,12 @@ public class CreateColorMap implements RequestHandler {
 			                   final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-		final ColorMap.AllocType[] allocationTypes = ColorMap.AllocType.values();
 		final int allocationTypeIndex = request.getData();
-		if(allocationTypeIndex < 0 || allocationTypeIndex >= allocationTypes.length) {
+		final ColorMap.AllocType allocType = ColorMap.AllocType.getFromIndex(allocationTypeIndex);
+		if(allocType==null) {
 			response.error(Response.ErrorCode.Value, allocationTypeIndex);
 			return;
 		}
-		final ColorMap.AllocType allocType = allocationTypes[allocationTypeIndex];
 		final int colorMapResourceId = inputStream.readInt();
 		final int windowResourceId = inputStream.readInt(); 		
 		final Window window = server.getResources().get(windowResourceId, Window.class);

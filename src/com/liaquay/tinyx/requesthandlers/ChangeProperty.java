@@ -39,12 +39,11 @@ public class ChangeProperty implements RequestHandler {
 
 		final XInputStream inputStream = request.getInputStream();		
 		final int modeIndex = request.getData();
-		final Property.Mode[] modes = Property.Mode.values();
-		if(modeIndex < 0 | modeIndex >= modes.length) {
+		final Property.Mode mode = Property.Mode.getFromIndex(modeIndex);
+		if(mode==null) {
 			response.error(Response.ErrorCode.Value, modeIndex);
 			return;
 		}
-		final Property.Mode mode = modes[modeIndex];
 		final int windowId = inputStream.readInt(); 		
 		final Window window = server.getResources().get(windowId, Window.class);
 		if(window == null) {
@@ -63,14 +62,10 @@ public class ChangeProperty implements RequestHandler {
 			response.error(Response.ErrorCode.Atom, typeId);
 			return;
 		}
-		final int formatIndex = inputStream.readUnsignedByte();
-		final Property.Format format;
-		switch(formatIndex) {
-		case 8:format = Property.Format.ByteFormat;break;
-		case 16:format = Property.Format.ShortFormat;break;
-		case 32:format = Property.Format.IntFormat;break;
-		default:
-			response.error(Response.ErrorCode.Value, formatIndex);
+		final int noOfBits = inputStream.readUnsignedByte();
+		final Property.Format format = Property.Format.getFromNoOfBits(noOfBits);
+		if (format==null) {
+			response.error(Response.ErrorCode.Value, noOfBits);
 			return;	
 		}
 		inputStream.skip(3);

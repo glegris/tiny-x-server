@@ -39,13 +39,12 @@ public class PutImage implements RequestHandler {
 			                   final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-		final Image.ImageType[] imageTypes = Image.ImageType.values();
 		final int imageTypeIndex = request.getData();
-		if(imageTypeIndex < 0 || imageTypeIndex >= imageTypes.length) {
+		final Image.ImageType imageType = Image.ImageType.getFromIndex(imageTypeIndex);
+		if(imageType == null) {
 			response.error(Response.ErrorCode.Match, imageTypeIndex); // TODO is this correct?
 			return;
 		}
-		final Image.ImageType imageType = imageTypes[imageTypeIndex];
 		final int drawableResourceId = inputStream.readInt();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
 		if(drawable == null) {

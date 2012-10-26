@@ -25,7 +25,13 @@ public class Window extends Tree<Window> implements Drawable {
 	public enum WindowClass {
 		CopyFromParent,
 		InputOutput,
-		InputOnly
+		InputOnly;
+		
+		public static WindowClass getFromIndex(final int index) {
+			final WindowClass[] windowClasses = values();
+			if (index<windowClasses.length && index>=0) return windowClasses[index];
+			return null;
+		}
 	}
 	
 	private final int _resourceId;

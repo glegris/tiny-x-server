@@ -28,7 +28,14 @@ public abstract class ColorMap extends AbstractResource {
 	
 	public enum AllocType {
 		AllocNone,
-		AllocAll
+		AllocAll;
+		
+		public static AllocType getFromIndex(final int index) {
+			final AllocType[] allocTypes = values();
+			if (index<allocTypes.length && index>=0)
+				return allocTypes[index];
+			return null;
+		}
 	}
 	
 	public ColorMap(final int id) {

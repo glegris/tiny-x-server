@@ -58,12 +58,11 @@ public class CreateWindow implements RequestHandler {
 		final int visualResourceId = inputStream.readInt();
 		final int attributeMask = inputStream.readInt();
 		
-		final WindowClass[] windowClasses = WindowClass.values();
-		if(windowClassIndex < 0 || windowClassIndex >= windowClasses.length) {
+		final WindowClass windowClass = WindowClass.getFromIndex(windowClassIndex);
+		if(windowClass == null) {
 			response.error(Response.ErrorCode.Value, windowClassIndex);
 			return;
 		}
-		final WindowClass windowClass = windowClasses[windowClassIndex];
 		
 		final Window parentWindow = server.getResources().get(parentWindowResourceId, Window.class);
 		if(parentWindow == null) {
@@ -72,7 +71,7 @@ public class CreateWindow implements RequestHandler {
 		}
 		
 		final Visual visual = visualResourceId == 0 ? 
-				parentWindow.getVisual() :       
+				parentWindow.getVisual() : 
 				server.getResources().get(visualResourceId, Visual.class);
 		
 		final Window window = new Window(

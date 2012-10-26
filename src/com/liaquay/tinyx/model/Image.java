@@ -5,6 +5,12 @@ public interface Image {
 	public enum ImageType {
 		BitMap,
 		XYPixmap,
-		ZPixmap
+		ZPixmap;
+		
+		public static ImageType getFromIndex(final int index) {
+			final ImageType[] imageTypes = values();
+			if(index >= 0 && index < imageTypes.length) return imageTypes[index];
+			return null;
+		}
 	}
 }
