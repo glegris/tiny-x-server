@@ -26,8 +26,12 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Property;
+import com.liaquay.tinyx.model.Property.Mode;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.properties.BytePropertyValue;
+import com.liaquay.tinyx.model.properties.IntPropertyValue;
+import com.liaquay.tinyx.model.properties.ShortPropertyValue;
 
 public class ChangeProperty implements RequestHandler {
 
@@ -69,9 +73,122 @@ public class ChangeProperty implements RequestHandler {
 			return;	
 		}
 		inputStream.skip(3);
-		final Property property = window.getProperty(propertyId);
+		Property property = window.getProperty(propertyId);
 		final int n = inputStream.readInt();
 		
-		// TODO implement change of property
+		if(!mode.equals(Mode.PropModeReplace)) {
+			if(property == null) {
+				response.error(Response.ErrorCode.Match, propertyId); //TODO This is probably not the correct error code
+				return;						
+			}
+			if(!format.equals(property.getValue().getFormat())) {
+				response.error(Response.ErrorCode.Match, noOfBits);
+				return;				
+			}
+			if(property.getValue().getTypeAtomId() != typeId) {
+				response.error(Response.ErrorCode.Match, typeId);
+				return;
+			}
+		}
+		
+		if(property == null) {
+			property = new Property(propertyId);
+		}
+		
+		switch(format) {
+		case ByteFormat: changeBytes(inputStream, property, typeId, mode, n); break;
+		case ShortFormat: changeShorts(inputStream, property, typeId, mode, n); break;
+		case IntFormat: changeInts(inputStream, property, typeId, mode, n); break;
+		}
 	}
+
+	private void changeBytes(
+			final XInputStream inputStream,
+			final Property property,
+			final int typeId,
+			final Property.Mode mode,
+			final int n) throws IOException {
+
+		final byte[] data = new  byte[n];
+		inputStream.read(data, 0, n);
+System.out.println("Change property received " + new String(data))		;
+		
+		switch(mode) {
+		case PropModeReplace: {
+			final BytePropertyValue bytePropertyValue = new BytePropertyValue(typeId, data);
+			property.setValue(bytePropertyValue);
+			break;
+		}
+		case PropModeAppend: {
+			final BytePropertyValue bytePropertyValue = (BytePropertyValue)property.getValue();
+			bytePropertyValue.append(data);
+			break;
+		}
+		case PropModePrepend: {
+			final BytePropertyValue bytePropertyValue = (BytePropertyValue)property.getValue();
+			bytePropertyValue.append(data);
+			break;
+		}
+		}
+	}
+	
+	private void changeShorts(
+			final XInputStream inputStream,
+			final Property property,
+			final int typeId,
+			final Property.Mode mode,
+			final int n) throws IOException {
+
+		final short[] data = new  short[n];
+		for(int i = 0; i < n; ++i) {
+			data[i] = (short)inputStream.readSignedShort();
+		}
+		switch(mode) {
+		case PropModeReplace: {
+			final ShortPropertyValue bytePropertyValue = new ShortPropertyValue(typeId, data);
+			property.setValue(bytePropertyValue);
+			break;
+		}
+		case PropModeAppend: {
+			final ShortPropertyValue bytePropertyValue = (ShortPropertyValue)property.getValue();
+			bytePropertyValue.append(data);
+			break;
+		}
+		case PropModePrepend: {
+			final ShortPropertyValue bytePropertyValue = (ShortPropertyValue)property.getValue();
+			bytePropertyValue.append(data);
+			break;
+		}
+		}
+	}
+	
+	private void changeInts(
+			final XInputStream inputStream,
+			final Property property,
+			final int typeId,
+			final Property.Mode mode,
+			final int n) throws IOException {
+
+		final int[] data = new  int[n];
+		for(int i = 0; i < n; ++i) {
+			data[i] = (short)inputStream.readInt();
+		}
+		switch(mode) {
+		case PropModeReplace: {
+			final IntPropertyValue bytePropertyValue = new IntPropertyValue(typeId, data);
+			property.setValue(bytePropertyValue);
+			break;
+		}
+		case PropModeAppend: {
+			final IntPropertyValue bytePropertyValue = (IntPropertyValue)property.getValue();
+			bytePropertyValue.append(data);
+			break;
+		}
+		case PropModePrepend: {
+			final IntPropertyValue bytePropertyValue = (IntPropertyValue)property.getValue();
+			bytePropertyValue.append(data);
+			break;
+		}
+		}
+	}	
 }

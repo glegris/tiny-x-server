@@ -29,9 +29,10 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Property;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.model.properties.ByteProperty;
-import com.liaquay.tinyx.model.properties.IntProperty;
-import com.liaquay.tinyx.model.properties.ShortProperty;
+import com.liaquay.tinyx.model.properties.BytePropertyValue;
+import com.liaquay.tinyx.model.properties.IntPropertyValue;
+import com.liaquay.tinyx.model.properties.PropertyValue;
+import com.liaquay.tinyx.model.properties.ShortPropertyValue;
 
 public class GetProperty implements RequestHandler {
 
@@ -76,12 +77,13 @@ public class GetProperty implements RequestHandler {
 		int valueLength = 0;
 		final Property property = window.getProperty(propertyId);
 		if(property != null) {
-			actualTypeAtomId = property.getTypeAtomId();
+			final PropertyValue value = property.getValue();
+			actualTypeAtomId = value.getTypeAtomId();
 			if(typeId != 0 && actualTypeAtomId != typeId) {
-				bytesAfter = property.getLengthInBytes();
+				bytesAfter = value.getLengthInBytes();
 			}
 			else {
-				final int n = property.getLengthInBytes();
+				final int n = value.getLengthInBytes();
 				i = 4 * longOffset;
 				final int t = n - i;
 
@@ -102,7 +104,7 @@ public class GetProperty implements RequestHandler {
 						return;
 					}
 					else {
-						valueLength = property.getLength();
+						valueLength = value.getLength();
 					}
 			}
 		}
@@ -114,18 +116,19 @@ public class GetProperty implements RequestHandler {
 		response.padHeader();
 
 		if(l > 0 && property != null) {
-			switch(property.getFormat()) {
+			final PropertyValue value = property.getValue();
+			switch(value.getFormat()) {
 			case ByteFormat:
-				writeBytes(outputStream, ((ByteProperty)property).getData(), i, l);
+				writeBytes(outputStream, ((BytePropertyValue)value).getData(), i, l);
 				break;
 			case ShortFormat:
-				writeShorts(outputStream, ((ShortProperty)property).getData(), i, l);
+				writeShorts(outputStream, ((ShortPropertyValue)value).getData(), i, l);
 				break;
 			case IntFormat:
-				writeInts(outputStream, ((IntProperty)property).getData(), i, l);
+				writeInts(outputStream, ((IntPropertyValue)value).getData(), i, l);
 				break;
 			default:
-				throw new RuntimeException("Undefined property format " + property.getFormat());
+				throw new RuntimeException("Undefined property format " + value.getFormat());
 			}
 		}
 
@@ -163,9 +166,9 @@ public class GetProperty implements RequestHandler {
 			final int lengthInBytes) throws IOException {
 
 		final int offsetInInts = offsetInBytes >> 2;
-					final int lengthInInts =  lengthInBytes >> 2;
-					for(int i = 0; i < lengthInInts; ++ i){						
-						outputStream.writeInt(data[offsetInInts + i]);
-					}
+		final int lengthInInts =  lengthInBytes >> 2;
+		for(int i = 0; i < lengthInInts; ++ i){						
+			outputStream.writeInt(data[offsetInInts + i]);
+		}
 	}
 }

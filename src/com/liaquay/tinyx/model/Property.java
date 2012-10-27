@@ -1,9 +1,10 @@
 package com.liaquay.tinyx.model;
 
-import com.liaquay.tinyx.model.ColorMap.AllocType;
+import com.liaquay.tinyx.model.properties.PropertyValue;
 
 
-public abstract class Property {
+
+public class Property {
 	
 	public enum Format {
 		NoFormat(0),
@@ -43,29 +44,28 @@ public abstract class Property {
 		
 		public static Mode getFromIndex(final int index) {
 			final Mode[] modes = values();
-			if (index<modes.length && index>=0)
-				return modes[index];
+			if (index<modes.length && index>=0) return modes[index];
 			return null;
 		}		
 	}
 	
 	private final int _propertyAtomId;
-	private final int _typeAtomId;
+	private PropertyValue _value = null;
 	
-	public Property(final int propertyAtomId, final int typeAtomId) {
+	public Property(final int propertyAtomId) {
 		_propertyAtomId = propertyAtomId;
-		_typeAtomId = typeAtomId;
-	}
-	
-	public int getTypeAtomId() {
-		return _typeAtomId;
 	}
 	
 	public int getPropertyAtomId() {
 		return _propertyAtomId;
 	}
 	
-	public abstract int getLengthInBytes();
-	public abstract int getLength();
-	public abstract Format getFormat();
+	public PropertyValue getValue() {
+		return _value;
+	}
+
+	public void setValue(final PropertyValue value) {
+		// TODO need to issue and event
+		_value = value;
+	}
 }

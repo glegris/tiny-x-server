@@ -18,18 +18,16 @@
  */
 package com.liaquay.tinyx.model.properties;
 
-import com.liaquay.tinyx.model.Property;
 import com.liaquay.tinyx.model.Property.Format;
 
 
-public class IntProperty extends Property {
+public class IntPropertyValue extends PropertyValue {
 	
 	private int[] _data;
 
-	public IntProperty(final int propertyAtomId, final int typeAtomId, final int[] data) {
-		super(propertyAtomId, typeAtomId);
+	public IntPropertyValue(final int typeAtomId, final int[] data) {
+		super(typeAtomId);
 		_data = data;
-		if((_data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");		
 	}
 	
 	@Override
@@ -49,6 +47,22 @@ public class IntProperty extends Property {
 	
 	public int[] getData() {
 		return _data;
+	}	
+	
+	public void prepend(final int[] data) {
+		if((data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");
+		final int[] n = new int[_data.length + data.length];
+		System.arraycopy(data, 0, n, 0, data.length);
+		System.arraycopy(_data, 0, n, data.length, _data.length);
+		_data = n;
+	}	
+	
+	public void append(final int[] data) {
+		if((data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");
+		final int[] n = new int[_data.length + data.length];
+		System.arraycopy(_data, 0, n, 0, _data.length);
+		System.arraycopy(data, 0, n, _data.length, data.length);
+		_data = n;
 	}	
 }
 
