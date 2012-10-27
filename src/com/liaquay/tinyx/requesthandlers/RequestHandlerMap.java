@@ -59,7 +59,7 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		
 		//		addExtension("RANDR", 0, 139, 72,0, null);
-		addExtension("BIG-REQUESTS", 0,0,0, new BigRequestsExtension());
+//		addExtension("BIG-REQUESTS", 0,0,0, new BigRequestsExtension());
 
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();

@@ -25,6 +25,7 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Atoms;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
@@ -41,11 +42,11 @@ public class InternAtom implements RequestHandler {
 		final boolean onlyIfExists = request.getData() == 1;
 		final String atomName = inputStream.readString();
 		final Atoms atoms = server.getAtoms();
-		int atomId = atoms.get(atomName);
-		if(!onlyIfExists && atomId == 0) {
-			atomId = server.getAtoms().allocate(atomName);
+		Atom atom = atoms.get(atomName);
+		if(!onlyIfExists && atom == null) {
+			atom = server.getAtoms().allocate(atomName);
 		}
 		final XOutputStream outputStream = response.respond(1, 0);
-		outputStream.writeInt(atomId);
+		outputStream.writeInt(atom == null ? 0 : atom.getId());
 	}
 }

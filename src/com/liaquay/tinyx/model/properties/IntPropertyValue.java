@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model.properties;
 
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Property.Format;
 
 
@@ -25,8 +26,8 @@ public class IntPropertyValue extends PropertyValue {
 	
 	private int[] _data;
 
-	public IntPropertyValue(final int typeAtomId, final int[] data) {
-		super(typeAtomId);
+	public IntPropertyValue(final Atom typeAtom, final int[] data) {
+		super(typeAtom);
 		_data = data;
 	}
 	

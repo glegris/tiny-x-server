@@ -25,6 +25,7 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Property;
 import com.liaquay.tinyx.model.Server;
@@ -57,14 +58,14 @@ public class GetProperty implements RequestHandler {
 		final int longOffset = inputStream.readInt();
 		int longLength = inputStream.readInt();
 
-		final String propertyName = server.getAtoms().get(propertyId);
-		if(propertyName == null) {
+		final Atom propertyAtom = server.getAtoms().get(propertyId);
+		if(propertyAtom == null) {
 			response.error(Response.ErrorCode.Atom, propertyId);
 			return;
 		}
 
-		final String typeName = server.getAtoms().get(typeId);
-		if(typeName == null) {
+		final Atom typeAtom = server.getAtoms().get(typeId);
+		if(typeAtom == null) {
 			response.error(Response.ErrorCode.Atom, typeId);
 			return;
 		}
@@ -78,7 +79,7 @@ public class GetProperty implements RequestHandler {
 		final Property property = window.getProperty(propertyId);
 		if(property != null) {
 			final PropertyValue value = property.getValue();
-			actualTypeAtomId = value.getTypeAtomId();
+			actualTypeAtomId = value.getTypeAtom().getId();
 			if(typeId != 0 && actualTypeAtomId != typeId) {
 				bytesAfter = value.getLengthInBytes();
 			}
@@ -154,7 +155,7 @@ public class GetProperty implements RequestHandler {
 
 		final int offsetInShorts = offsetInBytes >> 1;
 					final int lengthInShorts =  lengthInBytes >> 1;
-					for(int i = 0; i < lengthInShorts; ++ i){						
+					for(int i = 0; i < lengthInShorts; ++ i){
 						outputStream.writeShort(data[offsetInShorts + i]);
 					}
 	}	
@@ -167,7 +168,7 @@ public class GetProperty implements RequestHandler {
 
 		final int offsetInInts = offsetInBytes >> 2;
 		final int lengthInInts =  lengthInBytes >> 2;
-		for(int i = 0; i < lengthInInts; ++ i){						
+		for(int i = 0; i < lengthInInts; ++ i){	
 			outputStream.writeInt(data[offsetInInts + i]);
 		}
 	}

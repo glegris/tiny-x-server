@@ -1,20 +1,21 @@
 package com.liaquay.tinyx.model.properties;
 
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Property.Format;
 
 public abstract class PropertyValue {
 	
-	private final int _typeAtomId;
+	private final Atom _typeAtom;
 	
-	public PropertyValue(final int typeAtomId) {
-		_typeAtomId = typeAtomId;
+	public PropertyValue(final Atom typeAtom) {
+		_typeAtom = typeAtom;
 	}
 	public int getLengthInBytes() {
 		return getLength() * getFormat().getNoOfBytes();
 	}
 	
-	public int getTypeAtomId() {
-		return _typeAtomId;
+	public Atom getTypeAtom() {
+		return _typeAtom;
 	}
 	
 	public abstract int getLength();

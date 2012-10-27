@@ -96,8 +96,8 @@ public class Atoms {
 		"WM_TRANSIENT_FOR"
 	};	
 
-	private IntMap<String> _idToAtomNameMap = new IntMap<String>();
-	private Map<String, Integer> _atomNameToIdMap = new TreeMap<String, Integer>();
+	private IntMap<Atom> _idToAtomNameMap = new IntMap<Atom>();
+	private Map<String, Atom> _atomNameToIdMap = new TreeMap<String, Atom>();
 	
 	private int _nextId = 1;
 
@@ -107,19 +107,19 @@ public class Atoms {
 		}
 	}
 
-	public int allocate(final String atom) {
+	public Atom allocate(final String text) {
 		final int id = _nextId++;
+		final Atom atom = new Atom(id, text);
 		_idToAtomNameMap.put(id, atom);
-		_atomNameToIdMap.put(atom, id);
-		return id;
+		_atomNameToIdMap.put(text, atom);
+		return atom;
 	}
 	
-	public String get(final int id) {
+	public Atom get(final int id) {
 		return _idToAtomNameMap.get(id);
 	}
 
-	public int get(final String atomName) {
-		final Integer id = _atomNameToIdMap.get(atomName);
-		return id == null ? 0 : id;
+	public Atom get(final String atomName) {
+		return _atomNameToIdMap.get(atomName);
 	}
 }

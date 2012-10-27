@@ -18,14 +18,15 @@
  */
 package com.liaquay.tinyx.model.properties;
 
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Property.Format;
 
 public class BytePropertyValue extends PropertyValue {
 
 	private byte[] _data;
 	
-	public BytePropertyValue(final int typeAtomId, final byte[] data) {
-		super(typeAtomId);
+	public BytePropertyValue(final Atom typeAtom, final byte[] data) {
+		super(typeAtom);
 		_data = data;
 	}
 

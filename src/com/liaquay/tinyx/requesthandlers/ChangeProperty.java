@@ -24,6 +24,7 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Property;
 import com.liaquay.tinyx.model.Property.Mode;
@@ -55,14 +56,14 @@ public class ChangeProperty implements RequestHandler {
 			return;
 		}
 		final int propertyId =inputStream.readInt(); 
-		final String propertyName = server.getAtoms().get(propertyId);
-		if(propertyName == null) {
+		final Atom propertyAtom = server.getAtoms().get(propertyId);
+		if(propertyAtom == null) {
 			response.error(Response.ErrorCode.Atom, propertyId);
 			return;
 		}
 		final int typeId = inputStream.readInt();
-		final String typeName = server.getAtoms().get(typeId);
-		if(typeName == null) {
+		final Atom typeAtom = server.getAtoms().get(typeId);
+		if(typeAtom == null) {
 			response.error(Response.ErrorCode.Atom, typeId);
 			return;
 		}
@@ -85,37 +86,37 @@ public class ChangeProperty implements RequestHandler {
 				response.error(Response.ErrorCode.Match, noOfBits);
 				return;				
 			}
-			if(property.getValue().getTypeAtomId() != typeId) {
+			if(property.getValue().getTypeAtom().getId() != typeId) {
 				response.error(Response.ErrorCode.Match, typeId);
 				return;
 			}
 		}
 		
 		if(property == null) {
-			property = new Property(propertyId);
+			property = new Property(propertyAtom);
 		}
 		
 		switch(format) {
-		case ByteFormat: changeBytes(inputStream, property, typeId, mode, n); break;
-		case ShortFormat: changeShorts(inputStream, property, typeId, mode, n); break;
-		case IntFormat: changeInts(inputStream, property, typeId, mode, n); break;
+		case ByteFormat: changeBytes(inputStream, property, typeAtom, mode, n); break;
+		case ShortFormat: changeShorts(inputStream, property, typeAtom, mode, n); break;
+		case IntFormat: changeInts(inputStream, property, typeAtom, mode, n); break;
 		}
 	}
 
 	private void changeBytes(
 			final XInputStream inputStream,
 			final Property property,
-			final int typeId,
+			final Atom typeAtom,
 			final Property.Mode mode,
 			final int n) throws IOException {
 
 		final byte[] data = new  byte[n];
 		inputStream.read(data, 0, n);
-System.out.println("Change property received " + new String(data))		;
+System.out.println("Change property received for " +property.getPropertyAtom().getText() + " value " + new String(data))		;
 		
 		switch(mode) {
 		case PropModeReplace: {
-			final BytePropertyValue bytePropertyValue = new BytePropertyValue(typeId, data);
+			final BytePropertyValue bytePropertyValue = new BytePropertyValue(typeAtom, data);
 			property.setValue(bytePropertyValue);
 			break;
 		}
@@ -135,7 +136,7 @@ System.out.println("Change property received " + new String(data))		;
 	private void changeShorts(
 			final XInputStream inputStream,
 			final Property property,
-			final int typeId,
+			final Atom typeAtom,
 			final Property.Mode mode,
 			final int n) throws IOException {
 
@@ -145,7 +146,7 @@ System.out.println("Change property received " + new String(data))		;
 		}
 		switch(mode) {
 		case PropModeReplace: {
-			final ShortPropertyValue bytePropertyValue = new ShortPropertyValue(typeId, data);
+			final ShortPropertyValue bytePropertyValue = new ShortPropertyValue(typeAtom, data);
 			property.setValue(bytePropertyValue);
 			break;
 		}
@@ -165,7 +166,7 @@ System.out.println("Change property received " + new String(data))		;
 	private void changeInts(
 			final XInputStream inputStream,
 			final Property property,
-			final int typeId,
+			final Atom typeAtom,
 			final Property.Mode mode,
 			final int n) throws IOException {
 
@@ -175,7 +176,7 @@ System.out.println("Change property received " + new String(data))		;
 		}
 		switch(mode) {
 		case PropModeReplace: {
-			final IntPropertyValue bytePropertyValue = new IntPropertyValue(typeId, data);
+			final IntPropertyValue bytePropertyValue = new IntPropertyValue(typeAtom, data);
 			property.setValue(bytePropertyValue);
 			break;
 		}

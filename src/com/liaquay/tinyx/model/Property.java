@@ -49,15 +49,15 @@ public class Property {
 		}		
 	}
 	
-	private final int _propertyAtomId;
+	private final Atom _propertyAtom;
 	private PropertyValue _value = null;
 	
-	public Property(final int propertyAtomId) {
-		_propertyAtomId = propertyAtomId;
+	public Property(final Atom propertyAtom) {
+		_propertyAtom = propertyAtom;
 	}
 	
-	public int getPropertyAtomId() {
-		return _propertyAtomId;
+	public Atom getPropertyAtom() {
+		return _propertyAtom;
 	}
 	
 	public PropertyValue getValue() {
