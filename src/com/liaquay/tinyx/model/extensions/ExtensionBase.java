@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx.model.extensions;
 
+import com.liaquay.tinyx.requesthandlers.extensions.ExtensionHandler;
+
 
 abstract class ExtensionBase implements Extension {
 	static int currentMaxType=127;
@@ -40,14 +42,25 @@ abstract class ExtensionBase implements Extension {
 	//  }
 
 	int type;
-	int eventbase;
+	
+	int firstevent;
+	int firsterror;
+
 	int eventcount;
-	int errorbase;
 	int errorcount;
 	String name;
+	ExtensionHandler handler;
 	
-	public ExtensionBase(String name) {
+	public ExtensionBase(String name, int firstEvent, int firstError, ExtensionHandler handler) {
 		this.name = name;
+		this.firstevent = firstEvent;
+		this.firsterror = firstError;
+		this.handler = handler;
+	}
+	
+	@Override
+	public ExtensionHandler getHandler() {
+		return handler;
 	}
 	
 	public int getType() {
@@ -56,63 +69,43 @@ abstract class ExtensionBase implements Extension {
 	public void setType(int type) {
 		this.type = type;
 	}
-	public int getEventbase() {
-		return eventbase;
-	}
-	public void setEventbase(int eventbase) {
-		this.eventbase = eventbase;
-	}
+
 	public int getEventcount() {
 		return eventcount;
 	}
 	public void setEventcount(int eventcount) {
 		this.eventcount = eventcount;
 	}
-	public int getErrorbase() {
-		return errorbase;
+
+
+	public int getFirstEvent() {
+		return firstevent;
 	}
-	public void setErrorbase(int errorbase) {
-		this.errorbase = errorbase;
+
+	public void setFirstEvent(int firstevent) {
+		this.firstevent = firstevent;
 	}
+
+	public int getFirstError() {
+		return firsterror;	
+	}
+
+
+	public void setFirstError(int firsterror) {
+		this.firsterror = firsterror;
+	}
+
 	public int getErrorcount() {
 		return errorcount;
 	}
 	public void setErrorcount(int errorcount) {
 		this.errorcount = errorcount;
 	}
+
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	//  static final void dispatch(int reqType, Client c) throws IOException{
-	//    for(int i=0; i<ext.length; i++){
-	//      if(ext[i]==null)break;
-	//      if(ext[i].type==reqType){
-	//	ext[i].dispatch(c);
-	//	return;
-	//      }
-	//    }
-	//    System.err.println("Extension: unknown reqType "+reqType);
-	//  }
-	//
-	//  static void swap(int etyp, Event e){
-	//    for(int i=0; i<ext.length; i++){
-	//      if(ext[i]==null)break;
-	//      if(ext[i].eventcount==0)continue;
-	//      if(ext[i].eventbase<=etyp && 
-	//	 etyp<=ext[i].eventbase+ext[i].eventcount){
-	//	ext[i].swap(e);
-	//	return;
-	//      }
-	//    }
-	//  }
-	//
-	//  abstract void dispatch(Client c) throws IOException;
-	//  abstract void swap(Event e);
-
-
-
 }

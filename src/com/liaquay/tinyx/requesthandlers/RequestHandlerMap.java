@@ -27,7 +27,9 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.extensions.BigRequestsExtension;
 import com.liaquay.tinyx.model.extensions.Extension;
+import com.liaquay.tinyx.requesthandlers.extensions.BigRequestHandler;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
@@ -58,7 +60,7 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		
 		//		addExtension("RANDR", 0, 139, 72,0, null);
-//		addExtension("BIG-REQUESTS", 0,0,0, new BigRequestsExtension());
+		addExtension("BIG-REQUESTS2", 0,0,0, new BigRequestsExtension(new BigRequestHandler()));
 
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
