@@ -46,6 +46,7 @@ public class Window extends Tree<Window> implements Drawable {
 	private int _bit_gravity;		/* one of bit gravity values */
 	private int _win_gravity;		/* one of the window gravity values */
 
+	private Pointer _pointer = new Pointer();
 	private boolean _mapped = false;
 	
 	
@@ -118,6 +119,10 @@ public class Window extends Tree<Window> implements Drawable {
 		return _depth;
 	}
 	
+	public Pointer getPointer() {
+		return _pointer;
+	}
+
 	public boolean isMapped() {
 		return _mapped;
 	}
