@@ -20,23 +20,25 @@ package com.liaquay.tinyx.model;
 
 public class Client {
 	private final int _clientId;
-	private final int _endFakeID;
+	private final int _endServerResourceId;
 
-	private int _fakeID;
+	private int _serverResourceId;
 
 	public Client(final int clientId, final int fakeID) {
 		_clientId = clientId;    
-		_fakeID = fakeID;
-	    _endFakeID = (_fakeID | Resource.RESOURCE_ID_MASK)+1;
+		_serverResourceId = fakeID;
+	    _endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;
 	}
 	
 	public int getClientId() {
 		return _clientId;
 	}
 	
-	protected int allocateFakeId(){
-		final int id =_fakeID++;
-		if (id !=_endFakeID){
+	// TODO Might need 2 of these
+	//   One to allocate effectively static resources and another for more dynamic stuff like events
+	protected int allocateResourceId(){
+		final int id =_serverResourceId++;
+		if (id !=_endServerResourceId){
 			return id;
 		}
 		// TODO : Error handling!

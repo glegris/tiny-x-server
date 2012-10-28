@@ -42,8 +42,12 @@ import com.liaquay.tinyx.requesthandlers.RequestHandlerMap;
 
 public class ConnectionFactory implements TinyXServer.ClientFactory {
 		
-	private final Server _server = new Server();
+	private final Server _server;
 	private final RequestHandler _requestHandler = new RequestHandlerMap();
+	
+	public ConnectionFactory(final Server server) {
+		_server = server;
+	}
 	
 	private static void writeFormat(final XOutputStream out, final Format format) throws IOException {
 	    out.writeByte(format.getDepth());
@@ -72,7 +76,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		extraOutputStream.writeInt(0);		                  // Motion buffer size.
 		extraOutputStream.writeShort(_server.getVendor().length);	 // Vendor length.
 		extraOutputStream.writeShort(0x7fff);	                  // Max request length. TODO Really?
-		extraOutputStream.writeByte(_server.getScreens().length);   // Number of screens.
+		extraOutputStream.writeByte(_server.getScreens().size());   // Number of screens.
 		extraOutputStream.writeByte(_server.getFormats().length);   // Number of formats
 		extraOutputStream.writeByte(_server.getImageByteOrder().ordinal());   // Image byte order (0=LSB, 1=MSB).
 		extraOutputStream.writeByte(_server.getBitmapBitOrder().ordinal());   // Bitmap bit order (0=LSB, 1=MSB).
@@ -85,8 +89,8 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		for(int i = 0; i < _server.getFormats().length; ++i) {
 			writeFormat(extraOutputStream, _server.getFormats()[i]);
 		}
-		for(int i = 0; i < _server.getScreens().length; ++i) {
-			writeScreen(extraOutputStream, _server.getScreens()[i]);
+		for(int i = 0; i < _server.getScreens().size(); ++i) {
+			writeScreen(extraOutputStream, _server.getScreens().get(i));
 		}
 		
 		out.writeByte(1);		                  // Success.

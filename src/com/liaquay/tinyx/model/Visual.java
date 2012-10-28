@@ -45,8 +45,6 @@ public class Visual extends AbstractResource {
 	private final int _depth;
 	/**
 	 * Constructor.
-	 *
-	 * @param id    The visual ID.
 	 */
 	public Visual (
 			final int resourceId,
