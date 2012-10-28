@@ -46,6 +46,7 @@ public class Window extends Tree<Window> implements Drawable {
 	private int _bit_gravity;		/* one of bit gravity values */
 	private int _win_gravity;		/* one of the window gravity values */
 
+	private boolean _mapped = false;
 	
 	
 	
@@ -115,5 +116,39 @@ public class Window extends Tree<Window> implements Drawable {
 	
 	public int getDepth() {
 		return _depth;
+	}
+	
+	public boolean isMapped() {
+		return _mapped;
+	}
+	
+	public void map() {
+		if(!_mapped ) {
+			_mapped = true;
+			// TODO issue some mapped event
+		}
+	}
+	
+	/**
+	 * Performs a MapWindow request on all unmapped children of the window,
+	 * in top-to-bottom stacking order.
+	 */
+	public void mapSubwindows() {
+		// 
+	}
+	
+	public void unmap() {
+		if(_mapped) {
+			_mapped = false;
+			// TODO issue some unmapped event
+		}
+	}
+	
+	/**
+	 * Performs an UnmapWindow request on all mapped children of the window,
+	 * in bottom-to-top stacking order
+	 */
+	public void unmapSubwindows() {
+		
 	}
 }

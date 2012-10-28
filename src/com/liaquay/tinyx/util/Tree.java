@@ -19,19 +19,16 @@
 package com.liaquay.tinyx.util;
 
 public class Tree<T extends Tree<T>> {
-	private Tree<T> _parent;
-	private Tree<T> _firstChild;
-	private Tree<T> _nextSibling;
-	private Tree<T> _prevSibling;
+	private Tree<T> _parent = null;
+	private Tree<T> _firstChild = null;
+	private Tree<T> _lastChild = null; // TODO populate
+	private Tree<T> _nextSibling = null;
+	private Tree<T> _prevSibling = null;
 
 	public Tree(final Tree<T> parent) {
 		_parent = parent;
 		if(parent != null) {
-			if(parent._firstChild != null) {
-				parent._firstChild._prevSibling = this;
-				_nextSibling = _parent._firstChild;
-			}
-			parent._firstChild = this;
+			parent.addChild(this);
 		}
 	}
 
@@ -41,14 +38,21 @@ public class Tree<T extends Tree<T>> {
 	}
 
 	public void addChild(final Tree<T> child) {
-		if(_firstChild != null) {
-			_firstChild._prevSibling = child;
+		child._prevSibling = _lastChild;
+		child._nextSibling = null;
+		
+		if(_lastChild != null) {
+			_lastChild._nextSibling = child;
 		}
-		_firstChild = child;
+		else {
+			_firstChild = child;
+		}
+		_lastChild = child;
 		child._parent = this;
 	}
 
 	public final void removeChild(final Tree<T> child) {
+		//TODO double link!
 		if(child._prevSibling == null) {
 			_firstChild = child._nextSibling;
 		}

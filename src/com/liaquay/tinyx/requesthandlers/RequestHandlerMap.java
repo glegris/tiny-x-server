@@ -27,7 +27,6 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.extensions.BigRequestsExtension;
 import com.liaquay.tinyx.model.extensions.Extension;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
@@ -71,6 +70,10 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[4] = new DestroyWindow();
 		_handlers[5] = new DestroyWindows();
 		_handlers[6] = new ChangeSaveSet();
+		_handlers[8] = new MapWindow();
+		_handlers[9] = new MapSubwindows();
+		_handlers[10] = new UnmapWindow();
+		_handlers[11] = new UnmapSubwindows();
 		_handlers[14] = new GetGeometry();
 		_handlers[16] = new InternAtom();
 		_handlers[18] = new ChangeProperty();
