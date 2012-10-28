@@ -134,7 +134,10 @@ public class Window extends Tree<Window> implements Drawable {
 	 * in top-to-bottom stacking order.
 	 */
 	public void mapSubwindows() {
-		// 
+		// TODO not sure the order is correct
+		for(Window w = getFirstchild(); w != null; w = w.getNextSibling()) {
+			w.mapSubwindows();
+		}
 	}
 	
 	public void unmap() {
@@ -149,6 +152,9 @@ public class Window extends Tree<Window> implements Drawable {
 	 * in bottom-to-top stacking order
 	 */
 	public void unmapSubwindows() {
-		
+		// TODO not sure the order is correct
+		for(Window w = getLastchild(); w != null; w = w.getPrevSibling()) {
+			w.mapSubwindows();
+		}
 	}
 }

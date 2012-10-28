@@ -21,7 +21,7 @@ package com.liaquay.tinyx.util;
 public class Tree<T extends Tree<T>> {
 	private Tree<T> _parent = null;
 	private Tree<T> _firstChild = null;
-	private Tree<T> _lastChild = null; // TODO populate
+	private Tree<T> _lastChild = null;
 	private Tree<T> _nextSibling = null;
 	private Tree<T> _prevSibling = null;
 
@@ -52,16 +52,38 @@ public class Tree<T extends Tree<T>> {
 	}
 
 	public final void removeChild(final Tree<T> child) {
-		//TODO double link!
 		if(child._prevSibling == null) {
 			_firstChild = child._nextSibling;
 		}
 		else {
 			child._prevSibling._nextSibling = child._nextSibling;
 		}
-		if(child._nextSibling != null) {
+		if(child._nextSibling == null) {
+			_lastChild = child._prevSibling;
+		} 
+		else {
 			child._nextSibling._prevSibling = child._prevSibling;
 		}
 		child._parent = null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T getFirstchild() {
+		return (T)_firstChild;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T getLastchild() {
+		return (T)_lastChild;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T getNextSibling() {
+		return (T)_nextSibling;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T getPrevSibling() {
+		return (T)_prevSibling;
 	}
 }
