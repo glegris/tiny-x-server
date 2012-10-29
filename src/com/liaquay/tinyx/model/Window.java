@@ -40,7 +40,7 @@ public class Window extends Tree<Window> implements Drawable {
 
 	private final int _depth;		/* depth of window */
 	private int _x, _y;			/* location of window */
-	private int _width, _height;	/* width and height of window */
+	private int _widthPixels, _heightPixels;	/* width and height of window in pixels */
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
 	private int _bit_gravity;		/* one of bit gravity values */
@@ -81,8 +81,8 @@ public class Window extends Tree<Window> implements Drawable {
 		_resourceId = resourceId;
 		_visual = visual;
 		_depth = depth;
-		_width = width;
-		_height = height;
+		_widthPixels = width;
+		_heightPixels = height;
 		_x = x;
 		_y = y;
 		_borderWidth = borderWidth;
@@ -92,6 +92,14 @@ public class Window extends Tree<Window> implements Drawable {
 	@Override
 	public int getId() {
 		return _resourceId;
+	}
+	
+	public int getWidthPixels() {
+		return _widthPixels;
+	}	
+	
+	public int getHeightPixels() {
+		return _heightPixels;
 	}
 	
 	public void free() {}

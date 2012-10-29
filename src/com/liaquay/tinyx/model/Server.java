@@ -83,11 +83,11 @@ public class Server extends Client {
 		final Screen screen = factory.create(resourceId);
 		// TODO not very graceful
 		if(_screens.size() == 0) {
-		    _focus = new Focus(screen.getRootWindow(), Focus.RevertTo.None);
+		    _focus = new Focus(screen, Focus.RevertTo.None);
 		}
 		
 		_screens.add(screen);
-		_resources.add(screen.getRootWindow());
+		_resources.add(screen);
 	}
 	
 	public Client allocateClient() {
