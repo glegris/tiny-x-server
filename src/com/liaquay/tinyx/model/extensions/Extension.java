@@ -18,12 +18,16 @@
  */
 package com.liaquay.tinyx.model.extensions;
 
-import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.requesthandlers.extensions.ExtensionHandler;
 
 public interface Extension {
 	String getName();
 	
-	int getErrorCodes();
-	
-	void dispatch(XOutputStream out);
+	ExtensionHandler getHandler();
+
+	int getMajorOpCode();
+
+	int getFirstEvent();
+
+	int getFirstError();
 }
