@@ -18,13 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
-public class Screen {
-	private final Visual _rootVisual;
-	private final int _rootDepth;
+public class Screen extends Window {
+	
 	private final ColorMap _defaultColorMap;
-	private final RootWindow _rootWindow;
-	private final int _widthPixels;
-	private final int _heightPixels;
 	private final int _widthMM;
 	private final int _heightMM;
 	private final int _minInstalledMaps = 1; // TODO What are these?
@@ -41,37 +37,25 @@ public class Screen {
 			       final int heightMM,
 			       final Depths depths) {
 		
+		super(rootWindowResourceId,
+				null,
+				rootVisual,
+				rootDepth,
+				widthPixels,
+				heightPixels,
+				0, //x 
+				0, // y
+				0, // border width
+				WindowClass.InputOutput);
+		
 		_defaultColorMap = defaultColorMap;
-		_rootVisual = rootVisual;
-		_rootDepth = rootDepth;
-		_widthPixels = widthPixels;
-		_heightPixels = heightPixels;
 		_widthMM = widthMM;
 		_heightMM = heightMM;
 		_depths = depths;
-		
-		// Be careful here. Cyclic dependency between root window and screen
-		_rootWindow = new RootWindow(rootWindowResourceId, this);
 	}
-	
-	public Visual getRootVisual() {
-		return _rootVisual;
-	}
-	
-	public RootWindow getRootWindow() {
-		return _rootWindow;
-	}
-	
+
 	public ColorMap getDefaultColorMap() {
 		return _defaultColorMap;
-	}
-	
-	public int getWidthPixels() {
-		return _widthPixels;
-	}	
-	
-	public int getHeightPixels() {
-		return _heightPixels;
 	}
 	
 	public int getWidthMM() {
@@ -94,7 +78,7 @@ public class Screen {
 		return _depths;
 	}
 	
-	public int getRootDepth(){
-		return _rootDepth;
+	public Screen getScreen() {
+		return this;
 	}
 }

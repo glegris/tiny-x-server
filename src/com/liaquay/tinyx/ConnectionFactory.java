@@ -134,7 +134,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 	}
 	
 	private void writeScreen(final XOutputStream out, final Screen screen)  throws IOException {
-		out.writeInt(screen.getRootWindow().getId ());		// Root window ID.
+		out.writeInt(screen.getId ());		// Root window ID.
 		out.writeInt(screen.getDefaultColorMap().getId ());	// Default colour-map ID.
 		out.writeInt(screen.getDefaultColorMap().getWhitePixel ());	// White pixel.
 		out.writeInt(screen.getDefaultColorMap().getBlackPixel ());	// Black pixel.
@@ -145,10 +145,10 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		out.writeShort(screen.getHeightMM());	// Height in millimeters.
 		out.writeShort(screen.getMinInstalledMaps());	// Minimum installed maps.
 		out.writeShort(screen.getMaxInstalledMaps());	// Maximum installed maps.
-		out.writeInt(screen.getRootVisual().getId ());	// Root visual ID.
-		out.writeByte(screen.getRootVisual().getBackingStoreSupport().ordinal()); // TODO does this belong on a visual?
-		out.writeByte ((byte) (screen.getRootVisual().getSaveUnder () ? 1 : 0));// TODO does this belong on a visual?
-		out.writeByte (screen.getRootDepth ());	// Root depth.
+		out.writeInt(screen.getVisual().getId ());	// Root visual ID.
+		out.writeByte(screen.getVisual().getBackingStoreSupport().ordinal()); // TODO does this belong on a visual?
+		out.writeByte ((byte) (screen.getVisual().getSaveUnder () ? 1 : 0));// TODO does this belong on a visual?
+		out.writeByte (screen.getDepth ());	// Root depth.
 		writeDepths(out, screen.getDepths());
 	}
 	
