@@ -105,12 +105,8 @@ public class Window extends Tree<Window> implements Drawable {
 	
 	public void free() {}
 
-	public Property getProperty(final int propertyId) {
-		return _properties.get(propertyId);
-	}
-
-	public Property deleteProperty(final int propertyId) {
-		return _properties.remove(propertyId);
+	public Properties getProperties() {
+		return _properties;
 	}
 
 	@Override

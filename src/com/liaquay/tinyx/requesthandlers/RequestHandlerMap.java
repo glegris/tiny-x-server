@@ -78,8 +78,10 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[11] = new UnmapSubwindows();
 		_handlers[14] = new GetGeometry();
 		_handlers[16] = new InternAtom();
+		_handlers[17] = new GetAtomName();
 		_handlers[18] = new ChangeProperty();
 		_handlers[20] = new GetProperty();
+		_handlers[21] = new ListProperties();
 		_handlers[38] = new QueryPointer();
 		_handlers[43] = new GetInputFocus();
 		_handlers[53] = new CreatePixmap();

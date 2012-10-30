@@ -74,7 +74,7 @@ public class ChangeProperty implements RequestHandler {
 			return;	
 		}
 		inputStream.skip(3);
-		Property property = window.getProperty(propertyId);
+		Property property = window.getProperties().get(propertyId);
 		final int n = inputStream.readInt();
 		
 		if(!mode.equals(Mode.PropModeReplace)) {
@@ -94,6 +94,7 @@ public class ChangeProperty implements RequestHandler {
 		
 		if(property == null) {
 			property = new Property(propertyAtom);
+			window.getProperties().add(property);
 		}
 		
 		switch(format) {

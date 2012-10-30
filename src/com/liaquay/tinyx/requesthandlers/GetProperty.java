@@ -64,19 +64,20 @@ public class GetProperty implements RequestHandler {
 			return;
 		}
 
-		final Atom typeAtom = server.getAtoms().get(typeId);
-		if(typeAtom == null) {
-			response.error(Response.ErrorCode.Atom, typeId);
-			return;
+		if(typeId != 0) {
+			final Atom typeAtom = server.getAtoms().get(typeId);
+			if(typeAtom == null) {
+				response.error(Response.ErrorCode.Atom, typeId);
+				return;
+			}
 		}
-
 		int actualTypeAtomId = 0;
 		int format = 0;
 		int l = 0;
 		int i = 0;
 		int bytesAfter = 0;
 		int valueLength = 0;
-		final Property property = window.getProperty(propertyId);
+		final Property property = window.getProperties().get(propertyId);
 		if(property != null) {
 			final PropertyValue value = property.getValue();
 			actualTypeAtomId = value.getTypeAtom().getId();
@@ -134,7 +135,7 @@ public class GetProperty implements RequestHandler {
 		}
 
 		if(delete) {
-			window.deleteProperty(propertyId);
+			window.getProperties().remove(propertyId);
 		}			
 	}
 

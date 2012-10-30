@@ -77,4 +77,8 @@ public class IntMap<T> {
 	public Collection<T> values() {
 		return _map.values();
 	}
+	
+	public int size() {
+		return _map.size();
+	}
 }
