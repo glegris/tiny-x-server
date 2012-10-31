@@ -35,42 +35,7 @@ import com.liaquay.tinyx.model.properties.BytePropertyValue;
 import com.liaquay.tinyx.model.properties.IntPropertyValue;
 import com.liaquay.tinyx.model.properties.PropertyValue;
 import com.liaquay.tinyx.model.properties.ShortPropertyValue;
-/*
- * 
- * ead from fd 8
-01 08 0c 00 02 00 00 00 1f 00 00 00 00 00 
-00 00 08 00 00 00 00 00 00 00 0b 00 ff ff 01 02 00 00 6d 79 5f 76 61 6c 75 65 	               Reply (fd 8): 01 08 0c 
-00 02 00 00 00 1f 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 0b 00 ff ff 01 
-02 00 00 6d 79 5f 76 61 6c 75 65 
-					 ..............REPLY: GetProperty
-					              format: 08
-					     sequence number: 000c
-					        reply length: 00000002
-					                type: <STRING>
-					         bytes-after: 00000000
-					     length of value: 00000008
-					               value: "my_value"
-Have 0 need 32
-read 0 bytes from Client 2
-13.73: Client 2 --> EOF
-close 7 and 8
-Read from fd 8
-6d 79 5f 76 61 6c 75 65 					               Reply (fd 8): 01 00 0c 
-00 02 00 00 00 1f 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 
-00 00 00 6d 79 5f 76 61 6c 75 65 
-					 ..............REPLY: GetProperty
-					              format: 00
-					     sequence number: 000c
-					        reply length: 00000002
-					                type: <STRING>
-					         bytes-after: 00000000
-					     length of value: 00000008
-Have 0 need 32
-read 0 bytes from Client 4
 
- * 
- * 
- */
 public class GetProperty implements RequestHandler {
 
 	@Override
