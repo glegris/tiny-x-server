@@ -26,6 +26,10 @@ public class Property {
 			return _noOfBytes << 3;
 		}
 		
+		public int intsToUnits(final int noOfInts) {
+			return noOfInts << (3 -ordinal());
+		}
+		
 		public static Format getFromNoOfBits(final int noOfBits) {
 			switch(noOfBits) {
 			case 8:return ByteFormat;

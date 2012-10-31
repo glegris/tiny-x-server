@@ -28,13 +28,49 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Property;
+import com.liaquay.tinyx.model.Property.Format;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.properties.BytePropertyValue;
 import com.liaquay.tinyx.model.properties.IntPropertyValue;
 import com.liaquay.tinyx.model.properties.PropertyValue;
 import com.liaquay.tinyx.model.properties.ShortPropertyValue;
+/*
+ * 
+ * ead from fd 8
+01 08 0c 00 02 00 00 00 1f 00 00 00 00 00 
+00 00 08 00 00 00 00 00 00 00 0b 00 ff ff 01 02 00 00 6d 79 5f 76 61 6c 75 65 	               Reply (fd 8): 01 08 0c 
+00 02 00 00 00 1f 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 0b 00 ff ff 01 
+02 00 00 6d 79 5f 76 61 6c 75 65 
+					 ..............REPLY: GetProperty
+					              format: 08
+					     sequence number: 000c
+					        reply length: 00000002
+					                type: <STRING>
+					         bytes-after: 00000000
+					     length of value: 00000008
+					               value: "my_value"
+Have 0 need 32
+read 0 bytes from Client 2
+13.73: Client 2 --> EOF
+close 7 and 8
+Read from fd 8
+6d 79 5f 76 61 6c 75 65 					               Reply (fd 8): 01 00 0c 
+00 02 00 00 00 1f 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 6d 79 5f 76 61 6c 75 65 
+					 ..............REPLY: GetProperty
+					              format: 00
+					     sequence number: 000c
+					        reply length: 00000002
+					                type: <STRING>
+					         bytes-after: 00000000
+					     length of value: 00000008
+Have 0 need 32
+read 0 bytes from Client 4
 
+ * 
+ * 
+ */
 public class GetProperty implements RequestHandler {
 
 	@Override
@@ -72,69 +108,58 @@ public class GetProperty implements RequestHandler {
 			}
 		}
 		int actualTypeAtomId = 0;
-		int format = 0;
-		int l = 0;
-		int i = 0;
+		int formatNoBits = 0;
+		int lengthInUnits = 0;// TODO Should this be long ?
+		int offsetInUnits = 0;// TODO Should this be long ?
+		int lengthInBytes = 0;
 		int bytesAfter = 0;
-		int valueLength = 0;
 		final Property property = window.getProperties().get(propertyId);
 		if(property != null) {
 			final PropertyValue value = property.getValue();
+			final Format format = value.getFormat();
 			actualTypeAtomId = value.getTypeAtom().getId();
+			formatNoBits = format.getNoOfBits();
 			if(typeId != 0 && actualTypeAtomId != typeId) {
 				bytesAfter = value.getLengthInBytes();
 			}
 			else {
-				final int n = value.getLengthInBytes();
-				i = 4 * longOffset;
-				final int t = n - i;
-
-				if (longLength < 0 || longLength > 536870911)
-					longLength = 536870911;	// Prevent overflow.
-
-					if (t < longLength * 4) {
-						l = t;
-					} 
-					else {
-						l = longLength * 4;
-					}
-
-					bytesAfter = n - (i + l);
-
-					if (l < 0) {
-						response.error(Response.ErrorCode.Value, 0);
-						return;
-					}
-					else {
-						valueLength = value.getLength();
-					}
+				offsetInUnits = format.intsToUnits(longOffset);
+				if(offsetInUnits >= value.getLength()) {
+					response.error(Response.ErrorCode.Value, 0);
+					return;
+				}
+				lengthInUnits = format.intsToUnits(longLength);
+				if(lengthInUnits+offsetInUnits > value.getLength()) {
+					lengthInUnits = value.getLength() - offsetInUnits;
+				}
+				bytesAfter = (value.getLength() - (lengthInUnits + offsetInUnits)) * format.getNoOfBytes();
+				lengthInBytes = lengthInUnits * format.getNoOfBytes();
 			}
 		}
-		final int pad = -l & 3;
-		final XOutputStream outputStream = response.respond(format, l+pad);
+		final XOutputStream outputStream = response.respond(formatNoBits, lengthInBytes);
 		outputStream.writeInt(actualTypeAtomId);	// Type.
-		outputStream.writeInt(bytesAfter);	// Bytes after.
-		outputStream.writeInt(valueLength);	// Value length. 
+		outputStream.writeInt(bytesAfter);	        // Bytes after.
+		outputStream.writeInt(lengthInUnits);	    // Value length. 
 		response.padHeader();
 
-		if(l > 0 && property != null) {
+		if(lengthInUnits > 0 && property != null) {
 			final PropertyValue value = property.getValue();
 			switch(value.getFormat()) {
 			case ByteFormat:
-				writeBytes(outputStream, ((BytePropertyValue)value).getData(), i, l);
+				writeBytes(outputStream, ((BytePropertyValue)value).getData(), offsetInUnits, lengthInUnits);
 				break;
 			case ShortFormat:
-				writeShorts(outputStream, ((ShortPropertyValue)value).getData(), i, l);
+				writeShorts(outputStream, ((ShortPropertyValue)value).getData(), offsetInUnits, lengthInUnits);
 				break;
 			case IntFormat:
-				writeInts(outputStream, ((IntPropertyValue)value).getData(), i, l);
+				writeInts(outputStream, ((IntPropertyValue)value).getData(), offsetInUnits, lengthInUnits);
 				break;
 			default:
 				throw new RuntimeException("Undefined property format " + value.getFormat());
 			}
 		}
 
-		if(delete) {
+		if(delete  && bytesAfter == 0) {
 			window.getProperties().remove(propertyId);
 		}			
 	}
@@ -142,35 +167,31 @@ public class GetProperty implements RequestHandler {
 	private void writeBytes(
 			final XOutputStream outputStream,
 			final byte[] data, 
-			final int offsetInBytes,
-			final int lengthInBytes) throws IOException {
+			final int offset,
+			final int length) throws IOException {
 
-		outputStream.write(data, offsetInBytes, lengthInBytes);
+		outputStream.write(data, offset, length);
 	}	
 
 	private void writeShorts(
 			final XOutputStream outputStream,
 			final short[] data, 
-			final int offsetInBytes,
-			final int lengthInBytes) throws IOException {
+			final int offset,
+			final int length) throws IOException {
 
-		final int offsetInShorts = offsetInBytes >> 1;
-					final int lengthInShorts =  lengthInBytes >> 1;
-					for(int i = 0; i < lengthInShorts; ++ i){
-						outputStream.writeShort(data[offsetInShorts + i]);
-					}
+		for(int i = 0; i < length; ++ i){
+			outputStream.writeShort(data[offset + i]);
+		}
 	}	
 
 	private void writeInts(
 			final XOutputStream outputStream,
 			final int[] data, 
-			final int offsetInBytes,
-			final int lengthInBytes) throws IOException {
+			final int offset,
+			final int length) throws IOException {
 
-		final int offsetInInts = offsetInBytes >> 2;
-		final int lengthInInts =  lengthInBytes >> 2;
-		for(int i = 0; i < lengthInInts; ++ i){	
-			outputStream.writeInt(data[offsetInInts + i]);
+		for(int i = 0; i < length; ++ i){	
+			outputStream.writeInt(data[offset + i]);
 		}
 	}
 }
