@@ -37,13 +37,6 @@ public class ListExtensions implements RequestHandler {
 		this._extensionMap = extensionMap;
 	}
 
-	//	     1     1                               Reply
-	//	     1     CARD8                           number of STRs in names
-	//	     2     CARD16                          sequence number
-	//	     4     (n+p)/4                         reply length
-	//	     24                                    unused
-	//	     n     LISTofSTR                       names
-	//	     p                                     unused, p=pad(n)
 	@Override
 	public void handleRequest(
 			final Server server, 

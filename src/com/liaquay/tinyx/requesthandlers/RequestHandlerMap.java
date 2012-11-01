@@ -91,6 +91,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[72] = new PutImage();
 		_handlers[78] = new CreateColorMap();
 		_handlers[91] = new QueryColours();
+		_handlers[97] = new QueryBestSize();
 		_handlers[98] = new QueryExtension(_extensionMap);
 		_handlers[99] = new ListExtensions(_extensionMap);
 	}
