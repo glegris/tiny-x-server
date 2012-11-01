@@ -71,67 +71,7 @@ public class TinyXServer {
 		});
 	}
 
-	private void listen() throws IOException {
+	public void listen() throws IOException {
 		_socketServer.listen();
-	}
-
-	/**
-	 * Just an example of how to configure a server.
-	 * 
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(final String[] args) throws IOException {
-
-		// Create a new server
-		final Server server = new Server();
-
-		// Configure the new server
-
-		final Visual visual = server.createVisual(new ResourceFactory<Visual>() {
-			@Override
-			public Visual create(final int resourceId) {
-				return new Visual(
-						resourceId, 
-						32,
-						BackingStoreSupport.BackingStoreAlways,
-						VisualClass.TrueColor, 
-						8,  // Bits Per RGB
-						256, // TODO How do colour maps relate to visuals
-						0x000000ff, // Red mask
-						0x0000ff00, // Green mask
-						0x00ff0000  // Blue mask
-						);
-			}
-		});
-
-		final Depths depths = new Depths();
-		depths.add(visual);   
-
-		final ColorMap defaultColorMap = server.createColorMap(new ResourceFactory<ColorMap>() {
-			@Override
-			public ColorMap create(final int resourceId) {
-				return new TrueColorMap(resourceId);
-			}
-		});
-
-		server.addScreen(new ResourceFactory<Screen>() {
-			@Override
-			public Screen create(final int resourceId) {
-				return new Screen(
-						resourceId, 
-						defaultColorMap,
-						visual,
-						32,
-						1280,
-						800,
-						1280,
-						800,
-						depths);
-			}
-		});
-
-		final TinyXServer tinyXServer = new TinyXServer(6001, new ConnectionFactory(server));
-		tinyXServer.listen();
 	}
 }

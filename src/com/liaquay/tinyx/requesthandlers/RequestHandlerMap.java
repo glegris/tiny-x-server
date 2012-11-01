@@ -108,6 +108,8 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
 
+		System.out.println("Processing " + requestHandler.getClass().getSimpleName() + "...");
+		
 		requestHandler.handleRequest(server, client, request, response);
 	}
 }
