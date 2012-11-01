@@ -137,7 +137,8 @@ public class ResponseAdaptor implements Response {
 			_outputStream.writeByte(_replyCode.ordinal());
 			_outputStream.writeByte(_data);
 			_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
-			_outputStream.writeInt(_extra.size() - 32); // Send the size of the extra bytes but do not include the 32 byte header.
+			final int extraLength = _extra.size() - 24;
+			_outputStream.writeInt((extraLength+3)>>2); // Send the size of the extra bytes but do not include the 32 byte header.
 			_outputStream.write(_extra.toByteArray(), 0, _extra.size());
 			if(_outputStream.getCounter() < 32) {
 				throw new IOException("Response message too short");
@@ -158,11 +159,21 @@ public class ResponseAdaptor implements Response {
 
 	@Override
 	public void padHeader() throws IOException {
-		_outputStream.writePad(32 - _outputStream.getCounter());
+		if(_headerSent) {
+			_outputStream.writePad(32 - _outputStream.getCounter());
+		}
+		else {
+			_extraOutputStream.writePad(24 - _extraOutputStream.getCounter());
+		}
 	}
 
 	@Override
 	public void padAlign() throws IOException {
-		_outputStream.writePad(-_outputStream.getCounter() & 3);
+		if(_headerSent) {
+			_outputStream.writePad(-_outputStream.getCounter() & 3);
+		}
+		else {
+			_extraOutputStream.writePad(-_extraOutputStream.getCounter() & 3);
+		}
 	}
 }
