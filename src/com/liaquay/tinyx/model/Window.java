@@ -21,15 +21,64 @@ package com.liaquay.tinyx.model;
 import com.liaquay.tinyx.util.Tree;
 
 public class Window extends Tree<Window> implements Drawable {
+	
+	public enum MappedState {
+		IsUnmapped,
+		IsUnviewable,
+		IsViewable;
 
+		public static MappedState getFromIndex(final int index) {
+			final MappedState[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}	
+	}
+	
+	public enum BackingStoreHint {
+		BackingStoreNever,
+		BackingStoreWhenMapped,
+		BackingStoreAlways;
+		
+		public static BackingStoreHint getFromIndex(final int index) {
+			final BackingStoreHint[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+	}
+	
+	private BackingStoreHint _backingStoreHint = BackingStoreHint.BackingStoreAlways; // TODO Check default value
+	
+	public enum Gravity {
+		ForgetGravity,
+		NorthWestGravity,
+		NorthGravity,
+		NorthEastGravity,
+		WestGravity,
+		CenterGravity,
+		EastGravity,
+		SouthWestGravity,
+		SouthGravity,
+		SouthEastGravity,
+		StaticGravity;
+		
+		public static Gravity getFromIndex(final int index) {
+			final Gravity[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+	}
+	
+	private Gravity _bitGravity = 	Gravity.NorthWestGravity;
+	private Gravity _winGravity  = Gravity.	NorthWestGravity;
+	
 	public enum WindowClass {
 		CopyFromParent,
 		InputOutput,
 		InputOnly;
 		
 		public static WindowClass getFromIndex(final int index) {
-			final WindowClass[] windowClasses = values();
-			if (index<windowClasses.length && index>=0) return windowClasses[index];
+			final WindowClass[] values = values();
+			if (index<values.length && index>=0) return values[index];
 			return null;
 		}
 	}
@@ -43,14 +92,18 @@ public class Window extends Tree<Window> implements Drawable {
 	private int _widthPixels, _heightPixels;	/* width and height of window in pixels */
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
-	private int _bit_gravity;		/* one of bit gravity values */
-	private int _win_gravity;		/* one of the window gravity values */
 
 	private Pointer _pointer = new Pointer();
 	private boolean _mapped = false;
-	
-	
-	
+	// TODO values are rubbish
+	private int _backingPlanes = 0;
+	private int _backingPixel = 0;
+	private int _saveUnders = 0;
+	private int _eventMask = 0;
+	private boolean _overrideRedirect = false;
+	private ColorMap _colorMap = null;
+	private int _doNotPropagateMask = 0;
+
 //  Window root;                /* root of screen containing window */
 //    int backing_store;          /* NotUseful, WhenMapped, Always */
 //    unsigned long backing_planes;/* planes to be preserved if possible */
@@ -165,5 +218,85 @@ public class Window extends Tree<Window> implements Drawable {
 		for(Window w = getLastchild(); w != null; w = w.getPrevSibling()) {
 			w.mapSubwindows();
 		}
+	}
+
+	public boolean isInputOnly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public BackingStoreHint getBackingStoreHint() {
+		return _backingStoreHint;
+	}
+	
+	public Gravity getBitGravity() {
+		return _bitGravity;
+	}
+	
+	public Gravity getWinGravity() { 
+		return _winGravity;
+	}
+	
+	public MappedState getMappedState() {
+		if(_mapped) {
+			// TODO Should this value change 
+			return MappedState.IsViewable;
+		}
+		else {
+			return MappedState.IsUnmapped;
+		}
+	}
+	
+	public int getBackingPlanes() {
+		return _backingPlanes;
+	}
+	
+	public int getBackingPixel() {
+		return _backingPixel;
+	}
+	
+	public int getSaveUnders() {
+		return _saveUnders;
+	}
+	
+	public int getEventMask() {
+		return _eventMask;
+	}
+	
+	public int getDoNotPropagateMask() {
+		return _doNotPropagateMask;
+	}
+	
+	public boolean getOverrideRedirect() {
+		return _overrideRedirect;
+	}
+	
+	public ColorMap getColorMap() {
+		return _colorMap;
+	}
+
+	@Override
+	public int getX() {
+		return _x;
+	}
+
+	@Override
+	public int getY() {
+		return _y;
+	}
+
+	@Override
+	public int getWidth() {
+		return _widthPixels;
+	}
+
+	@Override
+	public int getHeight() {
+		return _heightPixels;
+	}
+
+	@Override
+	public int getBorderWidth() {
+		return _borderWidth;
 	}
 }

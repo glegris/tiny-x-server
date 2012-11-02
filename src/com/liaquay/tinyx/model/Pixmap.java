@@ -64,4 +64,29 @@ public class Pixmap implements Drawable {
 	public int getDepth() {
 		return _depth;
 	}
+
+	@Override
+	public int getX() {
+		return 0;
+	}
+
+	@Override
+	public int getY() {
+		return 0;
+	}
+
+	@Override
+	public int getWidth() {
+		return _width;
+	}
+
+	@Override
+	public int getHeight() {
+		return _height;
+	}
+
+	@Override
+	public int getBorderWidth() {
+		return 0;
+	}
 }

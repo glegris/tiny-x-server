@@ -25,4 +25,14 @@ public interface Drawable extends Resource {
 	public Visual getVisual();
 	
 	public int getDepth();
+	
+	public int getX();
+	
+	public int getY();
+	
+	public int getWidth();
+	
+	public int getHeight();
+	
+	public int getBorderWidth();
 }

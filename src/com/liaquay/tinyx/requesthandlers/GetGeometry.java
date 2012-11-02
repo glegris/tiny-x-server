@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Server;
 
 public class GetGeometry implements RequestHandler {
@@ -33,12 +36,21 @@ public class GetGeometry implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final XOutputStream outputStream = response.respond(drawable.getDepth(), 0);
+		outputStream.writeInt(drawable.getScreen().getId());
+		outputStream.writeInt(drawable.getX());
+		outputStream.writeInt(drawable.getY());
+		outputStream.writeShort(drawable.getWidth());
+		outputStream.writeShort(drawable.getHeight());
+		outputStream.writeShort(drawable.getBorderWidth());
 	}
 
 }

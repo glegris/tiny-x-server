@@ -1,5 +1,5 @@
 /*
- *  Tiny X server - A Java X server
+ *  Tiny X server - A Java X server*
  *
  *   Copyright (C) 2012  Phil Scull
  *
@@ -23,8 +23,13 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Visual;
+import com.liaquay.tinyx.model.Window;
 
 public class GetWindowAttributes implements RequestHandler {
 
@@ -33,11 +38,31 @@ public class GetWindowAttributes implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();		
+		final int windowId = inputStream.readInt(); 		
+		final Window window = server.getResources().get(windowId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowId);		
+			return;
+		}
+		
+		final Visual visual = window.getVisual();
+		final XOutputStream outputStream = response.respond(window.getBackingStoreHint().ordinal(), 3 << 2);
+		outputStream.writeInt(visual.getId());
+		outputStream.writeShort(window.isInputOnly() ? 2 : 1);
+		outputStream.writeByte(window.getBitGravity().ordinal());
+		outputStream.writeByte(window.getWinGravity().ordinal());
+		outputStream.writeInt(window.getBackingPlanes());
+		outputStream.writeInt(window.getBackingPixel());
+		outputStream.writeByte(window.getSaveUnders());
+		outputStream.writeByte(1); // TODO Map is installed 
+		outputStream.writeByte(window.getMappedState().ordinal());
+		outputStream.writeByte(window.getOverrideRedirect() ? 1 : 0);
+		final ColorMap colorMap = window.getColorMap();
+		outputStream.writeInt(colorMap == null ? 0 : colorMap.getId());
+		outputStream.writeInt(window.getEventMask());
+		outputStream.writeInt(window.getEventMask());
+		outputStream.writeShort(window.getDoNotPropagateMask());
 	}
 }
