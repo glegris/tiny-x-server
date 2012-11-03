@@ -44,10 +44,14 @@ public class AttributeHandlers<T> {
 		
 		for(int i = 0; i < _handlers.length; ++i) {
 			if(((1<<i) & attributeMask) != 0) {
+				final int pos = request.getInputStream().getCounter();
 				_handlers[i].read(server, client, request, response, t);
 				if(!ErrorCode.None.equals(response.getResponseCode())) {
 					return;
 				}
+				final int length = request.getInputStream().getCounter() - pos;
+				if(length > 4) throw new RuntimeException("Attribute length has exceeded word length");
+				request.getInputStream().skip(4-length);
 			}
 		}
 	}

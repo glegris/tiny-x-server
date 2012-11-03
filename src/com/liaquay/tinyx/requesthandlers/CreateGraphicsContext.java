@@ -58,7 +58,7 @@ public class CreateGraphicsContext implements RequestHandler {
 		final int attributeMask = inputStream.readInt();
 		_attributeHandlers.read(server, client, request, response, graphicsContext, attributeMask);
 
-		if(ErrorCode.None.equals(response.getResponseCode())) {
+		if(!ErrorCode.None.equals(response.getResponseCode())) {
 			graphicsContext.free();
 			return;
 		}

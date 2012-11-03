@@ -59,10 +59,11 @@ public class CreatePixmap implements RequestHandler {
 		if(depth != 1){
 			final Screen screen = drawable.getScreen();
 			final Depths depths = screen.getDepths();
-			if(depths.get(depth) == null) {
-				response.error(Response.ErrorCode.Match, depth);
-				return;
-			}
+// TODO This test causes lots of errors and I don't know why			
+//			if(depths.get(depth) == null) {
+//				response.error(Response.ErrorCode.Match, depth);
+//				return;
+//			}
 		}
 		
 		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);

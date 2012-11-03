@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model;
 
+import com.liaquay.tinyx.model.Window.Gravity;
 import com.liaquay.tinyx.util.Tree;
 
 public class Window extends Tree<Window> implements Drawable {
@@ -93,6 +94,9 @@ public class Window extends Tree<Window> implements Drawable {
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
 
+	private int _backgroundPixel = 0; // TODO Default value
+	private int _borderPixel = 0; // TODO Default value
+	
 	private Pointer _pointer = new Pointer();
 	private boolean _mapped = false;
 	// TODO values are rubbish
@@ -300,5 +304,25 @@ public class Window extends Tree<Window> implements Drawable {
 	@Override
 	public int getBorderWidth() {
 		return _borderWidth;
+	}
+
+	public void setBackgroundPixel(final int backGroundPixel) {
+		_backgroundPixel = backGroundPixel;
+	}
+
+	public void setBorderPixel(final int borderPixel) {
+		_borderPixel = borderPixel;
+	}
+
+	public void setBitGravity(final Gravity gravity) {
+		_bitGravity = gravity;
+	}
+
+	public void setWinGravity(Gravity gravity) {
+		_winGravity = gravity;
+	}
+
+	public void setColorMap(final ColorMap colorMap) {
+		_colorMap = colorMap;
 	}
 }

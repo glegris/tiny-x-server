@@ -90,7 +90,7 @@ public class CreateWindow implements RequestHandler {
 
 		_attributeHandlers.read(server, client, request, response, window, attributeMask);
 
-		if(ErrorCode.None.equals(response.getResponseCode())) {
+		if(!ErrorCode.None.equals(response.getResponseCode())) {
 			window.free();
 			return;
 		}

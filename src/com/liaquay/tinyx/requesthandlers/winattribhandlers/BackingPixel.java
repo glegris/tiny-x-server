@@ -18,30 +18,35 @@
  */
 package com.liaquay.tinyx.requesthandlers.winattribhandlers;
 
+import java.io.IOException;
+
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
-import com.liaquay.tinyx.requesthandlers.AttributeHandlers;
 
-public class WindowAttributeHandlers extends AttributeHandlers<Window> {
+public class BackingPixel implements AttributeHandler<Window> {
 
-	@SuppressWarnings("unchecked")
-	public WindowAttributeHandlers() {
-		super(new AttributeHandler[] {
-			new BackgroundPixmap(),
-			new BackgroundPixel(),
-			new BorderPixmap(),
-			new BorderPixel(),
-			new BitGravity(),
-			new WinGravity(),
-			new BackingStore(),
-			new BackingPlanes(),
-			new BackingPixel(),
-			new OverrideDirect(),
-			new SaveUnder(),
-			new EventMask(),
-			new DoNotPropagateMask(),
-			new ColorMap(),
-			new Cursor()
-		});
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final Window window) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+		
+		// TODO Implement
+		throw new RuntimeException("Unimplemented");
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final Window window) throws IOException {
+		throw new RuntimeException("Unimplemented");
 	}
 }

@@ -22,13 +22,14 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Unimplemented implements AttributeHandler<Window> {
+public class SaveUnder implements AttributeHandler<Window> {
 
 	@Override
 	public void read(
@@ -38,6 +39,9 @@ public class Unimplemented implements AttributeHandler<Window> {
 			final Response response, 
 			final Window window) throws IOException {
 		
+		final XInputStream inputStream = request.getInputStream();
+		
+		// TODO Implement
 		throw new RuntimeException("Unimplemented");
 	}
 

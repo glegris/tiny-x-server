@@ -151,6 +151,16 @@ public class ResponseAdaptor implements Response {
 
 	@Override
 	public void error(final ErrorCode errorCode, final int resourceId) throws IOException {
+		
+		{ // Debugging - trace where errors are being raised
+			try {
+				throw new RuntimeException("TRACE error " + errorCode + " for value " + resourceId);
+			}
+			catch(final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		_outputStream.writeByte(ReplyCode.Error.ordinal());
 		_outputStream.writeByte(errorCode.ordinal());
 		_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
@@ -158,7 +168,7 @@ public class ResponseAdaptor implements Response {
 		_outputStream.writeShort(_request.getData());
 		_outputStream.writeByte(_request.getMajorOpCode());
 		_responseCode = errorCode;
-		padHeader();
+		_outputStream.writePad(32 - _outputStream.getCounter());
 	}
 
 	@Override
