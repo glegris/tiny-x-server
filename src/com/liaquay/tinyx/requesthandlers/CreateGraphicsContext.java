@@ -23,6 +23,7 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
@@ -37,12 +38,13 @@ public class CreateGraphicsContext implements RequestHandler {
 	public CreateGraphicsContext(final GraphicsContextAttributeHandlers attributeHandlers) {
 		_attributeHandlers = attributeHandlers;
 	}
-	
+
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int graphicsContextId = inputStream.readInt();
@@ -50,13 +52,16 @@ public class CreateGraphicsContext implements RequestHandler {
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
 		if(drawable == null) {
 			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
 		}
-		else {
-			final GraphicsContext graphicsContext = new GraphicsContext(graphicsContextId, drawable);
-			final int attributeMask = inputStream.readInt();
-			_attributeHandlers.read(inputStream, graphicsContext, attributeMask);
-			server.getResources().add(graphicsContext);
+		final GraphicsContext graphicsContext = new GraphicsContext(graphicsContextId, drawable);
+		final int attributeMask = inputStream.readInt();
+		_attributeHandlers.read(server, client, request, response, graphicsContext, attributeMask);
+
+		if(ErrorCode.None.equals(response.getResponseCode())) {
+			graphicsContext.free();
+			return;
 		}
+		server.getResources().add(graphicsContext);
 	}
 }
-                                                                                                                                                                                                                         

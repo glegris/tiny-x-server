@@ -16,33 +16,47 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
+package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Unimplemented implements AttributeHandler<GraphicsContext> {
-
-	@Override
-	public void read(
-			final Server server, 
-			final Client client, 
-			final Request request,
-			final Response response, 
-			final GraphicsContext graphicsContext) throws IOException {
-		
-		throw new RuntimeException("Unimplemented");
+public class AttributeHandlers<T> {
+	private final AttributeHandler<T>[] _handlers;
+	
+	public AttributeHandlers(final AttributeHandler<T>[] handlers){
+		_handlers = handlers;
 	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		throw new RuntimeException("Unimplemented");
+	
+	public void read(
+			final Server server,
+			final Client client,
+			final Request request, 
+			final Response response,
+			final T t,
+			final int attributeMask) throws IOException {
+		
+		for(int i = 0; i < _handlers.length; ++i) {
+			if(((1<<i) & attributeMask) != 0) {
+				_handlers[i].read(server, client, request, response, t);
+				if(!ErrorCode.None.equals(response.getResponseCode())) {
+					return;
+				}
+			}
+		}
+	}
+	
+	public void write(final XOutputStream outputStream, final T t, final int attributeMask) throws IOException {
+		for(int i = 0; i < _handlers.length; ++i) {
+			if(((1<<i) & attributeMask) != 0) {
+				_handlers[i].write(outputStream, t);
+			}
+		}
 	}
 }

@@ -61,4 +61,6 @@ public interface Response {
 	public void padAlign() throws IOException;
 	
 	public void error(final ErrorCode errorCode, final int resourceId) throws IOException;
+	
+	public ErrorCode getResponseCode();
 }

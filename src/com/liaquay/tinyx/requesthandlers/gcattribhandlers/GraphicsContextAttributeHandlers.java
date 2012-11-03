@@ -19,6 +19,8 @@
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+import com.liaquay.tinyx.requesthandlers.AttributeHandlers;
 
 public class GraphicsContextAttributeHandlers extends AttributeHandlers<GraphicsContext> {
 	

@@ -156,7 +156,9 @@ public class Window extends Tree<Window> implements Drawable {
 		return _heightPixels;
 	}
 	
-	public void free() {}
+	public void free() {
+		// TODO Unlink from parent
+	}
 
 	public Properties getProperties() {
 		return _properties;

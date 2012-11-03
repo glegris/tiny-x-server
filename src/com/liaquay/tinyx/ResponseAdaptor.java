@@ -40,6 +40,7 @@ public class ResponseAdaptor implements Response {
 	private boolean _prepared = false;
 	private boolean _sent = false;
 	private Request _request = null;
+	private ErrorCode _responseCode = ErrorCode.None;
 	
 	public ResponseAdaptor(final XOutputStream outputStream) {
 		_outputStream = outputStream;
@@ -64,7 +65,9 @@ public class ResponseAdaptor implements Response {
 		_prepared = false;
 		
 		_sent = false;
-
+		
+		_responseCode = ErrorCode.None;
+		
 		_outputStream.resetCounter();
 	}
 	
@@ -154,6 +157,7 @@ public class ResponseAdaptor implements Response {
 		_outputStream.writeInt(resourceId);
 		_outputStream.writeShort(_request.getData());
 		_outputStream.writeByte(_request.getMajorOpCode());
+		_responseCode = errorCode;
 		padHeader();
 	}
 
@@ -175,5 +179,9 @@ public class ResponseAdaptor implements Response {
 		else {
 			_extraOutputStream.writePad(-_extraOutputStream.getCounter() & 3);
 		}
+	}
+	
+	public ErrorCode getResponseCode() {
+		return _responseCode;
 	}
 }

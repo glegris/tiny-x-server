@@ -23,6 +23,7 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
@@ -34,16 +35,17 @@ import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandle
 public class CreateWindow implements RequestHandler {
 
 	private final WindowAttributeHandlers _attributeHandlers;
-	
+
 	public CreateWindow(final WindowAttributeHandlers attributeHandlers){
 		_attributeHandlers = attributeHandlers;
 	}
-	
+
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int depth = request.getData();
@@ -57,23 +59,23 @@ public class CreateWindow implements RequestHandler {
 		final int windowClassIndex = inputStream.readUnsignedShort();
 		final int visualResourceId = inputStream.readInt();
 		final int attributeMask = inputStream.readInt();
-		
+
 		final WindowClass windowClass = WindowClass.getFromIndex(windowClassIndex);
 		if(windowClass == null) {
 			response.error(Response.ErrorCode.Value, windowClassIndex);
 			return;
 		}
-		
+
 		final Window parentWindow = server.getResources().get(parentWindowResourceId, Window.class);
 		if(parentWindow == null) {
 			response.error(Response.ErrorCode.Window, parentWindowResourceId);	
 			return;
 		}
-		
+
 		final Visual visual = visualResourceId == 0 ? 
 				parentWindow.getVisual() : 
-				server.getResources().get(visualResourceId, Visual.class);
-		
+					server.getResources().get(visualResourceId, Visual.class);
+
 		final Window window = new Window(
 				windowResourceId,
 				parentWindow,
@@ -85,10 +87,14 @@ public class CreateWindow implements RequestHandler {
 				y,
 				borderWidth,
 				windowClass);
-		
-		_attributeHandlers.read(inputStream, window, attributeMask);
-		
+
+		_attributeHandlers.read(server, client, request, response, window, attributeMask);
+
+		if(ErrorCode.None.equals(response.getResponseCode())) {
+			window.free();
+			return;
+		}
+
 		server.getResources().add(window);
 	}
-
 }

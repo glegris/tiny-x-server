@@ -16,7 +16,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
+package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 
@@ -24,25 +24,16 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Unimplemented implements AttributeHandler<GraphicsContext> {
-
-	@Override
+public interface AttributeHandler<T> {
+	
 	public void read(
-			final Server server, 
-			final Client client, 
-			final Request request,
-			final Response response, 
-			final GraphicsContext graphicsContext) throws IOException {
-		
-		throw new RuntimeException("Unimplemented");
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		throw new RuntimeException("Unimplemented");
-	}
+			final Server server,
+            final Client client,
+            final Request request, 
+            final Response response, 
+            final T t) throws IOException;
+	
+	public void write(final XOutputStream outputStream, final T T) throws IOException;
 }

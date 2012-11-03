@@ -52,5 +52,4 @@ public class GetGeometry implements RequestHandler {
 		outputStream.writeShort(drawable.getHeight());
 		outputStream.writeShort(drawable.getBorderWidth());
 	}
-
 }
