@@ -46,8 +46,8 @@ public class GetGeometry implements RequestHandler {
 		}
 		final XOutputStream outputStream = response.respond(drawable.getDepth(), 0);
 		outputStream.writeInt(drawable.getScreen().getId());
-		outputStream.writeInt(drawable.getX());
-		outputStream.writeInt(drawable.getY());
+		outputStream.writeShort(drawable.getX());
+		outputStream.writeShort(drawable.getY());
 		outputStream.writeShort(drawable.getWidth());
 		outputStream.writeShort(drawable.getHeight());
 		outputStream.writeShort(drawable.getBorderWidth());
