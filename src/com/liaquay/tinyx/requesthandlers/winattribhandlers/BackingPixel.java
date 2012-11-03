@@ -40,9 +40,8 @@ public class BackingPixel implements AttributeHandler<Window> {
 			final Window window) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int backingPixel = inputStream.readInt();
+		window.setBackingPixel(backingPixel);
 	}
 
 	@Override

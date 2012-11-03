@@ -55,7 +55,7 @@ public class GetWindowAttributes implements RequestHandler {
 		outputStream.writeByte(window.getWinGravity().ordinal());
 		outputStream.writeInt(window.getBackingPlanes());
 		outputStream.writeInt(window.getBackingPixel());
-		outputStream.writeByte(window.getSaveUnders());
+		outputStream.writeByte(window.getSaveUnder() ? 1 : 0);
 		outputStream.writeByte(1); // TODO Map is installed 
 		outputStream.writeByte(window.getMappedState().ordinal());
 		outputStream.writeByte(window.getOverrideRedirect() ? 1 : 0);

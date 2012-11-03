@@ -40,9 +40,8 @@ public class OverrideDirect implements AttributeHandler<Window> {
 			final Window window) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int overrideDirect = inputStream.readUnsignedByte();
+		window.setOverrideDirect(overrideDirect == 1);
 	}
 
 	@Override

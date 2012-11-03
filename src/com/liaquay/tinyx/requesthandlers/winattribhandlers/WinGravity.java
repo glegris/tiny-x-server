@@ -48,7 +48,8 @@ public class WinGravity implements AttributeHandler<Window> {
 			response.error(ErrorCode.Value, gravityIndex); // TODO is this the correct type of error?
 			return;
 		}
-		window.setWinGravity(gravity);	}
+		window.setWinGravity(gravity);
+	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final Window window) throws IOException {

@@ -88,6 +88,8 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[60] = new FreeGraphicsContext();
+		_handlers[61] = new ClearArea();
+		_handlers[71] = new PolyFillArc();
 		_handlers[72] = new PutImage();
 		_handlers[78] = new CreateColorMap();
 		_handlers[91] = new QueryColours();

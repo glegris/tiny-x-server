@@ -40,9 +40,8 @@ public class DoNotPropagateMask implements AttributeHandler<Window> {
 			final Window window) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int doNotPropagateMask = inputStream.readInt();
+		window.setDoNotPropagateMask(doNotPropagateMask);
 	}
 
 	@Override

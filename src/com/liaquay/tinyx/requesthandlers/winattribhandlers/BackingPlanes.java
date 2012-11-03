@@ -40,9 +40,8 @@ public class BackingPlanes implements AttributeHandler<Window> {
 			final Window window) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int backingPlanes = inputStream.readInt();
+		window.setBackingPlanes(backingPlanes);
 	}
 
 	@Override

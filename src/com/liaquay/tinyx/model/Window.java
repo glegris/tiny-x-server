@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model;
 
+import com.liaquay.tinyx.model.Window.BackingStoreHint;
 import com.liaquay.tinyx.model.Window.Gravity;
 import com.liaquay.tinyx.util.Tree;
 
@@ -96,17 +97,20 @@ public class Window extends Tree<Window> implements Drawable {
 
 	private int _backgroundPixel = 0; // TODO Default value
 	private int _borderPixel = 0; // TODO Default value
+	private Pixmap _borderPixmap = null;
 	
 	private Pointer _pointer = new Pointer();
 	private boolean _mapped = false;
 	// TODO values are rubbish
 	private int _backingPlanes = 0;
 	private int _backingPixel = 0;
-	private int _saveUnders = 0;
+	private boolean _saveUnder= false;
 	private int _eventMask = 0;
 	private boolean _overrideRedirect = false;
 	private ColorMap _colorMap = null;
 	private int _doNotPropagateMask = 0;
+	private Pixmap _backgroundPixmap = null;
+	private boolean _parentRelativeBackgroundPixmap = false;
 
 //  Window root;                /* root of screen containing window */
 //    int backing_store;          /* NotUseful, WhenMapped, Always */
@@ -261,8 +265,8 @@ public class Window extends Tree<Window> implements Drawable {
 		return _backingPixel;
 	}
 	
-	public int getSaveUnders() {
-		return _saveUnders;
+	public boolean getSaveUnder() {
+		return _saveUnder;
 	}
 	
 	public int getEventMask() {
@@ -324,5 +328,51 @@ public class Window extends Tree<Window> implements Drawable {
 
 	public void setColorMap(final ColorMap colorMap) {
 		_colorMap = colorMap;
+	}
+
+	public void setBackgroundPixmap(final Pixmap pixmap, boolean relative) {
+		_backgroundPixmap = pixmap;
+		_parentRelativeBackgroundPixmap = relative;
+	}
+
+	public Pixmap getBackgroundPixmap() {
+		return _backgroundPixmap;
+	}
+
+	public Pixmap getBorderPixmap() {
+		return _borderPixmap;
+	}
+
+	public void setBorderPixmap(final Pixmap borderPixmap) {
+		_borderPixmap = borderPixmap;
+	}
+
+	public void setBackingPixel(final int backingPixel) {
+		_backingPixel = backingPixel;
+	}
+
+	public void setBackingPlanes(final int backingPlanes) {
+		_backingPlanes = backingPlanes;
+	}
+
+	public void setBackingStoreHint(final BackingStoreHint backingStoreHint) {
+		_backingStoreHint = backingStoreHint;
+	}
+
+	public void setDoNotPropagateMask(final int doNotPropagateMask) {
+		_doNotPropagateMask = doNotPropagateMask;
+	}
+
+	public void setOverrideDirect(final boolean overrideRedirect) {
+		_overrideRedirect = overrideRedirect;
+	}
+
+	public void setSaveUnder(final boolean saveUnder) {
+		_saveUnder = saveUnder;
+	}
+
+	public void clearArea(final boolean exposures, final int x, final int y, final int width, final int height) {
+		// TODO Auto-generated method stub
+		
 	}
 }

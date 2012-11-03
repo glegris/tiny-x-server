@@ -22,11 +22,13 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.Window.BackingStoreHint;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
 public class BackingStore implements AttributeHandler<Window> {
@@ -40,9 +42,12 @@ public class BackingStore implements AttributeHandler<Window> {
 			final Window window) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int backingStoreIndex = inputStream.readUnsignedByte();
+		final BackingStoreHint backingStoreHint = BackingStoreHint.getFromIndex(backingStoreIndex);
+		if(backingStoreHint == null) {
+			response.error(ErrorCode.Value, backingStoreIndex);
+		}
+		window.setBackingStoreHint(backingStoreHint);
 	}
 
 	@Override

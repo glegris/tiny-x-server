@@ -16,36 +16,38 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.winattribhandlers;
+package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class SaveUnder implements AttributeHandler<Window> {
+public class ClearArea implements RequestHandler {
 
 	@Override
-	public void read(
-			final Server server, 
-			final Client client, 
-			final Request request,
-			final Response response, 
-			final Window window) throws IOException {
+	public void handleRequest(final Server server, 
+			                   final Client client, 
+			                   final Request request, 
+			                   final Response response) throws IOException {
 		
-		final XInputStream inputStream = request.getInputStream();
-		final int saveUnder = inputStream.readUnsignedByte();
-		window.setSaveUnder(saveUnder == 1);
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final Window window) throws IOException {
-		throw new RuntimeException("Unimplemented");
+		final XInputStream inputStream = request.getInputStream();		
+		final int windowId = inputStream.readInt(); 		
+		final Window window = server.getResources().get(windowId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowId);			
+			return;
+		}
+		final boolean exposures = request.getData() == 1;
+		final int x = inputStream.readSignedShort();
+		final int y = inputStream.readSignedShort();
+		final int width = inputStream.readUnsignedShort();
+		final int height = inputStream.readUnsignedShort();
+		window.clearArea(exposures,x,y,width,height);
 	}
 }

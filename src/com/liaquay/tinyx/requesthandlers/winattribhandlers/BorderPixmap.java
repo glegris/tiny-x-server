@@ -22,9 +22,11 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
@@ -40,9 +42,24 @@ public class BorderPixmap implements AttributeHandler<Window> {
 			final Window window) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int pixmapResourceId = inputStream.readInt();
+		switch(pixmapResourceId){
+		case 0: // Copy from parent
+			if(window.getParent() == null) {
+				response.error(ErrorCode.Match, window.getId());
+			}
+			else {
+				window.setBorderPixmap(window.getParent().getBorderPixmap());
+			}
+			break;
+		default: // Just set it
+			final Pixmap pixmap = server.getResources().get(pixmapResourceId, Pixmap.class);
+			if(pixmap == null) {
+				response.error(Response.ErrorCode.Pixmap, pixmapResourceId);
+				return;
+			}
+			window.setBorderPixmap(pixmap);
+		}
 	}
 
 	@Override
