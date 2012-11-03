@@ -67,7 +67,7 @@ public class RequestHandlerMap implements RequestHandler {
 		final WindowAttributeHandlers windowAttributeHandlers = new WindowAttributeHandlers();
 
 		_handlers[1] = new CreateWindow(windowAttributeHandlers);
-		_handlers[2] = new ChangeWindowAttributes();
+		_handlers[2] = new ChangeWindowAttributes(windowAttributeHandlers);
 		_handlers[3] = new GetWindowAttributes();
 		_handlers[4] = new DestroyWindow();
 		_handlers[5] = new DestroyWindows();

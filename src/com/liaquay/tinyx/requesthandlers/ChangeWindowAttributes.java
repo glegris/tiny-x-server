@@ -23,22 +23,36 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
 public class ChangeWindowAttributes implements RequestHandler {
 
-	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+	private final WindowAttributeHandlers _attributeHandlers;
+
+	public ChangeWindowAttributes(final WindowAttributeHandlers attributeHandlers){
+		_attributeHandlers = attributeHandlers;
 	}
 
+	@Override
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+		final int windowId = inputStream.readInt(); 		
+		final Window window = server.getResources().get(windowId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowId);		
+			return;
+		}		
+		final int attributeMask = inputStream.readInt();
+
+		_attributeHandlers.read(server, client, request, response, window, attributeMask);
+	}
 }
