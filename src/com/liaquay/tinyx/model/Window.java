@@ -18,8 +18,10 @@
  */
 package com.liaquay.tinyx.model;
 
-import com.liaquay.tinyx.model.Window.BackingStoreHint;
-import com.liaquay.tinyx.model.Window.Gravity;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.liaquay.tinyx.util.IntMap;
 import com.liaquay.tinyx.util.Tree;
 
 public class Window extends Tree<Window> implements Drawable {
@@ -88,6 +90,7 @@ public class Window extends Tree<Window> implements Drawable {
 	private final int _resourceId;
 	private final Visual _visual;
 	private final Properties _properties = new Properties();
+	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();
 
 	private final int _depth;		/* depth of window */
 	private int _x, _y;			/* location of window */
@@ -105,7 +108,6 @@ public class Window extends Tree<Window> implements Drawable {
 	private int _backingPlanes = 0;
 	private int _backingPixel = 0;
 	private boolean _saveUnder= false;
-	private int _eventMask = 0;
 	private boolean _overrideRedirect = false;
 	private ColorMap _colorMap = null;
 	private int _doNotPropagateMask = 0;
@@ -165,6 +167,11 @@ public class Window extends Tree<Window> implements Drawable {
 	}
 	
 	public void free() {
+		final List<ClientWindowAssociation> assocs = new ArrayList<ClientWindowAssociation>(_clientWindowAssociations.values());
+		for(final ClientWindowAssociation assoc : assocs) {
+			assoc.free();
+		}
+		
 		// TODO Unlink from parent
 	}
 
@@ -269,8 +276,18 @@ public class Window extends Tree<Window> implements Drawable {
 		return _saveUnder;
 	}
 	
-	public int getEventMask() {
-		return _eventMask;
+	// TODO what is this used for? Might need to be efficient/cached.
+	public int getAllEventMask() {
+		int eventMask = 0;
+		for(final ClientWindowAssociation assoc : _clientWindowAssociations.values()) {
+			eventMask |= assoc.getEventMask();
+		}
+		return eventMask;
+	}
+	
+	public int getClientEventMask(final Client client) {
+		final ClientWindowAssociation assoc = _clientWindowAssociations.get(client.getClientId());
+		return assoc == null ? 0 : assoc.getEventMask();
 	}
 	
 	public int getDoNotPropagateMask() {
@@ -374,5 +391,10 @@ public class Window extends Tree<Window> implements Drawable {
 	public void clearArea(final boolean exposures, final int x, final int y, final int width, final int height) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	
+	public IntMap<ClientWindowAssociation> getClientWindowAssociations() {
+		return _clientWindowAssociations;
 	}
 }

@@ -61,8 +61,8 @@ public class GetWindowAttributes implements RequestHandler {
 		outputStream.writeByte(window.getOverrideRedirect() ? 1 : 0);
 		final ColorMap colorMap = window.getColorMap();
 		outputStream.writeInt(colorMap == null ? 0 : colorMap.getId());
-		outputStream.writeInt(window.getEventMask());// TODO this is wrong.
-		outputStream.writeInt(window.getEventMask());// TODO this is wrong.
+		outputStream.writeInt(window.getAllEventMask());
+		outputStream.writeInt(window.getClientEventMask(client));
 		outputStream.writeShort(window.getDoNotPropagateMask());
 	}
 }

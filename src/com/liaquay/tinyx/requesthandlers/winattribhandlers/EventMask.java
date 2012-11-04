@@ -25,6 +25,7 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.ClientWindowAssociation;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
@@ -41,11 +42,11 @@ public class EventMask implements AttributeHandler<Window> {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int eventMask = inputStream.readInt();
-		
-		// TODO need to create some combination of client and window 
-		// to hold the event mask
-		
-		// TODO implement
+		ClientWindowAssociation assoc = window.getClientWindowAssociations().get(client.getClientId());
+		if(assoc == null) {
+			assoc = new ClientWindowAssociation(client, window);
+		}
+		assoc.setEventMask(eventMask);
 	}
 
 	@Override

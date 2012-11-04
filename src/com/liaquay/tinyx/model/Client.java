@@ -18,10 +18,18 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.liaquay.tinyx.util.IntMap;
+
 public class Client {
 	private final int _clientId;
+	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();
+	
+	
+	// TODO probably need to move these 2 to the server class
 	private final int _endServerResourceId;
-
 	private int _serverResourceId;
 
 	public Client(final int clientId, final int fakeID) {
@@ -34,6 +42,7 @@ public class Client {
 		return _clientId;
 	}
 	
+	// TODO Currently only used by the server. probably should move this code to the server class(?)
 	// TODO Might need 2 of these
 	//   One to allocate effectively static resources and another for more dynamic stuff like events
 	protected int allocateResourceId(){
@@ -47,5 +56,13 @@ public class Client {
 	}	
 	
 	public void free() {
+		final List<ClientWindowAssociation> assocs = new ArrayList<ClientWindowAssociation>(_clientWindowAssociations.values());
+		for(final ClientWindowAssociation assoc : assocs) {
+			assoc.free();
+		}
+	}
+	
+	public IntMap<ClientWindowAssociation> getClientWindowAssociations() {
+		return _clientWindowAssociations;
 	}
 }
