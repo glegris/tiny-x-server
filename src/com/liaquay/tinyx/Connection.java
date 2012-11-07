@@ -18,9 +18,12 @@
  */
 package com.liaquay.tinyx;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Server;
 
 public class Connection implements Runnable {
@@ -30,30 +33,78 @@ public class Connection implements Runnable {
 	private final RequestAdaptor _request;
 	private final ResponseAdaptor _response;
 	private final RequestHandler _requestHandler;
+	private final ArrayBlockingQueue<Event> _outTray;
+	private final XOutputStream _outputStream;
+	private boolean _isAlive = true;
 	
 	public Connection(final XInputStream inputStream,
 			           final XOutputStream outputStream,
 			           final Server server,
 			           final Client client,
-			           final RequestHandler requestHandler) {
+			           final RequestHandler requestHandler, 
+			           final ArrayBlockingQueue<Event> outTray) {
 		
 		_server = server;
 		_client = client;
 		_request = new RequestAdaptor(inputStream);
 		_response = new ResponseAdaptor(outputStream);
 		_requestHandler = requestHandler;
+		_outTray = outTray;
+		_outputStream = outputStream;
 	}
 	
 	public void run() {
 		
+		// This thread receives events for this client and delivers them to the output stream.
+		final Thread parcelForce = new Thread() {
+			@Override
+			public void run() {
+				while(_isAlive) {
+					try {
+						final Event event = _outTray.take();
+						
+						// Ensure output stream is protected from concurrent access
+						// in particular from the request handler thread.
+						synchronized (_outputStream) {
+							try {
+								event.write(_outputStream, _request.getSequenceNumber());
+							}
+							catch(final Exception e) {
+								// TODO Log
+								// TODO try to shut the client down
+								e.printStackTrace();
+								
+								// Indicate that the connection is dead and needs closing down.
+								_isAlive = false;
+							}
+						}
+					}
+					catch(final InterruptedException e) {
+						// TODO Logger
+						System.out.println("Parcel force exiting.");
+					}
+				}
+			}
+		};
+		parcelForce.start();
+		
 		try {
-			while(true) {
+			while(_isAlive) {
 				_request.readRequest();
-				_response.setRequest(_request);
-				_requestHandler.handleRequest(_server, _client, _request, _response);
-				_request.skipRemaining();
-				_response.padAlign();
-				_response.send();
+				
+				// Ensure model is protected from concurrent access
+				synchronized (_server) {
+					
+					// Ensure output stream is protected from concurrent access
+					// in particular from the event delivery thread.
+					synchronized (_outputStream) {
+						_response.setRequest(_request);
+						_requestHandler.handleRequest(_server, _client, _request, _response);
+						_request.skipRemaining();
+						_response.padAlign();
+						_response.send();
+					}
+				}
 			}
 		}
 		catch(final Exception e) {
@@ -61,7 +112,14 @@ public class Connection implements Runnable {
 			e.printStackTrace();
 		}
 		finally {
-			_server.freeClient(_client);
+			
+			_isAlive = false;
+			parcelForce.interrupt();
+			try { parcelForce.join(); } catch(final InterruptedException e) {};
+			
+			synchronized (_server) {
+				_server.freeClient(_client);
+			}
 		}
 	}
 }

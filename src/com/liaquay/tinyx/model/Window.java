@@ -21,6 +21,7 @@ package com.liaquay.tinyx.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.util.IntMap;
 import com.liaquay.tinyx.util.Tree;
 
@@ -113,6 +114,7 @@ public class Window extends Tree<Window> implements Drawable {
 	private int _doNotPropagateMask = 0;
 	private Pixmap _backgroundPixmap = null;
 	private boolean _parentRelativeBackgroundPixmap = false;
+	private final EventFactories _eventFactories;
 
 //  Window root;                /* root of screen containing window */
 //    int backing_store;          /* NotUseful, WhenMapped, Always */
@@ -139,7 +141,8 @@ public class Window extends Tree<Window> implements Drawable {
 			final int x,
 			final int y,
 			final int borderWidth,
-			final WindowClass windowClass) {
+			final WindowClass windowClass,
+			final EventFactories eventFactories) {
 		
 		super(parent);
 		_resourceId = resourceId;
@@ -151,6 +154,7 @@ public class Window extends Tree<Window> implements Drawable {
 		_y = y;
 		_borderWidth = borderWidth;
 		_windowClass = windowClass;
+		_eventFactories = eventFactories;
 	}
 
 	@Override
@@ -204,7 +208,22 @@ public class Window extends Tree<Window> implements Drawable {
 	public void map() {
 		if(!_mapped ) {
 			_mapped = true;
-			// TODO issue some mapped event
+			
+			// TODO lots to implement here
+			// ...
+			
+			final Event event = _eventFactories.getMapNotifyFactory().create(false, this, this, _overrideRedirect);
+			
+			// TODO lots to implement here
+			// ...
+			
+			// TODO Send the event to all clients for a quick test of the event delivery code.
+			// TODO This should just be clients with matching masks!
+			// TODO Make a more efficient way of looping over this collection
+			// TODO Think about if we really need a ClientWindowAssociation collection here and not just a list!?
+			for(final ClientWindowAssociation assoc : _clientWindowAssociations.values()) {
+				assoc.getClient().getPostBox().send(event);
+			}
 		}
 	}
 	

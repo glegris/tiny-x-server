@@ -18,8 +18,10 @@
  */
 package com.liaquay.tinyx.model;
 
+import com.liaquay.tinyx.model.eventfactories.EventFactories;
+
 public class Screen extends Window {
-	
+
 	private final ColorMap _defaultColorMap;
 	private final int _widthMM;
 	private final int _heightMM;
@@ -27,16 +29,18 @@ public class Screen extends Window {
 	private final int _maxInstalledMaps = 1; // TODO What are these?
 	private final Depths _depths;           
 
-	public Screen(final int rootWindowResourceId, 
-			       final ColorMap defaultColorMap,
-			       final Visual rootVisual,
-			       final int rootDepth,
-			       final int widthPixels,
-			       final int heightPixels,
-			       final int widthMM,
-			       final int heightMM,
-			       final Depths depths) {
-		
+	public Screen(
+			final int rootWindowResourceId, 
+			final ColorMap defaultColorMap,
+			final Visual rootVisual,
+			final int rootDepth,
+			final int widthPixels,
+			final int heightPixels,
+			final int widthMM,
+			final int heightMM,
+			final Depths depths,
+			final EventFactories eventFactories) {
+
 		super(rootWindowResourceId,
 				null,
 				rootVisual,
@@ -46,8 +50,9 @@ public class Screen extends Window {
 				0, //x 
 				0, // y
 				0, // border width
-				WindowClass.InputOutput);
-		
+				WindowClass.InputOutput,
+				eventFactories);
+
 		_defaultColorMap = defaultColorMap;
 		_widthMM = widthMM;
 		_heightMM = heightMM;
@@ -57,19 +62,19 @@ public class Screen extends Window {
 	public ColorMap getDefaultColorMap() {
 		return _defaultColorMap;
 	}
-	
+
 	public int getWidthMM() {
 		return _widthMM;
 	}	
-	
+
 	public int getHeightMM() {
 		return _heightMM;
 	}
-	
+
 	public int getMinInstalledMaps() {
 		return _minInstalledMaps;
 	}
-	
+
 	public int getMaxInstalledMaps() {
 		return _maxInstalledMaps;
 	}
@@ -77,7 +82,7 @@ public class Screen extends Window {
 	public Depths getDepths() {
 		return _depths;
 	}
-	
+
 	public Screen getScreen() {
 		return this;
 	}

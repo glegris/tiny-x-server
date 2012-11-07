@@ -23,15 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import com.liaquay.tinyx.model.ColorMap;
-import com.liaquay.tinyx.model.Depths;
-import com.liaquay.tinyx.model.Screen;
-import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Server.ResourceFactory;
-import com.liaquay.tinyx.model.TrueColorMap;
-import com.liaquay.tinyx.model.Visual;
-import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
-import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.sockets.SocketServer;
 import com.liaquay.tinyx.sockets.SocketServer.Listener;
 

@@ -86,7 +86,8 @@ public class CreateWindow implements RequestHandler {
 				x,
 				y,
 				borderWidth,
-				windowClass);
+				windowClass,
+				server.getEventFactories());
 
 		_attributeHandlers.read(server, client, request, response, window, attributeMask);
 

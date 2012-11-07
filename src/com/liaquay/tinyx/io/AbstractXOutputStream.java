@@ -44,6 +44,11 @@ public abstract class AbstractXOutputStream implements XOutputStream {
 	}
 	
 	@Override
+	public final void writeBoolean(final boolean b) throws IOException {
+		writeByte(b ? 1 :0);
+	}
+	
+	@Override
 	public final void writeByte(final byte b) throws IOException {
 		_counter++;
 		_outputStream.write(((int)b) &0xff);

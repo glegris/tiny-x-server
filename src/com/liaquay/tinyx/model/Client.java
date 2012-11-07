@@ -25,35 +25,21 @@ import com.liaquay.tinyx.util.IntMap;
 
 public class Client {
 	private final int _clientId;
-	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();
-	
-	
-	// TODO probably need to move these 2 to the server class
-	private final int _endServerResourceId;
-	private int _serverResourceId;
+	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();	
+	private final PostBox _postBox;
 
-	public Client(final int clientId, final int fakeID) {
-		_clientId = clientId;    
-		_serverResourceId = fakeID;
-	    _endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;
+	public Client(final int clientId, final PostBox postBox) {
+		_clientId = clientId;
+		_postBox = postBox;
 	}
 	
 	public int getClientId() {
 		return _clientId;
 	}
 	
-	// TODO Currently only used by the server. probably should move this code to the server class(?)
-	// TODO Might need 2 of these
-	//   One to allocate effectively static resources and another for more dynamic stuff like events
-	protected int allocateResourceId(){
-		final int id =_serverResourceId++;
-		if (id !=_endServerResourceId){
-			return id;
-		}
-		// TODO : Error handling!
-		System.out.println("error: fakeClient "+id);
-		throw new RuntimeException("Error allocating fake ID");
-	}	
+	public PostBox getPostBox() {
+		return _postBox;
+	}
 	
 	public void free() {
 		final List<ClientWindowAssociation> assocs = new ArrayList<ClientWindowAssociation>(_clientWindowAssociations.values());

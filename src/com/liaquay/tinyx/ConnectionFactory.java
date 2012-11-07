@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.liaquay.tinyx.io.LsbXInputStream;
 import com.liaquay.tinyx.io.LsbXOutputStream;
@@ -33,7 +34,9 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Depths.Depth;
+import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Format;
+import com.liaquay.tinyx.model.PostBox;
 import com.liaquay.tinyx.model.Resource;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
@@ -191,16 +194,40 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 			xinputStream.skip((-dataLength)&3);
 		}			
 		
-		final Client client = _server.allocateClient();
-		if(client == null) {
-			// TODO we could not allocate a new client!
-			return null;
-		}
-		else {
-			// Send the opening response
-			writeProlog(xoutputStream, client.getClientId());
+		synchronized (_server) {
 			
-			return new Connection(xinputStream, xoutputStream, _server, client, _requestHandler);
+			final ArrayBlockingQueue<Event> outTray = new ArrayBlockingQueue<Event>(50);
+			
+			final Client client = _server.allocateClient(new PostMan(outTray));
+			
+			if(client == null) {
+				// TODO we could not allocate a new client!
+				return null;
+			}
+			else {
+				
+				// Send the opening response
+				writeProlog(xoutputStream, client.getClientId());
+
+				return new Connection(xinputStream, xoutputStream, _server, client, _requestHandler, outTray);
+			}
+		}
+	}
+	
+	/**
+	 * Sends messages delivered to a client to the out-tray in the client's connection.
+	 */
+	private static class PostMan implements PostBox {
+
+		private final ArrayBlockingQueue<Event> _outTray;
+		
+		public PostMan(final ArrayBlockingQueue<Event> outTray) {
+			_outTray = outTray;
+		}
+		
+		@Override
+		public void send(final Event envelope) {
+			_outTray.add(envelope);
 		}
 	}
 }
