@@ -18,19 +18,29 @@
  */
 package com.liaquay.tinyx.events;
 
-import com.liaquay.tinyx.model.eventfactories.EventFactories;
-import com.liaquay.tinyx.model.eventfactories.MapNotifyFactory;
+import java.io.IOException;
+
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.MapRequestFactory;
 
-public final class EventFactoriesImpl implements EventFactories {
+public class MapRequestFactoryImpl implements MapRequestFactory {
 
+	public static MapRequestFactory FACTORY = new MapRequestFactoryImpl();
+	
 	@Override
-	public final MapNotifyFactory getMapNotifyFactory() {
-		return MapNotifyFactoryImpl.FACTORY;
-	}
+	public Event create(
+			final boolean sendEvent, 
+			final Window parent,
+			final Window window) {
 
-	@Override
-	public final MapRequestFactory getMapRequestFactory() {
-		return MapRequestFactoryImpl.FACTORY;
+		return new EventImpl(Event.MapRequest, 0) {
+			@Override
+			public final void writeBody(final XOutputStream outputStream) throws IOException {
+				outputStream.writeInt(parent == null ? 0 : parent.getId());
+				outputStream.writeInt(window.getId());
+			}
+		};
 	}
 }

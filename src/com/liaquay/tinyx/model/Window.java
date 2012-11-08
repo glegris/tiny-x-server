@@ -207,18 +207,40 @@ public class Window extends Tree<Window> implements Drawable {
 		if(!_mapped ) {
 			_mapped = true;
 			
-			// TODO lots to implement here
-			// ...
+			if (!_overrideRedirect && getParent() != null && getParent().checkForEvent(Event.SubstructureRedirectMask)) {
+				final Event mapRequestEvent = _eventFactories.getMapRequestFactory().create(false, getParent(), this);
+				getParent().deliver(mapRequestEvent, Event.SubstructureRedirectMask);
+			}
+
+			if(checkForEvent(Event.StructureNotifyMask)) {
+				final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create(false, this, this, _overrideRedirect);
+				deliver(mapNotifyEvent, Event.StructureNotifyMask);
+			}
 			
-			final Event event = _eventFactories.getMapNotifyFactory().create(false, this, this, _overrideRedirect);
+			if(checkForEvent(Event.SubstructureNotifyMask)) {
+				final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create(false, getParent(), this, _overrideRedirect);
+				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
+			}
 			
-			// TODO lots to implement here
-			// ...
-			
-			// TODO Send the event to all clients for a quick test of the event delivery code.
-			// TODO This should just be clients with matching masks!
-			for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
-				final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			// TODO check for visibility changes 
+			// TODO Send visibility events 
+		}
+	}
+	
+	private boolean checkForEvent(final int mask) {
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			if((assoc.getEventMask() & mask) != 0) {
+				return true;
+			}
+		}	
+		return false;
+	}
+	
+	private void deliver(final Event event, final int mask){
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			if((assoc.getEventMask() & mask) != 0) {
 				assoc.getClient().getPostBox().send(event);
 			}
 		}

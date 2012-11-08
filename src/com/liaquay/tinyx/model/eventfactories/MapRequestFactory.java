@@ -18,7 +18,13 @@
  */
 package com.liaquay.tinyx.model.eventfactories;
 
-public interface EventFactories {
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Window;
+
+public interface MapRequestFactory {
+	
+	public Event create(
+			final boolean sendEvent,
+			final Window parent,
+			final Window window);
 }

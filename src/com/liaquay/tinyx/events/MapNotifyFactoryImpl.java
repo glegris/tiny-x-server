@@ -36,9 +36,9 @@ public class MapNotifyFactoryImpl implements MapNotifyFactory {
 			final Window window,
 			final boolean overideRedirect) {
 
-		return new EventImpl(19, 0) {
+		return new EventImpl(Event.MapNotify, 0) {
 			@Override
-			public void writeBody(final XOutputStream outputStream) throws IOException {
+			public final void writeBody(final XOutputStream outputStream) throws IOException {
 				outputStream.writeInt(event == null ? 0 : event.getId());
 				outputStream.writeInt(window.getId());
 				outputStream.writeBoolean(overideRedirect);
