@@ -27,8 +27,8 @@ public class ClientWindowAssociation {
 		_client = client;
 		_window = window;
 		
-		client.getClientWindowAssociations().put(window.getId(), this);
-		window.getClientWindowAssociations().put(client.getClientId(), this);
+		client.add(this);
+		window.add(this);
 	}
 	
 	public void setEventMask(final int eventMask) {
@@ -48,7 +48,7 @@ public class ClientWindowAssociation {
 	}
 	
 	public void free() {
-		_client.getClientWindowAssociations().remove(_window.getId());
-		_window.getClientWindowAssociations().remove(_client.getClientId());
+		_client.remove(this);
+		_window.remove(this);
 	}
 }

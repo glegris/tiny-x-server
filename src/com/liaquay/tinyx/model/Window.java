@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
-import com.liaquay.tinyx.util.IntMap;
 import com.liaquay.tinyx.util.Tree;
 
 public class Window extends Tree<Window> implements Drawable {
@@ -91,7 +90,7 @@ public class Window extends Tree<Window> implements Drawable {
 	private final int _resourceId;
 	private final Visual _visual;
 	private final Properties _properties = new Properties();
-	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();
+	private final List<ClientWindowAssociation> _clientWindowAssociations = new ArrayList<ClientWindowAssociation>(2);
 
 	private final int _depth;		/* depth of window */
 	private int _x, _y;			/* location of window */
@@ -171,9 +170,8 @@ public class Window extends Tree<Window> implements Drawable {
 	}
 	
 	public void free() {
-		final List<ClientWindowAssociation> assocs = new ArrayList<ClientWindowAssociation>(_clientWindowAssociations.values());
-		for(final ClientWindowAssociation assoc : assocs) {
-			assoc.free();
+		for(int i = _clientWindowAssociations.size()-1; i>=0; i--) {
+			_clientWindowAssociations.get(i).free();
 		}
 		
 		// TODO Unlink from parent
@@ -219,9 +217,8 @@ public class Window extends Tree<Window> implements Drawable {
 			
 			// TODO Send the event to all clients for a quick test of the event delivery code.
 			// TODO This should just be clients with matching masks!
-			// TODO Make a more efficient way of looping over this collection
-			// TODO Think about if we really need a ClientWindowAssociation collection here and not just a list!?
-			for(final ClientWindowAssociation assoc : _clientWindowAssociations.values()) {
+			for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+				final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
 				assoc.getClient().getPostBox().send(event);
 			}
 		}
@@ -298,7 +295,8 @@ public class Window extends Tree<Window> implements Drawable {
 	// TODO what is this used for? Might need to be efficient/cached.
 	public int getAllEventMask() {
 		int eventMask = 0;
-		for(final ClientWindowAssociation assoc : _clientWindowAssociations.values()) {
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
 			eventMask |= assoc.getEventMask();
 		}
 		return eventMask;
@@ -412,8 +410,20 @@ public class Window extends Tree<Window> implements Drawable {
 		
 	}
 	
+	public void add(final ClientWindowAssociation assoc) {
+		_clientWindowAssociations.add(assoc);
+	}
 	
-	public IntMap<ClientWindowAssociation> getClientWindowAssociations() {
-		return _clientWindowAssociations;
+	public void remove(final ClientWindowAssociation assoc) {
+		_clientWindowAssociations.remove(assoc);
+	}
+
+	public ClientWindowAssociation getClientWindowAssociations(final Client client) {
+		// Linear search but this should be a short list (1 or 2 long).
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			if(assoc.getClient() == client) return assoc;
+		}
+		return null;
 	}
 }

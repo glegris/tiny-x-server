@@ -42,7 +42,7 @@ public class EventMask implements AttributeHandler<Window> {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int eventMask = inputStream.readInt();
-		ClientWindowAssociation assoc = window.getClientWindowAssociations().get(client.getClientId());
+		ClientWindowAssociation assoc = window.getClientWindowAssociations(client);
 		if(assoc == null) {
 			assoc = new ClientWindowAssociation(client, window);
 		}

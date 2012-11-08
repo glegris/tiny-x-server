@@ -48,7 +48,11 @@ public class Client {
 		}
 	}
 	
-	public IntMap<ClientWindowAssociation> getClientWindowAssociations() {
-		return _clientWindowAssociations;
+	public void add(final ClientWindowAssociation assoc) {
+		_clientWindowAssociations.put(assoc.getWindow().getId(), assoc);
+	}
+	
+	public void remove(final ClientWindowAssociation assoc) {
+		_clientWindowAssociations.remove(assoc.getWindow().getId());
 	}
 }
