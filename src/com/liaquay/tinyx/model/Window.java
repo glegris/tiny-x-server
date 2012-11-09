@@ -170,11 +170,13 @@ public class Window extends Tree<Window> implements Drawable {
 	}
 	
 	public void free() {
-		for(int i = _clientWindowAssociations.size()-1; i>=0; i--) {
+		for(int i = _clientWindowAssociations.size()-1; i>=0; --i) {
 			_clientWindowAssociations.get(i).free();
 		}
 		
-		// TODO Unlink from parent
+		if(getParent() != null) {
+			getParent().removeChild(this);
+		}
 	}
 
 	public Properties getProperties() {
@@ -185,7 +187,19 @@ public class Window extends Tree<Window> implements Drawable {
 	public Screen getScreen() {
 		return getParent().getScreen();
 	}
+	
+	public Window getRootWindow() {
+		return getScreen();
+	}
 
+	public int getChildCount() {
+		int childCount = 0;
+		for(Window child = getFirstchild(); child != null; child = child.getNextSibling()) {
+			++childCount;
+		}
+		return childCount;
+	}
+	
 	@Override
 	public Visual getVisual() {
 		return _visual;

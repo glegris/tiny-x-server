@@ -77,6 +77,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[10] = new UnmapWindow();
 		_handlers[11] = new UnmapSubwindows();
 		_handlers[14] = new GetGeometry();
+		_handlers[15] = new QueryTree();
 		_handlers[16] = new InternAtom();
 		_handlers[17] = new GetAtomName();
 		_handlers[18] = new ChangeProperty();

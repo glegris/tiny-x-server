@@ -110,9 +110,10 @@ public class ResponseAdaptor implements Response {
 		_outputStream.writeByte(ReplyCode.Ok.ordinal());
 		_outputStream.writeByte(data); 
 		_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
-		_outputStream.writeInt((extraLength+3)>>2);
+		final int lengthInWords = (extraLength+3)>>2;
+		_outputStream.writeInt(lengthInWords);
 		_headerSent = true;
-		_extraLength = extraLength;
+		_extraLength = lengthInWords << 2;
 		return _outputStream;
 	}
 
@@ -130,7 +131,9 @@ public class ResponseAdaptor implements Response {
 		}
 		
 		if(_headerSent) {
-			if(_outputStream.getCounter() > 32 + _extraLength) throw new IOException("Response message too long");
+			if(_outputStream.getCounter() > 32 + _extraLength) {
+				throw new IOException("Response message too long");
+			}
 			if(_outputStream.getCounter() < 32 + _extraLength) {
 				_outputStream.writePad(32 + _extraLength - _outputStream.getCounter());
 			}
