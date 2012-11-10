@@ -24,6 +24,24 @@ import java.util.List;
 import com.liaquay.tinyx.util.IntMap;
 
 public class Client {
+	
+	public interface Listener {
+		public void closed();
+	}
+	
+	private final static class NullListener implements Listener {
+		@Override
+		public void closed() {}
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+	
+	private Listener _listener = NULL_LISTENER;
+	
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
 	private final int _clientId;
 	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();	
 	private final PostBox _postBox;
@@ -54,5 +72,9 @@ public class Client {
 	
 	public void remove(final ClientWindowAssociation assoc) {
 		_clientWindowAssociations.remove(assoc.getWindow().getId());
+	}
+	
+	public void close() {
+		_listener.closed();
 	}
 }

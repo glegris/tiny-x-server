@@ -84,6 +84,11 @@ public abstract class AbstractXInputStream implements XInputStream {
 		_counter+=length;
 	}
 	
+	@Override
+	public final void close() throws IOException {
+		_inputStream.close();
+	}
+	
 	private byte[] _stringBuffer = new byte[64];
 	
 	public String readString() throws IOException {

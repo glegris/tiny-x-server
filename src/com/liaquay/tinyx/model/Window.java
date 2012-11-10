@@ -22,9 +22,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
-import com.liaquay.tinyx.util.Tree;
 
-public class Window extends Tree<Window> implements Drawable {
+public class Window implements Drawable {
+	
+	private final Window _parent;
+	private final List<Window> _children = new ArrayList<Window>();
+	
+	public interface Listener {
+		public void childCreated(final Window parent, final Window child);
+	}
+	
+	/**
+	 * Empty implementation of the listener so that we don't have null checks 
+	 * throughout the code. 
+	 */
+	private static final class NullListener implements Listener {
+		@Override
+		public void childCreated(final Window parent, final Window child) {}
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+	
+	private Listener _listener = NULL_LISTENER;
+	
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
 	
 	public enum MappedState {
 		IsUnmapped,
@@ -143,7 +166,7 @@ public class Window extends Tree<Window> implements Drawable {
 			final WindowClass windowClass,
 			final EventFactories eventFactories) {
 		
-		super(parent);
+		_parent = parent;
 		_resourceId = resourceId;
 		_visual = visual;
 		_depth = depth;
@@ -154,8 +177,29 @@ public class Window extends Tree<Window> implements Drawable {
 		_borderWidth = borderWidth;
 		_windowClass = windowClass;
 		_eventFactories = eventFactories;
+		
+		if(_parent != null) {
+			_parent.addChild(this);
+		}
 	}
 
+	public Window getParent() {
+		return _parent;
+	}
+	
+	public void removeChild(final Window window) {
+		_children.remove(window);
+	}
+	
+	public Window getChild(final int i) {
+		return _children.get(i);
+	}
+	
+	private void addChild(final Window child) {
+		_children.add(child);
+		_listener.childCreated(this, child);
+	}
+	
 	@Override
 	public int getId() {
 		return _resourceId;
@@ -193,11 +237,7 @@ public class Window extends Tree<Window> implements Drawable {
 	}
 
 	public int getChildCount() {
-		int childCount = 0;
-		for(Window child = getFirstchild(); child != null; child = child.getNextSibling()) {
-			++childCount;
-		}
-		return childCount;
+		return _children.size();
 	}
 	
 	@Override
@@ -266,8 +306,8 @@ public class Window extends Tree<Window> implements Drawable {
 	 */
 	public void mapSubwindows() {
 		// TODO not sure the order is correct
-		for(Window w = getFirstchild(); w != null; w = w.getNextSibling()) {
-			w.mapSubwindows();
+		for(int i = 0; i < _children.size() ; ++i) {
+			_children.get(i).mapSubwindows();
 		}
 	}
 	
@@ -284,8 +324,8 @@ public class Window extends Tree<Window> implements Drawable {
 	 */
 	public void unmapSubwindows() {
 		// TODO not sure the order is correct
-		for(Window w = getLastchild(); w != null; w = w.getPrevSibling()) {
-			w.mapSubwindows();
+		for(int i = _children.size()-1; i >= 0 ; --i) {
+			_children.get(i).mapSubwindows();
 		}
 	}
 

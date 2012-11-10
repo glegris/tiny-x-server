@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import com.liaquay.tinyx.TinyXServer.Executable;
 import com.liaquay.tinyx.io.LsbXInputStream;
 import com.liaquay.tinyx.io.LsbXOutputStream;
 import com.liaquay.tinyx.io.MsbXInputStream;
@@ -156,7 +157,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 	}
 	
 	@Override
-	public Runnable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException {
+	public Executable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException {
 		
 		final XInputStream xinputStream;
 		final XOutputStream xoutputStream;

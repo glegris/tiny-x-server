@@ -55,8 +55,8 @@ public class QueryTree implements RequestHandler {
 		outputStream.writeInt(parent == null ? 0 : parent.getId());
 		outputStream.writeShort(childCount);
 		response.padHeader();
-		for(Window child = window.getFirstchild(); child != null; child = child.getNextSibling()) {
-			outputStream.writeInt(child.getId());
+		for(int i = 0 ; i < childCount; ++i) {
+			outputStream.writeInt(window.getChild(i).getId());
 		}
 	}
 }

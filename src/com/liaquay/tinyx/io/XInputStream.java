@@ -33,4 +33,5 @@ public interface XInputStream {
 	public void resetCounter();
 	public void skip(int remaining) throws IOException;
 	public ByteOrder getByteOrder();
+	public void close() throws IOException;
 }

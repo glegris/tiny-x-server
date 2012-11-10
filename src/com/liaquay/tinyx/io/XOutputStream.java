@@ -32,4 +32,5 @@ public interface XOutputStream {
 	public int getCounter();
 	public void resetCounter();
 	public ByteOrder getByteOrder();
+	public void close() throws IOException;
 }

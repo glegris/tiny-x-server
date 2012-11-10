@@ -57,12 +57,13 @@ public class Server extends Client {
 	
 	public Server(final EventFactories eventFactories) {		
 		// Create the server as a client with ID of 0
-		super(0, new PostBox() {
-			@Override
-			public void send(final Event event) {
-				// Do nothing. No messages should be sent to the server anyhow.
-			}
-		});
+		super(	0, 
+				new PostBox() {
+					@Override
+					public void send(final Event event) {
+						// Do nothing. No messages should be sent to the server anyhow.
+					}
+				});
 		
 		_eventFactories = eventFactories;
 	    
@@ -107,7 +108,7 @@ public class Server extends Client {
 		return visual;
 	}
 	
-	public void addScreen(final ResourceFactory<Screen> factory) {
+	public Screen addScreen(final ResourceFactory<Screen> factory) {
 		final int resourceId = allocateResourceId();
 		final Screen screen = factory.create(resourceId);
 		// TODO not very graceful
@@ -117,6 +118,8 @@ public class Server extends Client {
 		
 		_screens.add(screen);
 		_resources.add(screen);
+		
+		return screen;
 	}
 	
 	public Client allocateClient(final PostBox postBox) {

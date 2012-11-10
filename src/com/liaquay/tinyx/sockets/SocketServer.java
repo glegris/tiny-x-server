@@ -26,6 +26,7 @@ public class SocketServer {
 	
 	public interface Listener {
 		public boolean connected(final Socket socket);
+		public void exited();
 	}
 
 	private final Listener _listener;
@@ -41,9 +42,10 @@ public class SocketServer {
 	//	TODO Check this interrupts the listener socket.
 	public void close() {
 		if(_open) {
+			_open = false;
 			try {
 				_serverSocket.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 			_open = false;
@@ -51,16 +53,27 @@ public class SocketServer {
 	}
 
 	public void listen() throws IOException {
-		while(_open) {
-			final Socket client = _serverSocket.accept();
-			if(!_listener.connected(client))  {
-				try {
-					client.close();
-				}
-				catch(final Exception e) {
-					e.printStackTrace();
+		try {
+			while(_open) {
+				final Socket client = _serverSocket.accept();
+				if(!_listener.connected(client))  {
+					try {
+						client.close();
+					}
+					catch(final Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
+		}
+		catch(final Exception e) {
+			if(_open) {
+				// TODO Logging
+				e.printStackTrace();
+			}
+		}
+		finally {
+			_listener.exited();
 		}
 	}
 
@@ -70,6 +83,11 @@ public class SocketServer {
 			public boolean connected(final Socket socket) {
 				System.out.println("" + socket.getRemoteSocketAddress());
 				return true;
+			}
+
+			@Override
+			public void exited() {
+				System.out.println("Exited");
 			}
 		});
 		server.listen();

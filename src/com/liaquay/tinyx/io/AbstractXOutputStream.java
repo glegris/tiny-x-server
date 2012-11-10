@@ -72,6 +72,11 @@ public abstract class AbstractXOutputStream implements XOutputStream {
 	}
 	
 	@Override
+	public final void close() throws IOException {
+		_outputStream.close();
+	}
+	
+	@Override
 	public void writePad(final int i) throws IOException {
 		for(int j = 0; j< i; j++) writeByte(0);
 	}

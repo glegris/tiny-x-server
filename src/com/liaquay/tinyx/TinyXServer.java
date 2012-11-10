@@ -22,17 +22,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.sockets.SocketServer;
 import com.liaquay.tinyx.sockets.SocketServer.Listener;
 
 public class TinyXServer {
 
+	private final static Logger LOGGER = Logger.getLogger(TinyXServer.class.getName());
+	
+	public interface Executable {
+		public void run();
+		public void stop();
+	}
+	
 	public interface ClientFactory {
-		public Runnable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException;
+		public Executable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException;
 	}
 
 	private final SocketServer _socketServer;
+	private final Set<Executable> _executables = new HashSet<Executable>();
 
 	public TinyXServer(final int port, final ClientFactory clientFactory) throws IOException {
 		_socketServer = new SocketServer(port, new Listener() {			
@@ -43,11 +55,15 @@ public class TinyXServer {
 						try {
 							final InputStream inputStream = socket.getInputStream();
 							final OutputStream outputStream = socket.getOutputStream();
-							final Runnable client = clientFactory.createClient(inputStream, outputStream);
-							if(client != null) client.run();
+							final Executable client = clientFactory.createClient(inputStream, outputStream);
+							if(client != null) {
+								_executables.add(client);
+								client.run();
+							}
 						}
 						catch(final Exception e) {
-							e.printStackTrace();
+							// TODO this issues an error even on a normal exit.
+							LOGGER.log(Level.SEVERE, "Connection failed", e);
 						}
 						finally {
 							try {
@@ -59,10 +75,21 @@ public class TinyXServer {
 				}.start();
 				return true;
 			}
+
+			@Override
+			public void exited() {
+				for(final Executable executable : _executables) {
+					executable.stop();
+				}
+			}
 		});
 	}
 
 	public void listen() throws IOException {
 		_socketServer.listen();
+	}
+	
+	public void close() {
+		_socketServer.close();
 	}
 }

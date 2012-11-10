@@ -18,7 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -64,5 +66,12 @@ public class Clients {
 	
 	public void free() {
 		
+	}
+	
+	public void close() {
+		final List<Client> clients = new ArrayList<Client>(_idToClientMap.values());
+		for(final Client client : clients) {
+			client.close();
+		}
 	}
 }

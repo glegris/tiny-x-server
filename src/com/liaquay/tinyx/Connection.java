@@ -18,15 +18,21 @@
  */
 package com.liaquay.tinyx;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.liaquay.tinyx.TinyXServer.Executable;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Server;
 
-public class Connection implements Runnable {
+public class Connection implements Executable {
+	
+	private final static Logger LOGGER = Logger.getLogger(Connection.class.getName());
 
 	private final Client _client;
 	private final Server _server;
@@ -35,6 +41,8 @@ public class Connection implements Runnable {
 	private final RequestHandler _requestHandler;
 	private final ArrayBlockingQueue<Event> _outTray;
 	private final XOutputStream _outputStream;
+	private final XInputStream _inputStream;
+	
 	private boolean _isAlive = true;
 	
 	public Connection(final XInputStream inputStream,
@@ -51,6 +59,14 @@ public class Connection implements Runnable {
 		_requestHandler = requestHandler;
 		_outTray = outTray;
 		_outputStream = outputStream;
+		_inputStream = inputStream;
+	}
+	
+	@Override
+	public void stop() {
+		_isAlive = false;
+		try{ _outputStream.close(); } catch(final IOException e) {}
+		try{ _inputStream.close(); } catch(final IOException e) {}
 	}
 	
 	public void run() {
@@ -70,18 +86,15 @@ public class Connection implements Runnable {
 								event.write(_outputStream, _request.getSequenceNumber());
 							}
 							catch(final Exception e) {
-								// TODO Log
-								// TODO try to shut the client down
-								e.printStackTrace();
+								LOGGER.log(Level.SEVERE, "Failed to deliver event", e);
 								
 								// Indicate that the connection is dead and needs closing down.
-								_isAlive = false;
+								Connection.this.stop();
 							}
 						}
 					}
 					catch(final InterruptedException e) {
-						// TODO Logger
-						System.out.println("Parcel force exiting.");
+						LOGGER.log(Level.INFO, "Parcel force exiting.");
 					}
 				}
 			}
@@ -108,11 +121,10 @@ public class Connection implements Runnable {
 			}
 		}
 		catch(final Exception e) {
-			// TODO Logging
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Failure in client processing", e);
 		}
 		finally {
-			
+			LOGGER.log(Level.INFO, "Client " + _client.getClientId() + " thread exiting.");
 			_isAlive = false;
 			parcelForce.interrupt();
 			try { parcelForce.join(); } catch(final InterruptedException e) {};
