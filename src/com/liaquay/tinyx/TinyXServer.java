@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +47,7 @@ public class TinyXServer {
 
 	private final SocketServer _socketServer;
 	private final Set<Executable> _executables = new HashSet<Executable>();
-
+	
 	public TinyXServer(final int port, final ClientFactory clientFactory) throws IOException {
 		_socketServer = new SocketServer(port, new Listener() {			
 			@Override
@@ -57,8 +59,17 @@ public class TinyXServer {
 							final OutputStream outputStream = socket.getOutputStream();
 							final Executable client = clientFactory.createClient(inputStream, outputStream);
 							if(client != null) {
-								_executables.add(client);
-								client.run();
+								synchronized (_executables) {
+									_executables.add(client);
+								}
+								try {
+									client.run();
+								}
+								finally {
+									synchronized (_executables) {
+										_executables.remove(client);
+									}
+								}
 							}
 						}
 						catch(final Exception e) {
@@ -78,7 +89,13 @@ public class TinyXServer {
 
 			@Override
 			public void exited() {
-				for(final Executable executable : _executables) {
+				final List<Executable> _executablesRemaining;
+				
+				synchronized (_executables) {
+					_executablesRemaining = new ArrayList<Executable>(_executables);
+				}
+
+				for(final Executable executable : _executablesRemaining) {
 					executable.stop();
 				}
 			}
