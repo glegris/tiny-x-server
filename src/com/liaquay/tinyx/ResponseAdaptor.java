@@ -137,7 +137,6 @@ public class ResponseAdaptor implements Response {
 			if(_outputStream.getCounter() < 32 + _extraLength) {
 				_outputStream.writePad(32 + _extraLength - _outputStream.getCounter());
 			}
-			_outputStream.send();
 		}
 		else {
 			_outputStream.writeByte(_replyCode.ordinal());
@@ -150,6 +149,8 @@ public class ResponseAdaptor implements Response {
 				throw new IOException("Response message too short");
 			}
 		}
+		_outputStream.send();
+		_outputStream.resetCounter();
 	}
 
 	@Override

@@ -121,7 +121,12 @@ public class Connection implements Executable {
 			}
 		}
 		catch(final Exception e) {
-			LOGGER.log(Level.SEVERE, "Failure in client processing", e);
+			// Do not issue an error message on normal exit.
+			// TODO this is a bit messy!
+			final boolean eos = e.getMessage() != null && e.getMessage().equals("END OF STREAM!");
+			if(!(eos && _inputStream.getCounter() ==0 && _outputStream.getCounter() == 0)) {
+				LOGGER.log(Level.SEVERE, "Failure in client processing", e);
+			}
 		}
 		finally {
 			LOGGER.log(Level.INFO, "Client " + _client.getClientId() + " thread exiting.");

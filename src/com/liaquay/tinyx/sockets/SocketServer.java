@@ -21,8 +21,12 @@ package com.liaquay.tinyx.sockets;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SocketServer {
+	
+	private final static Logger LOGGER = Logger.getLogger(SocketServer.class.getName());
 	
 	public interface Listener {
 		public boolean connected(final Socket socket);
@@ -39,7 +43,6 @@ public class SocketServer {
 		_serverSocket = new ServerSocket(port);
 	}
 
-	//	TODO Check this interrupts the listener socket.
 	public void close() {
 		if(_open) {
 			_open = false;
@@ -68,8 +71,7 @@ public class SocketServer {
 		}
 		catch(final Exception e) {
 			if(_open) {
-				// TODO Logging
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Error listening on socket", e);
 			}
 		}
 		finally {
@@ -87,7 +89,7 @@ public class SocketServer {
 
 			@Override
 			public void exited() {
-				System.out.println("Exited");
+				LOGGER.log(Level.INFO, "Socket server exiting");
 			}
 		});
 		server.listen();
