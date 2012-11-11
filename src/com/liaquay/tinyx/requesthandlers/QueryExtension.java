@@ -20,6 +20,8 @@ package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -31,48 +33,37 @@ import com.liaquay.tinyx.model.extensions.Extension;
 
 public class QueryExtension implements RequestHandler {
 
-	Map<String, Extension> _extensionMap;
+	private final static Logger LOGGER = Logger.getLogger(QueryExtension.class.getName());
+	
+	private final Map<String, Extension> _extensionMap;
 
-	public QueryExtension(Map<String, Extension> extensionMap) {
-		this._extensionMap = extensionMap;
+	public QueryExtension(final Map<String, Extension> extensionMap) {
+		_extensionMap = extensionMap;
 	}
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
 
 		final String requestedExtensionName = request.getInputStream().readString();
 
-		System.out.print("Extension query for " + requestedExtensionName);
+		LOGGER.log(Level.INFO, "Extension query for " + requestedExtensionName);
 
-		for (String extensionName : _extensionMap.keySet()) {
-			if	(extensionName.equals(requestedExtensionName)){
-				final Extension ext = _extensionMap.get(extensionName);
-
-				// Extension present
-				writeResponse(response, ext);
-				
-				return;
-			}
-		}
-
-		// Extension not found
-		writeResponse(response, null);
-	}
-
-	private void writeResponse(Response response, Extension ext) throws IOException {
-		if (ext == null) {
-			System.out.println(".... Not found");
-		} else {
-			System.out.println(".... Found");
-		}
+		final Extension ext = _extensionMap.get(requestedExtensionName);
+		
 		final XOutputStream outputStream = response.respond(1, 0);
-		outputStream.writeByte(ext == null ? 0 : 1);  
-		outputStream.writeByte(ext == null ? 0 : ext.getMajorOpCode());
-		outputStream.writeByte(ext == null ? 0 : ext.getFirstEvent());
-		outputStream.writeByte(ext == null ? 0 : ext.getFirstError());
-		outputStream.writePad(20);
+		if(ext == null) {
+			outputStream.writeByte(0);
+		}
+		else {
+			// Extension present
+			outputStream.writeByte(1);  
+			outputStream.writeByte(ext.getMajorOpCode());
+			outputStream.writeByte(ext.getFirstEvent());
+			outputStream.writeByte(ext.getFirstError());
+		}
 	}
 }

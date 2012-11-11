@@ -19,6 +19,8 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -35,6 +37,8 @@ import com.liaquay.tinyx.model.properties.IntPropertyValue;
 import com.liaquay.tinyx.model.properties.ShortPropertyValue;
 
 public class ChangeProperty implements RequestHandler {
+
+	private final static Logger LOGGER = Logger.getLogger(ChangeProperty.class.getName());
 
 	@Override
 	public void handleRequest(final Server server, 
@@ -113,7 +117,8 @@ public class ChangeProperty implements RequestHandler {
 
 		final byte[] data = new  byte[n];
 		inputStream.read(data, 0, n);
-System.out.println("Change property received for " +property.getPropertyAtom().getText() + " value " + new String(data))		;
+		
+		LOGGER.log(Level.INFO, "Change property received for " +property.getPropertyAtom().getText() + " value " + new String(data));
 		
 		switch(mode) {
 		case PropModeReplace: {

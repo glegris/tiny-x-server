@@ -20,12 +20,16 @@ package com.liaquay.tinyx;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.LsbXOutputStream;
 import com.liaquay.tinyx.io.MsbXOutputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 
 public class ResponseAdaptor implements Response {
+	
+	private final static Logger LOGGER = Logger.getLogger(ResponseAdaptor.class.getName());
 
 	public enum ReplyCode {
 		Error,
@@ -161,7 +165,7 @@ public class ResponseAdaptor implements Response {
 				throw new RuntimeException("TRACE error " + errorCode + " for value " + resourceId);
 			}
 			catch(final Exception e) {
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, "TRACE error " + errorCode + " for value " + resourceId, e);
 			}
 		}
 		

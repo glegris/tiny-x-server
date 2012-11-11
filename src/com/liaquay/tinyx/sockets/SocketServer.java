@@ -49,7 +49,7 @@ public class SocketServer {
 			try {
 				_serverSocket.close();
 			} catch (final IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Error closing server socket", e);
 			}
 			_open = false;
 		}
@@ -64,7 +64,7 @@ public class SocketServer {
 						client.close();
 					}
 					catch(final Exception e) {
-						e.printStackTrace();
+						LOGGER.log(Level.SEVERE, "Error closing client", e);
 					}
 				}
 			}
@@ -83,7 +83,7 @@ public class SocketServer {
 		final SocketServer server = new SocketServer(6001, new Listener() {
 			@Override
 			public boolean connected(final Socket socket) {
-				System.out.println("" + socket.getRemoteSocketAddress());
+				LOGGER.log(Level.INFO, "Connected "+ socket.getRemoteSocketAddress());
 				return true;
 			}
 

@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.TinyXServer.Executable;
 import com.liaquay.tinyx.io.LsbXInputStream;
@@ -45,7 +47,9 @@ import com.liaquay.tinyx.model.Visual;
 import com.liaquay.tinyx.requesthandlers.RequestHandlerMap;
 
 public class ConnectionFactory implements TinyXServer.ClientFactory {
-		
+	
+	private final static Logger LOGGER = Logger.getLogger(ConnectionFactory.class.getName());
+
 	private final Server _server;
 	private final RequestHandler _requestHandler = new RequestHandlerMap();
 	
@@ -173,6 +177,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 			xoutputStream = new MsbXOutputStream(outputStream);
 			break;
 		default:
+			LOGGER.log(Level.SEVERE, "Could not determine byte ordering for new client");
 			// Protocol Error
 			return null;
 		}				
@@ -202,7 +207,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 			final Client client = _server.allocateClient(new PostMan(outTray));
 			
 			if(client == null) {
-				// TODO we could not allocate a new client!
+				LOGGER.log(Level.SEVERE, "Could not allocate new client");
 				return null;
 			}
 			else {

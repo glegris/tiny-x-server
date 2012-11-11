@@ -21,6 +21,8 @@ package com.liaquay.tinyx.requesthandlers;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -34,6 +36,8 @@ import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttribu
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
 public class RequestHandlerMap implements RequestHandler {
+	
+	private final static Logger LOGGER = Logger.getLogger(RequestHandlerMap.class.getName());
 
 	private static final Unimplemented UNIMPLEMENTED = new Unimplemented();
 
@@ -111,7 +115,7 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
 
-		System.out.println("Processing " + requestHandler.getClass().getSimpleName() + "...");
+		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "...");
 		
 		requestHandler.handleRequest(server, client, request, response);
 	}

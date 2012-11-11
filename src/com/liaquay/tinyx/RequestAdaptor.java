@@ -19,11 +19,15 @@
 package com.liaquay.tinyx;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.XInputStream;
 
 public class RequestAdaptor implements Request {
 	
+	private final static Logger LOGGER = Logger.getLogger(RequestAdaptor.class.getName());
+
 	private int _requestSequence = 0;
 	private int _majorOpCode = 0;	
 	private int _data = 0;
@@ -41,7 +45,7 @@ public class RequestAdaptor implements Request {
 		_length = _inputStream.readUnsignedShort() << 2;
 		_requestSequence++;
 		
-		System.out.println(String.format("Read request code %d, data %d, length %d, seq %d", _majorOpCode, _data, _length, _requestSequence));
+		LOGGER.log(Level.INFO, String.format("Read request code %d, data %d, length %d, seq %d", _majorOpCode, _data, _length, _requestSequence));
 	}
 
 	@Override
