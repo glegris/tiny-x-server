@@ -1,7 +1,23 @@
+/*
+ *  Tiny X server - A Java X server
+ *
+ *   Copyright (C) 2012  Phil Scull
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.liaquay.tinyx.renderers.awt;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import com.liaquay.tinyx.ConnectionFactory;
@@ -17,6 +33,7 @@ import com.liaquay.tinyx.model.Visual;
 import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 
 public class TinyXAwt {
 
@@ -80,37 +97,12 @@ public class TinyXAwt {
 		});
 
 		final TinyXServer tinyXServer = new TinyXServer(6001, new ConnectionFactory(server));
-		final XawtScreen xawtScreen = new XawtScreen(screen);
-		xawtScreen.setVisible(true);
 		
-		xawtScreen.addWindowListener(new WindowListener() {
-			
+		final XawtScreen xawtScreen = new XawtScreen(screen);
+		xawtScreen.getListeners().add(new Listener() {
 			@Override
-			public void windowOpened(final WindowEvent arg0) {}
-			
-			@Override
-			public void windowIconified(final WindowEvent arg0) {}
-			
-			@Override
-			public void windowDeiconified(final WindowEvent arg0) {
-			}
-			
-			@Override
-			public void windowDeactivated(final WindowEvent arg0) {
-			}
-			
-			@Override
-			public void windowClosing(final WindowEvent arg0) {
+			public void closed() {
 				tinyXServer.close();
-				xawtScreen.dispose();
-			}
-			
-			@Override
-			public void windowClosed(final WindowEvent arg0) {
-			}
-
-			@Override
-			public void windowActivated(final WindowEvent e) {
 			}
 		});
 		
