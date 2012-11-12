@@ -30,6 +30,7 @@ public class Window implements Drawable {
 	
 	public interface Listener {
 		public void childCreated(final Window parent, final Window child);
+		public void mapped(final boolean mapped);
 	}
 	
 	/**
@@ -39,6 +40,8 @@ public class Window implements Drawable {
 	private static final class NullListener implements Listener {
 		@Override
 		public void childCreated(final Window parent, final Window child) {}
+		@Override
+		public void mapped(boolean mapped) {}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -278,6 +281,8 @@ public class Window implements Drawable {
 			
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
+			
+			_listener.mapped(true);
 		}
 	}
 	
@@ -307,6 +312,7 @@ public class Window implements Drawable {
 	public void mapSubwindows() {
 		// TODO not sure the order is correct
 		for(int i = 0; i < _children.size() ; ++i) {
+			_children.get(i).map();
 			_children.get(i).mapSubwindows();
 		}
 	}
@@ -315,6 +321,7 @@ public class Window implements Drawable {
 		if(_mapped) {
 			_mapped = false;
 			// TODO issue some unmapped event
+			_listener.mapped(false);
 		}
 	}
 	
@@ -325,6 +332,7 @@ public class Window implements Drawable {
 	public void unmapSubwindows() {
 		// TODO not sure the order is correct
 		for(int i = _children.size()-1; i >= 0 ; --i) {
+			_children.get(i).unmap();
 			_children.get(i).mapSubwindows();
 		}
 	}
@@ -379,8 +387,11 @@ public class Window implements Drawable {
 	}
 	
 	public int getClientEventMask(final Client client) {
-		final ClientWindowAssociation assoc = _clientWindowAssociations.get(client.getClientId());
-		return assoc == null ? 0 : assoc.getEventMask();
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			if(assoc.getClient() == client) return assoc.getEventMask();
+		}
+		return 0;
 	}
 	
 	public int getDoNotPropagateMask() {

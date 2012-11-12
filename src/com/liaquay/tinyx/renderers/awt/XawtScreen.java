@@ -87,6 +87,7 @@ public class XawtScreen {
 		
 		_rootWindow = new XawtWindow(screen.getRootWindow());
 		_frame.add(_rootWindow.getBorder());
+		_rootWindow.xawtMapped(true);
 		_frame.pack();
 		_frame.setVisible(true);
 	}

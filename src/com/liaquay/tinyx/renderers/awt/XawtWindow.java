@@ -45,6 +45,7 @@ public class XawtWindow  {
     private Panel _content = new Panel(null);
     
 	public XawtWindow(final Window window) {
+		xawtMapped(window.isMapped());
 		
 		_border.setBackground(getColor());
 		_content.setBackground(getColor());
@@ -64,6 +65,7 @@ public class XawtWindow  {
 				window.getHeightPixels() - (window.getBorderWidth()<<1));
 		
 		window.setListener(new Listener() {
+			
 			@Override
 			public void childCreated(final Window parent, final Window child) {
 				
@@ -71,10 +73,20 @@ public class XawtWindow  {
 				
 				_content.add(childXawtWindow._border);
 			}
+
+			@Override
+			public void mapped(final boolean mapped) {
+				xawtMapped(mapped);
+			}
 		});
 	}
 	
 	public Panel getBorder() {
 		return _border;
+	}
+	
+	public void xawtMapped(final boolean mapped) {
+		_border.setVisible(mapped);
+		_content.setVisible(mapped);
 	}
 }

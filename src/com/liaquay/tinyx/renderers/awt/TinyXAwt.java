@@ -87,10 +87,10 @@ public class TinyXAwt {
 						defaultColorMap,
 						visual,
 						32,
-						1280,
 						800,
-						1280,
+						600,
 						800,
+						600,
 						depths,
 						eventFactories);
 			}
