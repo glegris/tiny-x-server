@@ -230,6 +230,32 @@ public class Window implements Drawable {
 			_clipW = _clipX < x3 ? x3 - _clipX : 0;
 			_clipH = _clipY < y3 ? y3 - _clipY : 0;
 		}
+		
+		// TODO need to think if this really belong in here!
+		for(int i = 0; i < _children.size() ; ++i) {
+			_children.get(i).updateLocation();
+		}
+	}
+	
+	private boolean containsPixel(final int absX, final int absY) {
+		return absX >= _absX && absX < (_absX + _widthPixels + _borderWidth + _borderWidth) &&
+				absY >= _absY && absY < (_absY + _heightPixels + _borderWidth + _borderWidth);
+	}
+	
+	public Window windowAt(final int absX, final int absY) {
+		if(containsPixel(absX, absY)) {
+			for(int i = _children.size()-1; i >= 0 ; --i) {
+				final Window child = _children.get(i);
+				final Window childContains = child.windowAt(absX, absY);
+				if(childContains != null) {
+					return childContains;
+				}
+			}
+			return this;
+		}
+		else {
+			return null;
+		}
 	}
 	
 	public Window getParent() {
@@ -334,6 +360,10 @@ public class Window implements Drawable {
 		}
 	}
 	
+	/**
+	 * Determine if all the window up to the root window are mapped,
+	 * in which case this window is mapped and displayable.
+	 */
 	private boolean isMappedToRoot() {
 		return _mapped && (_parent == null || _parent.isMappedToRoot());
 	}

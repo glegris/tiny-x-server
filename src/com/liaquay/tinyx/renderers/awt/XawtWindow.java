@@ -21,6 +21,8 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
@@ -115,10 +117,18 @@ public class XawtWindow  {
 		_canvas.setBounds(
 				window.getX(),
 				window.getY(),
-				window.getWidthPixels(), 
-				window.getHeightPixels());
+				window.getWidthPixels() + window.getBorderWidth() + window.getBorderWidth(), 
+				window.getHeightPixels() + window.getBorderWidth() + window.getBorderWidth());
 		
 		window.setListener(_windowListener);
+		
+		_canvas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				final Window evw = window.windowAt(e.getX(), e.getY());
+				System.out.println(String.format("%d %d %x08 ", e.getX(),e.getY(),evw.getId()));
+			}
+		});
 	}
 	
 	public Canvas getCanvas() {
