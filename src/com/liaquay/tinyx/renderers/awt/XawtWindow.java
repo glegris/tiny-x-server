@@ -18,8 +18,9 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
+import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Panel;
+import java.awt.Graphics2D;
 
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
@@ -41,52 +42,86 @@ public class XawtWindow  {
 		return COLORS[_ci];
 	}
 	
-    private Panel _border = new Panel(null);
-    private Panel _content = new Panel(null);
+	private Window.Listener _windowListener = new Listener() {
+		
+		@Override
+		public void childCreated(final Window child) {
+			child.setListener(_windowListener);
+		}
+
+		@Override
+		public void mapped(final Window window, final boolean mapped) {
+			
+			paintWindow(window);
+			for(int i = 0; i < window.getChildCount(); i++) {
+				final Window child = window.getChild(i);
+				mapped(child, mapped);
+			}
+		}
+	};
+	
+    private Canvas _canvas = new Canvas();
+    
+    private void paintWindow(final Window window) {
+    	final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+    	
+    	graphics.setClip(
+    			window.getClipX(), 
+    			window.getClipY(),
+    			window.getClipWidth(), 
+    			window.getClipHeight());
+    	
+    	graphics.translate(window.getAbsX(), window.getAbsY());
+
+    	paintBorder(window, graphics);
+    	
+    	final int borderWidth = window.getBorderWidth();
+    	final int borderWidthX2 = (window.getBorderWidth() <<1);
+    	
+    	
+    	graphics.setClip(
+    			borderWidth, 
+    			borderWidth, 
+    			window.getClipWidth() - borderWidthX2, 
+    			window.getClipHeight() - borderWidthX2);
+    	
+    	graphics.translate(window.getBorderWidth(), window.getBorderWidth());
+    	
+    	paintContent(window, graphics);
+    	
+    	graphics.translate(
+    			-window.getAbsX() - window.getBorderWidth(), 
+    			-window.getAbsY() - window.getBorderWidth());
+    	
+    	
+    }
+    
+    private void paintBorder(final Window window, final Graphics2D graphics) {
+    	graphics.setColor(getColor());
+    	graphics.fillRect(
+    			0, 
+    			0,
+    			window.getWidth() + window.getBorderWidth()+ window.getBorderWidth(), 
+    			window.getHeight() + window.getBorderWidth()+ window.getBorderWidth());
+    }
+    
+    private void paintContent(final Window window, final Graphics2D graphics) {
+    	graphics.setColor(getColor());
+    	graphics.fillRect(0, 0, window.getWidth(), window.getHeight());    	
+    }
     
 	public XawtWindow(final Window window) {
-		xawtMapped(window.isMapped());
 		
-		_border.setBackground(getColor());
-		_content.setBackground(getColor());
-		
-		_border.add(_content);
-		
-		_border.setBounds(
+		_canvas.setBounds(
 				window.getX(),
 				window.getY(),
 				window.getWidthPixels(), 
 				window.getHeightPixels());
 		
-		_content.setBounds(
-				window.getBorderWidth(),
-				window.getBorderWidth(),
-				window.getWidthPixels() - (window.getBorderWidth()<<1),
-				window.getHeightPixels() - (window.getBorderWidth()<<1));
-		
-		window.setListener(new Listener() {
-			
-			@Override
-			public void childCreated(final Window parent, final Window child) {
-				
-				final XawtWindow childXawtWindow = new XawtWindow(child);
-				
-				_content.add(childXawtWindow._border);
-			}
-
-			@Override
-			public void mapped(final boolean mapped) {
-				xawtMapped(mapped);
-			}
-		});
+		window.setListener(_windowListener);
 	}
 	
-	public Panel getBorder() {
-		return _border;
-	}
-	
-	public void xawtMapped(final boolean mapped) {
-		_border.setVisible(mapped);
-		_content.setVisible(mapped);
+	public Canvas getCanvas() {
+		return _canvas;
 	}
 }

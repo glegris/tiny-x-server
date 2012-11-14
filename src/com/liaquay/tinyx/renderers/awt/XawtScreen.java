@@ -19,8 +19,8 @@
 package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,42 +53,21 @@ public class XawtScreen {
 	public XawtScreen(final Screen screen) {
 		
 		_frame = new Frame();
+		_frame.setResizable(false);
 		
-		_frame.addWindowListener(new WindowListener() {
-			
-			@Override
-			public void windowOpened(final WindowEvent arg0) {}
-			
-			@Override
-			public void windowIconified(final WindowEvent arg0) {}
-			
-			@Override
-			public void windowDeiconified(final WindowEvent arg0) {
-			}
-			
-			@Override
-			public void windowDeactivated(final WindowEvent arg0) {
-			}
-			
+		_frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent arg0) {
 				_proxy.closed();
 				_frame.dispose();
 			}
-			
-			@Override
-			public void windowClosed(final WindowEvent arg0) {
-			}
-
-			@Override
-			public void windowActivated(final WindowEvent e) {
-			}
 		});
 		
 		_rootWindow = new XawtWindow(screen.getRootWindow());
-		_frame.add(_rootWindow.getBorder());
-		_rootWindow.xawtMapped(true);
+		_frame.add(_rootWindow.getCanvas());
 		_frame.pack();
 		_frame.setVisible(true);
+		
+		screen.map();
 	}
 }

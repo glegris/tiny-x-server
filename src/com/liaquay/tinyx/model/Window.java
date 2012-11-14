@@ -29,8 +29,8 @@ public class Window implements Drawable {
 	private final List<Window> _children = new ArrayList<Window>();
 	
 	public interface Listener {
-		public void childCreated(final Window parent, final Window child);
-		public void mapped(final boolean mapped);
+		public void childCreated(final Window child);
+		public void mapped(final Window window, final boolean mapped);
 	}
 	
 	/**
@@ -39,9 +39,9 @@ public class Window implements Drawable {
 	 */
 	private static final class NullListener implements Listener {
 		@Override
-		public void childCreated(final Window parent, final Window child) {}
+		public void childCreated(final Window child) {}
 		@Override
-		public void mapped(boolean mapped) {}
+		public void mapped(final Window window, final boolean mapped) {}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -119,7 +119,12 @@ public class Window implements Drawable {
 	private final List<ClientWindowAssociation> _clientWindowAssociations = new ArrayList<ClientWindowAssociation>(2);
 
 	private final int _depth;		/* depth of window */
-	private int _x, _y;			/* location of window */
+	private int _x, _y;			/* relative location of window */
+	private int _absX, _absY;      /* absolute location of window */
+	
+	private int _clipX, _clipY;    /* clip location of window */
+	private int _clipW, _clipH;    /* clip size of window */
+	
 	private int _widthPixels, _heightPixels;	/* width and height of window in pixels */
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
@@ -184,8 +189,49 @@ public class Window implements Drawable {
 		if(_parent != null) {
 			_parent.addChild(this);
 		}
+		
+		updateLocation();
 	}
 
+	/**
+	 * Update the absolute position of the window and its clip rectangle.
+	 */
+	private void updateLocation() {
+		if(_parent == null) {
+			_absX = _x;
+			_absY = _y;
+			_clipX = _absX;
+			_clipY = _absY;
+			_clipW = _widthPixels + _borderWidth + _borderWidth;
+			_clipH = _heightPixels + _borderWidth + _borderWidth;
+		}
+		else {
+			// Calculate inner coordinates of the parent window
+			final int pix0 = _parent._absX + _parent._borderWidth;
+			final int piy0 = _parent._absY + _parent._borderWidth;
+			final int pix1 = pix0 + _parent._widthPixels;
+			final int piy1 = piy0 + _parent._heightPixels;
+			
+			// Calculate the outer coordinates of the child window
+			final int cox0 = pix0 + _x;
+			final int coy0 = piy0 + _y;
+			final int cox1 = cox0 + _widthPixels + _borderWidth + _borderWidth;
+			final int coy1 = coy0 + _heightPixels + _borderWidth + _borderWidth;
+			
+			_absX = cox0;
+			_absY = coy0;
+			_clipX = cox0 > pix0 ? cox0 : pix0;
+			_clipY = coy0 >  piy0 ? coy0 : piy0;
+			
+			// Find the clipped right and lower points
+			final int x3 = cox1 < pix1 ? cox1 : pix1;
+			final int y3 = coy1 < piy1 ? coy1 : piy1;
+			
+			_clipW = _clipX < x3 ? x3 - _clipX : 0;
+			_clipH = _clipY < y3 ? y3 - _clipY : 0;
+		}
+	}
+	
 	public Window getParent() {
 		return _parent;
 	}
@@ -200,7 +246,7 @@ public class Window implements Drawable {
 	
 	private void addChild(final Window child) {
 		_children.add(child);
-		_listener.childCreated(this, child);
+		_listener.childCreated(child);
 	}
 	
 	@Override
@@ -282,8 +328,14 @@ public class Window implements Drawable {
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
 			
-			_listener.mapped(true);
+			if(isMappedToRoot()) {
+				_listener.mapped(this,true);
+			}
 		}
+	}
+	
+	private boolean isMappedToRoot() {
+		return _mapped && (_parent == null || _parent.isMappedToRoot());
 	}
 	
 	private boolean checkForEvent(final int mask) {
@@ -321,7 +373,7 @@ public class Window implements Drawable {
 		if(_mapped) {
 			_mapped = false;
 			// TODO issue some unmapped event
-			_listener.mapped(false);
+			_listener.mapped(this, false);
 		}
 	}
 	
@@ -426,6 +478,30 @@ public class Window implements Drawable {
 		return _heightPixels;
 	}
 
+	public int getAbsX() {
+		return _absX;
+	}
+	
+	public int getAbsY() {
+		return _absY;
+	}
+	
+	public int getClipX() {
+		return _clipX;
+	}
+	
+	public int getClipY() {
+		return _clipY;
+	}
+	
+	public int getClipWidth() {
+		return _clipW;
+	}
+	
+	public int getClipHeight() {
+		return _clipH;
+	}
+	
 	@Override
 	public int getBorderWidth() {
 		return _borderWidth;
