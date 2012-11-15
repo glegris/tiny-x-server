@@ -78,7 +78,7 @@ public class XawtWindow  {
     	paintBorder(window, graphics);
     	
     	final int borderWidth = window.getBorderWidth();
-    	final int borderWidthX2 = (window.getBorderWidth() <<1);
+    	final int borderWidthX2 = borderWidth + borderWidth;
     	
     	
     	graphics.setClip(
@@ -87,15 +87,13 @@ public class XawtWindow  {
     			window.getClipWidth() - borderWidthX2, 
     			window.getClipHeight() - borderWidthX2);
     	
-    	graphics.translate(window.getBorderWidth(), window.getBorderWidth());
+    	graphics.translate(borderWidth, borderWidth);
     	
     	paintContent(window, graphics);
     	
     	graphics.translate(
-    			-window.getAbsX() - window.getBorderWidth(), 
-    			-window.getAbsY() - window.getBorderWidth());
-    	
-    	
+    			-window.getAbsX() - borderWidth, 
+    			-window.getAbsY() - borderWidth);
     }
     
     private void paintBorder(final Window window, final Graphics2D graphics) {

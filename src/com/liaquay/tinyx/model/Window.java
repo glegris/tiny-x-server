@@ -211,35 +211,49 @@ public class Window implements Drawable {
 			final int piy0 = _parent._absY + _parent._borderWidth;
 			final int pix1 = pix0 + _parent._widthPixels;
 			final int piy1 = piy0 + _parent._heightPixels;
-			
+
+			// Calculate the parent clip coordinates
+			final int clx0 = _parent._clipX;
+			final int cly0 = _parent._clipY;
+			final int clx1 = clx0 + _parent._clipW;
+			final int cly1 = cly0 + _parent._clipH;
+
+			// Now calculate the clipped parent inner coordinates
+			final int cpx0 = pix0 > clx0 ? pix0 : clx0;
+			final int cpy0 = piy0 > cly0 ? piy0 : cly0;
+			final int cpx1 = pix1 < clx1 ? pix1 : clx1;
+			final int cpy1 = piy1 < cly1 ? piy1 : cly1;
+
 			// Calculate the outer coordinates of the child window
 			final int cox0 = pix0 + _x;
 			final int coy0 = piy0 + _y;
 			final int cox1 = cox0 + _widthPixels + _borderWidth + _borderWidth;
 			final int coy1 = coy0 + _heightPixels + _borderWidth + _borderWidth;
-			
+
 			_absX = cox0;
 			_absY = coy0;
-			_clipX = cox0 > pix0 ? cox0 : pix0;
-			_clipY = coy0 >  piy0 ? coy0 : piy0;
-			
+
+			// Clip the outer child to the inner clipped parent
+			_clipX = cox0 > cpx0 ? cox0 : cpx0;
+			_clipY = coy0 > cpy0 ? coy0 : cpy0;
+
 			// Find the clipped right and lower points
-			final int x3 = cox1 < pix1 ? cox1 : pix1;
-			final int y3 = coy1 < piy1 ? coy1 : piy1;
-			
+			final int x3 = cox1 < cpx1 ? cox1 : cpx1;
+			final int y3 = coy1 < cpy1 ? coy1 : cpy1;
+
 			_clipW = _clipX < x3 ? x3 - _clipX : 0;
 			_clipH = _clipY < y3 ? y3 - _clipY : 0;
 		}
-		
+
 		// TODO need to think if this really belong in here!
 		for(int i = 0; i < _children.size() ; ++i) {
 			_children.get(i).updateLocation();
 		}
 	}
-	
+
 	private boolean containsPixel(final int absX, final int absY) {
-		return absX >= _absX && absX < (_absX + _widthPixels + _borderWidth + _borderWidth) &&
-				absY >= _absY && absY < (_absY + _heightPixels + _borderWidth + _borderWidth);
+		return absX >= _clipX && absX < (_clipX + _clipW) &&
+				absY >= _clipY && absY < (_clipY + _clipH);  
 	}
 	
 	public Window windowAt(final int absX, final int absY) {
