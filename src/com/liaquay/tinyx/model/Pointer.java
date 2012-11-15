@@ -19,30 +19,43 @@
 package com.liaquay.tinyx.model;
 
 public class Pointer {
-	int _x, _y;
-	int _state;
+	
+	/**
+	 * Used to form the pointer button state
+	 */
+	public static final int Button1Mask=(1<<8);
+	public static final int Button2Mask=(1<<9);
+	public static final int Button3Mask=(1<<10);
+	public static final int Button4Mask=(1<<11);
+	public static final int Button5Mask=(1<<12);
+	
+	private int _x, _y;
+	private int _state;
 	
 	public Pointer() {
 		_x = 0;
 		_y = 0;
 		_state = 0;
 	}
+	
 	public int getX() {
 		return _x;
 	}
-	public void setX(int _x) {
-		this._x = _x;
-	}
+	
 	public int getY() {
 		return _y;
 	}
-	public void setY(int _y) {
-		this._y = _y;
+	
+	public void set(final int x, final int y) {
+		_x = x;
+		_y = y;
 	}
+
 	public int getState() {
 		return _state;
 	}
-	public void setState(int _state) {
-		this._state = _state;
+	
+	public void setState(final int state) {
+		_state = state;
 	}
 }

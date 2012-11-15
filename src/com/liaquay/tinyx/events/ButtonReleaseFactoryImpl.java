@@ -16,11 +16,33 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.eventfactories;
+package com.liaquay.tinyx.events;
 
-public interface EventFactories {
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
-	public ButtonFactory getButtonPressFactory();
-	public ButtonFactory getButtonReleaseFactory();
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
+
+public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements ButtonFactory {
+
+	public static ButtonFactory FACTORY = new ButtonReleaseFactoryImpl();
+	
+	@Override
+	public Event create(
+			final int		button,
+			final Window	root,
+			final Window	eventWindow,
+			final Window	child,
+			final Pointer	pointer,
+			final boolean	sameScreen) {
+	
+		return create(
+				Event.ButtonRelease,
+				button,
+				root,
+				eventWindow,
+				child,
+				pointer,
+				sameScreen);
+	}
 }

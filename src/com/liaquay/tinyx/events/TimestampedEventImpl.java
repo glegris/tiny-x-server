@@ -16,11 +16,23 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.eventfactories;
+package com.liaquay.tinyx.events;
 
-public interface EventFactories {
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
-	public ButtonFactory getButtonPressFactory();
-	public ButtonFactory getButtonReleaseFactory();
+import java.io.IOException;
+
+import com.liaquay.tinyx.io.XOutputStream;
+
+public abstract class TimestampedEventImpl extends EventImpl {
+
+	public TimestampedEventImpl(final int eventType, final int argument) {
+		super(eventType, argument);
+	}
+
+	@Override
+	public final void writeBody(final XOutputStream outputStream) throws IOException {
+		outputStream.writeInt((int)(System.currentTimeMillis() & 0xffffffff));
+		writeTimestampedBody(outputStream);
+	}
+	
+	public abstract void writeTimestampedBody(final XOutputStream outputStream) throws IOException;
 }

@@ -18,9 +18,17 @@
  */
 package com.liaquay.tinyx.model.eventfactories;
 
-public interface EventFactories {
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
-	public ButtonFactory getButtonPressFactory();
-	public ButtonFactory getButtonReleaseFactory();
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.Window;
+
+public interface ButtonFactory {
+
+	public Event create(
+			final int		button,
+			final Window	root,
+			final Window	eventWindow,
+			final Window	child,
+			final Pointer	pointer,
+			final boolean	sameScreen);
 }
