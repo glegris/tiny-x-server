@@ -18,26 +18,29 @@
  */
 package com.liaquay.tinyx.model;
 
+
 public class Pixmap implements Drawable {
-	
+
 	private final int _resourceId;
 	private final Drawable _drawable;
 	private final int _depth;
 	private final int _width;
 	private final int _height;
 
+	private byte[] data;
+
 	public Pixmap(final int resourceId,
-				   final Drawable drawable,
-				   final int depth,
-				   final int width,
-				   final int height) {
+			final Drawable drawable,
+			final int depth,
+			final int width,
+			final int height) {
 		_resourceId = resourceId;
 		_depth = depth;
 		_width = width;
 		_height = height;
 		_drawable = drawable;
 	}
-	
+
 	@Override
 	public int getId() {
 		return _resourceId;
@@ -46,7 +49,7 @@ public class Pixmap implements Drawable {
 	@Override
 	public void free() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class Pixmap implements Drawable {
 		// TODO Not sure this is correct
 		return _drawable.getVisual();
 	}
-	
+
 	public int getDepth() {
 		return _depth;
 	}
@@ -88,5 +91,26 @@ public class Pixmap implements Drawable {
 	@Override
 	public int getBorderWidth() {
 		return 0;
+	}
+
+	@Override
+	public void init(byte[] data) {
+		this.data = data;
+
+//		int widthInBytes = getWidth() / 8;
+//
+//		for (int y=0; y < getHeight(); y++) {
+//			for (int x=0; x < widthInBytes; x++) {
+//				String str = Integer.toBinaryString((int) data[(widthInBytes * y) + x] & 0xFF);
+//
+//				if (str.length() < 8) {
+//					for (int j=0; j < (8-str.length()); j++) {
+//						System.out.print("0");
+//					}
+//				}
+//				System.out.print(str);
+//			}
+//			System.out.println();
+//		}
 	}
 }
