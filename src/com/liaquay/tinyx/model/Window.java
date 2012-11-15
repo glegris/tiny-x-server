@@ -619,4 +619,10 @@ public class Window implements Drawable {
 		}
 		return null;
 	}
+
+	@Override
+	public void init(byte[] data) {
+		// TODO Auto-generated method stub
+		
+	}
 }

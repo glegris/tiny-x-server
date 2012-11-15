@@ -29,14 +29,15 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Image.ImageType;
 
 public class PutImage implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int imageTypeIndex = request.getData();
@@ -56,7 +57,8 @@ public class PutImage implements RequestHandler {
 		if(graphicsContext == null) {
 			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
 			return;
-		}
+		}	          
+
 		final int width = inputStream.readUnsignedShort();
 		final int height = inputStream.readUnsignedShort();
 		final int destinationX = inputStream.readSignedShort();
@@ -64,13 +66,25 @@ public class PutImage implements RequestHandler {
 		final int leftPad = inputStream.readUnsignedByte();
 		final int depth = inputStream.readUnsignedByte();
 		inputStream.skip(2);
-		
+
 		// TODO This test does not seem correct
 		if(depth != drawable.getDepth()) {
 			response.error(Response.ErrorCode.Match, drawableResourceId);
 			return;
 		}
-		// Process image data...
-		// TODO Process byte data...
+
+		// Image must also be in XY Format?
+		if (imageType.equals(ImageType.BitMap) && depth != 1) {
+			response.error(Response.ErrorCode.Match, drawableResourceId); //TODO??
+		}
+
+		// Read image data...
+		final int remainingBytes = request.getLength() - inputStream.getCounter();
+
+		byte[] data = new byte[remainingBytes];
+		inputStream.read(data, 0, remainingBytes);
+
+		// Pass it onto the drawable resource
+		drawable.init(data);
 	}
 }
