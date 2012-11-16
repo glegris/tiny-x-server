@@ -2,30 +2,20 @@ package com.liaquay.tinyx.requesthandlers.extensions;
 
 import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Server;
 
-public class BigRequestHandler implements ExtensionHandler {
+public class BigRequestHandler implements RequestHandler {
 
 	@Override
-	public void dispatch(Response response) throws IOException {
-
-//		final XOutputStream outputStream = response.respond(1, 24);
-	     
-		//		outputStream.writeByte(1);  // true
-		//
-		//		outputStream.writeByte(131); // Made up type, comes from the extension
-		//		//					if(extension.eventcount==0) 
-		//		outputStream.writeByte(1);
-		//		//					else 
-		//		//						io.writeByte(ext[i].eventbase);
-		//		//					if(ext[i].errorcount==0) 
-		//		outputStream.writeByte(1);
-		//		//					else 
-		//		//						io.writeByte(ext[i].errorbase);
-		//		outputStream.writePad(20);
-
-
-
+	public void handleRequest(Server server, Client client,
+			Request request, Response response) throws IOException {
+		
+		final XOutputStream outputStream = response.respond(1, 24);
+		outputStream.writeInt(server.getMaximumRequestLength());
 	}
-
 }

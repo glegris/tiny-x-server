@@ -49,12 +49,12 @@ public class RequestHandlerMap implements RequestHandler {
 	private int _currentExtension = 128;
 	private Map<String, Extension> _extensionMap = new TreeMap<String, Extension>();
 
-	private void addExtension(final String extensionName, final int numEvents, final int numErrors, final int minorOp, final Extension extension) {
+	private void addExtension(final String extensionName, final int numEvents, final int numErrors, final int minorOp, final Extension ext) {
 		//		final int extensionOpCode = _currentExtension++;
 		//		if(extensionOpCode > 255) {
 		//			throw new RuntimeException("Too many extensions");
 		//		}
-		_extensionMap.put(extensionName, extension);
+		_extensionMap.put(extensionName, ext);
 //		_handlers[EXTENSION_BASE+minorOp] = requestHandler;
 	}
 
@@ -63,9 +63,7 @@ public class RequestHandlerMap implements RequestHandler {
 			_handlers[i] = UNIMPLEMENTED;
 		}
 		
-		//		addExtension("RANDR", 0, 139, 72,0, null);
-		addExtension("BIG-REQUESTS2", 0,0,0, new BigRequestsExtension(new BigRequestHandler()));
-
+		addExtension("BIG-REQUESTS", 0,0,0, new BigRequestsExtension(new BigRequestHandler()));
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
 		final WindowAttributeHandlers windowAttributeHandlers = new WindowAttributeHandlers();
@@ -99,8 +97,14 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[78] = new CreateColorMap();
 		_handlers[91] = new QueryColours();
 		_handlers[97] = new QueryBestSize();
+		
 		_handlers[98] = new QueryExtension(_extensionMap);
 		_handlers[99] = new ListExtensions(_extensionMap);
+
+		// Add the extension handler
+		for (Extension ext : _extensionMap.values()) {
+			_handlers[ext.getMajorOpCode()] = ext.getHandler();
+		}
 	}
 
 	@Override
@@ -114,9 +118,7 @@ public class RequestHandlerMap implements RequestHandler {
 			throw new RuntimeException("Impossible majorOpCode " + majorOpCode);
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
-
 		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "...");
-		
 		requestHandler.handleRequest(server, client, request, response);
 	}
 }

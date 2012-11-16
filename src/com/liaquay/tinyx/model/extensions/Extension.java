@@ -18,12 +18,12 @@
  */
 package com.liaquay.tinyx.model.extensions;
 
-import com.liaquay.tinyx.requesthandlers.extensions.ExtensionHandler;
+import com.liaquay.tinyx.RequestHandler;
 
 public interface Extension {
 	String getName();
 	
-	ExtensionHandler getHandler();
+	RequestHandler getHandler();
 
 	int getMajorOpCode();
 
