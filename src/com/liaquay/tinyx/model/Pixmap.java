@@ -93,7 +93,6 @@ public class Pixmap implements Drawable {
 		return 0;
 	}
 
-	@Override
 	public void init(byte[] data) {
 		this.data = data;
 

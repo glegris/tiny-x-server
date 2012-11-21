@@ -28,6 +28,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Image.ImageType;
 
@@ -84,7 +85,9 @@ public class PutImage implements RequestHandler {
 		byte[] data = new byte[remainingBytes];
 		inputStream.read(data, 0, remainingBytes);
 
-		// Pass it onto the drawable resource
-		drawable.init(data);
+		if (drawable instanceof Pixmap) {
+			// Pass it onto the drawable resource
+			((Pixmap) drawable).init(data);
+		}
 	}
 }

@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.util.IntegerAllocator;
 
 
@@ -57,8 +58,9 @@ public class Server extends Client {
 	private final int _endServerResourceId;
 	private int _serverResourceId;
 	private final EventFactories _eventFactories;
+	private final FontFactory _fontFactory;
 	
-	public Server(final EventFactories eventFactories) {		
+	public Server(final EventFactories eventFactories, final FontFactory fontFactory) {		
 		// Create the server as a client with ID of 0
 		super(	0, 
 				new PostBox() {
@@ -69,6 +71,7 @@ public class Server extends Client {
 				});
 		
 		_eventFactories = eventFactories;
+		_fontFactory = fontFactory;
 	    
 	    // Ensure the first allocation is for the server (which has a client ID of 0)
 	    _clientIdAllocator.allocate();
@@ -83,6 +86,10 @@ public class Server extends Client {
 	
 	public EventFactories getEventFactories() {
 		return _eventFactories;
+	}
+	
+	public FontFactory getFontFactory() {
+		return _fontFactory;
 	}
 	
 	private int allocateResourceId(){

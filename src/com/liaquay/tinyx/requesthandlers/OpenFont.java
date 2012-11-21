@@ -25,6 +25,7 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
 
 public class OpenFont implements RequestHandler {
@@ -48,7 +49,8 @@ public class OpenFont implements RequestHandler {
 		final int fid = inputStream.readInt();
 		final String requestedFontName = inputStream.readString();
 		
-		
+		final Font font = new Font(fid, requestedFontName);
+		server.getResources().add(font);
 		
 		
 	}

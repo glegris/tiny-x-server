@@ -35,7 +35,4 @@ public interface Drawable extends Resource {
 	public int getHeight();
 	
 	public int getBorderWidth();
-	
-	public void init(byte[] data);
-
 }

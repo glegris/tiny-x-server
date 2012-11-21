@@ -23,47 +23,98 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
 
 public class QueryFont implements RequestHandler {
 
-	// Request... What the heck is a FONTABLE?? That's just weird
-	
-//    1     47                              opcode
-//    1                                     unused
-//    2     2                               request length
-//    4     FONTABLE                        font
-	
 
-//    1     1                               Reply
-//    1                                     unused
-//    2     CARD16                          sequence number
-//    4     7+2n+3m                         reply length
-//    12     CHARINFO                       min-bounds
-//    4                                     unused
-//    12     CHARINFO                       max-bounds
-//    4                                     unused
-//    2     CARD16                          min-char-or-byte2
-//    2     CARD16                          max-char-or-byte2
-//    2     CARD16                          default-char
-//    2     n                               number of FONTPROPs in properties
-//    1                                     draw-direction
-//         0     LeftToRight
-//         1     RightToLeft
-//    1     CARD8                           min-byte1
-//    1     CARD8                           max-byte1
-//    1     BOOL                            all-chars-exist
-//    2     INT16                           font-ascent
-//    2     INT16                           font-descent
-//    4     m                               number of CHARINFOs in char-infos
-//    8n     LISTofFONTPROP                 properties
-//    12m     LISTofCHARINFO                char-infos
-    
 	@Override
 	public void handleRequest(Server server, Client client, Request request,
 			Response response) throws IOException {
-		// TODO Auto-generated method stub
+
+		final XInputStream inputStream = request.getInputStream();
+		final int fid = inputStream.readInt();
+
+		Font f = (Font) server.getResources().get(fid);
+		String name = f.getRequestedName();
+
+		System.out.println("Name: " + name);
+
+		String newName = name.replaceAll("\\*", ".*[^-]");
+
+		for (String fontName : server.getFontFactory().getFontNames()) {
+			if (f.matches(fontName)) {
+				f.setFont(fontName);
+			}
+		}
+
+
+		String fontName = f.getFontName();
+
+		int[] prop=new int[2];
+		prop[0] = server.getAtoms().allocate("FONT").getId();
+		prop[1] = server.getAtoms().allocate(fontName).getId();
+
+		final XOutputStream outputStream = response.respond(1, 7);
+		// Request... What the heck is a FONTABLE?? That's just weird
+
+		// Min-bounds
+		outputStream.writeShort(0);
+		outputStream.writeShort(0);
+		outputStream.writeShort(f.getMinWidth());
+		outputStream.writeShort(0);
+		outputStream.writeShort(0);
+		outputStream.writeShort(0);
+
+		// Unused
+		outputStream.writePad(4);
+
+		// Max-bounds
+		outputStream.writeShort(0);                      // left-side-bearing
+		outputStream.writeShort(f.getMaxWidth());      // right-side-bearing
+		outputStream.writeShort(f.getMaxWidth());       // character-width
+		outputStream.writeShort(f.getMaxAscent());  // ascent
+		outputStream.writeShort(f.getMaxDescent()); // descent
+		outputStream.writeShort(0);                        // attribute
+
+		outputStream.writePad(4);
+
+		outputStream.writeShort(0x20);  // min-char-or-byte2
+		outputStream.writeShort(0xff);    // max-char-or-byte2
+
+		outputStream.writeShort(f.getDefaultChar()); // default-char
+		outputStream.writeShort(prop!=null ? prop.length/2 : 0); // m
+		outputStream.writeByte(0);  // draw-direction
+		//	         0     LeftToRight
+		//	         1     RightToLeft
+
+		outputStream.writeByte(0); // min-byte1
+		outputStream.writeByte(0); // max-byte1
+		outputStream.writeByte(0);  // all-char-exists
+		outputStream.writeShort(f.getMaxAscent());  // font-ascent
+		outputStream.writeShort(f.getMaxDescent()); // font-descent
+		outputStream.writeInt(fontName.length()); // reply-hint
+
+		if(prop!=null){
+			for(int j=0; j<prop.length; j++){
+				outputStream.writeInt(prop[j]);
+			}
+		}
+
+//	    outputStream.write(fontName.getBytes(), 0, fontName.length());
+//	    outputStream.writePad((-font.lfname.length)&3);
+	    
+
+
+		//	    4     m                               number of CHARINFOs in char-infos
+		//	    8n     LISTofFONTPROP                 properties
+		//	    12m     LISTofCHARINFO                char-infos
+
 
 	}
 

@@ -33,6 +33,7 @@ import com.liaquay.tinyx.model.Visual;
 import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 
 public class TinyXAwt {
@@ -47,8 +48,10 @@ public class TinyXAwt {
 
 		final EventFactories eventFactories = new EventFactoriesImpl();
 		
+		final FontFactory fontFactory = new AwtFontFactory();
+		
 		// Create a new server
-		final Server server = new Server(eventFactories);
+		final Server server = new Server(eventFactories, fontFactory);
 
 		// Configure the new server
 
