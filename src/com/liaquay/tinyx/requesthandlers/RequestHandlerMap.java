@@ -89,6 +89,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[21] = new ListProperties();
 		_handlers[38] = new QueryPointer();
 		_handlers[43] = new GetInputFocus();
+		_handlers[44] = new QueryKeymap();
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
@@ -101,6 +102,14 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[97] = new QueryBestSize();
 		_handlers[98] = new QueryExtension(_extensionMap);
 		_handlers[99] = new ListExtensions(_extensionMap);
+		_handlers[100] = new ChangeKeyboardMapping();
+		_handlers[101] = new GetKeyboardMapping();
+		_handlers[102] = new ChangeKeyboardControl();
+		_handlers[103] = new GetKeyboardControl();
+		_handlers[104] = new Bell();
+		_handlers[105] = new ChangePointerControl();
+		_handlers[106] = new GetPointerControl();
+		_handlers[119] = new GetModifierMapping();
 	}
 
 	@Override

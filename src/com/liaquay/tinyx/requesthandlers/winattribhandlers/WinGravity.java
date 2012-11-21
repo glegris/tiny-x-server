@@ -24,14 +24,12 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Gravity;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class WinGravity implements AttributeHandler<Window> {
+public class WinGravity extends WindowAttributeHandler {
 
 	@Override
 	public void read(
@@ -49,10 +47,5 @@ public class WinGravity implements AttributeHandler<Window> {
 			return;
 		}
 		window.setWinGravity(gravity);
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final Window window) throws IOException {
-		throw new RuntimeException("Unimplemented");
 	}
 }

@@ -23,13 +23,11 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class SaveUnder implements AttributeHandler<Window> {
+public class SaveUnder extends WindowAttributeHandler {
 
 	@Override
 	public void read(
@@ -42,10 +40,5 @@ public class SaveUnder implements AttributeHandler<Window> {
 		final XInputStream inputStream = request.getInputStream();
 		final int saveUnder = inputStream.readUnsignedByte();
 		window.setSaveUnder(saveUnder == 1);
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final Window window) throws IOException {
-		throw new RuntimeException("Unimplemented");
 	}
 }

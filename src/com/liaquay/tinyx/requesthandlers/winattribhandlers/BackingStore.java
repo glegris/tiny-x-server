@@ -24,14 +24,12 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.BackingStoreHint;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class BackingStore implements AttributeHandler<Window> {
+public class BackingStore extends WindowAttributeHandler {
 
 	@Override
 	public void read(
@@ -48,10 +46,5 @@ public class BackingStore implements AttributeHandler<Window> {
 			response.error(ErrorCode.Value, backingStoreIndex);
 		}
 		window.setBackingStoreHint(backingStoreHint);
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final Window window) throws IOException {
-		throw new RuntimeException("Unimplemented");
 	}
 }

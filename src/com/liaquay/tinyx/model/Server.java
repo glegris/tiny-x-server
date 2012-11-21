@@ -39,7 +39,7 @@ public class Server extends Client {
 	
 	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
 	private final Clients _clients = new Clients();
-	private final Keyboard _keyboard = new Keyboard(); // TODO configurable
+	private final Keyboard _keyboard;
 	private final List<Screen> _screens = new ArrayList<Screen>(2);
 	private final Resources _resources = new Resources();
 	private final Atoms _atoms = new Atoms();
@@ -55,7 +55,7 @@ public class Server extends Client {
 	private int _serverResourceId;
 	private final EventFactories _eventFactories;
 	
-	public Server(final EventFactories eventFactories) {		
+	public Server(final EventFactories eventFactories, final Keyboard keyboard) {		
 		// Create the server as a client with ID of 0
 		super(	0, 
 				new PostBox() {
@@ -66,7 +66,8 @@ public class Server extends Client {
 				});
 		
 		_eventFactories = eventFactories;
-	    
+		_keyboard = keyboard;
+		
 	    // Ensure the first allocation is for the server (which has a client ID of 0)
 	    _clientIdAllocator.allocate();
 	    

@@ -16,29 +16,39 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.winattribhandlers;
+package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.KeyboardMapping;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 
-public class BackingPixel extends WindowAttributeHandler {
+public class ChangeKeyboardMapping implements RequestHandler {
 
 	@Override
-	public void read(
+	public void handleRequest(
 			final Server server, 
 			final Client client, 
-			final Request request,
-			final Response response, 
-			final Window window) throws IOException {
+			final Request request, 
+			final Response response) throws IOException {
+
+		final int keycodeCount = request.getData();
+		final XInputStream inputStream = request.getInputStream();		
+		final int firstKeycode = inputStream.readUnsignedByte();
+		final int keysymsPerKeycode = inputStream.readUnsignedByte();
+		inputStream.skip(2);
+		final int intsInMapping = keycodeCount * keysymsPerKeycode;
+		final int[] m = new int[intsInMapping];
+		for(int i = 0; i < intsInMapping; ++i) {
+			m[i] = inputStream.readInt();
+		}
+		final KeyboardMapping keyboardMapping = server.getKeyboard().getKeyboardMapping();
 		
-		final XInputStream inputStream = request.getInputStream();
-		final int backingPixel = inputStream.readInt();
-		window.setBackingPixel(backingPixel);
+		keyboardMapping.changeMapping(keycodeCount, firstKeycode, keysymsPerKeycode, m);
 	}
 }

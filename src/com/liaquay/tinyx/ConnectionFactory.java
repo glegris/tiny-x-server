@@ -39,6 +39,7 @@ import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Depths.Depth;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Format;
+import com.liaquay.tinyx.model.KeyboardMapping;
 import com.liaquay.tinyx.model.PostBox;
 import com.liaquay.tinyx.model.Resource;
 import com.liaquay.tinyx.model.Screen;
@@ -90,8 +91,9 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		extraOutputStream.writeByte(_server.getBitmapBitOrder().ordinal());   // Bitmap bit order (0=LSB, 1=MSB).
 		extraOutputStream.writeByte(_server.getBitmapScanLineUnit());         // Bitmap format scan-line unit.
 		extraOutputStream.writeByte(_server.getBitmapScanLinePad());          // Bitmap format scan-line pad.
-		extraOutputStream.writeByte(_server.getKeyboard().getMinKeyCode());// Minimum key code
-		extraOutputStream.writeByte(_server.getKeyboard().getMaxKeyCode());// Maximum key code
+		final KeyboardMapping keyboardMapping = _server.getKeyboard().getKeyboardMapping();
+		extraOutputStream.writeByte(keyboardMapping.getFirstKeyCode());// Minimum key code
+		extraOutputStream.writeByte(keyboardMapping.getFirstKeyCode() + keyboardMapping.getKeycodeCount() - 1);// Maximum key code
 		extraOutputStream.writePad (4);	                      // Unused.
 		writeVendor(extraOutputStream);
 		for(int i = 0; i < _server.getFormats().length; ++i) {

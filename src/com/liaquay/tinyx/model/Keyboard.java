@@ -19,14 +19,113 @@
 package com.liaquay.tinyx.model;
 
 public class Keyboard {
-	private int _minKeyCode = 9;
-	private int _maxKeyCode = 117;
 
-	public int getMinKeyCode() {
-		return _minKeyCode;
+	/**
+	 * Mapping of physical keys to key-codes
+	 */
+	private KeyboardMapping _keyboardMapping;
+	
+	/**
+	 * Modifier mappings
+	 */
+	// TODO should be configurable
+	private ModifierMapping _modifierMapping = new ModifierMapping(
+			2,
+			new byte[] {
+				    (byte)16, (byte)151,     // shift
+				    (byte)20, (byte)0x00,    // lock
+				    (byte)17, (byte)11,      // control
+				    (byte)18, (byte)0,       // mod1
+				    (byte)148, (byte)0x00,   // mod2,
+				    (byte)0x00, (byte)0x00,  // mod3,
+				    (byte)0x00, (byte)0x00,  // mod4
+				    (byte)145, (byte)0x00    // mod5
+				  });
+	
+	/**
+	 * This is a bit-array that keeps track of depressed keys
+	 */
+	private byte[] _keymap = new byte[32];
+
+	/**
+	 * This is a bit-array that keeps track of auto-repeat keys
+	 */
+	private byte[] _repeats = new byte[32];
+	
+	/**
+	 * The keyboards bell
+	 */
+	private Bell _bell = new Bell();
+	
+	/**
+	 * The keyboards click
+	 */
+	private KeyClick _click = new KeyClick();
+	
+	/**
+	 * The LEDs
+	 */
+	private Leds _leds = new Leds();
+	
+	public Keyboard(final KeyboardMapping keyboardMapping) {
+		_keyboardMapping = keyboardMapping;
+	}
+	
+	public KeyboardMapping getKeyboardMapping() {
+		return _keyboardMapping;
+	}
+	
+	public byte[] getKeymap() {
+		return _keymap;
+	}
+	
+	public byte[] getRepeats() {
+		return _repeats;
+	}
+	
+	public void setAutoRepeatOn(final int keycode) {
+		if (keycode < 0 || keycode > 255) return;
+		_repeats[keycode >> 2] |= (1 << (keycode & 7));
+	}
+	
+	public void setAutoRepeatOff(final int keycode) {
+		if (keycode < 0 || keycode > 255) return;
+		_repeats[keycode >> 2] &= ~(1 << (keycode & 7));		
+	}
+	
+	private boolean _globalAutoRepeatEnabled = true;
+	
+	public boolean isGlobalAutoRepeatEnabled() {
+		return _globalAutoRepeatEnabled;
+	}
+	
+	public void setGlobalAutoRepeatEnabled(final boolean enabled) {
+		_globalAutoRepeatEnabled = enabled;
+	}
+	
+	public Bell getBell() {
+		return _bell;
+	}
+	
+	public KeyClick getKeyClick() {
+		return _click;
+	}
+	
+	public Leds getLeds() {
+		return _leds;
 	}
 
-	public int getMaxKeyCode() {
-		return _maxKeyCode;
+	public void setGlobalAutoRepeatDefault() {
+		// TODO Not correct
+		_globalAutoRepeatEnabled =  true;	
+	}
+
+	public void setAutoRepeatDefault(final int keycode) {
+		// TODO Not correct
+		setAutoRepeatOn(keycode);
+	}
+	
+	public ModifierMapping getModifierMapping() {
+		return _modifierMapping;
 	}
 }

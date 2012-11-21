@@ -23,13 +23,11 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class DoNotPropagateMask implements AttributeHandler<Window> {
+public class DoNotPropagateMask extends WindowAttributeHandler {
 
 	@Override
 	public void read(
@@ -42,10 +40,5 @@ public class DoNotPropagateMask implements AttributeHandler<Window> {
 		final XInputStream inputStream = request.getInputStream();
 		final int doNotPropagateMask = inputStream.readInt();
 		window.setDoNotPropagateMask(doNotPropagateMask);
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final Window window) throws IOException {
-		throw new RuntimeException("Unimplemented");
 	}
 }
