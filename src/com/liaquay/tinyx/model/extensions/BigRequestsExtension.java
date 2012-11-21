@@ -17,11 +17,11 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.liaquay.tinyx.model.extensions;
-import com.liaquay.tinyx.requesthandlers.extensions.ExtensionHandler;
+import com.liaquay.tinyx.RequestHandler;
 
 public final class BigRequestsExtension extends ExtensionBase {
 
-	public BigRequestsExtension(ExtensionHandler handler){
+	public BigRequestsExtension(RequestHandler handler){
 		super("BIG-REQUESTS", 0, 0, handler);
 	}
 

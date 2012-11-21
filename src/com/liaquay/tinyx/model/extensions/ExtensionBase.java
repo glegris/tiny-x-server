@@ -18,7 +18,7 @@
  */
 package com.liaquay.tinyx.model.extensions;
 
-import com.liaquay.tinyx.requesthandlers.extensions.ExtensionHandler;
+import com.liaquay.tinyx.RequestHandler;
 
 
 abstract class ExtensionBase implements Extension {
@@ -49,9 +49,9 @@ abstract class ExtensionBase implements Extension {
 	int eventcount;
 	int errorcount;
 	String name;
-	ExtensionHandler handler;
+	RequestHandler handler;
 	
-	public ExtensionBase(String name, int firstEvent, int firstError, ExtensionHandler handler) {
+	public ExtensionBase(String name, int firstEvent, int firstError, RequestHandler handler) {
 		this.name = name;
 		this.firstevent = firstEvent;
 		this.firsterror = firstError;
@@ -59,7 +59,7 @@ abstract class ExtensionBase implements Extension {
 	}
 	
 	@Override
-	public ExtensionHandler getHandler() {
+	public RequestHandler getHandler() {
 		return handler;
 	}
 	

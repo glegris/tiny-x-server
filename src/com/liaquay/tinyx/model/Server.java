@@ -48,6 +48,9 @@ public class Server extends Client {
 	private final int _bitmapScanLineUnit = 8; 
 	private final int _bitmapScanLinePad = 8;
 	
+	private final boolean _handlesBigRequests = true;
+	private final int _maximumRequestLength = 32000;
+	
 	private Focus _focus = null;
 	
 	// Used for generating server side resources such as the Root Window, ColorMap, etc.
@@ -180,12 +183,19 @@ public class Server extends Client {
 	public ByteOrder getBitmapBitOrder() {
 		return _bitmapBitOrder;
 	}
-
 	public int getBitmapScanLineUnit() {
 		return _bitmapScanLineUnit;
 	}
 
 	public int getBitmapScanLinePad() {
 		return _bitmapScanLinePad;
+	}
+	
+	public boolean getHandlesBigRequests() {
+		return _handlesBigRequests;
+	}
+
+	public int getMaximumRequestLength() {
+		return _maximumRequestLength;
 	}
 }

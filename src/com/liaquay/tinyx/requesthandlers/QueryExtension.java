@@ -60,7 +60,7 @@ public class QueryExtension implements RequestHandler {
 		}
 		else {
 			// Extension present
-			outputStream.writeByte(1);  
+			outputStream.writeByte(1);
 			outputStream.writeByte(ext.getMajorOpCode());
 			outputStream.writeByte(ext.getFirstEvent());
 			outputStream.writeByte(ext.getFirstError());
