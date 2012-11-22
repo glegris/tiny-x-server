@@ -45,12 +45,12 @@ public class Keyboard {
 	/**
 	 * This is a bit-array that keeps track of depressed keys
 	 */
-	private byte[] _keymap = new byte[32];
+	private KeyFlags _keymap = new KeyFlags();
 
 	/**
 	 * This is a bit-array that keeps track of auto-repeat keys
 	 */
-	private byte[] _repeats = new byte[32];
+	private KeyFlags _repeats = new KeyFlags();
 	
 	/**
 	 * The keyboards bell
@@ -76,21 +76,19 @@ public class Keyboard {
 	}
 	
 	public byte[] getKeymap() {
-		return _keymap;
+		return _keymap.getBytes();
 	}
 	
 	public byte[] getRepeats() {
-		return _repeats;
+		return _repeats.getBytes();
 	}
 	
 	public void setAutoRepeatOn(final int keycode) {
-		if (keycode < 0 || keycode > 255) return;
-		_repeats[keycode >> 3] |= (1 << (keycode & 7));
+		_repeats.set(keycode);
 	}
 	
 	public void setAutoRepeatOff(final int keycode) {
-		if (keycode < 0 || keycode > 255) return;
-		_repeats[keycode >> 3] &= ~(1 << (keycode & 7));		
+		_repeats.clear(keycode);
 	}
 	
 	private boolean _globalAutoRepeatEnabled = true;
