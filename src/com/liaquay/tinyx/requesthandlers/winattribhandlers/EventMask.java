@@ -23,14 +23,12 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.ClientWindowAssociation;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class EventMask implements AttributeHandler<Window> {
+public class EventMask extends WindowAttributeHandler {
 
 	@Override
 	public void read(
@@ -47,10 +45,5 @@ public class EventMask implements AttributeHandler<Window> {
 			assoc = new ClientWindowAssociation(client, window);
 		}
 		assoc.setEventMask(eventMask);
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final Window window) throws IOException {
-		throw new RuntimeException("Unimplemented");
 	}
 }

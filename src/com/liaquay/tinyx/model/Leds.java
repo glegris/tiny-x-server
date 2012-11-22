@@ -16,29 +16,38 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.winattribhandlers;
+package com.liaquay.tinyx.model;
 
-import java.io.IOException;
-
-import com.liaquay.tinyx.Request;
-import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
-
-public class BackingPixel extends WindowAttributeHandler {
-
-	@Override
-	public void read(
-			final Server server, 
-			final Client client, 
-			final Request request,
-			final Response response, 
-			final Window window) throws IOException {
-		
-		final XInputStream inputStream = request.getInputStream();
-		final int backingPixel = inputStream.readInt();
-		window.setBackingPixel(backingPixel);
+/**
+ * Represents the state of 32 LEDs 
+ */
+public class Leds {
+	
+	private int _mask = 0;
+	
+	public int getMask() {
+		return _mask;
+	}
+	
+	/**
+	 * @param index LED index 1 to 32
+	 */
+	public void turnOn(final int index) {
+		_mask |= 1 << (index-1);
+	}
+	
+	/**
+	 * @param index LED index 1 to 32
+	 */
+	public void turnOff(final int index) {
+		_mask &= ~(1 << (index-1));		
+	}
+	
+	public void turnOn() {
+		_mask = ~0;
+	}
+	
+	public void turnOff() {
+		_mask = 0;
 	}
 }

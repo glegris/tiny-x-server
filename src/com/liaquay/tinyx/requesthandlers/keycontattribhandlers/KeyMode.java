@@ -16,7 +16,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.winattribhandlers;
+package com.liaquay.tinyx.requesthandlers.keycontattribhandlers;
 
 import java.io.IOException;
 
@@ -24,10 +24,10 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 
-public class BackingPixel extends WindowAttributeHandler {
+public class KeyMode extends KeyboardControlAttributeHandler {
 
 	@Override
 	public void read(
@@ -35,10 +35,27 @@ public class BackingPixel extends WindowAttributeHandler {
 			final Client client, 
 			final Request request,
 			final Response response, 
-			final Window window) throws IOException {
+			final KeyboardAttributeState keyboardAttributeState) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-		final int backingPixel = inputStream.readInt();
-		window.setBackingPixel(backingPixel);
+		final int keyMode = inputStream.readUnsignedByte();
+		final int keycode = keyboardAttributeState._key;
+		final Keyboard keyboard = server.getKeyboard();
+		if(keycode == -1){
+			// No key was specified
+			switch(keyMode) {
+			case 0: keyboard.setGlobalAutoRepeatEnabled(false);
+			case 1: keyboard.setGlobalAutoRepeatEnabled(true);
+			default:keyboard.setGlobalAutoRepeatDefault();
+			}
+		}
+		else {
+			// A single LED was specified
+			switch(keyMode) {
+			case 0: keyboard.setAutoRepeatOff(keycode);
+			case 1: keyboard.setAutoRepeatOn(keycode);
+			default:keyboard.setAutoRepeatDefault(keycode);
+			}
+		}
 	}
 }

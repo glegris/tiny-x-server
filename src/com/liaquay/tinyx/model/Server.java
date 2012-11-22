@@ -38,9 +38,10 @@ public class Server extends Client {
 		new Format (32, 24, 8)
 	};
 	
+	private final Extensions _extensions = new Extensions();
 	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
 	private final Clients _clients = new Clients();
-	private final Keyboard _keyboard = new Keyboard(); // TODO configurable
+	private final Keyboard _keyboard;
 	private final List<Screen> _screens = new ArrayList<Screen>(2);
 	private final Resources _resources = new Resources();
 	private final Atoms _atoms = new Atoms();
@@ -60,7 +61,7 @@ public class Server extends Client {
 	private final EventFactories _eventFactories;
 	private final FontFactory _fontFactory;
 	
-	public Server(final EventFactories eventFactories, final FontFactory fontFactory) {		
+	public Server(final EventFactories eventFactories, final Keyboard keyboard, final FontFactory fontFactory) {		
 		// Create the server as a client with ID of 0
 		super(	0, 
 				new PostBox() {
@@ -72,7 +73,8 @@ public class Server extends Client {
 		
 		_eventFactories = eventFactories;
 		_fontFactory = fontFactory;
-	    
+		_keyboard = keyboard;
+		
 	    // Ensure the first allocation is for the server (which has a client ID of 0)
 	    _clientIdAllocator.allocate();
 	    
@@ -82,6 +84,10 @@ public class Server extends Client {
 	    // TODO not sure we should do this!
 	    // TODO How accessible should the server client be?
 	    //_clients.add(this);
+	}
+	
+	public Extensions getExtensions() {
+		return _extensions;
 	}
 	
 	public EventFactories getEventFactories() {

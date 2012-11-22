@@ -18,33 +18,39 @@
  */
 package com.liaquay.tinyx.model;
 
-public class Pallette extends ColorMap {
+public class Bell {
 	
-	private int[] _red;
-	private int[] _green;
-	private int[] _blue;
-
-	public Pallette(final int id) {
-		super(id);
-	}
-
-	@Override
-	public int getBlackPixel() {
-		return 0; // TODO
-	}
-
-	@Override
-	public int getWhitePixel() {
-		return 0; // TODO
+	private final static int DEFAULT_VOLUME_PERCENT = 50;
+	private final static int DEFAULT_PITCH = 440;
+	private final static int DEFAULT_DURATION = 500;
+	
+	private int _volumePercent = 50;
+	
+	public int getVolumePercent() {
+		return _volumePercent;
 	}
 	
-	public boolean isValidColor(final int pixel) {
-		return pixel >= 0 && pixel < _red.length;
+	public void setVolumePercent(final int volume) {
+		_volumePercent = volume < 0 ? DEFAULT_VOLUME_PERCENT : volume;
 	}
 	
-	public void getColor(final int pixel, final Color color) {
-		color._red = _red[pixel];
-		color._green = _green[pixel];
-		color._blue = _blue[pixel];
+	private int _pitch = 5000;
+	
+	public int getPitch() {
+		return _pitch;
+	}
+	
+	public void setPitch(final int pitch) {
+		_pitch = pitch < 0 ? DEFAULT_PITCH : pitch;
+	}
+	
+	private int _duration = 500;
+	
+	public int getDuration() {
+		return _duration;
+	}
+	
+	public void setDuration(final int duration) {
+		_duration = duration < 0 ? DEFAULT_DURATION :duration;
 	}
 }

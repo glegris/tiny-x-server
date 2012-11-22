@@ -19,8 +19,6 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,9 +26,9 @@ import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Extension;
+import com.liaquay.tinyx.model.Extensions;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.extensions.BigRequestsExtension;
-import com.liaquay.tinyx.model.extensions.Extension;
 import com.liaquay.tinyx.requesthandlers.extensions.BigRequestHandler;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
@@ -43,27 +41,23 @@ public class RequestHandlerMap implements RequestHandler {
 
 	private RequestHandler[] _handlers = new RequestHandler[256];
 
-	private static int EXTENSION_BASE = 128;
-	private static int EXTENSION_EVENT_BASE = 64;
-
-	private int _currentExtension = 128;
-	private Map<String, Extension> _extensionMap = new TreeMap<String, Extension>();
-
-	private void addExtension(final String extensionName, final int numEvents, final int numErrors, final int minorOp, final Extension ext) {
-		//		final int extensionOpCode = _currentExtension++;
-		//		if(extensionOpCode > 255) {
-		//			throw new RuntimeException("Too many extensions");
-		//		}
-		_extensionMap.put(extensionName, ext);
-//		_handlers[EXTENSION_BASE+minorOp] = requestHandler;
+	private void addExtension(
+			final Extensions extensions,
+			final String extensionName, 
+			final int eventCodeCount, 
+			final int errorCodeCount,
+			final RequestHandler requestHandler) {
+		
+		final Extension extension = extensions.createExtension(extensionName, errorCodeCount, eventCodeCount);
+		_handlers[extension.getMajorOpCode()] = requestHandler;
 	}
 
-	public RequestHandlerMap() {
+	public RequestHandlerMap(final Extensions extensions) {
 		for(int i = 0; i < _handlers.length; ++i) {
 			_handlers[i] = UNIMPLEMENTED;
 		}
 		
-		addExtension("BIG-REQUESTS", 0,0,0, new BigRequestsExtension(new BigRequestHandler()));
+		addExtension(extensions, "BIG-REQUESTS", 0,0, new BigRequestHandler());
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
 		final WindowAttributeHandlers windowAttributeHandlers = new WindowAttributeHandlers();
@@ -91,6 +85,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[46] = new CloseFont();
 		_handlers[47] = new QueryFont();
 		_handlers[49] = new ListFonts();
+		_handlers[44] = new QueryKeymap();
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
@@ -101,18 +96,21 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[78] = new CreateColorMap();
 		_handlers[91] = new QueryColours();
 		_handlers[97] = new QueryBestSize();
-		
-		_handlers[98] = new QueryExtension(_extensionMap);
-		_handlers[99] = new ListExtensions(_extensionMap);
-
-		// Add the extension handler
-		for (Extension ext : _extensionMap.values()) {
-			_handlers[ext.getMajorOpCode()] = ext.getHandler();
-		}
+		_handlers[98] = new QueryExtension();
+		_handlers[99] = new ListExtensions();
+		_handlers[100] = new ChangeKeyboardMapping();
+		_handlers[101] = new GetKeyboardMapping();
+		_handlers[102] = new ChangeKeyboardControl();
+		_handlers[103] = new GetKeyboardControl();
+		_handlers[104] = new Bell();
+		_handlers[105] = new ChangePointerControl();
+		_handlers[106] = new GetPointerControl();
+		_handlers[119] = new GetModifierMapping();
 	}
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {

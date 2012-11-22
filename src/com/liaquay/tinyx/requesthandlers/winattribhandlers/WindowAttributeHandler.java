@@ -20,25 +20,14 @@ package com.liaquay.tinyx.requesthandlers.winattribhandlers;
 
 import java.io.IOException;
 
-import com.liaquay.tinyx.Request;
-import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XInputStream;
-import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class BackingPixel extends WindowAttributeHandler {
+public abstract class WindowAttributeHandler implements AttributeHandler<Window> {
 
 	@Override
-	public void read(
-			final Server server, 
-			final Client client, 
-			final Request request,
-			final Response response, 
-			final Window window) throws IOException {
-		
-		final XInputStream inputStream = request.getInputStream();
-		final int backingPixel = inputStream.readInt();
-		window.setBackingPixel(backingPixel);
+	public final void write(final XOutputStream outputStream, final Window window) throws IOException {
+		throw new RuntimeException("Unimplemented");
 	}
 }

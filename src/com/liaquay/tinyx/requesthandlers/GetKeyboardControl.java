@@ -16,29 +16,36 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.requesthandlers.winattribhandlers;
+package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 
-public class BackingPixel extends WindowAttributeHandler {
+public class GetKeyboardControl implements RequestHandler {
 
 	@Override
-	public void read(
+	public void handleRequest(
 			final Server server, 
 			final Client client, 
-			final Request request,
-			final Response response, 
-			final Window window) throws IOException {
+			final Request request, 
+			final Response response) throws IOException {
 		
-		final XInputStream inputStream = request.getInputStream();
-		final int backingPixel = inputStream.readInt();
-		window.setBackingPixel(backingPixel);
+		final Keyboard keyboard = server.getKeyboard();
+		final XOutputStream outputStream = response.respond(keyboard.isGlobalAutoRepeatEnabled() ? 1 : 0, 20);
+		outputStream.writeInt(keyboard.getLeds().getMask());
+		outputStream.writeByte(keyboard.getKeyClick().getVolumePercent());
+		final com.liaquay.tinyx.model.Bell bell = keyboard.getBell();
+		outputStream.writeByte(bell.getVolumePercent());
+		outputStream.writeShort(bell.getPitch());
+		outputStream.writeShort(bell.getDuration());
+		outputStream.writePad(2);
+		outputStream.write(keyboard.getRepeats(), 0, 32);
 	}
 }

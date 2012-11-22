@@ -16,17 +16,28 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.extensions;
+package com.liaquay.tinyx.requesthandlers;
+
+import java.io.IOException;
+
+import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Server;
 
-public final class BigRequestsExtension extends ExtensionBase {
-
-	public BigRequestsExtension(RequestHandler handler){
-		super("BIG-REQUESTS", 0, 0, handler);
-	}
+public class Bell implements RequestHandler {
 
 	@Override
-	public int getMajorOpCode() {
-		return 131;
+	public void handleRequest(final Server server, 
+			                   final Client client, 
+			                   final Request request, 
+			                   final Response response) throws IOException {
+		// TODO logging
+		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+				request.getMajorOpCode(), 
+				request.getData(),
+				request.getLength(),
+				request.getSequenceNumber()));		
 	}
 }

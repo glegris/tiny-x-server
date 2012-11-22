@@ -16,18 +16,27 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.extensions;
+package com.liaquay.tinyx.requesthandlers.keycontattribhandlers;
 
-import com.liaquay.tinyx.RequestHandler;
+import java.io.IOException;
 
-public interface Extension {
-	String getName();
-	
-	RequestHandler getHandler();
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Server;
 
-	int getMajorOpCode();
+public class Led extends KeyboardControlAttributeHandler {
 
-	int getFirstEvent();
-
-	int getFirstError();
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final KeyboardAttributeState keyboardAttributeState) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+		keyboardAttributeState._led = inputStream.readUnsignedByte();
+	}
 }
