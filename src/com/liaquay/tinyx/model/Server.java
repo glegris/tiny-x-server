@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
-import com.liaquay.tinyx.util.IntegerAllocator;
 
 
 /**
@@ -38,7 +37,6 @@ public class Server extends Client {
 	};
 	
 	private final Extensions _extensions = new Extensions();
-	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
 	private final Clients _clients = new Clients();
 	private final Keyboard _keyboard;
 	private final List<Screen> _screens = new ArrayList<Screen>(2);
@@ -72,8 +70,6 @@ public class Server extends Client {
 		_eventFactories = eventFactories;
 		_keyboard = keyboard;
 		
-	    // Ensure the first allocation is for the server (which has a client ID of 0)
-	    _clientIdAllocator.allocate();
 	    
 		_serverResourceId = (getClientId() << Resource.CLIENTOFFSET) | Resource.SERVER_BIT;
 	    _endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;
@@ -132,15 +128,7 @@ public class Server extends Client {
 	}
 	
 	public Client allocateClient(final PostBox postBox) {
-		final int clientId = _clientIdAllocator.allocate();
-		if(clientId < 0) {
-			return null;
-		}
-		else {
-			final Client client = new Client(clientId, postBox);
-			_clients.add(client);
-			return client;
-		}
+		return _clients.allocate(postBox);
 	}
 	
 	public void freeClient(final Client client) {
@@ -148,8 +136,7 @@ public class Server extends Client {
 		if(clientId == 0) {
 			throw new RuntimeException("Don't try to free the server silly");
 		}
-		client.free();
-		_clientIdAllocator.free(clientId);
+		_clients.free(client);
 		_resources.free(client);
 	}
 	
@@ -203,4 +190,12 @@ public class Server extends Client {
 	public int getMaximumRequestLength() {
 		return _maximumRequestLength;
 	}
+	
+	
+	// TODO I need to be called
+	public void free() {
+		_clients.freeAllClients();
+		// TODO free all resources
+	}
+
 }

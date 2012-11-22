@@ -60,6 +60,7 @@ public class Client {
 	}
 	
 	public void free() {
+		_listener.closed();
 		final List<ClientWindowAssociation> assocs = new ArrayList<ClientWindowAssociation>(_clientWindowAssociations.values());
 		for(final ClientWindowAssociation assoc : assocs) {
 			assoc.free();
@@ -72,9 +73,5 @@ public class Client {
 	
 	public void remove(final ClientWindowAssociation assoc) {
 		_clientWindowAssociations.remove(assoc.getWindow().getId());
-	}
-	
-	public void close() {
-		_listener.closed();
 	}
 }
