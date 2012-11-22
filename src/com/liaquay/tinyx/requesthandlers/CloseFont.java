@@ -16,23 +16,30 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model;
+package com.liaquay.tinyx.requesthandlers;
 
-public interface Drawable extends Resource {
+import java.io.IOException;
 
-	public Screen getScreen();
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Font;
+import com.liaquay.tinyx.model.Server;
 
-	public Visual getVisual();
-	
-	public int getDepth();
-	
-	public int getX();
-	
-	public int getY();
-	
-	public int getWidth();
-	
-	public int getHeight();
-	
-	public int getBorderWidth();
+public class CloseFont implements RequestHandler {
+
+	@Override
+	public void handleRequest(Server server, Client client, Request request,
+			Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+		final int fid = inputStream.readInt();
+
+		Font font = (Font) server.getResources().get(fid);
+		if (font != null) {
+			font.free();
+		}		
+	}
 }

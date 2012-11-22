@@ -81,6 +81,10 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[21] = new ListProperties();
 		_handlers[38] = new QueryPointer();
 		_handlers[43] = new GetInputFocus();
+		_handlers[45] = new OpenFont();
+		_handlers[46] = new CloseFont();
+		_handlers[47] = new QueryFont();
+		_handlers[49] = new ListFonts();
 		_handlers[44] = new QueryKeymap();
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();

@@ -52,7 +52,8 @@ public class TinyXConsole {
 		
 		final Keyboard keyboard = new Keyboard(keyboardMapping);
 		// Create a new server
-		final Server server = new Server(eventFactories, keyboard);
+		//TODO: Hmm.. is a null fontfactory acceptable for a console app?
+		final Server server = new Server(eventFactories, keyboard, null);
 
 		// Configure the new server
 

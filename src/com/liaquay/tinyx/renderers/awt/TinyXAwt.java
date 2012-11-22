@@ -35,6 +35,7 @@ import com.liaquay.tinyx.model.Visual;
 import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 
 public class TinyXAwt {
@@ -49,12 +50,15 @@ public class TinyXAwt {
 
 		final EventFactories eventFactories = new EventFactoriesImpl();
 		
+		final FontFactory fontFactory = new AwtFontFactory();
+
 		final KeyboardMapping keyboardMapping = XawtKeyboardMappingFactory.createKeyboardMapping();
 		
 		final Keyboard keyboard = new Keyboard(keyboardMapping);
-		
+
 		// Create a new server
-		final Server server = new Server(eventFactories, keyboard);
+
+		final Server server = new Server(eventFactories, keyboard, fontFactory);
 
 		// Configure the new server
 
