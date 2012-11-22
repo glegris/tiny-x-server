@@ -52,10 +52,11 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 	private final static Logger LOGGER = Logger.getLogger(ConnectionFactory.class.getName());
 
 	private final Server _server;
-	private final RequestHandler _requestHandler = new RequestHandlerMap();
+	private final RequestHandler _requestHandler;
 	
 	public ConnectionFactory(final Server server) {
 		_server = server;
+		_requestHandler = new RequestHandlerMap(server.getExtensions());
 	}
 	
 	private static void writeFormat(final XOutputStream out, final Format format) throws IOException {

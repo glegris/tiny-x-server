@@ -19,7 +19,6 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,19 +27,13 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Extension;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.extensions.Extension;
 
 public class QueryExtension implements RequestHandler {
 
 	private final static Logger LOGGER = Logger.getLogger(QueryExtension.class.getName());
 	
-	private final Map<String, Extension> _extensionMap;
-
-	public QueryExtension(final Map<String, Extension> extensionMap) {
-		_extensionMap = extensionMap;
-	}
-
 	@Override
 	public void handleRequest(
 			final Server server, 
@@ -52,7 +45,7 @@ public class QueryExtension implements RequestHandler {
 
 		LOGGER.log(Level.INFO, "Extension query for " + requestedExtensionName);
 
-		final Extension ext = _extensionMap.get(requestedExtensionName);
+		final Extension ext = server.getExtensions().getExtension(requestedExtensionName);
 		
 		final XOutputStream outputStream = response.respond(1, 0);
 		if(ext == null) {
@@ -62,8 +55,8 @@ public class QueryExtension implements RequestHandler {
 			// Extension present
 			outputStream.writeByte(1);
 			outputStream.writeByte(ext.getMajorOpCode());
-			outputStream.writeByte(ext.getFirstEvent());
-			outputStream.writeByte(ext.getFirstError());
+			outputStream.writeByte(ext.getFirstEventCode());
+			outputStream.writeByte(ext.getFirstErrorCode());
 		}
 	}
 }

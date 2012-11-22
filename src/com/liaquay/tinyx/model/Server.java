@@ -37,6 +37,7 @@ public class Server extends Client {
 		new Format (32, 24, 8)
 	};
 	
+	private final Extensions _extensions = new Extensions();
 	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
 	private final Clients _clients = new Clients();
 	private final Keyboard _keyboard;
@@ -80,6 +81,10 @@ public class Server extends Client {
 	    // TODO not sure we should do this!
 	    // TODO How accessible should the server client be?
 	    //_clients.add(this);
+	}
+	
+	public Extensions getExtensions() {
+		return _extensions;
 	}
 	
 	public EventFactories getEventFactories() {

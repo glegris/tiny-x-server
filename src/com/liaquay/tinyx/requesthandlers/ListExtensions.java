@@ -19,7 +19,7 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -27,15 +27,9 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.extensions.Extension;
+import com.liaquay.tinyx.model.Extension;
 
 public class ListExtensions implements RequestHandler {
-
-	private final Map<String, Extension> _extensionMap;
-
-	public ListExtensions(final Map<String, Extension> extensionMap) {
-		this._extensionMap = extensionMap;
-	}
 
 	@Override
 	public void handleRequest(
@@ -44,9 +38,13 @@ public class ListExtensions implements RequestHandler {
 			final Request request,
 			final Response response) throws IOException {
 
-		final XOutputStream outputStream = response.respond(_extensionMap.size());
+		final List<Extension> extensions = server.getExtensions().getExtensions();
+		final XOutputStream outputStream = response.respond(extensions.size());
 		response.padHeader();
-		for (final String extensionName : _extensionMap.keySet()) {
+
+		for (int i = 0 ; i < extensions.size(); ++i) {
+			final Extension extension = extensions.get(i);
+			final String extensionName = extension.getName();
 			final byte[] b = extensionName.getBytes();
 			outputStream.writeByte(b.length);
 			outputStream.write(b, 0, b.length);
