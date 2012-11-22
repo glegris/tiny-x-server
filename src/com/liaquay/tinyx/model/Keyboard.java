@@ -85,12 +85,12 @@ public class Keyboard {
 	
 	public void setAutoRepeatOn(final int keycode) {
 		if (keycode < 0 || keycode > 255) return;
-		_repeats[keycode >> 2] |= (1 << (keycode & 7));
+		_repeats[keycode >> 3] |= (1 << (keycode & 7));
 	}
 	
 	public void setAutoRepeatOff(final int keycode) {
 		if (keycode < 0 || keycode > 255) return;
-		_repeats[keycode >> 2] &= ~(1 << (keycode & 7));		
+		_repeats[keycode >> 3] &= ~(1 << (keycode & 7));		
 	}
 	
 	private boolean _globalAutoRepeatEnabled = true;
