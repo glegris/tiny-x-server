@@ -57,4 +57,30 @@ public class IntegerAllocator {
 	public void free(final int value) {
 		_bits[value >> 5] &= ~(1<<value&31);
 	}
+	
+	public void free() {
+		for(int i = 0; i < _bits.length; ++i) {
+			_bits[i] = 0;
+		}
+	}
+	
+	public int nextAllocated(final int start) {
+		int i = start + 1;
+		while(i < _max) {
+		  final int wi = i >> 5;
+		  final int w = _bits[wi];
+		  if(w == 0) {
+		    i = (wi + 1) << 5;
+		  }
+		  else {
+		    final int bi = i & 31;
+		    final int bm = 1 << bi;
+		    if((bm & w) != 0) {
+		      return i;
+		    }
+		    ++i;
+		  }
+		}
+		return -2;
+	}
 }

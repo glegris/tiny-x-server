@@ -18,60 +18,60 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import com.liaquay.tinyx.util.IntegerAllocator;
 
 /**
  * Map of clients against client identifier.
- * 
- * Very much not thread safe!
  */
-public class Clients {
+public class Clients implements PostBox {
 	
-	private static class ClientKey {
-		private int _clientId;
-		
-		public ClientKey(final int clientId) {
-			_clientId = clientId;
+	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
+	private final Client[] _clients = new  Client[Resource.MAXCLIENTS];
+
+	public Clients() {
+	    // Ensure the first allocation is for the server (which has a client ID of 0)
+	    _clientIdAllocator.allocate();
+	}
+	
+	public Client allocate(final PostBox postBox){
+		final int clientId = _clientIdAllocator.allocate();
+		if(clientId < 0) {
+			return null;
+		}
+		else {
+			final Client client = new Client(clientId, postBox);
+			_clients[clientId] = client;
+			return client;
 		}
 	}
 	
-	private static final Comparator<ClientKey> CLIENT_KEY_COMPARATOR = new Comparator<ClientKey>() {
-		@Override
-		public int compare(final ClientKey arg0, final ClientKey arg1) {
-			return arg0._clientId - arg1._clientId;
-		}		
-	};
-	
-	private final Map<ClientKey, Client> _idToClientMap = new TreeMap<ClientKey, Client>(Clients.CLIENT_KEY_COMPARATOR);
-	
-	private ClientKey _scratchClientKey = new ClientKey(0);
-	
-	public void add(final Client Client){
-		_idToClientMap.put(new ClientKey(Client.getClientId()), Client);
-	}
-	
-	public Client remove(final int clientId) {
-		_scratchClientKey._clientId = clientId;
-		return _idToClientMap.remove(_scratchClientKey);
+	public void free(final Client client) {
+		final int clientId = client.getClientId();
+		_clientIdAllocator.free(clientId);
+		_clients[clientId] = null;
+		client.free();
 	}
 	
 	public Client get(final int clientId) {
-		_scratchClientKey._clientId = clientId;
-		return _idToClientMap.get(_scratchClientKey);
+		return _clients[clientId];
 	}
 	
-	public void free() {
-		
+	public void freeAllClients() {
+		for(int i = _clientIdAllocator.nextAllocated(-1) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
+			final Client client = _clients[i];
+			client.free();
+			 _clients[i] = null;
+		}
 	}
-	
-	public void close() {
-		final List<Client> clients = new ArrayList<Client>(_idToClientMap.values());
-		for(final Client client : clients) {
-			client.close();
+
+	/**
+	 * Deliver an event to all clients
+	 */
+	@Override
+	public void send(final Event event) {
+		for(int i = _clientIdAllocator.nextAllocated(-1) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
+			final Client client = _clients[i];
+			client.getPostBox().send(event);
 		}
 	}
 }
