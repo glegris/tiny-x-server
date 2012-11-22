@@ -29,7 +29,8 @@ public class TinyXConsole {
 		final EventFactories eventFactories = new EventFactoriesImpl();
 		
 		// Create a new server
-		final Server server = new Server(eventFactories);
+		//TODO: Hmm.. is a null fontfactory acceptable for a console app?
+		final Server server = new Server(eventFactories, null);
 
 		// Configure the new server
 

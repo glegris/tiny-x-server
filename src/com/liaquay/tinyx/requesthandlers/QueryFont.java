@@ -25,7 +25,6 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
-import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
@@ -60,7 +59,12 @@ public class QueryFont implements RequestHandler {
 		prop[0] = server.getAtoms().allocate("FONT").getId();
 		prop[1] = server.getAtoms().allocate(fontName).getId();
 
-		final XOutputStream outputStream = response.respond(1, 7);
+		final XOutputStream outputStream = response.respond(1);
+		//		, 7 + 
+		//				(prop!=null ? prop.length/2 : 0)*2 + 
+		//				//                (hascinfo ? 
+		//				//                 (f.font.max_char_or_byte2-f.font.min_char_or_byte2+1)*3 :
+		//				0);
 		// Request... What the heck is a FONTABLE?? That's just weird
 
 		// Min-bounds
@@ -84,8 +88,11 @@ public class QueryFont implements RequestHandler {
 
 		outputStream.writePad(4);
 
-		outputStream.writeShort(0x20);  // min-char-or-byte2
-		outputStream.writeShort(0xff);    // max-char-or-byte2
+		int minCharOrByte2 = 0x20;
+		int maxCharOrByte2 = 0xff;
+
+		outputStream.writeShort(minCharOrByte2);  // min-char-or-byte2
+		outputStream.writeShort(maxCharOrByte2);    // max-char-or-byte2
 
 		outputStream.writeShort(f.getDefaultChar()); // default-char
 		outputStream.writeShort(prop!=null ? prop.length/2 : 0); // m
@@ -98,7 +105,9 @@ public class QueryFont implements RequestHandler {
 		outputStream.writeByte(0);  // all-char-exists
 		outputStream.writeShort(f.getMaxAscent());  // font-ascent
 		outputStream.writeShort(f.getMaxDescent()); // font-descent
-		outputStream.writeInt(fontName.length()); // reply-hint
+
+		outputStream.writeInt(0xff-0x20+1); // m 
+		//		outputStream.writeInt(0);//fontName.length()); // reply-hint
 
 		if(prop!=null){
 			for(int j=0; j<prop.length; j++){
@@ -106,9 +115,26 @@ public class QueryFont implements RequestHandler {
 			}
 		}
 
-//	    outputStream.write(fontName.getBytes(), 0, fontName.length());
-//	    outputStream.writePad((-font.lfname.length)&3);
-	    
+		byte[] src=new byte[1];	
+		char[] dst=new char[1];	
+		int width;
+		for(int i=minCharOrByte2; i<=maxCharOrByte2; i++){
+//			src[0]=(byte)i;
+			//	          encode(src, 0, 1, dst);
+			char w= 32;//(char) f.font.charWidth(dst[0]);
+			outputStream.writeShort(0);                    // left-side-bearing
+			outputStream.writeShort(w);                    // right-side-bearing
+			outputStream.writeShort(32);                   // character-width
+			outputStream.writeShort(f.getMaxAscent());                   // ascent
+			outputStream.writeShort(f.getMaxDescent());                   // descent
+			outputStream.writeShort(0);                    // attribute
+		}	
+		//	      if(hascinfo){
+		//	          f.dumpCharInfo(c);                      // m 
+		//	        }
+		//	    outputStream.write(fontName.getBytes(), 0, fontName.length());
+		//	    outputStream.writePad((-font.lfname.length)&3);
+
 
 
 		//	    4     m                               number of CHARINFOs in char-infos

@@ -90,6 +90,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[45] = new OpenFont();
 		_handlers[46] = new CloseFont();
 		_handlers[47] = new QueryFont();
+		_handlers[49] = new ListFonts();
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
