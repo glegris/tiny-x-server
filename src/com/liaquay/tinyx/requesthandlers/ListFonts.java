@@ -1,6 +1,7 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -8,6 +9,7 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.FontString;
 import com.liaquay.tinyx.model.Server;
 
 public class ListFonts implements RequestHandler {
@@ -28,20 +30,25 @@ public class ListFonts implements RequestHandler {
 		// Response
 		final XOutputStream outputStream = response.respond(1);
 
-//		Query our fonts DB
-//		server.getFontFactory().getFontNames()
-		
-		int numberOfMatches = 1;
+		// Query our fonts registry
+		List<FontString> matches = server.getFontFactory().getMatchingFonts(pattern);
+
+		final int numberOfMatches = matches.size() > maxNames ? maxNames : matches.size();
 		outputStream.writeShort(numberOfMatches);
 
 		outputStream.writePad(22);
 
-
-		for (int i = 0; i < (numberOfMatches < maxNames ? numberOfMatches : maxNames); i++) {
-			byte[] name = "test-font".getBytes();
+		int counter = 1;
+		for (FontString currentFont : matches) {
+			byte[] name = currentFont.toString().getBytes();
 
 			outputStream.writeByte(name.length);
 			outputStream.write(name, 0, name.length);
+
+			if (counter >= maxNames)
+				return;
+			
+			counter++;
 		}
 	}
 

@@ -27,6 +27,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
+import com.liaquay.tinyx.model.FontString;
 import com.liaquay.tinyx.model.Server;
 
 public class QueryFont implements RequestHandler {
@@ -40,24 +41,24 @@ public class QueryFont implements RequestHandler {
 		final int fid = inputStream.readInt();
 
 		Font f = (Font) server.getResources().get(fid);
-		String name = f.getRequestedName();
+		FontString fontName = f.getFontName();
 
-		System.out.println("Name: " + name);
+		System.out.println("Name: " + fontName.toString());
 
-		String newName = name.replaceAll("\\*", ".*[^-]");
+//		String newName = name.replaceAll("\\*", ".*[^-]");
+//
+//		for (String fontName : server.getFontFactory().getFontNames()) {
+//			if (f.matches(fontName)) {
+//				f.setChosenFontName(fontName);
+//			}
+//		}
 
-		for (String fontName : server.getFontFactory().getFontNames()) {
-			if (f.matches(fontName)) {
-				f.setFont(fontName);
-			}
-		}
 
-
-		String fontName = f.getFontName();
+//		String fontName = f.getCharsetEncoding();
 
 		int[] prop=new int[2];
 		prop[0] = server.getAtoms().allocate("FONT").getId();
-		prop[1] = server.getAtoms().allocate(fontName).getId();
+		prop[1] = server.getAtoms().allocate(fontName.toString()).getId();
 
 		final XOutputStream outputStream = response.respond(1);
 		//		, 7 + 

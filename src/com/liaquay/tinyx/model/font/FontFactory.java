@@ -2,6 +2,12 @@ package com.liaquay.tinyx.model.font;
 
 import java.util.List;
 
+import com.liaquay.tinyx.model.FontString;
+
 public interface FontFactory {
-	public List<String> getFontNames();
+	List<FontString> getFontNames();
+
+	FontString getFirstMatchingFont(String requestedFontName);
+
+	List<FontString> getMatchingFonts(String pattern);
 }

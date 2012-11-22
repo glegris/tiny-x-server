@@ -18,6 +18,50 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class Function extends Unimplemented {
+import java.io.IOException;
+
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+
+public class Function implements AttributeHandler<GraphicsContext> {
+	
+	public enum FunctionType {
+		Clear, 
+		And, 
+		AndReverse, 
+		Copy, AndInverted, NoOp, Xor, Or, Nor, Equiv, Invert, OrReverse, CopyInverted, OrInverted, Nand, Set;
+		
+		public static FunctionType getFromIndex(final int index) {
+			final FunctionType[] functionTypes = values();
+			if(index >= 0 && index < functionTypes.length) return functionTypes[index];
+			return null;
+		}
+	}
+	
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int function = inputStream.readUnsignedByte();
+		graphicsContext.setFunction(function);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeByte(graphicsContext.getFunction());
+	}
 
 }
