@@ -74,13 +74,20 @@ public class Server extends Client {
 		_fontFactory = fontFactory;
 		_keyboard = keyboard;
 		
-		keyboard.setListener(new Keyboard.Listener() {
+		_keyboard.setListener(new Keyboard.Listener() {
 			@Override
 			public void mappingNotify(final int firstKeyCode, final int count) {
 				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Keyboard, firstKeyCode, count));
 			}
 		});
 	    
+		_pointer.setListener(new Pointer.Listener() {
+			@Override
+			public void mappingNotify(final int count) {
+				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Pointer, 0, count));
+			}
+		});
+		
 		_serverResourceId = (getClientId() << Resource.CLIENTOFFSET) | Resource.SERVER_BIT;
 	    _endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;
 	    

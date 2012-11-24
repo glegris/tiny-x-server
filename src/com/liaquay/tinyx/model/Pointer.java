@@ -20,6 +20,20 @@ package com.liaquay.tinyx.model;
 
 public class Pointer {
 	
+	public interface Listener {
+		public void mappingNotify(final int count);
+	}
+
+	private Listener _listener = new Listener() {
+		@Override
+		public void mappingNotify(int count) {
+		}		
+	};
+	
+	void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
 	/**
 	 * Used to form the pointer button state
 	 */
@@ -31,16 +45,26 @@ public class Pointer {
 	
 	private int _x, _y;
 	private int _state;
-	private int _accelerationNumerator = 0;
-	private int _accelerationDemoninator = 0;
-	private int _threshold = 0;
+	private int _accelerationNumerator = 1;
+	private int _accelerationDemoninator = 1;
+	private int _threshold = 1;
 	private boolean _doAcceleration = false;
 	private boolean _doThreshold = false;
+	private PointerMapping _mapping = new PointerMapping(5);
 
 	public Pointer() {
 		_x = 0;
 		_y = 0;
 		_state = 0;
+	}
+	
+	public PointerMapping getPointerMapping() {
+		return _mapping;
+	}
+	
+	public void setPointerMapping(final PointerMapping mapping) {
+		_mapping = mapping;
+		_listener.mappingNotify(_mapping.getNumberOfButtons());
 	}
 	
 	public int getX() {
@@ -94,5 +118,13 @@ public class Pointer {
 
 	public int getThreshold() {
 		return _threshold;
+	}
+	
+	public boolean getDoThreshold() {
+		return _doThreshold;
+	}
+	
+	public boolean getDoAcceleration() {
+		return _doAcceleration;
 	}
 }

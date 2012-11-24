@@ -107,7 +107,11 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[104] = new Bell();
 		_handlers[105] = new ChangePointerControl();
 		_handlers[106] = new GetPointerControl();
+		_handlers[116] = new SetPointerMapping();
+		_handlers[117] = new GetPointerMapping();
+		_handlers[118] = new SetModifierMapping();
 		_handlers[119] = new GetModifierMapping();
+		_handlers[127] = new NoOperation();
 	}
 
 	@Override
