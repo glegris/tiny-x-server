@@ -54,7 +54,5 @@ public class ChangeWindowAttributes implements RequestHandler {
 		final int attributeMask = inputStream.readInt();
 
 		_attributeHandlers.read(server, client, request, response, window, attributeMask);
-
-		
 	}
 }

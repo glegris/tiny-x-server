@@ -43,6 +43,10 @@ public class Client {
 	}
 	
 	private final int _clientId;
+	// TODO this is probably not needed
+	// Currently only used to remove a clients resources.
+	// This could be done from the window which is a resource.
+	// Currently performing a linear scan of resources on close of a client to remove unwanted ones.
 	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();	
 	private final PostBox _postBox;
 
