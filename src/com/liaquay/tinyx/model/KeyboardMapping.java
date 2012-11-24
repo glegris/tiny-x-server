@@ -20,10 +20,23 @@ package com.liaquay.tinyx.model;
 
 public class KeyboardMapping {
 	
+	public interface Listener {
+		public void mappingNotify(final int firstKeyCode, final int count);
+	}
+	
 	private final int _firstKeyCode;
 	private final int _keysymsPerKeycode;
 	private final int _keycodeCount;
 	private final int[] _keyboardMapping;
+	private Listener _listener = new Listener() {
+		@Override
+		public void mappingNotify(int firstKeyCode, int count) {
+		}		
+	};
+	
+	void setListener(final Listener listener) {
+		_listener = listener;
+	}
 	
 	public KeyboardMapping(
 			final int firstKeyCode, 
@@ -67,7 +80,6 @@ public class KeyboardMapping {
 				}
 			}
 		}
-		
-		//  TODO mapping notify
+		_listener.mappingNotify(firstKeycode, keycodeCount);
 	}
 }

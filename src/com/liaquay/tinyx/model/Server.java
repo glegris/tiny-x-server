@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 import com.liaquay.tinyx.model.font.FontFactory;
 
 /**
@@ -72,6 +73,12 @@ public class Server extends Client {
 		_fontFactory = fontFactory;
 		_keyboard = keyboard;
 		
+		keyboard.setListener(new Keyboard.Listener() {
+			@Override
+			public void mappingNotify(final int firstKeyCode, final int count) {
+				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Keyboard, firstKeyCode, count));
+			}
+		});
 	    
 		_serverResourceId = (getClientId() << Resource.CLIENTOFFSET) | Resource.SERVER_BIT;
 	    _endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;

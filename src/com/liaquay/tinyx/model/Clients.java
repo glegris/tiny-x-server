@@ -57,7 +57,7 @@ public class Clients implements PostBox {
 	}
 	
 	public void freeAllClients() {
-		for(int i = _clientIdAllocator.nextAllocated(-1) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
+		for(int i = _clientIdAllocator.nextAllocated(0) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
 			final Client client = _clients[i];
 			client.free();
 			 _clients[i] = null;
@@ -69,7 +69,7 @@ public class Clients implements PostBox {
 	 */
 	@Override
 	public void send(final Event event) {
-		for(int i = _clientIdAllocator.nextAllocated(-1) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
+		for(int i = _clientIdAllocator.nextAllocated(0) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
 			final Client client = _clients[i];
 			client.getPostBox().send(event);
 		}

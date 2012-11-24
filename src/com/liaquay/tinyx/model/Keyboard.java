@@ -19,6 +19,20 @@
 package com.liaquay.tinyx.model;
 
 public class Keyboard {
+	
+	public interface Listener {
+		public void mappingNotify(final int firstKeyCode, final int count);
+	}
+
+	private Listener _listener = new Listener() {
+		@Override
+		public void mappingNotify(int firstKeyCode, int count) {
+		}		
+	};
+	
+	void setListener(final Listener listener) {
+		_listener = listener;
+	}
 
 	/**
 	 * Mapping of physical keys to key-codes
@@ -69,6 +83,12 @@ public class Keyboard {
 	
 	public Keyboard(final KeyboardMapping keyboardMapping) {
 		_keyboardMapping = keyboardMapping;
+		
+		keyboardMapping.setListener(new KeyboardMapping.Listener() {
+			@Override
+			public void mappingNotify(final int firstKeyCode, final int count) {
+				_listener.mappingNotify(firstKeyCode, count);
+			}});
 	}
 	
 	public KeyboardMapping getKeyboardMapping() {

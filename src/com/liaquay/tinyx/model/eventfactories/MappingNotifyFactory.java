@@ -18,10 +18,18 @@
  */
 package com.liaquay.tinyx.model.eventfactories;
 
-public interface EventFactories {
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
-	public ButtonFactory getButtonPressFactory();
-	public ButtonFactory getButtonReleaseFactory();
-	public MappingNotifyFactory getMappingNotifyFactory();
+import com.liaquay.tinyx.model.Event;
+
+public interface MappingNotifyFactory {
+	
+	public enum Request {
+		Modifier,
+		Keyboard,
+		Pointer
+	};
+	
+	public Event create(
+			final Request request,
+			final int firstKeyCode,
+			final int count);
 }

@@ -22,6 +22,7 @@ import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.MapNotifyFactory;
 import com.liaquay.tinyx.model.eventfactories.MapRequestFactory;
+import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 
 public final class EventFactoriesImpl implements EventFactories {
 
@@ -43,5 +44,10 @@ public final class EventFactoriesImpl implements EventFactories {
 	@Override
 	public ButtonFactory getButtonReleaseFactory() {
 		return ButtonReleaseFactoryImpl.FACTORY;
+	}
+
+	@Override
+	public MappingNotifyFactory getMappingNotifyFactory() {
+		return MappingNotifyFactoryImpl.FACTORY;
 	}
 }
