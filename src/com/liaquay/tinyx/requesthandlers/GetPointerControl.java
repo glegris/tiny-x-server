@@ -23,7 +23,9 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Pointer;
 import com.liaquay.tinyx.model.Server;
 
 public class GetPointerControl implements RequestHandler {
@@ -34,11 +36,11 @@ public class GetPointerControl implements RequestHandler {
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		final Pointer pointer = server.getPointer();
+		final XOutputStream outputStream = response.respond(1, 0);
+		outputStream.writeShort(pointer.getAccelerationNumerator());
+		outputStream.writeShort(pointer.getAccelerationDenominator());
+		outputStream.writeShort(pointer.getThreshold());
 	}
 }

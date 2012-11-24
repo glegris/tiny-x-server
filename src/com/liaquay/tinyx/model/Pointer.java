@@ -31,7 +31,12 @@ public class Pointer {
 	
 	private int _x, _y;
 	private int _state;
-	
+	private int _accelerationNumerator = 0;
+	private int _accelerationDemoninator = 0;
+	private int _threshold = 0;
+	private boolean _doAcceleration = false;
+	private boolean _doThreshold = false;
+
 	public Pointer() {
 		_x = 0;
 		_y = 0;
@@ -57,5 +62,37 @@ public class Pointer {
 	
 	public void setState(final int state) {
 		_state = state;
+	}
+
+	public void setAccelerationNumerator(final int accelerationNumerator) {
+		_accelerationNumerator = accelerationNumerator;
+	}
+
+	public void setAccelerationDemoninato(final int accelerationDemoninator) {
+		_accelerationDemoninator = accelerationDemoninator;
+	}
+
+	public void setThreshold(final int threshold) {
+		_threshold = threshold;
+	}
+
+	public void setDoThreshold(final boolean doThreshold) {
+		_doThreshold = doThreshold;
+	}
+
+	public void setDoAcceleration(final boolean doAcceleration) {
+		_doAcceleration = doAcceleration;
+	}
+
+	public int getAccelerationNumerator() {
+		return _accelerationNumerator;
+	}
+
+	public int getAccelerationDenominator() {
+		return _accelerationDemoninator;
+	}
+
+	public int getThreshold() {
+		return _threshold;
 	}
 }

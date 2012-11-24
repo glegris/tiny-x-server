@@ -57,7 +57,7 @@ public class QueryPointer implements RequestHandler {
 		
 		// Create the response
 		final XOutputStream os = response.respond(1, 24);
-		final Pointer p = window.getPointer();
+		final Pointer p = server.getPointer();
 
 		os.writeInt(rootWindowId);
 		os.writeInt(rootWindowId == windowId ? 0 : windowId);

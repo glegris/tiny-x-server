@@ -133,7 +133,6 @@ public class Window implements Drawable {
 	private int _borderPixel = 0; // TODO Default value
 	private Pixmap _borderPixmap = null;
 	
-	private Pointer _pointer = new Pointer();
 	private boolean _mapped = false;
 	// TODO values are rubbish
 	private int _backingPlanes = 0;
@@ -343,10 +342,6 @@ public class Window implements Drawable {
 	
 	public int getDepth() {
 		return _depth;
-	}
-	
-	public Pointer getPointer() {
-		return _pointer;
 	}
 
 	public boolean isMapped() {

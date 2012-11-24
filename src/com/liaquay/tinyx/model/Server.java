@@ -58,7 +58,8 @@ public class Server extends Client {
 	private int _serverResourceId;
 	private final EventFactories _eventFactories;
 	private final FontFactory _fontFactory;
-	
+	private Pointer _pointer = new Pointer();
+
 	public Server(final EventFactories eventFactories, final Keyboard keyboard, final FontFactory fontFactory) {		
 		// Create the server as a client with ID of 0
 		super(	0, 
@@ -86,6 +87,10 @@ public class Server extends Client {
 	    // TODO not sure we should do this!
 	    // TODO How accessible should the server client be?
 	    //_clients.add(this);
+	}
+	
+	public Pointer getPointer() {
+		return _pointer;
 	}
 	
 	public Extensions getExtensions() {
