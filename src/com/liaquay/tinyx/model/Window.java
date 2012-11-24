@@ -256,16 +256,23 @@ public class Window implements Drawable {
 				absY >= _clipY && absY < (_clipY + _clipH);  
 	}
 	
-	public Window windowAt(final int absX, final int absY) {
-		if(containsPixel(absX, absY)) {
-			for(int i = _children.size()-1; i >= 0 ; --i) {
-				final Window child = _children.get(i);
+	public Window childWindowAt(final int absX, final int absY) {
+		for(int i = _children.size()-1; i >= 0 ; --i) {
+			final Window child = _children.get(i);
+			if(child.isMapped()) {
 				final Window childContains = child.windowAt(absX, absY);
 				if(childContains != null) {
 					return childContains;
 				}
 			}
-			return this;
+		}
+		return null;
+	}
+	
+	public Window windowAt(final int absX, final int absY) {
+		if(containsPixel(absX, absY)) {
+			final Window childWindow = childWindowAt(absX, absY);
+			return childWindow == null ? this : childWindow;
 		}
 		else {
 			return null;
