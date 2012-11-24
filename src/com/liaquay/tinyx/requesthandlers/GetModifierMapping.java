@@ -39,8 +39,8 @@ public class GetModifierMapping implements RequestHandler {
 		
 		final ModifierMapping modifierMapping = server.getKeyboard().getModifierMapping();
 		final byte[] mappings = modifierMapping.getMappings();
-		response.padHeader();
 		final XOutputStream outputStream = response.respond(modifierMapping.getKeycodesPerModifier(), mappings.length);
+		response.padHeader();
 		outputStream.write(mappings, 0, mappings.length);
 	}
 }

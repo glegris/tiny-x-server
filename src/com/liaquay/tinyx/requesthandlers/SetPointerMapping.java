@@ -52,7 +52,8 @@ public class SetPointerMapping implements RequestHandler {
 		inputStream.read(map, 0, lengthOfMap);
 		pointer.setPointerMapping(new PointerMapping(map));
 		
-		// Reply 0 = success, 1 = busy
+		// Reply 0 = success, 1 = busy, 2 = failed
+		// TODO implement busy behaviour (I think this means don't map depressed buttons).
 		response.respond(0, 0);
 	}
 }

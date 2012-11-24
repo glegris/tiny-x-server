@@ -23,7 +23,12 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Keyboard;
+import com.liaquay.tinyx.model.KeyboardMapping;
+import com.liaquay.tinyx.model.ModifierMapping;
 import com.liaquay.tinyx.model.Server;
 
 public class SetModifierMapping implements RequestHandler {
@@ -34,11 +39,32 @@ public class SetModifierMapping implements RequestHandler {
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();
+		final int keycodesPerModifier = request.getData();
+		final byte[] mapping = new byte[keycodesPerModifier*8];
+		inputStream.read(mapping, 0, mapping.length);
+		
+		// Range check each key-code
+		final Keyboard keyboard = server.getKeyboard();
+		final KeyboardMapping keyboardMapping = keyboard.getKeyboardMapping();
+		final int minKeycode = keyboardMapping.getFirstKeyCode();
+		final int maxKeycode = minKeycode + keyboardMapping.getKeycodeCount();
+		for(int i = 0; i < mapping.length; ++i) {
+			final int keycode = mapping[i] & 0xff;
+			if(keycode != 0 && (keycode < minKeycode || keycode > maxKeycode)) {
+				response.error(ErrorCode.Value, keycode);
+				return;
+			}
+		}
+		
+		// TODO check busy state (I think this means you can't map depressed buttons)
+		
+		final ModifierMapping modifierMapping = new ModifierMapping(keycodesPerModifier, mapping);
+		keyboard.setModifierMapping(modifierMapping);
+			
+		// Reply 0 = success, 1 = busy, 2 = failed
+		// TODO implement busy behaviour (I think this means don't map depressed buttons).
+		response.respond(0, 0);
 	}
 }

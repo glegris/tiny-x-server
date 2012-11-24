@@ -22,12 +22,17 @@ public class Keyboard {
 	
 	public interface Listener {
 		public void mappingNotify(final int firstKeyCode, final int count);
+		public void modiferNotify();
 	}
 
 	private Listener _listener = new Listener() {
 		@Override
 		public void mappingNotify(int firstKeyCode, int count) {
 		}		
+		
+		@Override
+		public void modiferNotify() {
+		}
 	};
 	
 	void setListener(final Listener listener) {
@@ -145,5 +150,10 @@ public class Keyboard {
 	
 	public ModifierMapping getModifierMapping() {
 		return _modifierMapping;
+	}
+
+	public void setModifierMapping(final ModifierMapping modifierMapping) {
+		_modifierMapping = modifierMapping;
+		_listener.modiferNotify();
 	}
 }

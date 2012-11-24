@@ -72,12 +72,17 @@ public class Server extends Client {
 		
 		_eventFactories = eventFactories;
 		_fontFactory = fontFactory;
-		_keyboard = keyboard;
+		_keyboard = keyboard; 
 		
 		_keyboard.setListener(new Keyboard.Listener() {
 			@Override
 			public void mappingNotify(final int firstKeyCode, final int count) {
 				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Keyboard, firstKeyCode, count));
+			}
+
+			@Override
+			public void modiferNotify() {
+				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Modifier, 0, 0));
 			}
 		});
 	    
