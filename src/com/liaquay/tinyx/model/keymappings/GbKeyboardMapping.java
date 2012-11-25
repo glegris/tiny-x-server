@@ -277,8 +277,8 @@ public class GbKeyboardMapping extends KeyboardMapping {
 	public GbKeyboardMapping() {
 		super(
 				8, // first key code 
-				MAPPINGS.length / 3, // key code count 
-				3, // keysymsPerKeycode 
+				MAPPINGS.length / 4, // key code count 
+				4, // keysymsPerKeycode 
 				Arrays.copyOf(MAPPINGS, MAPPINGS.length)
 				);
 	}
