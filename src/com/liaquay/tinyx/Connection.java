@@ -18,19 +18,23 @@
  */
 package com.liaquay.tinyx;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.liaquay.tinyx.TinyXServer.Executable;
+import com.liaquay.tinyx.io.LsbXOutputStream;
+import com.liaquay.tinyx.io.MsbXOutputStream;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.PostBox;
 import com.liaquay.tinyx.model.Server;
 
-public class Connection implements Executable {
+public class Connection implements Executable, PostBox {
 	
 	private final static Logger LOGGER = Logger.getLogger(Connection.class.getName());
 
@@ -39,9 +43,11 @@ public class Connection implements Executable {
 	private final RequestAdaptor _request;
 	private final ResponseAdaptor _response;
 	private final RequestHandler _requestHandler;
-	private final ArrayBlockingQueue<Event> _outTray;
+	private final ArrayBlockingQueue<byte[]> _outTray = new  ArrayBlockingQueue<byte[]>(50);
 	private final XOutputStream _outputStream;
 	private final XInputStream _inputStream;
+	private final XOutputStream _eventOutputStream;
+	private final ByteArrayOutputStream _eventByteArrayOutputStream = new ByteArrayOutputStream(32);
 	
 	private boolean _isAlive = true;
 	
@@ -49,17 +55,24 @@ public class Connection implements Executable {
 			           final XOutputStream outputStream,
 			           final Server server,
 			           final Client client,
-			           final RequestHandler requestHandler, 
-			           final ArrayBlockingQueue<Event> outTray) {
+			           final RequestHandler requestHandler) {
 		
 		_server = server;
 		_client = client;
 		_request = new RequestAdaptor(inputStream);
 		_response = new ResponseAdaptor(outputStream);
 		_requestHandler = requestHandler;
-		_outTray = outTray;
 		_outputStream = outputStream;
 		_inputStream = inputStream;
+		
+		switch(_outputStream.getByteOrder()) {
+		case LSB:
+			_eventOutputStream = new LsbXOutputStream(_eventByteArrayOutputStream);
+			break;
+		default:
+			_eventOutputStream = new MsbXOutputStream(_eventByteArrayOutputStream);
+			break;
+		}
 	}
 	
 	@Override
@@ -77,13 +90,13 @@ public class Connection implements Executable {
 			public void run() {
 				while(_isAlive) {
 					try {
-						final Event event = _outTray.take();
+						final byte[] event = _outTray.take();
 						
 						// Ensure output stream is protected from concurrent access
 						// in particular from the request handler thread.
 						synchronized (_outputStream) {
 							try {
-								event.write(_outputStream, _request.getSequenceNumber());
+								_outputStream.write(event, 0, event.length);
 							}
 							catch(final Exception e) {
 								LOGGER.log(Level.SEVERE, "Failed to deliver event", e);
@@ -138,5 +151,16 @@ public class Connection implements Executable {
 				_server.freeClient(_client);
 			}
 		}
+	}
+	
+	@Override
+	public void send(final Event event) {
+		try {
+			event.write(_eventOutputStream, _request.getSequenceNumber());
+		} catch (final IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		_outTray.add(_eventByteArrayOutputStream.toByteArray());
 	}
 }

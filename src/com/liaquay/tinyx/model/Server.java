@@ -227,5 +227,30 @@ public class Server extends Client {
 		_clients.freeAllClients();
 		// TODO free all resources
 	}
-
+	
+	/**
+	 * Called by implementation to deliver a key press to the server
+	 * 
+	 * @param keycode code representing physical key in the range 0-255
+	 * @param when time in milliseconds
+	 */
+	public void keyPressed(final int keycode, final long when) {
+		_keyboard.keyPressed(keycode, when);
+		
+		//TODO ...
+		
+	}
+	
+	/**
+	 * Called by implementation to deliver a key release to the server
+	 * 
+	 * @param keycode code representing physical key in the range 0-255
+	 * @param when time in milliseconds
+	 */
+	public void keyReleased(final int keycode, final long when){
+		_keyboard.keyPressed(keycode, when);
+		
+		//TODO ...
+		
+	}	
 }

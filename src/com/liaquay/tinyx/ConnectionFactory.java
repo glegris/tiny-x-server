@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -205,9 +204,8 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		
 		synchronized (_server) {
 			
-			final ArrayBlockingQueue<Event> outTray = new ArrayBlockingQueue<Event>(50);
-			
-			final Client client = _server.allocateClient(new PostMan(outTray));
+			final PostMan postMan = new PostMan();
+			final Client client = _server.allocateClient(postMan);
 			
 			if(client == null) {
 				LOGGER.log(Level.SEVERE, "Could not allocate new client");
@@ -218,7 +216,10 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 				// Send the opening response
 				writeProlog(xoutputStream, client.getClientId());
 
-				return new Connection(xinputStream, xoutputStream, _server, client, _requestHandler, outTray);
+				final Connection connection =  new Connection(xinputStream, xoutputStream, _server, client, _requestHandler); 
+				postMan._destination = connection;
+				
+				return connection;
 			}
 		}
 	}
@@ -228,15 +229,11 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 	 */
 	private static class PostMan implements PostBox {
 
-		private final ArrayBlockingQueue<Event> _outTray;
-		
-		public PostMan(final ArrayBlockingQueue<Event> outTray) {
-			_outTray = outTray;
-		}
+		private PostBox _destination = null;
 		
 		@Override
-		public void send(final Event envelope) {
-			_outTray.add(envelope);
+		public void send(final Event event) {
+			_destination.send(event);
 		}
 	}
 }

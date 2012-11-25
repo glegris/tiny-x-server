@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.liaquay.tinyx.model.Screen;
+import com.liaquay.tinyx.model.Server;
 
 public class XawtScreen {
 
@@ -50,7 +51,7 @@ public class XawtScreen {
 	private final Frame _frame;
 	private final XawtWindow _rootWindow;
 	
-	public XawtScreen(final Screen screen) {
+	public XawtScreen(final Server server, final Screen screen) {
 		
 		_frame = new Frame();
 		_frame.setResizable(false);
@@ -63,7 +64,7 @@ public class XawtScreen {
 			}
 		});
 		
-		_rootWindow = new XawtWindow(screen.getRootWindow());
+		_rootWindow = new XawtWindow(server, screen.getRootWindow());
 		_frame.add(_rootWindow.getCanvas());
 		_frame.pack();
 		_frame.setVisible(true);

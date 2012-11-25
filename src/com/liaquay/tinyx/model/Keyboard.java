@@ -156,4 +156,30 @@ public class Keyboard {
 		_modifierMapping = modifierMapping;
 		_listener.modiferNotify();
 	}
+	
+	/**
+	 * Called by server
+	 * 
+	 * @param keycode code representing physical key in the range 0-255
+	 * @param when time in milliseconds
+	 */
+	void keyPressed(final int keycode, final long when) {
+		_keymap.set(keycode);
+		
+		//TODO ...
+		
+	}
+	
+	/**
+	 * Called by server
+	 * 
+	 * @param keycode code representing physical key in the range 0-255
+	 * @param when time in milliseconds
+	 */
+	void keyReleased(final int keycode, final long when){
+		_keymap.clear(keycode);
+		
+		//TODO ...
+		
+	}	
 }

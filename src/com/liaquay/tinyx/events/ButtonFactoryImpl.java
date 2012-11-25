@@ -41,10 +41,10 @@ public class ButtonFactoryImpl {
 				outputStream.writeInt (root.getId ());
 				outputStream.writeInt (eventWindow.getId ());
 				outputStream.writeInt (child == null ? 0 : child.getId ());
-				outputStream.writeShort (pointer.getX());
-				outputStream.writeShort (pointer.getY());
-				outputStream.writeShort (pointer.getX() - eventWindow.getAbsX() - eventWindow.getBorderWidth());
-				outputStream.writeShort (pointer.getY() - eventWindow.getAbsY() - eventWindow.getBorderWidth());
+				outputStream.writeShort (pointer.getX() - root.getAbsX());
+				outputStream.writeShort (pointer.getY() - root.getAbsY());
+				outputStream.writeShort (pointer.getX() - eventWindow.getAbsX());
+				outputStream.writeShort (pointer.getY() - eventWindow.getAbsY());
 				outputStream.writeShort (pointer.getState());
 				outputStream.writeByte (sameScreen ? 1 : 0);
 			}

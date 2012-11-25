@@ -21,9 +21,12 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
 
@@ -110,7 +113,7 @@ public class XawtWindow  {
     	graphics.fillRect(0, 0, window.getWidth(), window.getHeight());    	
     }
     
-	public XawtWindow(final Window window) {
+	public XawtWindow(final Server server, final Window window) {
 		
 		_canvas.setBounds(
 				window.getX(),
@@ -125,6 +128,30 @@ public class XawtWindow  {
 			public void mouseClicked(final MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
 				System.out.println(String.format("%d %d %x08 ", e.getX(),e.getY(),evw.getId()));
+			}
+		});
+		
+		_canvas.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(final KeyEvent e) {
+				System.out.println("Released ");
+				System.out.println("Keycode " + e.getKeyCode());
+				System.out.println("Location " + e.getKeyLocation());
+				System.out.println("Modifiers " + e.getModifiersEx());
+				synchronized(server) {
+					server.keyReleased(e.getKeyCode(), e.getWhen());
+				}
+			}
+			
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				System.out.println("Pressed ");
+				System.out.println("Keycode " + e.getKeyCode());
+				System.out.println("Location " + e.getKeyLocation());
+				System.out.println("Modifiers " + e.getModifiersEx());
+				synchronized(server) {
+					server.keyPressed(e.getKeyCode(), e.getWhen());
+				}
 			}
 		});
 	}

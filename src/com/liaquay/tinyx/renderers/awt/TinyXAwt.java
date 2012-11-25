@@ -108,10 +108,10 @@ public class TinyXAwt {
 
 		final TinyXServer tinyXServer = new TinyXServer(6001, new ConnectionFactory(server));
 		
-		final XawtScreen xawtScreen = new XawtScreen(screen);
+		final XawtScreen xawtScreen = new XawtScreen(server, screen);
 		xawtScreen.getListeners().add(new Listener() {
 			@Override
-			public void closed() {
+			public void closed() { 
 				tinyXServer.close();
 			}
 		});
