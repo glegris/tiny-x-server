@@ -197,17 +197,17 @@ public class Window implements Drawable {
 	 */
 	private void updateLocation() {
 		if(_parent == null) {
-			_absX = _x;
-			_absY = _y;
-			_clipX = _absX;
-			_clipY = _absY;
+			_absX = _x + _borderWidth;
+			_absY = _y + _borderWidth;
+			_clipX = _x;
+			_clipY = _y;
 			_clipW = _widthPixels + _borderWidth + _borderWidth;
 			_clipH = _heightPixels + _borderWidth + _borderWidth;
 		}
 		else {
 			// Calculate inner coordinates of the parent window
-			final int pix0 = _parent._absX + _parent._borderWidth;
-			final int piy0 = _parent._absY + _parent._borderWidth;
+			final int pix0 = _parent._absX;
+			final int piy0 = _parent._absY;
 			final int pix1 = pix0 + _parent._widthPixels;
 			final int piy1 = piy0 + _parent._heightPixels;
 
@@ -229,8 +229,8 @@ public class Window implements Drawable {
 			final int cox1 = cox0 + _widthPixels + _borderWidth + _borderWidth;
 			final int coy1 = coy0 + _heightPixels + _borderWidth + _borderWidth;
 
-			_absX = cox0;
-			_absY = coy0;
+			_absX = cox0 + _borderWidth;
+			_absY = coy0 + _borderWidth;
 
 			// Clip the outer child to the inner clipped parent
 			_clipX = cox0 > cpx0 ? cox0 : cpx0;

@@ -73,11 +73,11 @@ public class XawtWindow  {
     			window.getClipWidth(), 
     			window.getClipHeight());
     	
-    	graphics.translate(window.getAbsX(), window.getAbsY());
+    	final int borderWidth = window.getBorderWidth();
+    	graphics.translate(window.getAbsX()-borderWidth, window.getAbsY()-borderWidth);
 
     	paintBorder(window, graphics);
     	
-    	final int borderWidth = window.getBorderWidth();
     	final int borderWidthX2 = borderWidth + borderWidth;
     	
     	
