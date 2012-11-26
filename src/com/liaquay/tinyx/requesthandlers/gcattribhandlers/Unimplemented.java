@@ -38,7 +38,7 @@ public class Unimplemented implements AttributeHandler<GraphicsContext> {
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
 		
-		throw new RuntimeException("Unimplemented");
+		throw new RuntimeException("Unimplemented Method: " + this.getClass());
 	}
 
 	@Override

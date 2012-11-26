@@ -18,6 +18,39 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class GraphicsExposures extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+
+public class GraphicsExposures implements AttributeHandler<GraphicsContext> {
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int value = inputStream.readSignedByte();
+		boolean graphicsExposures = false;
+		if (value == -1) {
+			graphicsExposures = true;
+		}
+		graphicsContext.setGraphicsExposures(graphicsExposures);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeByte(graphicsContext.getFunction());
+	}
 }

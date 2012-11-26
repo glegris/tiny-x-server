@@ -68,4 +68,13 @@ public class GraphicsContext extends AbstractResource {
 	public int getLineWidth() {
 		return _lineWidth;
 	}
+
+	public boolean graphicsExposures = false;
+	
+	public boolean getGraphicsExposures() {
+		return this.graphicsExposures;
+	}
+	public void setGraphicsExposures(boolean graphicsExposures) {
+		this.graphicsExposures = graphicsExposures;
+	}
 }

@@ -61,7 +61,7 @@ public class FontString {
 			} else {
 				setFamilyName(name);
 			}
-		} else {
+		} else if (split.length == 15){
 			setFoundry(split[1]);
 			setFamilyName(split[2]);
 			setWeightName(split[3]);
@@ -91,6 +91,8 @@ public class FontString {
 			}
 			setCharsetRegistry(split[13]);
 			setCharsetEncoding(split[14]);
+		} else {
+			System.out.println("Kaboom: Name: " + name + "  Len: " + split.length);
 		}
 	}
 
