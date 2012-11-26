@@ -52,7 +52,7 @@ public class QueryPointer implements RequestHandler {
 			return;
 		}
 		
-		final Window root = window.getScreen();
+		final Window root = window.getRootWindow();
 		final int rootWindowId = root.getId();
 		
 		// Create the response
@@ -61,13 +61,11 @@ public class QueryPointer implements RequestHandler {
 
 		os.writeInt(rootWindowId);
 		os.writeInt(rootWindowId == windowId ? 0 : windowId);
-		os.writeShort(p.getX());
-		os.writeShort(p.getY());
-		// TODO the following should be window relative coords
-		// TODO i.e. p.x - w.x (where w.x is the absolute coordinate of the window).
-		os.writeShort(window.getScreen().getWidthPixels() - p.getX());
-		os.writeShort(window.getScreen().getHeightPixels() - p.getY());
-		os.writeShort(p.getState());
+		os.writeShort(p.getX() - root.getAbsX());
+		os.writeShort(p.getY() - root.getAbsY());
+		os.writeShort(p.getX() - window.getAbsX());
+		os.writeShort(p.getY() - window.getAbsY());
+		os.writeShort(server.getKeyButtonMask());
 	}
 
 }

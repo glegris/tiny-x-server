@@ -162,5 +162,7 @@ public class Connection implements Executable, PostBox {
 			e.printStackTrace();
 		}
 		_outTray.add(_eventByteArrayOutputStream.toByteArray());
+		
+		_eventByteArrayOutputStream.reset();
 	}
 }

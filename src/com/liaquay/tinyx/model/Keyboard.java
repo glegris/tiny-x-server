@@ -20,6 +20,17 @@ package com.liaquay.tinyx.model;
 
 public class Keyboard {
 	
+	public enum Modifier {
+		Shift,
+		Lock,
+		Control,
+		Mod1,
+		Mod2,
+		Mod3,
+		Mod4,
+		Mod5
+	};
+	
 	public interface Listener {
 		public void mappingNotify(final int firstKeyCode, final int count);
 		public void modiferNotify();
@@ -156,6 +167,23 @@ public class Keyboard {
 		_modifierMapping = modifierMapping;
 		_listener.modiferNotify();
 	}
+	
+	/**
+	 * Get the state of the current modifiers.
+	 * 
+	 * @param Modifier the modifier
+	 * @return true if the modifier is set
+	 */
+	public boolean isModified(final Modifier Modifier) {
+		final int keycodesPerModifier = _modifierMapping.getKeycodesPerModifier();
+		for(int keycodeIndex = 0; keycodeIndex < keycodesPerModifier; ++keycodeIndex) {
+			final int keycode = _modifierMapping.getKeycode(Modifier.ordinal(), keycodeIndex);
+			if(keycode == 0) return false;
+			if(_keymap.isSet(keycode)) return true;
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Called by server

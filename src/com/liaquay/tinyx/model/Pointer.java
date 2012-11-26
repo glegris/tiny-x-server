@@ -34,17 +34,9 @@ public class Pointer {
 		_listener = listener;
 	}
 	
-	/**
-	 * Used to form the pointer button state
-	 */
-	public static final int Button1Mask=(1<<8);
-	public static final int Button2Mask=(1<<9);
-	public static final int Button3Mask=(1<<10);
-	public static final int Button4Mask=(1<<11);
-	public static final int Button5Mask=(1<<12);
-	
-	private int _x, _y;
-	private int _state;
+	private int _x = 0;
+	private int _y = 0;
+	private int _buttonState = 0;
 	private int _accelerationNumerator = 1;
 	private int _accelerationDemoninator = 1;
 	private int _threshold = 1;
@@ -53,9 +45,6 @@ public class Pointer {
 	private PointerMapping _mapping = new PointerMapping(5);
 
 	public Pointer() {
-		_x = 0;
-		_y = 0;
-		_state = 0;
 	}
 	
 	public PointerMapping getPointerMapping() {
@@ -80,12 +69,16 @@ public class Pointer {
 		_y = y;
 	}
 
-	public int getState() {
-		return _state;
+	public void buttonPressed(final int buttonIndex) {
+		_buttonState |= 1 << buttonIndex;
 	}
 	
-	public void setState(final int state) {
-		_state = state;
+	public void buttonReleased(final int buttonIndex) {
+		_buttonState &= ~(1 << buttonIndex);
+	}
+	
+	public boolean isButtonPressed(final int buttonIndex) {
+		return (_buttonState & 1 << buttonIndex) != 0;
 	}
 
 	public void setAccelerationNumerator(final int accelerationNumerator) {

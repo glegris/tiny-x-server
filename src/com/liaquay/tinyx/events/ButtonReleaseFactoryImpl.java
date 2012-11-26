@@ -34,6 +34,7 @@ public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements Butto
 			final Window	eventWindow,
 			final Window	child,
 			final Pointer	pointer,
+			final int keyButtonMask,
 			final boolean	sameScreen) {
 	
 		return create(
@@ -43,6 +44,7 @@ public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements Butto
 				eventWindow,
 				child,
 				pointer,
+				keyButtonMask,
 				sameScreen);
 	}
 }
