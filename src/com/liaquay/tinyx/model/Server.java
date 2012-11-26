@@ -229,6 +229,31 @@ public class Server extends Client {
 	}
 	
 	/**
+	 * Get a combination of modifier keys and pointer buttons for events
+	 * @return
+	 */
+	public int getKeyButtonMask() {
+		return 
+				(_keyboard.isModified(Keyboard.Modifier.Shift) ? 1 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Lock) ? 1<<1 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Control) ? 1<<2 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Mod1) ? 1<<3 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Mod2) ? 1<<4 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Mod3) ? 1<<5 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Mod4) ? 1<<6 : 0 ) |
+				(_keyboard.isModified(Keyboard.Modifier.Mod5) ? 1<<7 : 0 ) |
+				(_pointer.isButtonPressed(0) ? 1<<8 : 0 ) |
+				(_pointer.isButtonPressed(1) ? 1<<9 : 0 ) |
+				(_pointer.isButtonPressed(2) ? 1<<10 : 0 ) |
+				(_pointer.isButtonPressed(3) ? 1<<11 : 0 ) |
+				(_pointer.isButtonPressed(4) ? 1<<12 : 0 );
+	}
+	
+	//
+	// TODO should the following be part of an input device adapter?
+	//
+	
+	/**
 	 * Called by implementation to deliver a key press to the server
 	 * 
 	 * @param keycode code representing physical key in the range 0-255
@@ -253,4 +278,29 @@ public class Server extends Client {
 		//TODO ...
 		
 	}	
+	
+	/**
+	 * Called by implementation to deliver a pointer button press to the server
+	 * 
+	 * @param buttonNumber code representing physical button in the range 1-5
+	 * @param when time in milliseconds
+	 */
+	public void buttonPressed(final int buttonNumber, final long when) {
+		
+		//TODO ...
+		
+	}
+	
+	/**
+	 * Called by implementation to deliver a key release to the server
+	 * 
+	 * @param buttonNumber code representing physical button in the range 1-5
+	 * @param when time in milliseconds
+	 */
+	public void buttonReleased(final int buttonNumber, final long when){
+		
+		//TODO ...
+		
+	}	
+
 }

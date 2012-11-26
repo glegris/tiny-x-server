@@ -33,6 +33,7 @@ public class ButtonFactoryImpl {
 			final Window	eventWindow,
 			final Window	child,
 			final Pointer	pointer,
+			final int keyButtonMask,
 			final boolean	sameScreen) {
 	
 		return new TimestampedEventImpl(event, button) {
@@ -45,7 +46,7 @@ public class ButtonFactoryImpl {
 				outputStream.writeShort (pointer.getY() - root.getAbsY());
 				outputStream.writeShort (pointer.getX() - eventWindow.getAbsX());
 				outputStream.writeShort (pointer.getY() - eventWindow.getAbsY());
-				outputStream.writeShort (pointer.getState());
+				outputStream.writeShort (keyButtonMask);
 				outputStream.writeByte (sameScreen ? 1 : 0);
 			}
 		};

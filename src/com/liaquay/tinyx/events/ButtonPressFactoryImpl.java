@@ -34,6 +34,7 @@ public class ButtonPressFactoryImpl extends ButtonFactoryImpl implements ButtonF
 			final Window	eventWindow,
 			final Window	child,
 			final Pointer	pointer,
+			final int keyButtonMask,
 			final boolean	sameScreen) {
 	
 		return create(
@@ -43,6 +44,7 @@ public class ButtonPressFactoryImpl extends ButtonFactoryImpl implements ButtonF
 				eventWindow,
 				child,
 				pointer,
+				keyButtonMask,
 				sameScreen);
 	}
 }

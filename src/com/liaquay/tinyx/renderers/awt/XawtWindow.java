@@ -23,8 +23,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
@@ -123,11 +123,41 @@ public class XawtWindow  {
 		
 		window.setListener(_windowListener);
 		
-		_canvas.addMouseListener(new MouseAdapter() {
+		_canvas.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
-				System.out.println(String.format("%d %d %x08 ", e.getX(),e.getY(),evw.getId()));
+				System.out.println(String.format("Button %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				final Window evw = window.windowAt(e.getX(), e.getY());
+				System.out.println(String.format("Button pressed %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
+				synchronized(server) {
+					server.buttonPressed(e.getButton(), e.getWhen());
+				}
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				final Window evw = window.windowAt(e.getX(), e.getY());
+				System.out.println(String.format("Button release %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
+				synchronized(server) {
+					server.buttonReleased(e.getButton(), e.getWhen());
+				}
 			}
 		});
 		

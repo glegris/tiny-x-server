@@ -17,4 +17,8 @@ public class ModifierMapping {
 	public byte[] getMappings() {
 		return _mappings;
 	}
+	
+	public int getKeycode(final int modifierIndex, final int keycodeIndex) {
+		return _mappings[(modifierIndex * _keycodesPerModifier) + keycodeIndex] & 0xff;
+	}
 }
