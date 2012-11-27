@@ -21,7 +21,7 @@ package com.liaquay.tinyx.io;
 import java.io.IOException;
 
 public interface XInputStream {
-	public String readString() throws IOException;
+	public String readString(int paddingBytes) throws IOException;
 	public int readUnsignedByte() throws IOException;
 	public int readSignedByte() throws IOException;
 	public int readUnsignedShort() throws IOException;

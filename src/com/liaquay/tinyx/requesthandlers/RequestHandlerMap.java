@@ -127,6 +127,9 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
 		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "...");
+		if (requestHandler instanceof ListFonts) {
+			System.out.println();
+		}
 		requestHandler.handleRequest(server, client, request, response);
 	}
 }

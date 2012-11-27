@@ -43,7 +43,7 @@ public class GraphicsExposures implements AttributeHandler<GraphicsContext> {
 	
 		int value = inputStream.readSignedByte();
 		boolean graphicsExposures = false;
-		if (value == -1) {
+		if (value != 0) {
 			graphicsExposures = true;
 		}
 		graphicsContext.setGraphicsExposures(graphicsExposures);

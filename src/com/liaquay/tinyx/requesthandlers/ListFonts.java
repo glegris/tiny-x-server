@@ -24,15 +24,10 @@ public class ListFonts implements RequestHandler {
 		final int maxNames = inputStream.readUnsignedShort();
 
 		// The pattern to search for fonts based on
-		final String pattern = inputStream.readString();
+		final String pattern = inputStream.readString(0);
 
 		// Query our fonts registry
 		List<FontString> matches = server.getFontFactory().getMatchingFonts(pattern);
-		
-		int length = 0;
-		for (FontString match : matches) {
-			length+=match.toString().length();
-		}
 
 		// Response
 		final XOutputStream outputStream = response.respond(1);//, (length+3)/4);
@@ -44,18 +39,13 @@ public class ListFonts implements RequestHandler {
 
 		int counter = 1;
 		for (FontString currentFont : matches) {
-			byte[] name = currentFont.toString().getBytes();
-
-			outputStream.writeByte(name.length);
-			outputStream.write(name, 0, name.length);
+			outputStream.writeString(currentFont.toString());
 
 			if (counter >= maxNames)
 				break;
-			
+
 			counter++;
 		}
-		
-		outputStream.writePad((-length)&3);
 	}
 
 }

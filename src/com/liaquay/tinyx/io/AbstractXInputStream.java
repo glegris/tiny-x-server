@@ -20,26 +20,31 @@ package com.liaquay.tinyx.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
+
+import com.liaquay.tinyx.Connection;
 
 public abstract class AbstractXInputStream implements XInputStream {
 
+	private final static Logger LOGGER = Logger.getLogger(AbstractXInputStream.class.getName());
+
 	private final InputStream _inputStream;
 	private int _counter = 0;
-	
+
 	@Override
 	public final int getCounter() {
 		return _counter;
 	}
-	
+
 	@Override
 	public final void resetCounter() {
 		_counter = 0;
 	}
-	
+
 	public AbstractXInputStream(final InputStream inputStream) {
 		_inputStream = inputStream;
 	}
-	
+
 	@Override
 	public final int readUnsignedByte() throws IOException {
 		final int d = _inputStream.read();
@@ -77,33 +82,37 @@ public abstract class AbstractXInputStream implements XInputStream {
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public final void skip(final int length) throws IOException {
 		_inputStream.skip(length);
 		_counter+=length;
 	}
-	
+
 	@Override
 	public final void close() throws IOException {
 		_inputStream.close();
 	}
-	
+
 	private byte[] _stringBuffer = new byte[64];
-	
-	public String readString() throws IOException {
+
+	public String readString(int skipBytes) throws IOException {
 		final int length = readUnsignedShort();
-	    skip(2);
-	    final byte[] buffer;
-	    if(length <= _stringBuffer.length) {
-	    	buffer = _stringBuffer;
-	    }
-	    else {
-	    	buffer = new byte[length];
-	    }
-	    read(buffer, 0, length);
-	    skip((-length) & 3);
-	    return new String(buffer, 0, length);
+		if (skipBytes > 0) {
+			skip(skipBytes);
+		}
+
+		final byte[] buffer;
+		if(length <= _stringBuffer.length) {
+			buffer = _stringBuffer;
+		}
+		else {
+			buffer = new byte[length];
+		}
+		read(buffer, 0, length);
+		LOGGER.info("Length of string: " + length + " skipping " + ((-length) &3) + " bytes at end of request");
+		skip((-length) & 3);
+		return new String(buffer, 0, length);
 	}
 }
 

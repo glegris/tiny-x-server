@@ -41,8 +41,8 @@ public class QueryExtension implements RequestHandler {
 			final Request request, 
 			final Response response) throws IOException {
 
-		final String requestedExtensionName = request.getInputStream().readString();
-
+		final String requestedExtensionName = request.getInputStream().readString(2);
+		
 		LOGGER.log(Level.INFO, "Extension query for " + requestedExtensionName);
 
 		final Extension ext = server.getExtensions().getExtension(requestedExtensionName);

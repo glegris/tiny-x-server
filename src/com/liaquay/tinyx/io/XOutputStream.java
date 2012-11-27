@@ -21,6 +21,7 @@ package com.liaquay.tinyx.io;
 import java.io.IOException;
 
 public interface XOutputStream {
+	public void writeString(final String str) throws IOException;
 	public void writeBoolean(final boolean b) throws IOException;
 	public void writeByte(final byte b) throws IOException;
 	public void writeByte(final int i) throws IOException;
