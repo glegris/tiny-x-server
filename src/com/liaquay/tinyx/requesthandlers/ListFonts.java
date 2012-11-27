@@ -45,7 +45,7 @@ public class ListFonts implements RequestHandler {
 		final int maxNames = inputStream.readUnsignedShort();
 
 		// The pattern to search for fonts based on
-		final String pattern = inputStream.readString(0);
+		final String pattern = inputStream.readString();
 
 		// Query our fonts registry
 		List<FontString> matches = server.getFontFactory().getMatchingFonts(pattern);

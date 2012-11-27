@@ -96,7 +96,7 @@ public abstract class AbstractXInputStream implements XInputStream {
 
 	private byte[] _stringBuffer = new byte[64];
 
-	public String readString(int skipBytes) throws IOException {
+	public String readString() throws IOException {
 		final int length = readUnsignedShort();
 	    skip(-_counter & 3);
 	    final byte[] buffer;

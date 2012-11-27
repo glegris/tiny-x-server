@@ -48,7 +48,7 @@ public class OpenFont implements RequestHandler {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
-		final String requestedFontName = inputStream.readString(2);
+		final String requestedFontName = inputStream.readString();
 		
 		FontString fontName = server.getFontFactory().getFirstMatchingFont(requestedFontName);
 		final Font font = new Font(fid, fontName);

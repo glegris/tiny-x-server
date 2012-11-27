@@ -40,7 +40,7 @@ public class InternAtom implements RequestHandler {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final boolean onlyIfExists = request.getData() == 1;
-		final String atomName = inputStream.readString(2);
+		final String atomName = inputStream.readString();
 		final Atoms atoms = server.getAtoms();
 		Atom atom = atoms.get(atomName);
 		if(!onlyIfExists && atom == null) {
