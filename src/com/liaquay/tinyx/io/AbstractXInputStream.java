@@ -98,21 +98,17 @@ public abstract class AbstractXInputStream implements XInputStream {
 
 	public String readString(int skipBytes) throws IOException {
 		final int length = readUnsignedShort();
-		if (skipBytes > 0) {
-			skip(skipBytes);
-		}
-
-		final byte[] buffer;
-		if(length <= _stringBuffer.length) {
-			buffer = _stringBuffer;
-		}
-		else {
-			buffer = new byte[length];
-		}
-		read(buffer, 0, length);
-		LOGGER.info("Length of string: " + length + " skipping " + ((-length) &3) + " bytes at end of request");
-		skip((-length) & 3);
-		return new String(buffer, 0, length);
+	    skip(-_counter & 3);
+	    final byte[] buffer;
+	    if(length <= _stringBuffer.length) {
+	    	buffer = _stringBuffer;
+	    }
+	    else {
+	    	buffer = new byte[length];
+	    }
+	    read(buffer, 0, length);
+	    skip((-length) & 3);
+	    return new String(buffer, 0, length);
 	}
 }
 
