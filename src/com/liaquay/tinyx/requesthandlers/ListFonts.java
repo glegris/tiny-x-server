@@ -56,7 +56,8 @@ public class ListFonts implements RequestHandler {
 		final int numberOfMatches = matches.size() > maxNames ? maxNames : matches.size();
 		outputStream.writeShort(numberOfMatches);
 
-		response.padHeader();
+		//TODO See why this is needed. It really does seem to need this. If changed to response.padHeader() it doesn't write the strings out correctly!
+		outputStream.writePad(22);
 
 		int counter = 1;
 		for (FontString currentFont : matches) {
