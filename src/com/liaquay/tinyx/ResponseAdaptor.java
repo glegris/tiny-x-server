@@ -73,6 +73,7 @@ public class ResponseAdaptor implements Response {
 		_responseCode = ErrorCode.None;
 		
 		_outputStream.resetCounter();
+		_extraOutputStream.resetCounter();
 	}
 	
 	private ReplyCode _replyCode;

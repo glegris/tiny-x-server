@@ -48,7 +48,7 @@ public class ListFonts implements RequestHandler {
 		final String pattern = inputStream.readString();
 
 		// Query our fonts registry
-		List<FontString> matches = server.getFontFactory().getMatchingFonts(pattern);
+		final List<FontString> matches = server.getFontFactory().getMatchingFonts(pattern);
 
 		// Response
 		final XOutputStream outputStream = response.respond(1);//, (length+3)/4);
@@ -56,11 +56,10 @@ public class ListFonts implements RequestHandler {
 		final int numberOfMatches = matches.size() > maxNames ? maxNames : matches.size();
 		outputStream.writeShort(numberOfMatches);
 
-		//TODO See why this is needed. It really does seem to need this. If changed to response.padHeader() it doesn't write the strings out correctly!
-		outputStream.writePad(22);
+		response.padHeader();
 
 		int counter = 1;
-		for (FontString currentFont : matches) {
+		for (final FontString currentFont : matches) {
 			outputStream.writeString(currentFont.toString());
 
 			if (counter >= maxNames)
