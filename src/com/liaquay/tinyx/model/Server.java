@@ -18,8 +18,13 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
@@ -59,7 +64,44 @@ public class Server extends Client {
 	private final EventFactories _eventFactories;
 	private final FontFactory _fontFactory;
 	private Pointer _pointer = new Pointer();
-
+	
+	/**
+	 * A lock used to protect the server from concurrent updates
+	 */
+	private final Lock _syncLock = new ReentrantLock();
+	
+	/**
+	 * Lock the server for read/update
+	 */
+	public void lock() {
+		_syncLock.lock();
+	}
+	
+	/**
+	 * Unlock the server after read/update
+	 */
+	public void unlock() {
+		_syncLock.unlock();
+	}
+	
+	/**
+	 * A Lock used to grab the server for a particular client
+	 */
+	private final Lock _grabLock = new ReentrantLock();
+	private Client _grab = null;
+	
+	public void grab(final Client client) {
+		_grabLock.lock();
+		_grab = client;
+	}
+	
+	public void ungrab(final Client client) {
+		if(_grab == client) {
+			_grab = null;
+			_grabLock.unlock();
+		}
+	}
+	
 	public Server(final EventFactories eventFactories, final Keyboard keyboard, final FontFactory fontFactory) {		
 		// Create the server as a client with ID of 0
 		super(	0, 
@@ -168,6 +210,7 @@ public class Server extends Client {
 		}
 		_clients.free(client);
 		_resources.free(client);
+		ungrab(client);
 	}
 	
 	public byte[] getVendor() {
@@ -224,7 +267,11 @@ public class Server extends Client {
 	
 	// TODO I need to be called
 	public void free() {
-		_clients.freeAllClients();
+		for(final Iterator<Client> i = _clients.iterator(); i.hasNext(); ) {
+			final Client client = i.next();
+			freeClient(client);
+		}
+		
 		// TODO free all resources
 	}
 	
@@ -298,9 +345,92 @@ public class Server extends Client {
 	 * @param when time in milliseconds
 	 */
 	public void buttonReleased(final int buttonNumber, final long when){
-		
-		//TODO ...
-		
+		enqueuePtr(new InputEvent() {
+			@Override
+			public long getWhen() {
+				return when;
+			}
+			
+			@Override
+			public void deliver() {
+				_pointer.buttonReleased(buttonNumber);
+				
+				// TODO generate an event and send it to the correct clients
+				_clients.send(_eventFactories.getButtonReleaseFactory().create(buttonNumber, null, null, null, _pointer, getKeyButtonMask(), true));
+				
+			}
+		});
 	}	
+	
+	private void enqueueKey(final InputEvent e) {
+		try {
+			lock();
+			_keyEventQueue.add(e);
+			dequeueAll();
+		}
+		finally {
+			unlock();
+		}
+
+	}
+
+	private void enqueuePtr(final InputEvent e) {
+		try {
+			lock();
+			_ptrEventQueue.add(e);
+			dequeueAll();
+		}
+		finally {
+			unlock();
+		}
+	}	
+	
+	// TODO worry about these getting too large
+	private Queue<InputEvent> _keyEventQueue = new ArrayDeque<InputEvent>(100);
+	private Queue<InputEvent> _ptrEventQueue = new ArrayDeque<InputEvent>(100);
+	private boolean _keyFrozen = false;
+	private boolean _prtFrozen = false;
+	
+	/**
+	 * Dequeue events in the correct order
+	 */
+	private boolean dequeue() {
+		final boolean haveKeyEvents = !_keyEventQueue.isEmpty() && !_keyFrozen;
+		final boolean havePtrEvents = !_ptrEventQueue.isEmpty() && !_prtFrozen;
+		if(haveKeyEvents && !havePtrEvents) {
+			final InputEvent keyEvent = _keyEventQueue.remove();
+			keyEvent.deliver();
+		}
+		else if(!haveKeyEvents && havePtrEvents) {
+			final InputEvent ptrEvent = _ptrEventQueue.remove();
+			ptrEvent.deliver();
+		}
+		else if(haveKeyEvents && havePtrEvents) {
+			final InputEvent keyEvent = _keyEventQueue.remove();
+			final InputEvent ptrEvent = _ptrEventQueue.remove();
+			if(keyEvent.getWhen() - ptrEvent.getWhen() > 0) {
+				keyEvent.deliver();
+				ptrEvent.deliver();
+			}
+			else {
+				ptrEvent.deliver();
+				keyEvent.deliver();
+			}
+		}
+		else {
+			return false;
+		}
+		return true;
+	}
+	
+	private void dequeueAll() {
+		while(dequeue());
+	}
+
+	public void setFreezeState(final boolean keyboard, final boolean pointer) {
+		_keyFrozen = keyboard;
+		_prtFrozen = pointer;
+		dequeueAll();
+	}
 
 }

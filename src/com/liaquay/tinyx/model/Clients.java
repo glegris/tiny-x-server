@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.Iterator;
+
 import com.liaquay.tinyx.util.IntegerAllocator;
 
 /**
@@ -55,15 +57,36 @@ public class Clients implements PostBox {
 	public Client get(final int clientId) {
 		return _clients[clientId];
 	}
-	
-	public void freeAllClients() {
-		for(int i = _clientIdAllocator.nextAllocated(0) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
-			final Client client = _clients[i];
-			client.free();
-			 _clients[i] = null;
-		}
-	}
 
+	public Iterator<Client> iterator() {
+		return new Iterator<Client>() {
+			private int i = _clientIdAllocator.nextAllocated(0);
+			private int j = -1;
+			
+			@Override
+			public boolean hasNext() {
+				return i >= 0;
+			}
+
+			@Override
+			public Client next() {
+				if(i < 0) return null;
+				final Client c = _clients[i];
+				j = i;
+				i = _clientIdAllocator.nextAllocated(i);
+				return c;
+			}
+
+			@Override
+			public void remove() {
+				if(j >= 0) {
+					_clientIdAllocator.free(j);
+					_clients[j] = null;
+				}
+			}
+		};
+	}
+	
 	/**
 	 * Deliver an event to all clients
 	 */

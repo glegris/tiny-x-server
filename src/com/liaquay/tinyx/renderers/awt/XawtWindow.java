@@ -146,18 +146,14 @@ public class XawtWindow  {
 			public void mousePressed(MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
 				System.out.println(String.format("Button pressed %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
-				synchronized(server) {
-					server.buttonPressed(e.getButton(), e.getWhen());
-				}
+				server.buttonPressed(e.getButton(), e.getWhen());
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
 				System.out.println(String.format("Button release %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
-				synchronized(server) {
-					server.buttonReleased(e.getButton(), e.getWhen());
-				}
+				server.buttonReleased(e.getButton(), e.getWhen());
 			}
 		});
 		
@@ -168,9 +164,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				synchronized(server) {
-					server.keyReleased(e.getKeyCode(), e.getWhen());
-				}
+				server.keyReleased(e.getKeyCode(), e.getWhen());
 			}
 			
 			@Override
@@ -179,9 +173,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				synchronized(server) {
-					server.keyPressed(e.getKeyCode(), e.getWhen());
-				}
+				server.keyPressed(e.getKeyCode(), e.getWhen());
 			}
 		});
 	}

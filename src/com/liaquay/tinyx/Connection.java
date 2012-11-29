@@ -43,7 +43,7 @@ public class Connection implements Executable, PostBox {
 	private final RequestAdaptor _request;
 	private final ResponseAdaptor _response;
 	private final RequestHandler _requestHandler;
-	private final ArrayBlockingQueue<byte[]> _outTray = new  ArrayBlockingQueue<byte[]>(50);
+	private final ArrayBlockingQueue<byte[]> _outTray = new  ArrayBlockingQueue<byte[]>(200);
 	private final XOutputStream _outputStream;
 	private final XInputStream _inputStream;
 	private final XOutputStream _eventOutputStream;
@@ -119,7 +119,8 @@ public class Connection implements Executable, PostBox {
 				_request.readRequest();
 				
 				// Ensure model is protected from concurrent access
-				synchronized (_server) {
+				try {
+					_server.lock();
 					
 					// Ensure output stream is protected from concurrent access
 					// in particular from the event delivery thread.
@@ -130,6 +131,9 @@ public class Connection implements Executable, PostBox {
 						_response.padAlign();
 						_response.send();
 					}
+				}
+				finally {
+					_server.unlock();
 				}
 			}
 		}
@@ -146,9 +150,14 @@ public class Connection implements Executable, PostBox {
 			_isAlive = false;
 			parcelForce.interrupt();
 			try { parcelForce.join(); } catch(final InterruptedException e) {};
-			
-			synchronized (_server) {
+
+			try {
+				_server.lock();
+				
 				_server.freeClient(_client);
+			}
+			finally {
+				_server.unlock();
 			}
 		}
 	}

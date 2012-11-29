@@ -202,7 +202,8 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 			xinputStream.skip((-dataLength)&3);
 		}			
 		
-		synchronized (_server) {
+		try {
+			_server.lock();
 			
 			final PostMan postMan = new PostMan();
 			final Client client = _server.allocateClient(postMan);
@@ -221,6 +222,9 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 				
 				return connection;
 			}
+		}
+		finally {
+			_server.unlock();
 		}
 	}
 	
