@@ -120,7 +120,7 @@ public class Connection implements Executable, PostBox {
 				
 				// Ensure model is protected from concurrent access
 				try {
-					_server.lock();
+					_server.lockForRequest();
 					
 					// Ensure output stream is protected from concurrent access
 					// in particular from the event delivery thread.
@@ -133,7 +133,7 @@ public class Connection implements Executable, PostBox {
 					}
 				}
 				finally {
-					_server.unlock();
+					_server.unlockForRequest();
 				}
 			}
 		}

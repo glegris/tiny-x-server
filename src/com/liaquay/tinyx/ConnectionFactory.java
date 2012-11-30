@@ -203,7 +203,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		}			
 		
 		try {
-			_server.lock();
+			_server.lockForRequest();
 			
 			final PostMan postMan = new PostMan();
 			final Client client = _server.allocateClient(postMan);
@@ -224,7 +224,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 			}
 		}
 		finally {
-			_server.unlock();
+			_server.unlockForRequest();
 		}
 	}
 	

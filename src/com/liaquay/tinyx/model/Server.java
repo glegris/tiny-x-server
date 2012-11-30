@@ -85,20 +85,53 @@ public class Server extends Client {
 	}
 	
 	/**
-	 * A Lock used to grab the server for a particular client
+	 * A Lock used to grab the server during client requests 
 	 */
-	private final Lock _grabLock = new ReentrantLock();
+	private final Lock _requestLock = new ReentrantLock();
+	
+	/**
+	 * Lock the server for a request.
+	 * If the server has been grabbed requests will queue up on the request lock
+	 */
+	public void lockForRequest() {
+		_requestLock.lock();
+		_syncLock.lock();
+	}
+	
+	/**
+	 * Unlock the server after a request
+	 */
+	public void unlockForRequest() {
+		_syncLock.unlock();
+		_requestLock.unlock();
+	}
+	
+	/**
+	 * The client that currently holds a server grab
+	 */
 	private Client _grab = null;
 	
+	/**
+	 * Grab the server.
+	 * This prevents further requests for any other client to be processed.
+	 * 
+	 * @param client The client grabbing the server
+	 */
 	public void grab(final Client client) {
-		_grabLock.lock();
+		_requestLock.lock();
 		_grab = client;
 	}
 	
+	/**
+	 * Un-grab the server.
+	 * Allows other clients to process requests.
+	 * 
+	 * @param client The client grabbing the server
+	 */
 	public void ungrab(final Client client) {
 		if(_grab == client) {
 			_grab = null;
-			_grabLock.unlock();
+			_requestLock.unlock();
 		}
 	}
 	
