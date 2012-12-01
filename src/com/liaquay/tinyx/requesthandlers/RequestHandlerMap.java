@@ -68,17 +68,24 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[4] = new DestroyWindow();
 		_handlers[5] = new DestroyWindows();
 		_handlers[6] = new ChangeSaveSet();
+		_handlers[7] = new ReparentWindow();
 		_handlers[8] = new MapWindow();
 		_handlers[9] = new MapSubwindows();
 		_handlers[10] = new UnmapWindow();
 		_handlers[11] = new UnmapSubwindows();
+		_handlers[12] = new ConfigureWindow();
 		_handlers[14] = new GetGeometry();
 		_handlers[15] = new QueryTree();
 		_handlers[16] = new InternAtom();
 		_handlers[17] = new GetAtomName();
 		_handlers[18] = new ChangeProperty();
+		_handlers[19] = new DeleteProperty();
 		_handlers[20] = new GetProperty();
 		_handlers[21] = new ListProperties();
+		_handlers[22] = new SetSelectionOwner();
+		_handlers[23] = new GetSelectionOwner();
+		_handlers[24] = new ConvertSelection();
+		_handlers[25] = new SendEvent();
 		_handlers[26] = new GrabPointer();
 		_handlers[27] = new UngrabPointer();
 		_handlers[28] = new GrabButton();
@@ -92,24 +99,34 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[36] = new GrabServer();
 		_handlers[37] = new UngrabServer();
 		_handlers[38] = new QueryPointer();
+		
 		_handlers[40] = new TranslateCoordinates();
+		
 		_handlers[42] = new SetInputFocus();
 		_handlers[43] = new GetInputFocus();
+		_handlers[44] = new QueryKeymap();
 		_handlers[45] = new OpenFont();
 		_handlers[46] = new CloseFont();
 		_handlers[47] = new QueryFont();
+		
 		_handlers[49] = new ListFonts();
-		_handlers[44] = new QueryKeymap();
+		
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
+		
 		_handlers[60] = new FreeGraphicsContext();
 		_handlers[61] = new ClearArea();
+		
 		_handlers[71] = new PolyFillArc();
 		_handlers[72] = new PutImage();
+		
 		_handlers[78] = new CreateColorMap();
+		
 		_handlers[91] = new QueryColours();
+		
 		_handlers[94] = new CreateGlyphCursor();
+		
 		_handlers[97] = new QueryBestSize();
 		_handlers[98] = new QueryExtension();
 		_handlers[99] = new ListExtensions();
@@ -120,6 +137,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[104] = new Bell();
 		_handlers[105] = new ChangePointerControl();
 		_handlers[106] = new GetPointerControl();
+		
 		_handlers[116] = new SetPointerMapping();
 		_handlers[117] = new GetPointerMapping();
 		_handlers[118] = new SetModifierMapping();
