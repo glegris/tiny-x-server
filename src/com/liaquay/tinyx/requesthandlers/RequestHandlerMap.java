@@ -99,34 +99,64 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[36] = new GrabServer();
 		_handlers[37] = new UngrabServer();
 		_handlers[38] = new QueryPointer();
-		
+		_handlers[39] = new GetMotionEvents();
 		_handlers[40] = new TranslateCoordinates();
-		
+		_handlers[41] = new WarpPointer();
 		_handlers[42] = new SetInputFocus();
 		_handlers[43] = new GetInputFocus();
 		_handlers[44] = new QueryKeymap();
 		_handlers[45] = new OpenFont();
 		_handlers[46] = new CloseFont();
 		_handlers[47] = new QueryFont();
-		
+		_handlers[48] = new QueryTextExtents();
 		_handlers[49] = new ListFonts();
-		
+		_handlers[50] = new ListFontsWithInfo();
+		_handlers[51] = new SetFontPath();
+		_handlers[52] = new GetFontPath();
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
-		
+		_handlers[56] = new ChangeGraphicsContext();
+		_handlers[57] = new CopyGraphicsContext();
+		_handlers[58] = new SetDashes();
+		_handlers[59] = new SetClipRectangles();
 		_handlers[60] = new FreeGraphicsContext();
 		_handlers[61] = new ClearArea();
-		
+		_handlers[62] = new CopyArea();
+		_handlers[63] = new CopyPlane();
+		_handlers[64] = new PolyPoint();
+		_handlers[65] = new PolyLine();
+		_handlers[66] = new PolySegment();
+		_handlers[67] = new PolyRectangle();
+		_handlers[68] = new PolyArc();
+		_handlers[69] = new FillPoly();
+		_handlers[70] = new PolyFillRectangle();
 		_handlers[71] = new PolyFillArc();
 		_handlers[72] = new PutImage();
-		
+		_handlers[73] = new GetImage();
+		_handlers[74] = new PolyText8();
+		_handlers[75] = new PolyText16();
+		_handlers[76] = new ImageText8();
+		_handlers[77] = new ImageText16();
 		_handlers[78] = new CreateColorMap();
-		
+		_handlers[79] = new FreeColorMap();
+		_handlers[80] = new CopyColormapAndFree();
+		_handlers[81] = new InstallColormap();
+		_handlers[82] = new UninstallColormap();
+		_handlers[83] = new ListInstalledColormaps();
+		_handlers[84] = new AllocColor();
+		_handlers[85] = new AllocNamedColor();
+		_handlers[86] = new AllocColorCells();
+		_handlers[87] = new AllocColorPlanes();
+		_handlers[88] = new FreeColors();
+		_handlers[89] = new StoreColors();
+		_handlers[90] = new StoreNamedColor();
 		_handlers[91] = new QueryColours();
-		
+		_handlers[92] = new LookupColor();
+		_handlers[93] = new CreateCursor();
 		_handlers[94] = new CreateGlyphCursor();
-		
+		_handlers[95] = new FreeCursor();
+		_handlers[96] = new RecolorCursor();
 		_handlers[97] = new QueryBestSize();
 		_handlers[98] = new QueryExtension();
 		_handlers[99] = new ListExtensions();
@@ -137,7 +167,15 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[104] = new Bell();
 		_handlers[105] = new ChangePointerControl();
 		_handlers[106] = new GetPointerControl();
-		
+		_handlers[107] = new SetScreenSaver();
+		_handlers[108] = new GetScreenSaver();
+		_handlers[109] = new ChangeHosts();
+		_handlers[110] = new ListHosts();
+		_handlers[111] = new SetAccessControl();
+		_handlers[112] = new SetCloseDownMode();
+		_handlers[113] = new KillClient();
+		_handlers[114] = new RotateProperties();
+		_handlers[115] = new ForceScreenSaver();
 		_handlers[116] = new SetPointerMapping();
 		_handlers[117] = new GetPointerMapping();
 		_handlers[118] = new SetModifierMapping();
