@@ -43,8 +43,14 @@ public class Pointer {
 	private boolean _doAcceleration = false;
 	private boolean _doThreshold = false;
 	private PointerMapping _mapping = new PointerMapping(5);
+	private Screen _screen = null;
 
 	public Pointer() {
+	}
+
+	
+	public Screen getScreen() {
+		return _screen;
 	}
 	
 	public PointerMapping getPointerMapping() {
@@ -64,7 +70,8 @@ public class Pointer {
 		return _y;
 	}
 	
-	public void set(final int x, final int y) {
+	public void set(final Screen screen, final int x, final int y) {
+		_screen = screen;
 		_x = x;
 		_y = y;
 	}

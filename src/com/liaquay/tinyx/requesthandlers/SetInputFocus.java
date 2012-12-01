@@ -23,13 +23,14 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Focus;
+import com.liaquay.tinyx.model.Focus.RevertTo;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
-public class GetInputFocus implements RequestHandler {
+public class SetInputFocus implements RequestHandler {
 
 	@Override
 	public void handleRequest(
@@ -37,16 +38,29 @@ public class GetInputFocus implements RequestHandler {
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
-
-		final Focus focus = server.getFocus();
-		final XOutputStream outputStream = response.respond(focus.getRevertTo().ordinal(), 0);
-		final Window focusWindow = focus.getWindow();
-		final int windowId;
-		switch(focus.getMode()) {
-		case None : 
-		case PointerRoot: windowId = 0; break;
-		default: windowId = focusWindow.getId(); break;
+		
+		final int revertToIndex = request.getData();
+		final XInputStream inputStream = request.getInputStream();		
+		final int windowId = inputStream.readInt(); 		
+		
+		final RevertTo revertTo = RevertTo.getFromIndex(revertToIndex);
+		if(revertTo == null) {
+			response.error(Response.ErrorCode.Value, windowId);		
+			return;			
 		}
-		outputStream.writeInt(windowId);
+		final Window window = server.getResources().get(windowId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowId);		
+			return;
+		}
+		final int timestamp = inputStream.readInt();
+		final Focus.Mode mode;
+		switch (windowId) {
+		case 0: mode = Focus.Mode.None;break;
+		case 1: mode = Focus.Mode.PointerRoot;break;
+		default: mode = Focus.Mode.Window; break;
+		}
+		final Focus focus = server.getFocus();
+		focus.set(mode, window, revertTo, timestamp);
 	}
 }

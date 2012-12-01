@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
@@ -35,6 +37,8 @@ import com.liaquay.tinyx.model.font.FontFactory;
  * 
  */
 public class Server extends Client {
+	
+	private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
 	
 	private static final byte[] VENDOR = "Liaquay".getBytes();
 
@@ -63,7 +67,7 @@ public class Server extends Client {
 	private int _serverResourceId;
 	private final EventFactories _eventFactories;
 	private final FontFactory _fontFactory;
-	private Pointer _pointer = new Pointer();
+	private final Pointer _pointer = new Pointer();
 	
 	/**
 	 * A lock used to protect the server from concurrent updates
@@ -224,6 +228,7 @@ public class Server extends Client {
 		// TODO not very graceful
 		if(_screens.size() == 0) {
 		    _focus = new Focus(screen, Focus.RevertTo.None);
+		    _pointer.set(screen, screen.getWidthPixels() >> 1, screen.getHeightPixels() >> 1);
 		}
 		
 		_screens.add(screen);
@@ -367,8 +372,27 @@ public class Server extends Client {
 	 */
 	public void buttonPressed(final int buttonNumber, final long when) {
 		
-		//TODO ...
+		if(buttonNumber < 1 || buttonNumber >5) {
+			final String message = "Button number " + buttonNumber + " out of range";
+			LOGGER.log(Level.SEVERE, message);
+			throw new RuntimeException(message);
+		}
 		
+		enqueuePtr(new InputEvent() {
+			@Override
+			public long getWhen() {
+				return when;
+			}
+			
+			@Override
+			public void deliver() {
+				_pointer.buttonPressed(buttonNumber);
+				
+				// TODO generate an event and send it to the correct clients
+				_clients.send(_eventFactories.getButtonPressFactory().create(buttonNumber, null, null, null, _pointer, getKeyButtonMask(), true));
+				
+			}
+		});
 	}
 	
 	/**
@@ -378,6 +402,13 @@ public class Server extends Client {
 	 * @param when time in milliseconds
 	 */
 	public void buttonReleased(final int buttonNumber, final long when){
+		
+		if(buttonNumber < 1 || buttonNumber >5) {
+			final String message = "Button number " + buttonNumber + " out of range";
+			LOGGER.log(Level.SEVERE, message);
+			throw new RuntimeException(message);
+		}
+		
 		enqueuePtr(new InputEvent() {
 			@Override
 			public long getWhen() {

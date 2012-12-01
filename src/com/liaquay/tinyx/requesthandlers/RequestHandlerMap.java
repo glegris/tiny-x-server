@@ -93,6 +93,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[37] = new UngrabServer();
 		_handlers[38] = new QueryPointer();
 		_handlers[40] = new TranslateCoordinates();
+		_handlers[42] = new SetInputFocus();
 		_handlers[43] = new GetInputFocus();
 		_handlers[45] = new OpenFont();
 		_handlers[46] = new CloseFont();
