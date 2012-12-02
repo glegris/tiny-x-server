@@ -43,12 +43,13 @@ public class AwtFontFactory implements FontFactory {
 
 	@Override
 	public FontString getFirstMatchingFont(String requestedFontName) {
-		FontString requestedFont = new FontString(requestedFontName);
+		final FontString requestedFont = new FontString(requestedFontName);
 
 		for (int i = 0; i < _fontNames.size(); i++) {
 			if (_fontNames.get(i).matches(requestedFont)) {
 				return _fontNames.get(i);
 			}
+
 		}
 		
 		//TODO: Nasty hack until I have proper matching code in place
@@ -66,6 +67,12 @@ public class AwtFontFactory implements FontFactory {
 		}
 		
 		return matchingFonts;
-	}	
+	}
+
+	@Override
+	// THis method will be used to 
+	public void getFontDetails() {
+		
+	}
 
 }

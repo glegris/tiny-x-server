@@ -10,4 +10,6 @@ public interface FontFactory {
 	FontString getFirstMatchingFont(String requestedFontName);
 
 	List<FontString> getMatchingFonts(String pattern);
+
+	void getFontDetails();
 }

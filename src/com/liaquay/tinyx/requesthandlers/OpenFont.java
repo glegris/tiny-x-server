@@ -31,17 +31,6 @@ import com.liaquay.tinyx.model.Server;
 
 public class OpenFont implements RequestHandler {
 
-
-//		Response
-//		--------
-//
-//    4     FONT                            fid
-//    2     n                               length of name
-//    2                                     unused
-//    n     STRING8                         name
-//    p                                     unused, p=pad(n)
-    
-    
 	@Override
 	public void handleRequest(Server server, Client client, Request request,
 			Response response) throws IOException {
@@ -51,9 +40,10 @@ public class OpenFont implements RequestHandler {
 		final String requestedFontName = inputStream.readString();
 		
 		FontString fontName = server.getFontFactory().getFirstMatchingFont(requestedFontName);
+		server.getFontFactory().getFontDetails();
+		
 		final Font font = new Font(fid, fontName);
 		server.getResources().add(font);
-		
 	}
 
 }

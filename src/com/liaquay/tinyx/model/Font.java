@@ -5,6 +5,8 @@ public class Font extends AbstractResource {
 
 	private FontString fontName;
 
+	private FontCharacterDetails chars[];
+	
 	public Font(int id, FontString fontName) {
 		super(id);
 
