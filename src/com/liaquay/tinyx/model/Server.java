@@ -37,15 +37,15 @@ import com.liaquay.tinyx.model.font.FontFactory;
  * 
  */
 public class Server extends Client {
-	
+
 	private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
-	
+
 	private static final byte[] VENDOR = "Liaquay".getBytes();
 
 	private static Format[] FORMATS = new Format[] {
 		new Format (32, 24, 8)
 	};
-	
+
 	private final Extensions _extensions = new Extensions();
 	private final Clients _clients = new Clients();
 	private final Keyboard _keyboard;
@@ -56,43 +56,43 @@ public class Server extends Client {
 	private final ByteOrder _bitmapBitOrder = ByteOrder.MSB;
 	private final int _bitmapScanLineUnit = 8; 
 	private final int _bitmapScanLinePad = 8;
-	
+
 	private final boolean _handlesBigRequests = true;
 	private final int _maximumRequestLength = 32000;
-	
+
 	private Focus _focus = null;
-	
+
 	// Used for generating server side resources such as the Root Window, ColorMap, etc.
 	private final int _endServerResourceId;
 	private int _serverResourceId;
 	private final EventFactories _eventFactories;
 	private final FontFactory _fontFactory;
 	private final Pointer _pointer = new Pointer();
-	
+
 	/**
 	 * A lock used to protect the server from concurrent updates
 	 */
 	private final Lock _syncLock = new ReentrantLock();
-	
+
 	/**
 	 * Lock the server for read/update
 	 */
 	public void lock() {
 		_syncLock.lock();
 	}
-	
+
 	/**
 	 * Unlock the server after read/update
 	 */
 	public void unlock() {
 		_syncLock.unlock();
 	}
-	
+
 	/**
 	 * A Lock used to grab the server during client requests 
 	 */
 	private final Lock _requestLock = new ReentrantLock();
-	
+
 	/**
 	 * Lock the server for a request.
 	 * If the server has been grabbed requests will queue up on the request lock
@@ -101,7 +101,7 @@ public class Server extends Client {
 		_requestLock.lock();
 		_syncLock.lock();
 	}
-	
+
 	/**
 	 * Unlock the server after a request
 	 */
@@ -109,12 +109,12 @@ public class Server extends Client {
 		_syncLock.unlock();
 		_requestLock.unlock();
 	}
-	
+
 	/**
 	 * The client that currently holds a server grab
 	 */
 	private Client _grab = null;
-	
+
 	/**
 	 * Grab the server.
 	 * This prevents further requests for any other client to be processed.
@@ -125,7 +125,7 @@ public class Server extends Client {
 		_requestLock.lock();
 		_grab = client;
 	}
-	
+
 	/**
 	 * Un-grab the server.
 	 * Allows other clients to process requests.
@@ -138,21 +138,21 @@ public class Server extends Client {
 			_requestLock.unlock();
 		}
 	}
-	
+
 	public Server(final EventFactories eventFactories, final Keyboard keyboard, final FontFactory fontFactory) {		
 		// Create the server as a client with ID of 0
 		super(	0, 
 				new PostBox() {
-					@Override
-					public void send(final Event event) {
-						// Do nothing. No messages should be sent to the server anyhow.
-					}
-				});
-		
+			@Override
+			public void send(final Event event) {
+				// Do nothing. No messages should be sent to the server anyhow.
+			}
+		});
+
 		_eventFactories = eventFactories;
 		_fontFactory = fontFactory;
 		_keyboard = keyboard; 
-		
+
 		_keyboard.setListener(new Keyboard.Listener() {
 			@Override
 			public void mappingNotify(final int firstKeyCode, final int count) {
@@ -164,38 +164,38 @@ public class Server extends Client {
 				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Modifier, 0, 0));
 			}
 		});
-	    
+
 		_pointer.setListener(new Pointer.Listener() {
 			@Override
 			public void mappingNotify(final int count) {
 				_clients.send(_eventFactories.getMappingNotifyFactory().create(MappingNotifyFactory.Request.Pointer, 0, count));
 			}
 		});
-		
+
 		_serverResourceId = (getClientId() << Resource.CLIENTOFFSET) | Resource.SERVER_BIT;
-	    _endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;
-	    
-	    // TODO not sure we should do this!
-	    // TODO How accessible should the server client be?
-	    //_clients.add(this);
+		_endServerResourceId = (_serverResourceId | Resource.RESOURCE_ID_MASK)+1;
+
+		// TODO not sure we should do this!
+		// TODO How accessible should the server client be?
+		//_clients.add(this);
 	}
-	
+
 	public Pointer getPointer() {
 		return _pointer;
 	}
-	
+
 	public Extensions getExtensions() {
 		return _extensions;
 	}
-	
+
 	public EventFactories getEventFactories() {
 		return _eventFactories;
 	}
-	
+
 	public FontFactory getFontFactory() {
 		return _fontFactory;
 	}
-	
+
 	private int allocateResourceId(){
 		final int id =_serverResourceId++;
 		if (id !=_endServerResourceId){
@@ -203,44 +203,44 @@ public class Server extends Client {
 		}
 		throw new RuntimeException("Error allocating fake ID");
 	}	
-	
+
 	public interface ResourceFactory<T> {
 		public T create(final int resourceId);
 	}
-	
+
 	public ColorMap createColorMap(final ResourceFactory<ColorMap> factory) {
 		final int resourceId = allocateResourceId();
 		final ColorMap colorMap = factory.create(resourceId);
 		_resources.add(colorMap);
 		return colorMap;
 	}
-	
+
 	public Visual createVisual(final ResourceFactory<Visual> factory) {
 		final int resourceId = allocateResourceId();
 		final Visual visual = factory.create(resourceId);
 		_resources.add(visual);
 		return visual;
 	}
-	
+
 	public Screen addScreen(final ResourceFactory<Screen> factory) {
 		final int resourceId = allocateResourceId();
 		final Screen screen = factory.create(resourceId);
 		// TODO not very graceful
 		if(_screens.size() == 0) {
-		    _focus = new Focus(screen, Focus.RevertTo.None);
-		    _pointer.set(screen, screen.getWidthPixels() >> 1, screen.getHeightPixels() >> 1);
+			_focus = new Focus(screen, Focus.RevertTo.None);
+			_pointer.set(screen, screen.getWidthPixels() >> 1, screen.getHeightPixels() >> 1);
 		}
-		
+
 		_screens.add(screen);
 		_resources.add(screen);
-		
+
 		return screen;
 	}
-	
+
 	public Client allocateClient(final PostBox postBox) {
 		return _clients.allocate(postBox);
 	}
-	
+
 	public void freeClient(final Client client) {
 		final int clientId = client.getClientId();
 		if(clientId == 0) {
@@ -250,31 +250,31 @@ public class Server extends Client {
 		_resources.free(client);
 		ungrab(client);
 	}
-	
+
 	public byte[] getVendor() {
 		return VENDOR;
 	}
-	
+
 	public Format[] getFormats() {
 		return FORMATS;
 	}
-	
+
 	public List<Screen> getScreens() {
 		return _screens;
 	}
-	
+
 	public Keyboard getKeyboard() {
 		return _keyboard;
 	}
-	
+
 	public Resources getResources() {
 		return _resources;
 	}
-	
+
 	public Atoms getAtoms() {
 		return _atoms;
 	}
-	
+
 	public Focus getFocus() {
 		return _focus;
 	}
@@ -293,7 +293,7 @@ public class Server extends Client {
 	public int getBitmapScanLinePad() {
 		return _bitmapScanLinePad;
 	}
-	
+
 	public boolean getHandlesBigRequests() {
 		return _handlesBigRequests;
 	}
@@ -301,18 +301,18 @@ public class Server extends Client {
 	public int getMaximumRequestLength() {
 		return _maximumRequestLength;
 	}
-	
-	
+
+
 	// TODO I need to be called
 	public void free() {
 		for(final Iterator<Client> i = _clients.iterator(); i.hasNext(); ) {
 			final Client client = i.next();
 			freeClient(client);
 		}
-		
+
 		// TODO free all resources
 	}
-	
+
 	/**
 	 * Get a combination of modifier keys and pointer buttons for events
 	 * @return
@@ -333,11 +333,11 @@ public class Server extends Client {
 				(_pointer.isButtonPressed(3) ? 1<<11 : 0 ) |
 				(_pointer.isButtonPressed(4) ? 1<<12 : 0 );
 	}
-	
+
 	//
 	// TODO should the following be part of an input device adapter?
 	//
-	
+
 	/**
 	 * Called by implementation to deliver a key press to the server
 	 * 
@@ -347,10 +347,12 @@ public class Server extends Client {
 	public void keyPressed(final int keycode, final long when) {
 		_keyboard.keyPressed(keycode, when);
 		
-		//TODO ...
+
 		
+		//TODO ...
+
 	}
-	
+
 	/**
 	 * Called by implementation to deliver a key release to the server
 	 * 
@@ -359,73 +361,95 @@ public class Server extends Client {
 	 */
 	public void keyReleased(final int keycode, final long when){
 		_keyboard.keyPressed(keycode, when);
-		
+
 		//TODO ...
-		
+
 	}	
-	
+
 	/**
 	 * Called by implementation to deliver a pointer button press to the server
 	 * 
 	 * @param buttonNumber code representing physical button in the range 1-5
 	 * @param when time in milliseconds
 	 */
-	public void buttonPressed(final int buttonNumber, final long when) {
-		
+	public void buttonPressed(final int screenIndex, final int x, final int y, final int buttonNumber, final long when) {
+
 		if(buttonNumber < 1 || buttonNumber >5) {
 			final String message = "Button number " + buttonNumber + " out of range";
 			LOGGER.log(Level.SEVERE, message);
 			throw new RuntimeException(message);
 		}
-		
+
 		enqueuePtr(new InputEvent() {
 			@Override
 			public long getWhen() {
 				return when;
 			}
-			
+
 			@Override
 			public void deliver() {
+				// Update the pressed buttons
 				_pointer.buttonPressed(buttonNumber);
 				
-				// TODO generate an event and send it to the correct clients
-				_clients.send(_eventFactories.getButtonPressFactory().create(buttonNumber, null, null, null, _pointer, getKeyButtonMask(), true));
+				// Update pointer position
+				_pointer.set(_screens.get(screenIndex), x, y);
 				
+				// TODO Consider grabs - do they change the construction of the event?
+				final Event event = _eventFactories.getButtonPressFactory().create(
+						buttonNumber, 
+						_focus, 
+						_pointer, 
+						getKeyButtonMask(), 
+						(int)(when & 0xffffffff));
+				
+				if(event != null) {
+					// TODO send it to the correct clients
+					_clients.send(event);
+				}
 			}
 		});
 	}
-	
+
 	/**
 	 * Called by implementation to deliver a key release to the server
 	 * 
 	 * @param buttonNumber code representing physical button in the range 1-5
 	 * @param when time in milliseconds
 	 */
-	public void buttonReleased(final int buttonNumber, final long when){
-		
+	public void buttonReleased(final int screenIndex, final int x, final int y, final int buttonNumber, final long when){
+
 		if(buttonNumber < 1 || buttonNumber >5) {
 			final String message = "Button number " + buttonNumber + " out of range";
 			LOGGER.log(Level.SEVERE, message);
 			throw new RuntimeException(message);
 		}
-		
+
 		enqueuePtr(new InputEvent() {
 			@Override
 			public long getWhen() {
 				return when;
 			}
-			
+
 			@Override
 			public void deliver() {
 				_pointer.buttonReleased(buttonNumber);
+
+				// TODO Consider grabs - do they change the construction of the event?
+				final Event event = _eventFactories.getButtonReleaseFactory().create(
+						buttonNumber, 
+						_focus, 
+						_pointer, 
+						getKeyButtonMask(), 
+						(int)(when & 0xffffffff));
 				
-				// TODO generate an event and send it to the correct clients
-				_clients.send(_eventFactories.getButtonReleaseFactory().create(buttonNumber, null, null, null, _pointer, getKeyButtonMask(), true));
-				
+				if(event != null) {
+					// TODO send it to the correct clients
+					_clients.send(event);
+				}			
 			}
 		});
 	}	
-	
+
 	private void enqueueKey(final InputEvent e) {
 		try {
 			lock();
@@ -448,13 +472,13 @@ public class Server extends Client {
 			unlock();
 		}
 	}	
-	
+
 	// TODO worry about these getting too large
 	private Queue<InputEvent> _keyEventQueue = new ArrayDeque<InputEvent>(100);
 	private Queue<InputEvent> _ptrEventQueue = new ArrayDeque<InputEvent>(100);
 	private boolean _keyFrozen = false;
 	private boolean _prtFrozen = false;
-	
+
 	/**
 	 * Dequeue events in the correct order
 	 */
@@ -486,7 +510,7 @@ public class Server extends Client {
 		}
 		return true;
 	}
-	
+
 	private void dequeueAll() {
 		while(dequeue());
 	}
@@ -496,5 +520,4 @@ public class Server extends Client {
 		_prtFrozen = pointer;
 		dequeueAll();
 	}
-
 }

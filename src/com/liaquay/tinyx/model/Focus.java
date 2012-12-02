@@ -22,7 +22,7 @@ public class Focus {
 	
 	private Window _window;
 	private RevertTo _revertTo;
-	private Mode _mode = Mode.None;
+	private Mode _mode = Mode.PointerRoot;
 	private int _timestamp = 0;
 	
 	public Focus(final Window window, final RevertTo revertTo) {

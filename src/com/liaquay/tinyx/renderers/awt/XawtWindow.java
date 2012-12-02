@@ -146,14 +146,16 @@ public class XawtWindow  {
 			public void mousePressed(MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
 				System.out.println(String.format("Button pressed %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
-				server.buttonPressed(e.getButton(), e.getWhen());
+				// TODO pass in correct screen index
+				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
 				System.out.println(String.format("Button release %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
-				server.buttonReleased(e.getButton(), e.getWhen());
+				// TODO pass in correct screen index
+				server.buttonReleased(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
 			}
 		});
 		

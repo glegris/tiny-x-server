@@ -127,4 +127,9 @@ public class Pointer {
 	public boolean getDoAcceleration() {
 		return _doAcceleration;
 	}
+	
+	public Window childWindowAt() {
+		if(_screen == null) return null;
+		return _screen.childWindowAt(_x, _y);
+	}
 }

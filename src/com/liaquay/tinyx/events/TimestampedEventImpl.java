@@ -24,13 +24,16 @@ import com.liaquay.tinyx.io.XOutputStream;
 
 public abstract class TimestampedEventImpl extends EventImpl {
 
-	public TimestampedEventImpl(final int eventType, final int argument) {
+	private final int _when;
+	
+	public TimestampedEventImpl(final int eventType, final int argument, final int when) {
 		super(eventType, argument);
+		_when = when;
 	}
 
 	@Override
 	public final void writeBody(final XOutputStream outputStream) throws IOException {
-		outputStream.writeInt((int)(System.currentTimeMillis() & 0xffffffff));
+		outputStream.writeInt(_when);
 		writeTimestampedBody(outputStream);
 	}
 	

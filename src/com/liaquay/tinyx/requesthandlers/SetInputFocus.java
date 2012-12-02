@@ -53,6 +53,14 @@ public class SetInputFocus implements RequestHandler {
 			response.error(Response.ErrorCode.Window, windowId);		
 			return;
 		}
+		
+		// The specified focus window must be viewable at the time XSetInputFocus() is called, or a BadMatch error results. 
+		// TODO Is viewable the same as mapped?
+		if(!window.isMapped()) {
+			response.error(Response.ErrorCode.Match, windowId);		
+			return;
+		}
+		
 		final int timestamp = inputStream.readInt();
 		final Focus.Mode mode;
 		switch (windowId) {
