@@ -62,7 +62,7 @@ public class Font extends AbstractResource {
 		return fontDetail.getLastChar();
 	}
 
-	public GlyphDetail getGlyphDetail(char i) {
+	public GlyphDetail getGlyphDetail(int i) {
 		return fontDetail.getGlyphDetail(i);
 	}
 	

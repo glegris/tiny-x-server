@@ -95,7 +95,7 @@ public class AwtFontFactory implements FontFactory {
 		fd.setMaxWidth(fm.getMaxAdvance());
 
 		char[] chr = new char[1];
-		for (int i = fd.getFirstChar(); i < fd.getLastChar(); i++) {
+		for (int i = fd.getFirstChar(); i <= fd.getLastChar(); i++) {
 			chr[0] = (char) i;
 			Rectangle2D bounds = f.getStringBounds(chr, 0, 1, frc);
 			LineMetrics lm = f.getLineMetrics(chr, 0, 1, frc);
