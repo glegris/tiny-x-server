@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.FontString;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.renderers.awt.GlyphDetail;
 
 public class QueryFont implements RequestHandler {
 
@@ -45,28 +46,11 @@ public class QueryFont implements RequestHandler {
 
 		System.out.println("Name: " + fontName.toString());
 
-//		String newName = name.replaceAll("\\*", ".*[^-]");
-//
-//		for (String fontName : server.getFontFactory().getFontNames()) {
-//			if (f.matches(fontName)) {
-//				f.setChosenFontName(fontName);
-//			}
-//		}
-
-
-//		String fontName = f.getCharsetEncoding();
-
 		int[] prop=new int[2];
 		prop[0] = server.getAtoms().allocate("FONT").getId();
 		prop[1] = server.getAtoms().allocate(fontName.toString()).getId();
 
 		final XOutputStream outputStream = response.respond(1);
-		//		, 7 + 
-		//				(prop!=null ? prop.length/2 : 0)*2 + 
-		//				//                (hascinfo ? 
-		//				//                 (f.font.max_char_or_byte2-f.font.min_char_or_byte2+1)*3 :
-		//				0);
-		// Request... What the heck is a FONTABLE?? That's just weird
 
 		// Min-bounds
 		outputStream.writeShort(0);
@@ -80,34 +64,33 @@ public class QueryFont implements RequestHandler {
 		outputStream.writePad(4);
 
 		// Max-bounds
-		outputStream.writeShort(0);                      // left-side-bearing
-		outputStream.writeShort(f.getMaxWidth());      // right-side-bearing
+		outputStream.writeShort(0);						// left-side-bearing
+		outputStream.writeShort(f.getMaxWidth());		// right-side-bearing
 		outputStream.writeShort(f.getMaxWidth());       // character-width
-		outputStream.writeShort(f.getMaxAscent());  // ascent
-		outputStream.writeShort(f.getMaxDescent()); // descent
-		outputStream.writeShort(0);                        // attribute
+		outputStream.writeShort(f.getMaxAscent());		// ascent
+		outputStream.writeShort(f.getMaxDescent());		// descent
+		outputStream.writeShort(0);						// attribute
 
 		outputStream.writePad(4);
 
-		int minCharOrByte2 = 0x20;
-		int maxCharOrByte2 = 0xff;
 
-		outputStream.writeShort(minCharOrByte2);  // min-char-or-byte2
-		outputStream.writeShort(maxCharOrByte2);    // max-char-or-byte2
+		outputStream.writeShort(f.getFirstChar());		// min-char-or-byte2
+		outputStream.writeShort(f.getLastChar());		// max-char-or-byte2
 
-		outputStream.writeShort(f.getDefaultChar()); // default-char
+		outputStream.writeShort(f.getDefaultChar());	// default-char
 		outputStream.writeShort(prop!=null ? prop.length/2 : 0); // m
 		outputStream.writeByte(0);  // draw-direction
 		//	         0     LeftToRight
 		//	         1     RightToLeft
 
-		outputStream.writeByte(0); // min-byte1
-		outputStream.writeByte(0); // max-byte1
-		outputStream.writeByte(0);  // all-char-exists
-		outputStream.writeShort(f.getMaxAscent());  // font-ascent
-		outputStream.writeShort(f.getMaxDescent()); // font-descent
+		outputStream.writeByte(0);						// min-byte1
+		outputStream.writeByte(0);						// max-byte1
+		outputStream.writeByte(0);						// all-char-exists
+		outputStream.writeShort(f.getMaxAscent());		// font-ascent
+		outputStream.writeShort(f.getMaxDescent());		// font-descent
 
-		outputStream.writeInt(0xff-0x20+1); // m 
+		outputStream.writeInt(f.getLastChar()-f.getFirstChar()+1); // m 
+		
 		//		outputStream.writeInt(0);//fontName.length()); // reply-hint
 
 		if(prop!=null){
@@ -116,18 +99,13 @@ public class QueryFont implements RequestHandler {
 			}
 		}
 
-		byte[] src=new byte[1];	
-		char[] dst=new char[1];	
-		int width;
-		for(int i=minCharOrByte2; i<=maxCharOrByte2; i++){
-//			src[0]=(byte)i;
-			//	          encode(src, 0, 1, dst);
-			char w= 32;//(char) f.font.charWidth(dst[0]);
-			outputStream.writeShort(0);                    // left-side-bearing
-			outputStream.writeShort(w);                    // right-side-bearing
-			outputStream.writeShort(32);                   // character-width
-			outputStream.writeShort(f.getMaxAscent());                   // ascent
-			outputStream.writeShort(f.getMaxDescent());                   // descent
+		for(int i=f.getFirstChar(); i<=f.getLastChar(); i++){
+			GlyphDetail gd = f.getGlyphDetail((char) i);
+			outputStream.writeShort(0);//gd.leftSideBearing());	// left-side-bearing
+			outputStream.writeShort(0);//gd.rightSideBearing());	// right-side-bearing
+			outputStream.writeShort(gd.getWidth());			// character-width
+			outputStream.writeShort(gd.getAscent());		// ascent
+			outputStream.writeShort(gd.getDescent());		// descent
 			outputStream.writeShort(0);                    // attribute
 		}	
 		//	      if(hascinfo){

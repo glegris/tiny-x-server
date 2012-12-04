@@ -11,5 +11,5 @@ public interface FontFactory {
 
 	List<FontString> getMatchingFonts(String pattern);
 
-	void getFontDetails();
+	FontDetail getFontDetail(String name, int size);
 }
