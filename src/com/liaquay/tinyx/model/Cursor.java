@@ -16,31 +16,13 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.events;
+package com.liaquay.tinyx.model;
 
-import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
-import com.liaquay.tinyx.model.Pointer;
-import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
+public class Cursor extends AbstractResource {
 
-public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements ButtonFactory {
-
-	public static ButtonFactory FACTORY = new ButtonReleaseFactoryImpl();
-	
-	@Override
-	public Event create(
-			final int button,
-			final Focus focus, 
-			final Pointer pointer,
-			final int keyButtonMask,
-			final int when) {
-	
-		return create(
-				Event.ButtonRelease,
-				button,
-				focus,
-				pointer,
-				keyButtonMask,
-				when);
+	public Cursor(final int id) {
+		super(id);
+		// TODO Auto-generated constructor stub
 	}
+
 }

@@ -48,5 +48,4 @@ public class ListFontsWithInfo implements RequestHandler {
 //	     4     7                               reply length
 //	     52                                    unused
 	}
-
 }

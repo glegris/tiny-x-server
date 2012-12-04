@@ -16,26 +16,28 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.events;
+package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
 
-import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Server;
 
-public abstract class TimestampedEventImpl extends EventImpl {
-
-	private final int _when;
-	
-	public TimestampedEventImpl(final int eventType, final int argument, final int when) {
-		super(eventType, argument);
-		_when = when;
-	}
+public class RotateProperties implements RequestHandler {
 
 	@Override
-	public final void writeBody(final XOutputStream outputStream) throws IOException {
-		outputStream.writeInt(_when);
-		writeTimestampedBody(outputStream);
+	public void handleRequest(final Server server, 
+			                   final Client client, 
+			                   final Request request, 
+			                   final Response response) throws IOException {
+		// TODO logging
+		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+				request.getMajorOpCode(), 
+				request.getData(),
+				request.getLength(),
+				request.getSequenceNumber()));		
 	}
-	
-	public abstract void writeTimestampedBody(final XOutputStream outputStream) throws IOException;
 }

@@ -16,31 +16,28 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.events;
+package com.liaquay.tinyx.requesthandlers;
 
-import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
-import com.liaquay.tinyx.model.Pointer;
-import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
+import java.io.IOException;
 
-public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements ButtonFactory {
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.RequestHandler;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Server;
 
-	public static ButtonFactory FACTORY = new ButtonReleaseFactoryImpl();
-	
+public class PolyText16 implements RequestHandler {
+
 	@Override
-	public Event create(
-			final int button,
-			final Focus focus, 
-			final Pointer pointer,
-			final int keyButtonMask,
-			final int when) {
-	
-		return create(
-				Event.ButtonRelease,
-				button,
-				focus,
-				pointer,
-				keyButtonMask,
-				when);
+	public void handleRequest(final Server server, 
+			                   final Client client, 
+			                   final Request request, 
+			                   final Response response) throws IOException {
+		// TODO logging
+		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+				request.getMajorOpCode(), 
+				request.getData(),
+				request.getLength(),
+				request.getSequenceNumber()));		
 	}
 }
