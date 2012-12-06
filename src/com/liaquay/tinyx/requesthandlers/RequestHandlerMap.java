@@ -37,8 +37,6 @@ public class RequestHandlerMap implements RequestHandler {
 	
 	private final static Logger LOGGER = Logger.getLogger(RequestHandlerMap.class.getName());
 
-	private static final Unimplemented UNIMPLEMENTED = new Unimplemented();
-
 	private RequestHandler[] _handlers = new RequestHandler[256];
 
 	private void addExtension(
@@ -53,10 +51,6 @@ public class RequestHandlerMap implements RequestHandler {
 	}
 
 	public RequestHandlerMap(final Extensions extensions) {
-		for(int i = 0; i < _handlers.length; ++i) {
-			_handlers[i] = UNIMPLEMENTED;
-		}
-		
 		addExtension(extensions, "BIG-REQUESTS", 0,0, new BigRequestHandler());
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
@@ -195,7 +189,7 @@ public class RequestHandlerMap implements RequestHandler {
 			throw new RuntimeException("Impossible majorOpCode " + majorOpCode);
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
-		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "...");
+		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "... opCode: " + majorOpCode);
 		if (requestHandler instanceof ListFonts) {
 			System.out.println();
 		}

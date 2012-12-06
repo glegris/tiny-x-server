@@ -82,6 +82,8 @@ public class RequestAdaptor implements Request {
 		final int remaining = _length - _inputStream.getCounter();
 		if (remaining > 0) {
 			_inputStream.skip(remaining);
+		} else if (remaining < 0) {
+			System.out.println("Skip remaining is Negative.. This can happen if you read over the end of the input. This can happen if you don't get the request.getData() and do a inputStream.readByte instead!");
 		}
 	}
 }

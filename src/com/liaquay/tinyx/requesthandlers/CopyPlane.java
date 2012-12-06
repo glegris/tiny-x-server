@@ -23,7 +23,9 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Server;
 
 public class CopyPlane implements RequestHandler {
@@ -33,11 +35,26 @@ public class CopyPlane implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();		
+
+		int srcDrawable = inputStream.readInt();
+		int dstDrawable = inputStream.readInt();
+
+		int gc = inputStream.readInt();
+
+		int srcX = inputStream.readUnsignedByte();
+		int srcY = inputStream.readUnsignedByte();
+
+		int dstX = inputStream.readUnsignedByte();
+		int dstY = inputStream.readUnsignedByte();
+
+		int width = inputStream.readUnsignedByte();
+		int height = inputStream.readUnsignedByte();
+
+		int bitplane = inputStream.readInt();
+
+		Drawable s = server.getResources().get(srcDrawable, Drawable.class);
+		Drawable d = server.getResources().get(dstDrawable, Drawable.class);
 	}
 }

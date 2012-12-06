@@ -69,6 +69,27 @@ public class GraphicsContext extends AbstractResource {
 		return _lineWidth;
 	}
 
+	public int _lineStyle = 0;
+	
+	public int getLineStyle() {
+		return _lineStyle;
+	}
+
+	public void setLineStyle(int lineStyle) {
+		this._lineStyle = lineStyle;
+	}
+
+	public int _capStyle = 0;
+
+	
+	public int getCapStyle() {
+		return _capStyle;
+	}
+
+	public void setCapStyle(int capStyle) {
+		this._capStyle = capStyle;
+	}
+
 	public boolean graphicsExposures = false;
 	
 	public boolean getGraphicsExposures() {
@@ -76,5 +97,136 @@ public class GraphicsContext extends AbstractResource {
 	}
 	public void setGraphicsExposures(boolean graphicsExposures) {
 		this.graphicsExposures = graphicsExposures;
+	}
+
+	int _arcMode = 0;
+	
+	public void setArcMode(int arcMode) {
+		this._arcMode = arcMode;
+	}
+	
+	public int getArcMode() {
+		return this._arcMode;
+	}
+
+	int _joinStyle = 0;
+	
+	public void setJoinStyle(int joinStyle) {
+		this._joinStyle = joinStyle;
+	}
+	
+	public int getJoinStyle() {
+		return this._joinStyle;
+	}
+	
+	int _fillStyle = 0;
+
+	public void setFillStyle(int fillStyle) {
+		this._fillStyle = fillStyle;
+	}
+	
+	public int getFillStyle() {
+		return this._fillStyle;
+	}
+
+	int _fillRule = 0;
+	
+	public void setFillRule(int fillRule) {
+		this._fillRule = fillRule;
+	}
+	
+	public int getFillRule() {
+		return this._fillRule;
+	}
+	
+	int _tilePixmap = 0;
+
+	public void setTile(int tilePixmap) {
+		this._tilePixmap = tilePixmap;
+	}
+	
+	public int getTile() {
+		return this._tilePixmap;
+	}
+	
+	int _stipple = 0;
+
+	public void setStipple(int stipple) {
+		this._stipple = stipple;
+	}
+	
+	public int getStipple() {
+		return this._stipple;
+	}
+
+	int _tileStippleXOrigin = 0;
+	
+	public void setTileStippleXOrigin(int tileStippleXOrigin) {
+		this._tileStippleXOrigin = tileStippleXOrigin;
+	}	
+	
+	public int getTileStippleXOrigin() {
+		return this._tileStippleXOrigin;
+	}
+
+	int _tileStippleYOrigin = 0;
+	
+	public void setTileStippleYOrigin(int clipYOrigin) {
+		this._tileStippleYOrigin = clipYOrigin;
+	}	
+	
+	public int getTileStippleYOrigin() {
+		return this._tileStippleYOrigin;
+	}
+
+	int _clipXOrigin = 0;
+	
+	public void setClipXOrigin(int clipXOrigin) {
+		this._clipXOrigin = _clipXOrigin;
+	}
+	
+	public int getClipXOrigin() {
+		return this._clipXOrigin;
+	}
+
+	int _clipYOrigin = 0;
+	
+	public void setClipYOrigin(int tileStippleYOrigin) {
+		this._clipYOrigin = _clipYOrigin;
+	}
+	
+	public int getClipYOrigin() {
+		return this._clipYOrigin;
+	}
+
+	/** Weird X seems to imply that this can either be a pixmap or a bunch of rectanges.. */
+	int _clipMask = 0;
+	
+	public void setClipMask(int clipMask) {
+		this._clipMask = clipMask;
+	}
+	
+	public int getClipMask() {
+		return this._clipMask;
+	}
+
+	int _dashOffset = 0;
+	
+	public void setDashOffset(int dashOffset) {
+		this._dashOffset = dashOffset;
+	}
+
+	public int getDashOffset() {
+		return this._dashOffset;
+	}
+
+	int _font = 0;
+	
+	public void setFont(int font) {
+		_font = font;
+	}
+	
+	public int getFont() {
+		return this._font;
 	}
 }

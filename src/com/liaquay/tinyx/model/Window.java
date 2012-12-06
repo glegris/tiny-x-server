@@ -122,6 +122,7 @@ public class Window implements Drawable {
 	private int _x, _y;			/* relative location of window */
 	private int _absX, _absY;      /* absolute location of window */
 	
+	private int _cursorId;			/* The resource id of the cursor to use when the mouse is within this window */
 	private int _clipX, _clipY;    /* clip location of window */
 	private int _clipW, _clipH;    /* clip size of window */
 	
@@ -524,6 +525,14 @@ public class Window implements Drawable {
 		return _heightPixels;
 	}
 
+	public int getCursorId() {
+		return this._cursorId;
+	}
+	
+	public void setCursorId(int cursorId) {
+		this._cursorId = cursorId;
+	}
+	
 	public int getAbsX() {
 		return _absX;
 	}

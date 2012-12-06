@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.AccessControls;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Host;
 import com.liaquay.tinyx.model.Server;
 
 public class ListHosts implements RequestHandler {
@@ -33,11 +36,18 @@ public class ListHosts implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final AccessControls acl = server.getAccessControls();
+		
+		XOutputStream outputStream = response.respond(acl.getMode() ? 1 : 0);
+		outputStream.writeShort(acl.getHosts().size());
+		outputStream.writePad(22);
+		
+		for (Host h : acl.getHosts()) {
+			outputStream.writeByte(h.getFamily());
+			outputStream.writePad(1);
+			outputStream.writeShort(h.getAddress().length);
+			outputStream.write(h.getAddress(),  0,  h.getAddress().length);
+		}
 	}
 }

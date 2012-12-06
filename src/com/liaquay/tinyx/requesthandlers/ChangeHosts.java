@@ -23,7 +23,9 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Host;
 import com.liaquay.tinyx.model.Server;
 
 public class ChangeHosts implements RequestHandler {
@@ -33,11 +35,35 @@ public class ChangeHosts implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		
+		int mode = request.getData();
+
+		XInputStream inputStream = request.getInputStream();
+		
+		int family = inputStream.readUnsignedByte();
+		inputStream.skip(1);
+		
+		int lengthOfAddress = inputStream.readUnsignedShort();
+
+		byte[] address = new byte[lengthOfAddress];
+		for (int i = 0; i < address.length; i++) {
+			address[i] = (byte) inputStream.readUnsignedByte();
+		}
+		
+		final Host h = new Host();
+		h.setAddress(address);
+		h.setFamily(family);
+		
+		if (mode == 0) {
+			// Insert mode
+			server.getAccessControls().getHosts().add(h);
+			
+		} else if (mode == 1) {
+			// Delete mode
+			server.getAccessControls().getHosts().remove(h);
+		} else {
+			System.out.println("Unknown changeHost mode");
+		}
 	}
 }

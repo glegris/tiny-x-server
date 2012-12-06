@@ -46,6 +46,7 @@ public class Server extends Client {
 		new Format (32, 24, 8)
 	};
 
+	private final AccessControls _accessControl = new AccessControls();
 	private final Extensions _extensions = new Extensions();
 	private final Clients _clients = new Clients();
 	private final Keyboard _keyboard;
@@ -180,6 +181,10 @@ public class Server extends Client {
 		//_clients.add(this);
 	}
 
+	public AccessControls getAccessControls() {
+		return _accessControl;
+	}
+	
 	public Pointer getPointer() {
 		return _pointer;
 	}

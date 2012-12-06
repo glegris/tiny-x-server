@@ -18,6 +18,35 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class ClipYOrigin extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+
+public class ClipYOrigin implements AttributeHandler<GraphicsContext> {
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int clipYOrigin = inputStream.readSignedShort();
+		graphicsContext.setClipYOrigin(clipYOrigin);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeShort(graphicsContext.getClipYOrigin());
+	}
 }

@@ -18,6 +18,37 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class Tile extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.SubWindowMode.SubWindowModeType;
+
+public class Tile implements AttributeHandler<GraphicsContext> {
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int tilePixmap = inputStream.readInt();
+		//TODO: Quick validation that tilePixmap references a known pixmap?
+		graphicsContext.setTile(tilePixmap);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeInt(graphicsContext.getTile());
+	}
 }

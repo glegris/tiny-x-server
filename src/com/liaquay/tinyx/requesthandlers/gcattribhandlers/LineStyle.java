@@ -18,6 +18,48 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class LineStyle extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+
+public class LineStyle implements AttributeHandler<GraphicsContext> {
+	
+	public enum LineStyleType {
+		Solid, 
+		OnOffDash, 
+		DoubleDash;
+		
+		public static LineStyleType getFromIndex(final int index) {
+			final LineStyleType[] lineStyles = values();
+			if(index >= 0 && index < lineStyles.length) return lineStyles[index];
+			return null;
+		}
+	}
+	
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int lineStyle = inputStream.readUnsignedByte();
+		graphicsContext.setLineStyle(lineStyle);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeByte(graphicsContext.getLineStyle());
+	}
 }

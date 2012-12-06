@@ -39,7 +39,7 @@ public class Cursor extends WindowAttributeHandler {
 		
 		final XInputStream inputStream = request.getInputStream();
 		
-		// TODO Implement
-		throw new RuntimeException("Unimplemented");
+		final int cursorId = inputStream.readInt();
+		window.setCursorId(cursorId);
 	}
 }

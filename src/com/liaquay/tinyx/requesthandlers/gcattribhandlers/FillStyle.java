@@ -18,6 +18,50 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class FillStyle extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.JoinStyle.JoinStyleType;
+
+public class FillStyle implements AttributeHandler<GraphicsContext> {
+	
+	public enum FillStyleType {
+		Solid,
+		Tiled,
+		Stippled,
+		OpaqueStippled;
+		
+		public static FillStyleType getFromIndex(final int index) {
+			final FillStyleType[] fillStyles = values();
+			if(index >= 0 && index < fillStyles.length) return fillStyles[index];
+			return null;
+		}
+	}
+	
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int fillStyle = inputStream.readUnsignedByte();
+		graphicsContext.setFillStyle(fillStyle);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeByte(graphicsContext.getFillStyle());
+	}
 }

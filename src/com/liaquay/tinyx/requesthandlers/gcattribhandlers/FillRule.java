@@ -18,6 +18,49 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class FillRule extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
+
+public class FillRule implements AttributeHandler<GraphicsContext> {
+	
+	public enum FillRuleType {
+		EvenOdd,
+		Winding;
+		
+		public static FillRuleType getFromIndex(final int index) {
+			final FillRuleType[] fillRule = values();
+			if(index >= 0 && index < fillRule.length) return fillRule[index];
+			return null;
+		}
+	}
+	
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int fillRule = inputStream.readUnsignedByte();
+		graphicsContext.setFillRule(fillRule);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeByte(graphicsContext.getFillRule());
+	}
 }
+

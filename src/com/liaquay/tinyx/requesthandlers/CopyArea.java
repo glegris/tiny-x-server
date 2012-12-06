@@ -23,7 +23,11 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 
 public class CopyArea implements RequestHandler {
@@ -33,11 +37,49 @@ public class CopyArea implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();		
+
+		int srcDrawable = inputStream.readInt();
+		Drawable s = server.getResources().get(srcDrawable, Drawable.class);
+		if(s == null) {
+			response.error(Response.ErrorCode.Drawable, srcDrawable);	
+			return;			
+		}
+		
+		int dstDrawable = inputStream.readInt();
+		Drawable d = server.getResources().get(dstDrawable, Drawable.class);
+		if(d == null) {
+			response.error(Response.ErrorCode.Drawable, dstDrawable);	
+			return;			
+		}
+
+		// Both drawables need to have the same depth
+		if (s.getDepth() != d.getDepth()) {
+			response.error(ErrorCode.Match, d.getId());
+		}
+
+		//TODO: Find out what it means by "Root"
+//		This request combines the specified rectangle of src-drawable with the specified rectangle of dst-drawable. 
+//		The src-x and src-y coordinates are relative to src-drawable's origin. The dst-x and dst-y are relative to 
+//		dst-drawable's origin, each pair specifying the upper-left corner of the rectangle. The src-drawable must 
+//		have the same root and the same depth as dst-drawable (or a Match error results). 
+		
+		int gcId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(gcId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, gcId);
+			return;
+		}
+
+		int srcX = inputStream.readUnsignedByte();
+		int srcY = inputStream.readUnsignedByte();
+
+		int dstX = inputStream.readUnsignedByte();
+		int dstY = inputStream.readUnsignedByte();
+
+		int width = inputStream.readUnsignedByte();
+		int height = inputStream.readUnsignedByte();
+		
 	}
 }

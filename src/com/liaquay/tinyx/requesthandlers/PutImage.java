@@ -80,14 +80,17 @@ public class PutImage implements RequestHandler {
 		}
 
 		// Read image data...
-		final int remainingBytes = request.getLength() - inputStream.getCounter();
+		final int remainingBytes = request.getLength() - inputStream.getCounter() ;
 
-		byte[] data = new byte[remainingBytes];
-		inputStream.read(data, 0, remainingBytes);
+		byte[] buffer = new byte[remainingBytes];
+		int bytesRead = inputStream.read(buffer, 0, remainingBytes);
+		while (bytesRead < remainingBytes) {
+			bytesRead+=inputStream.read(buffer, bytesRead, buffer.length - bytesRead);
+		}
 
 		if (drawable instanceof Pixmap) {
 			// Pass it onto the drawable resource
-			((Pixmap) drawable).init(data);
+			((Pixmap) drawable).init(buffer);
 		}
 	}
 }

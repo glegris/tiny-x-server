@@ -18,6 +18,50 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class JoinStyle extends Unimplemented {
+import java.io.IOException;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.CapStyle.CapStyleType;
+
+public class JoinStyle implements AttributeHandler<GraphicsContext> {
+	
+	public enum JoinStyleType {
+		Miter,
+		Round,
+		Bevel;
+		
+		public static JoinStyleType getFromIndex(final int index) {
+			final JoinStyleType[] joinStyles = values();
+			if(index >= 0 && index < joinStyles.length) return joinStyles[index];
+			return null;
+		}
+	}
+	
+	
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+	
+		int joinStyle = inputStream.readUnsignedByte();
+		graphicsContext.setJoinStyle(joinStyle);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		outputStream.writeByte(graphicsContext.getJoinStyle());
+	}
 }
+
