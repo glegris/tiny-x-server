@@ -89,6 +89,10 @@ public class Server extends Client {
 		_syncLock.unlock();
 	}
 
+	public int getTimestamp() {
+		return (int)(System.currentTimeMillis() & 0xffffffff);
+	}
+	
 	/**
 	 * A Lock used to grab the server during client requests 
 	 */

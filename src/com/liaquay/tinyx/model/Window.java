@@ -31,6 +31,7 @@ public class Window implements Drawable {
 	public interface Listener {
 		public void childCreated(final Window child);
 		public void mapped(final Window window, final boolean mapped);
+		public void visible(final Window window, final boolean visible);
 	}
 	
 	/**
@@ -42,6 +43,8 @@ public class Window implements Drawable {
 		public void childCreated(final Window child) {}
 		@Override
 		public void mapped(final Window window, final boolean mapped) {}
+		@Override
+		public void visible(Window window, boolean visible) {}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -135,6 +138,7 @@ public class Window implements Drawable {
 	private Pixmap _borderPixmap = null;
 	
 	private boolean _mapped = false;
+	private boolean _viewable = false;
 	// TODO values are rubbish
 	private int _backingPlanes = 0;
 	private int _backingPixel = 0;
@@ -245,12 +249,37 @@ public class Window implements Drawable {
 			_clipH = _clipY < y3 ? y3 - _clipY : 0;
 		}
 
-		// TODO need to think if this really belong in here!
 		for(int i = 0; i < _children.size() ; ++i) {
 			_children.get(i).updateLocation();
 		}
 	}
 
+	// TODO Work out difference between visible and exposed.
+	private void updateVisibility() {
+		
+		final boolean newVisibility = isMappedToRoot() && nonZeroClippedArea() && !isInputOnly();
+		
+		if(!_viewable && newVisibility) {
+			// Expose
+			_listener.visible(this, true);
+
+			// TODO issue visibility event
+//			final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create()
+		}
+		else if(_viewable && !newVisibility){
+			// Hide
+			_listener.visible(this, false);
+			
+			// TODO issue visibility event
+		}
+		
+		_viewable = newVisibility;
+		
+		for(int i = 0; i < _children.size() ; ++i) {
+			_children.get(i).updateVisibility();
+		}
+	}
+	
 	private boolean containsPixel(final int absX, final int absY) {
 		return absX >= _clipX && absX < (_clipX + _clipW) &&
 				absY >= _clipY && absY < (_clipY + _clipH);  
@@ -374,6 +403,8 @@ public class Window implements Drawable {
 			if(isMappedToRoot()) {
 				_listener.mapped(this,true);
 			}
+			
+			updateVisibility();
 		}
 	}
 	
@@ -455,8 +486,7 @@ public class Window implements Drawable {
 	
 	public MappedState getMappedState() {
 		if(_mapped) {
-			// TODO Should this value change 
-			return MappedState.IsViewable;
+			return isViewable() ? MappedState.IsViewable : MappedState.IsUnviewable;
 		}
 		else {
 			return MappedState.IsUnmapped;
@@ -634,7 +664,7 @@ public class Window implements Drawable {
 	
 	public void remove(final ClientWindowAssociation assoc) {
 		_clientWindowAssociations.remove(assoc);
-	}
+	} 
 
 	public ClientWindowAssociation getClientWindowAssociations(final Client client) {
 		// Linear search but this should be a short list (1 or 2 long).
@@ -643,5 +673,13 @@ public class Window implements Drawable {
 			if(assoc.getClient() == client) return assoc;
 		}
 		return null;
+	}
+
+	public final boolean isViewable() {
+		return _viewable;
+	}
+	
+	private final boolean nonZeroClippedArea() {
+		return _clipH > 0 && _clipW > 0;
 	}
 }
