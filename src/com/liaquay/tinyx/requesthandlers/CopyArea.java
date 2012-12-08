@@ -34,52 +34,55 @@ import com.liaquay.tinyx.model.Window;
 public class CopyArea implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();		
 
-		int srcDrawable = inputStream.readInt();
-		Drawable s = server.getResources().get(srcDrawable, Drawable.class);
+		final int srcDrawable = inputStream.readInt();
+		final Drawable s = server.getResources().get(srcDrawable, Drawable.class);
 		if(s == null) {
 			response.error(Response.ErrorCode.Drawable, srcDrawable);	
 			return;			
 		}
 
-		int dstDrawable = inputStream.readInt();
-		Drawable d = server.getResources().get(dstDrawable, Drawable.class);
+		final int dstDrawable = inputStream.readInt();
+		final Drawable d = server.getResources().get(dstDrawable, Drawable.class);
 		if(d == null) {
 			response.error(Response.ErrorCode.Drawable, dstDrawable);	
-			return;			
+			return;	
 		}
 
 		// Both drawables need to have the same depth
 		if (s.getDepth() != d.getDepth()) {
 			response.error(ErrorCode.Match, d.getId());
+			return;	
 		}
 
 		// Both drawables need to be on the same root window
 		if (!s.getScreen().getRootWindow().equals(d.getScreen().getRootWindow())) {
 			response.error(ErrorCode.Match, d.getId());
+			return;	
 		}
 
-		int gcId = inputStream.readInt();
+		final int gcId = inputStream.readInt();
 		final GraphicsContext graphicsContext = server.getResources().get(gcId, GraphicsContext.class);
 		if(graphicsContext == null) {
 			response.error(Response.ErrorCode.GContext, gcId);
 			return;
 		}
 
-		int srcX = inputStream.readUnsignedByte();
-		int srcY = inputStream.readUnsignedByte();
+		final int srcX = inputStream.readUnsignedByte();
+		final int srcY = inputStream.readUnsignedByte();
 
-		int dstX = inputStream.readUnsignedByte();
-		int dstY = inputStream.readUnsignedByte();
+		final int dstX = inputStream.readUnsignedByte();
+		final int dstY = inputStream.readUnsignedByte();
 
-		int width = inputStream.readUnsignedByte();
-		int height = inputStream.readUnsignedByte();
+		final int width = inputStream.readUnsignedByte();
+		final int height = inputStream.readUnsignedByte();
 
 
 		if(d instanceof Window) {

@@ -18,15 +18,14 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.net.InetAddress;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class AccessControls {
 	
-	private boolean _mode = true;
+	private boolean _enabled = true;
 	
-	private Set<Host> _hosts = new TreeSet<Host>();
+	private final Set<Host> _hosts = new TreeSet<Host>();
 
 	public AccessControls() {
 		// By default allow connection from local host.
@@ -34,31 +33,14 @@ public class AccessControls {
 	}
 	
 	public boolean getEnabled() {
-		return _mode;
+		return _enabled;
 	}
 
 	public void setEnabled(final boolean mode) {
-		_mode = mode;
+		_enabled = mode;
 	}
 
 	public Set<Host> getHosts() {
 		return _hosts;
-	}
-
-	public void setHosts(Set<Host> hosts) {
-		this._hosts = hosts;
-	}
-
-	public boolean validHost(InetAddress inetAddress) {
-		if (_mode) { // Disabled
-			return true;
-		} else {
-			for (Host h : _hosts) {
-				if (inetAddress.getAddress().equals(h.getAddress())) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 }
