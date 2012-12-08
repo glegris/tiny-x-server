@@ -32,19 +32,20 @@ import com.liaquay.tinyx.model.Server;
 public class ListHosts implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final AccessControls acl = server.getAccessControls();
-		
-		XOutputStream outputStream = response.respond(acl.getMode() ? 1 : 0);
+
+		final XOutputStream outputStream = response.respond(acl.getEnabled() ? 1 : 0);
 		outputStream.writeShort(acl.getHosts().size());
 		outputStream.writePad(22);
-		
-		for (Host h : acl.getHosts()) {
-			outputStream.writeByte(h.getFamily());
+
+		for (final Host h : acl.getHosts()) {
+			outputStream.writeByte(h.getFamily().ordinal());
 			outputStream.writePad(1);
 			outputStream.writeShort(h.getAddress().length);
 			outputStream.write(h.getAddress(),  0,  h.getAddress().length);

@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,11 +34,13 @@ import com.liaquay.tinyx.io.MsbXInputStream;
 import com.liaquay.tinyx.io.MsbXOutputStream;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.AccessControls;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Depths.Depth;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Format;
+import com.liaquay.tinyx.model.Host;
 import com.liaquay.tinyx.model.KeyboardMapping;
 import com.liaquay.tinyx.model.PostBox;
 import com.liaquay.tinyx.model.Resource;
@@ -113,7 +116,20 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		out.send();
 	}
 	
-	private static void writeDepth(final XOutputStream out, final Depth depth)  throws IOException {
+	private void writeFailure(final XOutputStream out, final String reason)  throws IOException {
+		final byte[] reasonBytes = reason.getBytes();
+		final int reasonLength = reasonBytes.length;
+		out.writeByte(0);		                  // Failure.
+		out.writeByte(reasonBytes.length);        // Unused.
+		out.writeShort(11);                       // ProtocolMajorVersion
+		out.writeShort(0);                        // ProtocolMinorVersion
+		out.writeShort((reasonLength + 3) >> 2);  // Extra length (in words)
+		out.write(reasonBytes, 0, reasonLength);
+		int p = -reasonLength & 3;
+		out.writePad(p);
+	}
+	
+	private static void writeDepth(final XOutputStream out, final Depth depth) throws IOException {
 		final Collection<Visual> visuals = depth.getVisuals();
 		out.writeByte(depth.getDepth());
 		out.writePad(1);
@@ -163,7 +179,7 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 	}
 	
 	@Override
-	public Executable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException {
+	public Executable createClient(final InputStream inputStream, final OutputStream outputStream, final InetAddress address) throws IOException {
 		
 		final XInputStream xinputStream;
 		final XOutputStream xoutputStream;
@@ -205,15 +221,25 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		try {
 			_server.lockForRequest();
 			
+			// Create a host class for the new connection
+			final Host host = new Host(address.getAddress(), Host.Family.Internet);
+			
+			final AccessControls accessControls = _server.getAccessControls();
+			if(accessControls.getEnabled() == true) {
+				if(!accessControls.getHosts().contains(host)) {
+					writeFailure(xoutputStream, "UNAUTHORISED ");
+					return null;
+				}
+			}
+			
 			final PostMan postMan = new PostMan();
-			final Client client = _server.allocateClient(postMan);
+			final Client client = _server.allocateClient(postMan, host);
 			
 			if(client == null) {
 				LOGGER.log(Level.SEVERE, "Could not allocate new client");
 				return null;
 			}
 			else {
-				
 				// Send the opening response
 				writeProlog(xoutputStream, client.getClientId());
 

@@ -37,6 +37,6 @@ public class SetAccessControl implements RequestHandler {
 		
 		final boolean accessControl = request.getData()==0 ? false : true;
 
-		server.getAccessControls().setMode(accessControl);
+		server.getAccessControls().setEnabled(accessControl);
 	}
 }

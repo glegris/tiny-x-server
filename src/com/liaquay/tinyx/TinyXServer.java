@@ -21,7 +21,9 @@ package com.liaquay.tinyx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +44,7 @@ public class TinyXServer {
 	}
 	
 	public interface ClientFactory {
-		public Executable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException;
+		public Executable createClient(final InputStream inputStream, final OutputStream outputStream, final InetAddress address) throws IOException;
 	}
 
 	private final SocketServer _socketServer;
@@ -57,7 +59,9 @@ public class TinyXServer {
 						try {
 							final InputStream inputStream = socket.getInputStream();
 							final OutputStream outputStream = socket.getOutputStream();
-							final Executable client = clientFactory.createClient(inputStream, outputStream);
+							final InetAddress address = socket.getInetAddress();
+							
+							final Executable client = clientFactory.createClient(inputStream, outputStream, address);
 							if(client != null) {
 								synchronized (_executables) {
 									_executables.add(client);

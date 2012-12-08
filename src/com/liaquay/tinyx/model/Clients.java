@@ -35,13 +35,13 @@ public class Clients implements PostBox {
 	    _clientIdAllocator.allocate();
 	}
 	
-	public Client allocate(final PostBox postBox){
+	public Client allocate(final PostBox postBox, final Host host){
 		final int clientId = _clientIdAllocator.allocate();
 		if(clientId < 0) {
 			return null;
 		}
 		else {
-			final Client client = new Client(clientId, postBox);
+			final Client client = new Client(clientId, postBox, host);
 			_clients[clientId] = client;
 			return client;
 		}

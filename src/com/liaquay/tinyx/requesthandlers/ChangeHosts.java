@@ -19,51 +19,65 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Host;
+import com.liaquay.tinyx.model.Host.Family;
 import com.liaquay.tinyx.model.Server;
 
 public class ChangeHosts implements RequestHandler {
 
+	private final static Logger LOGGER = Logger.getLogger(ChangeHosts.class.getName());
+
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
+		final int mode = request.getData();
+		if(mode < 0 || mode > 1) {
+			LOGGER.log(Level.SEVERE, "Unknown changeHost mode " + mode);
+			response.error(ErrorCode.Value, mode);
+			return;
+		}
 		
-		int mode = request.getData();
+		final XInputStream inputStream = request.getInputStream();
 
-		XInputStream inputStream = request.getInputStream();
+		final int familyIndex = inputStream.readUnsignedByte();
+		final Family family = Host.Family.getFromIndex(familyIndex);
+		if(family == null) {
+			LOGGER.log(Level.SEVERE, "Unknown changeHost family " + family);
+			response.error(ErrorCode.Value, familyIndex);
+			return;
+		}
 		
-		int family = inputStream.readUnsignedByte();
 		inputStream.skip(1);
-		
-		int lengthOfAddress = inputStream.readUnsignedShort();
 
-		byte[] address = new byte[lengthOfAddress];
+		final int lengthOfAddress = inputStream.readUnsignedShort();
+
+		final byte[] address = new byte[lengthOfAddress];
 		for (int i = 0; i < address.length; i++) {
 			address[i] = (byte) inputStream.readUnsignedByte();
 		}
-		
-		final Host h = new Host();
-		h.setAddress(address);
-		h.setFamily(family);
-		
+
+		final Host h = new Host(address, family);
+
 		if (mode == 0) {
 			// Insert mode
 			server.getAccessControls().getHosts().add(h);
-			
-		} else if (mode == 1) {
+		} 
+		else {
 			// Delete mode
 			server.getAccessControls().getHosts().remove(h);
-		} else {
-			System.out.println("Unknown changeHost mode");
 		}
 	}
 }
