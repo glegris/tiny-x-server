@@ -101,7 +101,7 @@ public class TinyXConsole {
 			}
 		});
 
-		final TinyXServer tinyXServer = new TinyXServer(6001, new ConnectionFactory(server));
+		final TinyXServer tinyXServer = new TinyXServer(6001, server);
 		tinyXServer.listen();
 	}
 }

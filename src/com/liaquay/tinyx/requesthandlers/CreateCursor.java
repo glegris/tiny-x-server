@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Cursor;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 
 public class CreateCursor implements RequestHandler {
@@ -33,11 +36,44 @@ public class CreateCursor implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		final XInputStream inputStream = request.getInputStream();
+		
+		int cursorId = inputStream.readInt();
+		Cursor cursor = new Cursor(cursorId);
+		server.getResources().add(cursor);
+		
+		int sourcePixmap = inputStream.readInt();
+		Pixmap sourcePixmapRes = server.getResources().get(sourcePixmap, Pixmap.class);
+		if (sourcePixmapRes == null) {
+			response.error(Response.ErrorCode.Pixmap, sourcePixmap);
+		}
+		
+		int maskPixmap = inputStream.readInt();
+		Pixmap maskPixmapRes = server.getResources().get(maskPixmap, Pixmap.class);
+		if (maskPixmapRes == null) {
+			response.error(Response.ErrorCode.Pixmap, maskPixmap);
+		}
+
+		// Both pixmaps must have a 
+		if (maskPixmapRes.getDepth() != 1 || sourcePixmapRes.getDepth() != 1) {
+			response.error(Response.ErrorCode.Match, maskPixmap);
+		}
+		
+		int foregroundRed = inputStream.readUnsignedShort();
+		int foregroundGreen = inputStream.readUnsignedShort();
+		int foregroundBlue = inputStream.readUnsignedShort();
+
+		int backgroundRed = inputStream.readUnsignedShort();
+		int backgroundGreen = inputStream.readUnsignedShort();
+		int backgroundBlue = inputStream.readUnsignedShort();
+
+		int x = inputStream.readUnsignedShort();
+		int y = inputStream.readUnsignedShort();
+
+		cursor.setX(x);
+		cursor.setY(y);
+//		cursor.setForegroundColor();
+//		cursor.setBackgroundColor();
 	}
 }

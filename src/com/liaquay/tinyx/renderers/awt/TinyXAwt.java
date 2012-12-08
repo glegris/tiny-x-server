@@ -106,7 +106,7 @@ public class TinyXAwt {
 			}
 		});
 
-		final TinyXServer tinyXServer = new TinyXServer(6001, new ConnectionFactory(server));
+		final TinyXServer tinyXServer = new TinyXServer(6001, server);
 		
 		final XawtScreen xawtScreen = new XawtScreen(server, screen);
 		xawtScreen.getListeners().add(new Listener() {

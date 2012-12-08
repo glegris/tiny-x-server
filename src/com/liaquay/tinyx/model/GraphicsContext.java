@@ -182,7 +182,7 @@ public class GraphicsContext extends AbstractResource {
 	int _clipXOrigin = 0;
 	
 	public void setClipXOrigin(int clipXOrigin) {
-		this._clipXOrigin = _clipXOrigin;
+		this._clipXOrigin = clipXOrigin;
 	}
 	
 	public int getClipXOrigin() {
@@ -191,8 +191,8 @@ public class GraphicsContext extends AbstractResource {
 
 	int _clipYOrigin = 0;
 	
-	public void setClipYOrigin(int tileStippleYOrigin) {
-		this._clipYOrigin = _clipYOrigin;
+	public void setClipYOrigin(int clipYOrigin) {
+		this._clipYOrigin = clipYOrigin;
 	}
 	
 	public int getClipYOrigin() {

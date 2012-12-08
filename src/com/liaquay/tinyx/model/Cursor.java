@@ -20,9 +20,19 @@ package com.liaquay.tinyx.model;
 
 public class Cursor extends AbstractResource {
 
+	int _x;
+	int _y;
+	
 	public Cursor(final int id) {
 		super(id);
-		// TODO Auto-generated constructor stub
+	}
+
+	public void setX(int x) {
+		this._x = x;
+	}
+
+	public void setY(int y) {
+		this._y = y;
 	}
 
 }

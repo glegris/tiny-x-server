@@ -29,45 +29,57 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.sockets.SocketServer;
 import com.liaquay.tinyx.sockets.SocketServer.Listener;
 
 public class TinyXServer {
 
 	private final static Logger LOGGER = Logger.getLogger(TinyXServer.class.getName());
-	
+
 	public interface Executable {
 		public void run();
 		public void stop();
 	}
-	
+
 	public interface ClientFactory {
 		public Executable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException;
 	}
 
 	private final SocketServer _socketServer;
 	private final Set<Executable> _executables = new HashSet<Executable>();
-	
-	public TinyXServer(final int port, final ClientFactory clientFactory) throws IOException {
+
+	public TinyXServer(final int port, final Server server) throws IOException {
+		final ClientFactory clientFactory = new ConnectionFactory(server);
+
 		_socketServer = new SocketServer(port, new Listener() {			
 			@Override
 			public boolean connected(final Socket socket) {
 				new Thread() {
 					public void run() {
 						try {
-							final InputStream inputStream = socket.getInputStream();
-							final OutputStream outputStream = socket.getOutputStream();
-							final Executable client = clientFactory.createClient(inputStream, outputStream);
-							if(client != null) {
-								synchronized (_executables) {
-									_executables.add(client);
-								}
-								try {
-									client.run();
-								}
-								finally {
+
+							if(!server.getAccessControls().validHost(socket.getInetAddress())){
+								System.err.println("ACL warning: unauthorized access from "+
+										socket.getInetAddress());
+								try{socket.close();}catch(Exception e){};
+
+							} else {
+
+								final InputStream inputStream = socket.getInputStream();
+								final OutputStream outputStream = socket.getOutputStream();
+								final Executable client = clientFactory.createClient(inputStream, outputStream);
+								if(client != null) {
 									synchronized (_executables) {
-										_executables.remove(client);
+										_executables.add(client);
+									}
+									try {
+										client.run();
+									}
+									finally {
+										synchronized (_executables) {
+											_executables.remove(client);
+										}
 									}
 								}
 							}
@@ -90,7 +102,7 @@ public class TinyXServer {
 			@Override
 			public void exited() {
 				final List<Executable> _executablesRemaining;
-				
+
 				synchronized (_executables) {
 					_executablesRemaining = new ArrayList<Executable>(_executables);
 				}
@@ -105,7 +117,7 @@ public class TinyXServer {
 	public void listen() throws IOException {
 		_socketServer.listen();
 	}
-	
+
 	public void close() {
 		_socketServer.close();
 	}
