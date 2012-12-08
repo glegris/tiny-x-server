@@ -23,20 +23,19 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 
 public class SetAccessControl implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
-		final boolean accessControl = request.getData()==0 ? false : true;
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
-		server.getAccessControls().setEnabled(accessControl);
+		final boolean enabled = request.getData() !=0 ;
+		server.getAccessControls().setEnabled(enabled);
 	}
 }
