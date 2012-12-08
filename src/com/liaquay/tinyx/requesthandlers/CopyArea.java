@@ -29,15 +29,16 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class CopyArea implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();		
 
 		int srcDrawable = inputStream.readInt();
@@ -46,7 +47,7 @@ public class CopyArea implements RequestHandler {
 			response.error(Response.ErrorCode.Drawable, srcDrawable);	
 			return;			
 		}
-		
+
 		int dstDrawable = inputStream.readInt();
 		Drawable d = server.getResources().get(dstDrawable, Drawable.class);
 		if(d == null) {
@@ -59,12 +60,11 @@ public class CopyArea implements RequestHandler {
 			response.error(ErrorCode.Match, d.getId());
 		}
 
-		//TODO: Find out what it means by "Root"
-//		This request combines the specified rectangle of src-drawable with the specified rectangle of dst-drawable. 
-//		The src-x and src-y coordinates are relative to src-drawable's origin. The dst-x and dst-y are relative to 
-//		dst-drawable's origin, each pair specifying the upper-left corner of the rectangle. The src-drawable must 
-//		have the same root and the same depth as dst-drawable (or a Match error results). 
-		
+		// Both drawables need to be on the same root window
+		if (!s.getScreen().getRootWindow().equals(d.getScreen().getRootWindow())) {
+			response.error(ErrorCode.Match, d.getId());
+		}
+
 		int gcId = inputStream.readInt();
 		final GraphicsContext graphicsContext = server.getResources().get(gcId, GraphicsContext.class);
 		if(graphicsContext == null) {
@@ -80,6 +80,10 @@ public class CopyArea implements RequestHandler {
 
 		int width = inputStream.readUnsignedByte();
 		int height = inputStream.readUnsignedByte();
-		
+
+
+		if(d instanceof Window) {
+			((Window)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
+		}
 	}
 }

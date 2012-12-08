@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.net.InetAddress;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -42,5 +43,22 @@ public class AccessControls {
 
 	public Set<Host> getHosts() {
 		return _hosts;
+	}
+
+	public void setHosts(Set<Host> hosts) {
+		this._hosts = hosts;
+	}
+
+	public boolean validHost(InetAddress inetAddress) {
+		if (_mode) { // Disabled
+			return true;
+		} else {
+			for (Host h : _hosts) {
+				if (inetAddress.getAddress().equals(h.getAddress())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

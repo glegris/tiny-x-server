@@ -18,22 +18,24 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.awt.Graphics;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 
 public class Window implements Drawable {
-	
+
 	private final Window _parent;
 	private final List<Window> _children = new ArrayList<Window>();
-	
+
 	public interface Listener {
 		public void childCreated(final Window child);
 		public void mapped(final Window window, final boolean mapped);
 		public void visible(final Window window, final boolean visible);
 	}
-	
+
 	/**
 	 * Empty implementation of the listener so that we don't have null checks 
 	 * throughout the code. 
@@ -46,15 +48,15 @@ public class Window implements Drawable {
 		@Override
 		public void visible(Window window, boolean visible) {}
 	}
-	
+
 	private static final Listener NULL_LISTENER = new NullListener();
-	
+
 	private Listener _listener = NULL_LISTENER;
-	
+
 	public void setListener(final Listener listener) {
 		_listener = listener;
 	}
-	
+
 	public enum MappedState {
 		IsUnmapped,
 		IsUnviewable,
@@ -66,21 +68,21 @@ public class Window implements Drawable {
 			return null;
 		}	
 	}
-	
+
 	public enum BackingStoreHint {
 		BackingStoreNever,
 		BackingStoreWhenMapped,
 		BackingStoreAlways;
-		
+
 		public static BackingStoreHint getFromIndex(final int index) {
 			final BackingStoreHint[] values = values();
 			if (index<values.length && index>=0) return values[index];
 			return null;
 		}
 	}
-	
+
 	private BackingStoreHint _backingStoreHint = BackingStoreHint.BackingStoreAlways; // TODO Check default value
-	
+
 	public enum Gravity {
 		ForgetGravity,
 		NorthWestGravity,
@@ -93,29 +95,29 @@ public class Window implements Drawable {
 		SouthGravity,
 		SouthEastGravity,
 		StaticGravity;
-		
+
 		public static Gravity getFromIndex(final int index) {
 			final Gravity[] values = values();
 			if (index<values.length && index>=0) return values[index];
 			return null;
 		}
 	}
-	
+
 	private Gravity _bitGravity = 	Gravity.NorthWestGravity;
 	private Gravity _winGravity  = Gravity.	NorthWestGravity;
-	
+
 	public enum WindowClass {
 		CopyFromParent,
 		InputOutput,
 		InputOnly;
-		
+
 		public static WindowClass getFromIndex(final int index) {
 			final WindowClass[] values = values();
 			if (index<values.length && index>=0) return values[index];
 			return null;
 		}
 	}
-	
+
 	private final int _resourceId;
 	private final Visual _visual;
 	private final Properties _properties = new Properties();
@@ -124,11 +126,11 @@ public class Window implements Drawable {
 	private final int _depth;		/* depth of window */
 	private int _x, _y;			/* relative location of window */
 	private int _absX, _absY;      /* absolute location of window */
-	
+
 	private int _cursorId;			/* The resource id of the cursor to use when the mouse is within this window */
 	private int _clipX, _clipY;    /* clip location of window */
 	private int _clipW, _clipH;    /* clip size of window */
-	
+
 	private int _widthPixels, _heightPixels;	/* width and height of window in pixels */
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
@@ -136,7 +138,7 @@ public class Window implements Drawable {
 	private int _backgroundPixel = 0; // TODO Default value
 	private int _borderPixel = 0; // TODO Default value
 	private Pixmap _borderPixmap = null;
-	
+
 	private boolean _mapped = false;
 	private boolean _viewable = false;
 	// TODO values are rubbish
@@ -150,21 +152,21 @@ public class Window implements Drawable {
 	private boolean _parentRelativeBackgroundPixmap = false;
 	private final EventFactories _eventFactories;
 
-//  Window root;                /* root of screen containing window */
-//    int backing_store;          /* NotUseful, WhenMapped, Always */
-//    unsigned long backing_planes;/* planes to be preserved if possible */
-//    unsigned long backing_pixel;/* value to be used when restoring planes */
-//    Bool save_under;            /* boolean, should bits under be saved? */
-//    Colormap colormap;          /* color map to be associated with window */
-//    Bool map_installed;         /* boolean, is color map currently installed*/
-//    int map_state;              /* IsUnmapped, IsUnviewable, IsViewable */
-//    long all_event_masks;       /* set of events all people have interest in*/
-//    long your_event_mask;       /* my event mask */
-//    long do_not_propagate_mask; /* set of events that should not propagate */
-//    Bool override_redirect;     /* boolean value for override-redirect */
-//    Screen *screen;             /* back pointer to correct screen */
+	//  Window root;                /* root of screen containing window */
+	//    int backing_store;          /* NotUseful, WhenMapped, Always */
+	//    unsigned long backing_planes;/* planes to be preserved if possible */
+	//    unsigned long backing_pixel;/* value to be used when restoring planes */
+	//    Bool save_under;            /* boolean, should bits under be saved? */
+	//    Colormap colormap;          /* color map to be associated with window */
+	//    Bool map_installed;         /* boolean, is color map currently installed*/
+	//    int map_state;              /* IsUnmapped, IsUnviewable, IsViewable */
+	//    long all_event_masks;       /* set of events all people have interest in*/
+	//    long your_event_mask;       /* my event mask */
+	//    long do_not_propagate_mask; /* set of events that should not propagate */
+	//    Bool override_redirect;     /* boolean value for override-redirect */
+	//    Screen *screen;             /* back pointer to correct screen */
 
-    
+
 	public Window(
 			final int resourceId, 
 			final Window parent, 
@@ -177,7 +179,7 @@ public class Window implements Drawable {
 			final int borderWidth,
 			final WindowClass windowClass,
 			final EventFactories eventFactories) {
-		
+
 		_parent = parent;
 		_resourceId = resourceId;
 		_visual = visual;
@@ -189,11 +191,11 @@ public class Window implements Drawable {
 		_borderWidth = borderWidth;
 		_windowClass = windowClass;
 		_eventFactories = eventFactories;
-		
+
 		if(_parent != null) {
 			_parent.addChild(this);
 		}
-		
+
 		updateLocation();
 	}
 
@@ -284,7 +286,7 @@ public class Window implements Drawable {
 		return absX >= _clipX && absX < (_clipX + _clipW) &&
 				absY >= _clipY && absY < (_clipY + _clipH);  
 	}
-	
+
 	public Window childWindowAt(final int absX, final int absY) {
 		for(int i = _children.size()-1; i >= 0 ; --i) {
 			final Window child = _children.get(i);
@@ -297,7 +299,7 @@ public class Window implements Drawable {
 		}
 		return null;
 	}
-	
+
 	public Window windowAt(final int absX, final int absY) {
 		if(containsPixel(absX, absY)) {
 			final Window childWindow = childWindowAt(absX, absY);
@@ -307,42 +309,42 @@ public class Window implements Drawable {
 			return null;
 		}
 	}
-	
+
 	public Window getParent() {
 		return _parent;
 	}
-	
+
 	public void removeChild(final Window window) {
 		_children.remove(window);
 	}
-	
+
 	public Window getChild(final int i) {
 		return _children.get(i);
 	}
-	
+
 	private void addChild(final Window child) {
 		_children.add(child);
 		_listener.childCreated(child);
 	}
-	
+
 	@Override
 	public int getId() {
 		return _resourceId;
 	}
-	
+
 	public int getWidthPixels() {
 		return _widthPixels;
 	}	
-	
+
 	public int getHeightPixels() {
 		return _heightPixels;
 	}
-	
+
 	public void free() {
 		for(int i = _clientWindowAssociations.size()-1; i>=0; --i) {
 			_clientWindowAssociations.get(i).free();
 		}
-		
+
 		if(getParent() != null) {
 			getParent().removeChild(this);
 		}
@@ -356,7 +358,7 @@ public class Window implements Drawable {
 	public Screen getScreen() {
 		return getParent().getScreen();
 	}
-	
+
 	public Window getRootWindow() {
 		return getScreen();
 	}
@@ -364,12 +366,12 @@ public class Window implements Drawable {
 	public int getChildCount() {
 		return _children.size();
 	}
-	
+
 	@Override
 	public Visual getVisual() {
 		return _visual;
 	}
-	
+
 	public int getDepth() {
 		return _depth;
 	}
@@ -377,11 +379,11 @@ public class Window implements Drawable {
 	public boolean isMapped() {
 		return _mapped;
 	}
-	
+
 	public void map() {
 		if(!_mapped ) {
 			_mapped = true;
-			
+
 			if (!_overrideRedirect && getParent() != null && getParent().checkForEvent(Event.SubstructureRedirectMask)) {
 				final Event mapRequestEvent = _eventFactories.getMapRequestFactory().create(false, getParent(), this);
 				getParent().deliver(mapRequestEvent, Event.SubstructureRedirectMask);
@@ -391,15 +393,15 @@ public class Window implements Drawable {
 				final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create(false, this, this, _overrideRedirect);
 				deliver(mapNotifyEvent, Event.StructureNotifyMask);
 			}
-			
+
 			if(checkForEvent(Event.SubstructureNotifyMask)) {
 				final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create(false, getParent(), this, _overrideRedirect);
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
-			
+
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
-			
+
 			if(isMappedToRoot()) {
 				_listener.mapped(this,true);
 			}
@@ -407,7 +409,7 @@ public class Window implements Drawable {
 			updateVisibility();
 		}
 	}
-	
+
 	/**
 	 * Determine if all the window up to the root window are mapped,
 	 * in which case this window is mapped and displayable.
@@ -415,7 +417,7 @@ public class Window implements Drawable {
 	private boolean isMappedToRoot() {
 		return _mapped && (_parent == null || _parent.isMappedToRoot());
 	}
-	
+
 	private boolean checkForEvent(final int mask) {
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -425,7 +427,7 @@ public class Window implements Drawable {
 		}	
 		return false;
 	}
-	
+
 	private void deliver(final Event event, final int mask){
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -434,7 +436,7 @@ public class Window implements Drawable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Performs a MapWindow request on all unmapped children of the window,
 	 * in top-to-bottom stacking order.
@@ -446,7 +448,7 @@ public class Window implements Drawable {
 			_children.get(i).mapSubwindows();
 		}
 	}
-	
+
 	public void unmap() {
 		if(_mapped) {
 			_mapped = false;
@@ -454,7 +456,7 @@ public class Window implements Drawable {
 			_listener.mapped(this, false);
 		}
 	}
-	
+
 	/**
 	 * Performs an UnmapWindow request on all mapped children of the window,
 	 * in bottom-to-top stacking order
@@ -471,19 +473,19 @@ public class Window implements Drawable {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	public BackingStoreHint getBackingStoreHint() {
 		return _backingStoreHint;
 	}
-	
+
 	public Gravity getBitGravity() {
 		return _bitGravity;
 	}
-	
+
 	public Gravity getWinGravity() { 
 		return _winGravity;
 	}
-	
+
 	public MappedState getMappedState() {
 		if(_mapped) {
 			return isViewable() ? MappedState.IsViewable : MappedState.IsUnviewable;
@@ -492,19 +494,19 @@ public class Window implements Drawable {
 			return MappedState.IsUnmapped;
 		}
 	}
-	
+
 	public int getBackingPlanes() {
 		return _backingPlanes;
 	}
-	
+
 	public int getBackingPixel() {
 		return _backingPixel;
 	}
-	
+
 	public boolean getSaveUnder() {
 		return _saveUnder;
 	}
-	
+
 	// TODO what is this used for? Might need to be efficient/cached.
 	public int getAllEventMask() {
 		int eventMask = 0;
@@ -514,7 +516,7 @@ public class Window implements Drawable {
 		}
 		return eventMask;
 	}
-	
+
 	public int getClientEventMask(final Client client) {
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -522,15 +524,15 @@ public class Window implements Drawable {
 		}
 		return 0;
 	}
-	
+
 	public int getDoNotPropagateMask() {
 		return _doNotPropagateMask;
 	}
-	
+
 	public boolean getOverrideRedirect() {
 		return _overrideRedirect;
 	}
-	
+
 	public ColorMap getColorMap() {
 		return _colorMap;
 	}
@@ -558,35 +560,35 @@ public class Window implements Drawable {
 	public int getCursorId() {
 		return this._cursorId;
 	}
-	
+
 	public void setCursorId(int cursorId) {
 		this._cursorId = cursorId;
 	}
-	
+
 	public int getAbsX() {
 		return _absX;
 	}
-	
+
 	public int getAbsY() {
 		return _absY;
 	}
-	
+
 	public int getClipX() {
 		return _clipX;
 	}
-	
+
 	public int getClipY() {
 		return _clipY;
 	}
-	
+
 	public int getClipWidth() {
 		return _clipW;
 	}
-	
+
 	public int getClipHeight() {
 		return _clipH;
 	}
-	
+
 	@Override
 	public int getBorderWidth() {
 		return _borderWidth;
@@ -655,13 +657,13 @@ public class Window implements Drawable {
 
 	public void clearArea(final boolean exposures, final int x, final int y, final int width, final int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	public void add(final ClientWindowAssociation assoc) {
 		_clientWindowAssociations.add(assoc);
 	}
-	
+
 	public void remove(final ClientWindowAssociation assoc) {
 		_clientWindowAssociations.remove(assoc);
 	} 
@@ -681,5 +683,35 @@ public class Window implements Drawable {
 	
 	private final boolean nonZeroClippedArea() {
 		return _clipH > 0 && _clipW > 0;
+	}
+	
+	public void copyArea(Window window, GraphicsContext graphicsContext,
+			int srcX, int srcY, int width, int height, int dstX, int dstY) {
+
+//		Graphics g=dst.getGraphics();
+//		if(g==null) return;
+//
+//		if(window==dst){ 
+//			copyArea(srcx, srcy, width, height, destx-srcx, desty-srcy); 
+//			dst.draw(destx, desty, width, height);
+//			return;
+//		}
+//
+//		Image img=window.getImage(gc, srcx, srcy, width, height);
+//		if(srcx==0 && srcy==0 && width==window.width && height==window.height){
+//			dst.ddxwindow.drawImage(gc.clip_mask, img, destx, desty, width, height);
+//		}
+//		else{
+//			java.awt.Shape tmp=g.getClip();
+//			g.clipRect(destx, desty, width, height);
+//			dst.ddxwindow.drawImage(gc.clip_mask, img, destx-srcx, desty-srcy, 
+//					window.width, window.height);
+//			if(tmp==null){ g.setClip(0, 0, dst.width, dst.height);}
+//			else{g.setClip(tmp);}
+//		}
+//		dst.draw(destx, desty, width, height);
+//		if(img!=window.getImage()){
+//			img.flush();
+//		}
 	}
 }
