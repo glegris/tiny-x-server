@@ -84,7 +84,12 @@ public class GrabPointer implements RequestHandler {
 			}
 		}
 
+		// Time of 0 is current time
 		final int timestamp = inputStream.readInt();
+		
+		final int time = timestamp == 0 ? 
+				(int)(System.currentTimeMillis() & 0xffffffff):
+				timestamp;
 		
 		// TODO implement
 		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 

@@ -63,4 +63,6 @@ public interface Response {
 	public void error(final ErrorCode errorCode, final int resourceId) throws IOException;
 	
 	public ErrorCode getResponseCode();
+	
+	public void send() throws IOException;
 }

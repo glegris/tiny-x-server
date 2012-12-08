@@ -122,4 +122,10 @@ public class Atoms {
 	public Atom get(final String atomName) {
 		return _atomNameToIdMap.get(atomName);
 	}
+	
+	public Atom getOrAllocate(final String atomName) {
+		final Atom a = get(atomName);
+		if(a != null) return a;
+		return allocate(atomName);
+	}
 }
