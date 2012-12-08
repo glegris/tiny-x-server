@@ -21,7 +21,9 @@ package com.liaquay.tinyx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +45,7 @@ public class TinyXServer {
 	}
 
 	public interface ClientFactory {
-		public Executable createClient(final InputStream inputStream, final OutputStream outputStream) throws IOException;
+		public Executable createClient(final InputStream inputStream, final OutputStream outputStream, final InetAddress address) throws IOException;
 	}
 
 	private final SocketServer _socketServer;
@@ -58,18 +60,19 @@ public class TinyXServer {
 				new Thread() {
 					public void run() {
 						try {
-
-							if(!server.getAccessControls().validHost(socket.getInetAddress())){
-								System.err.println("ACL warning: unauthorized access from "+
-										socket.getInetAddress());
-								try{socket.close();}catch(Exception e){};
-
-							} else {
-
-								final InputStream inputStream = socket.getInputStream();
-								final OutputStream outputStream = socket.getOutputStream();
-								final Executable client = clientFactory.createClient(inputStream, outputStream);
-								if(client != null) {
+							final InputStream inputStream = socket.getInputStream();
+							final OutputStream outputStream = socket.getOutputStream();
+							final InetAddress address = socket.getInetAddress();
+							
+							final Executable client = clientFactory.createClient(inputStream, outputStream, address);
+							if(client != null) {
+								synchronized (_executables) {
+									_executables.add(client);
+								}
+								try {
+									client.run();
+								}
+								finally {
 									synchronized (_executables) {
 										_executables.add(client);
 									}

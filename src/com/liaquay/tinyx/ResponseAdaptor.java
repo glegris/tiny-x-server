@@ -56,15 +56,12 @@ public class ResponseAdaptor implements Response {
 		}
 	}
 	
-	public void setRequest(final Request request) {
+	private void reset() {
 		// Prepare the extra buffer in case it is needed
 		_extra.reset();
 		
 		// Indicate that the header is yet to be sent
 		_headerSent = false;
-		
-		// Make a note of the request so the response can have the correct sequence number
-		_request = request;		
 		
 		_prepared = false;
 		
@@ -73,7 +70,16 @@ public class ResponseAdaptor implements Response {
 		_responseCode = ErrorCode.None;
 		
 		_outputStream.resetCounter();
-		_extraOutputStream.resetCounter();
+		_extraOutputStream.resetCounter();		
+	}
+	
+	public void setRequest(final Request request) {
+		
+		// Clear response for new request
+		reset();
+		
+		// Make a note of the request so the response can have the correct sequence number
+		_request = request;
 	}
 	
 	private ReplyCode _replyCode;
@@ -126,6 +132,8 @@ public class ResponseAdaptor implements Response {
 	 * Deliver the message to the client.
 	 */
 	public void send() throws IOException {
+		padAlign();
+		
 		if(_sent) {
 			throw new IOException("Attempt made to re-send a response");			
 		}
@@ -155,7 +163,10 @@ public class ResponseAdaptor implements Response {
 			}
 		}
 		_outputStream.send();
-		_outputStream.resetCounter();
+		
+		// Clear down the response.
+		// This should allow multiple responses to a single request as is required by ListFontsWithInfo.
+		reset();
 	}
 
 	@Override

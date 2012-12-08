@@ -144,11 +144,13 @@ public class Server extends Client {
 		// Create the server as a client with ID of 0
 		super(	0, 
 				new PostBox() {
-			@Override
-			public void send(final Event event) {
-				// Do nothing. No messages should be sent to the server anyhow.
-			}
-		});
+					@Override
+					public void send(final Event event) {
+						// Do nothing. No messages should be sent to the server anyhow.
+					}
+				}, 
+				null // There is not host for the server client.
+				);
 
 		_eventFactories = eventFactories;
 		_fontFactory = fontFactory;
@@ -242,8 +244,8 @@ public class Server extends Client {
 		return screen;
 	}
 
-	public Client allocateClient(final PostBox postBox) {
-		return _clients.allocate(postBox);
+	public Client allocateClient(final PostBox postBox, final Host host) {
+		return _clients.allocate(postBox, host);
 	}
 
 	public void freeClient(final Client client) {

@@ -49,10 +49,12 @@ public class Client {
 	// Currently performing a linear scan of resources on close of a client to remove unwanted ones.
 	private final IntMap<ClientWindowAssociation> _clientWindowAssociations = new IntMap<ClientWindowAssociation>();	
 	private final PostBox _postBox;
+	private final Host _host;
 
-	public Client(final int clientId, final PostBox postBox) {
+	public Client(final int clientId, final PostBox postBox, final Host host) {
 		_clientId = clientId;
 		_postBox = postBox;
+		_host = host;
 	}
 	
 	public int getClientId() {
