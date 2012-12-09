@@ -28,6 +28,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
@@ -84,6 +85,8 @@ public class CopyArea implements RequestHandler {
 
 		if(d instanceof Window) {
 			((Window)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
+		} else if (d instanceof Pixmap) {
+			((Window)s).copyArea(((Pixmap) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
 		}
 	}
 }

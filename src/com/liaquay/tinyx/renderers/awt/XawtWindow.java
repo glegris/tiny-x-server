@@ -111,6 +111,9 @@ public class XawtWindow  {
     private void paintContent(final Window window, final Graphics2D graphics) {
     	graphics.setColor(getColor());
     	graphics.fillRect(0, 0, window.getWidth(), window.getHeight());    	
+    	
+    	//Lets draw any pixmaps on the screen.
+    	
     }
     
 	public XawtWindow(final Server server, final Window window) {

@@ -650,6 +650,8 @@ public class Window implements Drawable {
 	public void copyArea(Window window, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
 
+		
+		map();
 //		Graphics g=dst.getGraphics();
 //		if(g==null) return;
 //
@@ -675,5 +677,13 @@ public class Window implements Drawable {
 //		if(img!=window.getImage()){
 //			img.flush();
 //		}
+	}
+
+	public void copyArea(Pixmap pixmap, GraphicsContext graphicsContext,
+			int srcX, int srcY, int width, int height, int dstX, int dstY) {
+
+		
+		
+		map();
 	}
 }

@@ -27,7 +27,7 @@ public class Pixmap implements Drawable {
 	private final int _width;
 	private final int _height;
 
-	private byte[] data;
+	private byte[] _data;
 
 	public Pixmap(final int resourceId,
 			final Drawable drawable,
@@ -46,6 +46,10 @@ public class Pixmap implements Drawable {
 		return _resourceId;
 	}
 
+	public byte[] getData() {
+		return this._data;
+	}
+	
 	@Override
 	public void free() {
 		// TODO Auto-generated method stub
@@ -94,7 +98,7 @@ public class Pixmap implements Drawable {
 	}
 
 	public void init(byte[] data) {
-		this.data = data;
+		this._data = data;
 
 //		int widthInBytes = getWidth() / 8;
 //
