@@ -18,7 +18,12 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Pointer {
+	
+	private final static Logger LOGGER = Logger.getLogger(Pointer.class.getName());
 	
 	public interface Listener {
 		public void mappingNotify(final int count);
@@ -44,10 +49,26 @@ public class Pointer {
 	private boolean _doThreshold = false;
 	private PointerMapping _mapping = new PointerMapping(5);
 	private Screen _screen = null;
-
+	private PointerGrab _pointerGrab = null;
+	
 	public Pointer() {
 	}
 
+	public PointerGrab getPointerGrab() {
+		return _pointerGrab;
+	}
+	
+	public void setPointerGrab(final PointerGrab pointerGrab) {
+		if(_pointerGrab != null) {
+			// TODO uninstall old grab
+			LOGGER.log(Level.SEVERE, "uninstall old grab not implemented");
+		}
+		
+		_pointerGrab = pointerGrab;
+		
+		// TODO install new grab
+		LOGGER.log(Level.SEVERE, "install grab not implemented");
+	}
 	
 	public Screen getScreen() {
 		return _screen;

@@ -26,6 +26,8 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Cursor;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
@@ -54,6 +56,10 @@ public class GrabPointer implements RequestHandler {
 			response.error(Response.ErrorCode.Window, windowId);
 			return;
 		}
+		if(!grabWindow.isViewable()) {
+			response.respond(GrabResponse.NotViewable.ordinal());
+			return;
+		}
 		final int eventMask = inputStream.readInt();
 		final boolean pointerSynchronous = inputStream.readUnsignedByte() == 0;
 		final boolean keyboardSynchronous = inputStream.readUnsignedByte() == 0;
@@ -67,6 +73,10 @@ public class GrabPointer implements RequestHandler {
 			confineToWindow = server.getResources().get(confineToWindowId, Window.class);
 			if(confineToWindow == null) {
 				response.error(Response.ErrorCode.Window, confineToWindowId);
+				return;
+			}
+			if(!confineToWindow.isViewable()) {
+				response.respond(GrabResponse.NotViewable.ordinal());
 				return;
 			}
 		}
@@ -84,21 +94,39 @@ public class GrabPointer implements RequestHandler {
 			}
 		}
 
-		// Time of 0 is current time
 		final int timestamp = inputStream.readInt();
+		final int servertime = server.getTimestamp();
+		// Time of 0 means use current server time.
+		final int time = timestamp == 0 ?servertime : timestamp;
 		
-		final int time = timestamp == 0 ? 
-				(int)(System.currentTimeMillis() & 0xffffffff):
-				timestamp;
+		final Pointer pointer = server.getPointer();
+		final PointerGrab currentPointerGrab = pointer.getPointerGrab();
+		if(currentPointerGrab != null) {
+			if(currentPointerGrab.getClient() == client) {
+				if(time - currentPointerGrab.getTimestamp() < 0 || servertime - time < 0) {
+					response.respond(GrabResponse.InvalidTime.ordinal());
+					return;					
+				}
+			}
+			else {
+				response.respond(GrabResponse.AlreadyGrabbed.ordinal());
+			}
+			return;
+		}
+				
+		final PointerGrab pointerGrab = new PointerGrab(
+				client,
+				ownerEvents,
+				grabWindow,
+				eventMask,
+				pointerSynchronous,
+				keyboardSynchronous,
+				confineToWindow,
+				cursor,
+				time);
 		
-		// TODO implement
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));
-		
-		// TODO respond with correct code
+		pointer.setPointerGrab(pointerGrab);
+
 		response.respond(GrabResponse.Success.ordinal());
 	}
 }

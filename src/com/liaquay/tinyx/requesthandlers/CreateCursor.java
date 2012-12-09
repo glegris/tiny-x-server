@@ -32,48 +32,52 @@ import com.liaquay.tinyx.model.Server;
 public class CreateCursor implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-		
-		int cursorId = inputStream.readInt();
-		Cursor cursor = new Cursor(cursorId);
+
+		final int cursorId = inputStream.readInt();
+		final Cursor cursor = new Cursor(cursorId);
 		server.getResources().add(cursor);
-		
-		int sourcePixmap = inputStream.readInt();
-		Pixmap sourcePixmapRes = server.getResources().get(sourcePixmap, Pixmap.class);
+
+		final int sourcePixmap = inputStream.readInt();
+		final Pixmap sourcePixmapRes = server.getResources().get(sourcePixmap, Pixmap.class);
 		if (sourcePixmapRes == null) {
 			response.error(Response.ErrorCode.Pixmap, sourcePixmap);
+			return;
 		}
-		
-		int maskPixmap = inputStream.readInt();
-		Pixmap maskPixmapRes = server.getResources().get(maskPixmap, Pixmap.class);
+
+		final int maskPixmap = inputStream.readInt();
+		final Pixmap maskPixmapRes = server.getResources().get(maskPixmap, Pixmap.class);
 		if (maskPixmapRes == null) {
 			response.error(Response.ErrorCode.Pixmap, maskPixmap);
+			return;
 		}
 
 		// Both pixmaps must have a 
 		if (maskPixmapRes.getDepth() != 1 || sourcePixmapRes.getDepth() != 1) {
 			response.error(Response.ErrorCode.Match, maskPixmap);
+			return;
 		}
-		
-		int foregroundRed = inputStream.readUnsignedShort();
-		int foregroundGreen = inputStream.readUnsignedShort();
-		int foregroundBlue = inputStream.readUnsignedShort();
 
-		int backgroundRed = inputStream.readUnsignedShort();
-		int backgroundGreen = inputStream.readUnsignedShort();
-		int backgroundBlue = inputStream.readUnsignedShort();
+		final int foregroundRed = inputStream.readUnsignedShort();
+		final int foregroundGreen = inputStream.readUnsignedShort();
+		final int foregroundBlue = inputStream.readUnsignedShort();
 
-		int x = inputStream.readUnsignedShort();
-		int y = inputStream.readUnsignedShort();
+		final int backgroundRed = inputStream.readUnsignedShort();
+		final int backgroundGreen = inputStream.readUnsignedShort();
+		final int backgroundBlue = inputStream.readUnsignedShort();
+
+		final int x = inputStream.readUnsignedShort();
+		final int y = inputStream.readUnsignedShort();
 
 		cursor.setX(x);
 		cursor.setY(y);
-//		cursor.setForegroundColor();
-//		cursor.setBackgroundColor();
+		//		cursor.setForegroundColor();
+		//		cursor.setBackgroundColor();
 	}
 }

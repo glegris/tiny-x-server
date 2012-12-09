@@ -63,6 +63,12 @@ public class XawtWindow  {
 				mapped(child, mapped);
 			}
 		}
+
+		@Override
+		public void visible(final Window window, final boolean visible) {
+			// TODO Auto-generated method stub
+			
+		}
 	};
 	
     private Canvas _canvas = new Canvas();
