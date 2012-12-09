@@ -96,14 +96,8 @@ public class GrabPointer implements RequestHandler {
 
 		final int timestamp = inputStream.readInt();
 		final int servertime = server.getTimestamp();
-		final int time;
 		// Time of 0 means use current server time.
-		if(timestamp == 0) {
-			time = timestamp;
-		}
-		else {
-			time = servertime;
-		}
+		final int time = timestamp == 0 ?servertime : timestamp;
 		
 		final Pointer pointer = server.getPointer();
 		final PointerGrab currentPointerGrab = pointer.getPointerGrab();
