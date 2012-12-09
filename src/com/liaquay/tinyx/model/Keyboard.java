@@ -184,6 +184,17 @@ public class Keyboard {
 		return false;
 	}
 	
+	public int getModifierMask() {
+		return 
+				(isModified(Keyboard.Modifier.Shift) ? 1 : 0 ) |
+				(isModified(Keyboard.Modifier.Lock) ? 1<<1 : 0 ) |
+				(isModified(Keyboard.Modifier.Control) ? 1<<2 : 0 ) |
+				(isModified(Keyboard.Modifier.Mod1) ? 1<<3 : 0 ) |
+				(isModified(Keyboard.Modifier.Mod2) ? 1<<4 : 0 ) |
+				(isModified(Keyboard.Modifier.Mod3) ? 1<<5 : 0 ) |
+				(isModified(Keyboard.Modifier.Mod4) ? 1<<6 : 0 ) |
+				(isModified(Keyboard.Modifier.Mod5) ? 1<<7 : 0 );
+	}
 	
 	/**
 	 * Called by server

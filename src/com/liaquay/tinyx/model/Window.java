@@ -18,11 +18,12 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.awt.Graphics;
-import java.awt.Image;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.liaquay.tinyx.model.ButtonGrab.Trigger;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 
 public class Window implements Drawable {
@@ -151,6 +152,8 @@ public class Window implements Drawable {
 	private Pixmap _backgroundPixmap = null;
 	private boolean _parentRelativeBackgroundPixmap = false;
 	private final EventFactories _eventFactories;
+	private final Map<ButtonGrab.Trigger, ButtonGrab> _buttonGrabs = new HashMap<ButtonGrab.Trigger, ButtonGrab>(4);
+	
 
 	//  Window root;                /* root of screen containing window */
 	//    int backing_store;          /* NotUseful, WhenMapped, Always */
@@ -199,6 +202,14 @@ public class Window implements Drawable {
 		updateLocation();
 	}
 
+	public ButtonGrab getButtonGrab(final ButtonGrab.Trigger trigger) {
+		return _buttonGrabs.get(trigger);
+	}
+	
+	public void addButtonGrab(final ButtonGrab buttonGrab) {
+		_buttonGrabs.put(buttonGrab.getTrigger(), buttonGrab);
+	}
+	
 	/**
 	 * Update the absolute position of the window and its clip rectangle.
 	 */
@@ -282,7 +293,7 @@ public class Window implements Drawable {
 		}
 	}
 	
-	private boolean containsPixel(final int absX, final int absY) {
+	public boolean containsPixel(final int absX, final int absY) {
 		return absX >= _clipX && absX < (_clipX + _clipW) &&
 				absY >= _clipY && absY < (_clipY + _clipH);  
 	}
@@ -713,5 +724,16 @@ public class Window implements Drawable {
 //		if(img!=window.getImage()){
 //			img.flush();
 //		}
+	}
+
+	public ButtonGrab findFirstButtonGrab(final Trigger trigger) {
+		ButtonGrab grab = null;
+		if(_parent != null) {
+			grab = findFirstButtonGrab(trigger);
+		}
+		if(grab == null) {
+			grab = _buttonGrabs.get(trigger);
+		}
+		return grab;
 	}
 }

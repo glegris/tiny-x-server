@@ -33,6 +33,8 @@ import com.liaquay.tinyx.model.Window;
 
 public class GrabPointer implements RequestHandler {
 
+	// TODO work out when to respond with 'Frozen'
+	
 	enum GrabResponse {
 		Success,
 		AlreadyGrabbed,
