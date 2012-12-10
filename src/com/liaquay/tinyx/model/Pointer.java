@@ -70,6 +70,20 @@ public class Pointer {
 		LOGGER.log(Level.SEVERE, "install grab not implemented");
 	}
 	
+	/**
+	 * Prior to calling this method make sure the key state and pointer are up-to-date
+	 * 
+	 * @param buttonNumber
+	 * @param modifierKeyMask
+	 * @return
+	 */
+	public ButtonGrab findButtonGrab(final int buttonNumber, final int modifierKeyMask) {
+		final ButtonGrab.Trigger trigger = new ButtonGrab.Trigger(buttonNumber, modifierKeyMask);
+		final Window child = _screen.getRootWindow().childWindowAt(_x, _y);
+		final ButtonGrab grab = child.findFirstButtonGrab(trigger);
+		return grab;
+	}
+	
 	public Screen getScreen() {
 		return _screen;
 	}
@@ -107,6 +121,10 @@ public class Pointer {
 	
 	public boolean isButtonPressed(final int buttonIndex) {
 		return (_buttonState & 1 << buttonIndex) != 0;
+	}
+	
+	public boolean isOnlyButtonPressed(final int buttonIndex) {
+		return _buttonState  == 1 << buttonIndex;
 	}
 
 	public void setAccelerationNumerator(final int accelerationNumerator) {
@@ -152,5 +170,9 @@ public class Pointer {
 	public Window childWindowAt() {
 		if(_screen == null) return null;
 		return _screen.childWindowAt(_x, _y);
+	}
+	
+	public int getButtonMask() {
+		return _buttonState << 8;
 	}
 }

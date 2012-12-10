@@ -334,20 +334,7 @@ public class Server extends Client {
 	 * @return
 	 */
 	public int getKeyButtonMask() {
-		return 
-				(_keyboard.isModified(Keyboard.Modifier.Shift) ? 1 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Lock) ? 1<<1 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Control) ? 1<<2 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Mod1) ? 1<<3 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Mod2) ? 1<<4 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Mod3) ? 1<<5 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Mod4) ? 1<<6 : 0 ) |
-				(_keyboard.isModified(Keyboard.Modifier.Mod5) ? 1<<7 : 0 ) |
-				(_pointer.isButtonPressed(0) ? 1<<8 : 0 ) |
-				(_pointer.isButtonPressed(1) ? 1<<9 : 0 ) |
-				(_pointer.isButtonPressed(2) ? 1<<10 : 0 ) |
-				(_pointer.isButtonPressed(3) ? 1<<11 : 0 ) |
-				(_pointer.isButtonPressed(4) ? 1<<12 : 0 );
+		return _keyboard.getModifierMask() | _pointer.getButtonMask();
 	}
 
 	//
@@ -405,10 +392,20 @@ public class Server extends Client {
 			@Override
 			public void deliver() {
 				// Update the pressed buttons
-				_pointer.buttonPressed(buttonNumber);
+				_pointer.buttonPressed(buttonNumber-1);
 				
 				// Update pointer position
 				_pointer.set(_screens.get(screenIndex), x, y);
+				
+				final PointerGrab grab = _pointer.getPointerGrab();
+				
+				if(grab == null) {
+					// There is no current grab on the pointer so consider activating a passive grab...
+					final ButtonGrab buttonGrab = _pointer.findButtonGrab(buttonNumber, _keyboard.getModifierMask());
+
+					// Activate the button grab...
+					// TODO
+				}
 				
 				// TODO Consider grabs - do they change the construction of the event?
 				final Event event = _eventFactories.getButtonPressFactory().create(
@@ -448,7 +445,10 @@ public class Server extends Client {
 
 			@Override
 			public void deliver() {
-				_pointer.buttonReleased(buttonNumber);
+				_pointer.buttonReleased(buttonNumber-1);
+				
+				// Update pointer position
+				_pointer.set(_screens.get(screenIndex), x, y);
 
 				// TODO Consider grabs - do they change the construction of the event?
 				final Event event = _eventFactories.getButtonReleaseFactory().create(
