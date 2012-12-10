@@ -23,7 +23,9 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.ScreenSaver;
 import com.liaquay.tinyx.model.Server;
 
 public class GetScreenSaver implements RequestHandler {
@@ -33,11 +35,15 @@ public class GetScreenSaver implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		final XOutputStream outputStream = response.respond(1);
+
+		final ScreenSaver ss = server.getScreenSaver();
+		outputStream.writeShort(ss.getTimeout());
+		outputStream.writeShort(ss.getInterval());
+
+		outputStream.writeByte(ss.getPreferBlankingIndex());
+		outputStream.writeByte(ss.getAllowExposuresIndex());
+		outputStream.writePad(18);
 	}
 }

@@ -77,7 +77,7 @@ public class CreateCursor implements RequestHandler {
 
 		cursor.setX(x);
 		cursor.setY(y);
-		//		cursor.setForegroundColor();
-		//		cursor.setBackgroundColor();
+		cursor.setSourcePixmap(sourcePixmapRes);
+		cursor.setMaskPixmap(maskPixmapRes);
 	}
 }

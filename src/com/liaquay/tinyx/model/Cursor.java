@@ -22,6 +22,9 @@ public class Cursor extends AbstractResource {
 
 	int _x;
 	int _y;
+
+	Pixmap _sourcePixmapRes;
+	Pixmap _maskPixmapRes;
 	
 	public Cursor(final int id) {
 		super(id);
@@ -35,4 +38,19 @@ public class Cursor extends AbstractResource {
 		this._y = y;
 	}
 
+	public void setSourcePixmap(Pixmap sourcePixmapRes) {
+		_sourcePixmapRes = sourcePixmapRes;
+	}
+
+	public void setMaskPixmap(Pixmap maskPixmapRes) {
+		_maskPixmapRes = maskPixmapRes;
+	}
+
+	public Pixmap getSourcePixmap() {
+		return _sourcePixmapRes;
+	}
+	
+	public Pixmap getMaskPixmap() {
+		return _maskPixmapRes;
+	}
 }

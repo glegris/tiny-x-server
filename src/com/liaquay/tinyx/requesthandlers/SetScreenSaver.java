@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.ScreenSaver;
 import com.liaquay.tinyx.model.Server;
 
 public class SetScreenSaver implements RequestHandler {
@@ -33,11 +36,49 @@ public class SetScreenSaver implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+//	     1     107                             opcode
+//	     1                                     unused
+//	     2     3                               request length
+//	     2     INT16                           timeout
+//	     2     INT16                           interval
+//	     1                                     prefer-blanking
+//	          0     No
+//	          1     Yes
+//	          2     Default
+//	     1                                     allow-exposures
+//	          0     No
+//	          1     Yes
+//	          2     Default
+//	     2                                     unused
+
+		final ScreenSaver ss = server.getScreenSaver();
+
+		XInputStream inputStream = request.getInputStream();
+		int timeout = inputStream.readSignedShort();
+		if (timeout == -1) {
+			ss.setDefaultTimeout();
+		} else if (timeout < -1) {
+			response.error(ErrorCode.Value, 0);
+		} else if (timeout == 0) {
+			//If the timeout value is zero, screen-saver is disabled 
+			ss.setEnabled(false);
+			//TODO (but an activated screen-saver is not deactivated)
+		} else {
+			// Must be positive numbers
+			ss.setEnabled(true);
+			
+		}
+		int interval = inputStream.readSignedShort();
+		if (interval == -1) {
+			ss.setDefaultInterval();
+		} else if (interval < -1) {
+			response.error(ErrorCode.Value, 0);
+		}
+
+		int blanking = inputStream.readUnsignedByte();
+		ss.setBlanking(blanking);
+		
+		int allowExposures = inputStream.readUnsignedByte();
+		ss.setAllowExposures(allowExposures);
 	}
 }

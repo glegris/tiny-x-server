@@ -33,11 +33,9 @@ public class ForceScreenSaver implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		// Sets the screensaver mode to either Active or Reset
+		final int mode = request.getData();
+		server.getScreenSaver().setMode(mode);
 	}
 }

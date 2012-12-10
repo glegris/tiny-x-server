@@ -18,8 +18,6 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.awt.Graphics;
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +32,9 @@ public class Window implements Drawable {
 		public void childCreated(final Window child);
 		public void mapped(final Window window, final boolean mapped);
 		public void visible(final Window window, final boolean visible);
+		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext,
+			int srcX, int srcY, int width, int height, int dstX, int dstY);
+		public void setCursor(int id);
 	}
 
 	/**
@@ -47,6 +48,18 @@ public class Window implements Drawable {
 		public void mapped(final Window window, final boolean mapped) {}
 		@Override
 		public void visible(Window window, boolean visible) {}
+		@Override
+		public void renderDrawable(Drawable drawable,
+				GraphicsContext graphicsContext, int srcX, int srcY, int width,
+				int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void setCursor(int id) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -563,6 +576,9 @@ public class Window implements Drawable {
 
 	public void setCursorId(int cursorId) {
 		this._cursorId = cursorId;
+		
+		//TODO: Move this into event handling code.. Only here to test the drawing methods
+		_listener.setCursor(cursorId);
 	}
 
 	public int getAbsX() {
@@ -688,8 +704,8 @@ public class Window implements Drawable {
 	public void copyArea(Window window, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
 
-		
-		map();
+		_listener.renderDrawable(window, graphicsContext, srcX, srcY, width, height, dstX, dstY);
+
 //		Graphics g=dst.getGraphics();
 //		if(g==null) return;
 //
@@ -720,8 +736,6 @@ public class Window implements Drawable {
 	public void copyArea(Pixmap pixmap, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
 
-		
-		
-		map();
+		_listener.renderDrawable(pixmap, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
 }

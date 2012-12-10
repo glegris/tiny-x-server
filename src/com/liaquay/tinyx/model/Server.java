@@ -69,6 +69,7 @@ public class Server extends Client {
 	private final EventFactories _eventFactories;
 	private final FontFactory _fontFactory;
 	private final Pointer _pointer = new Pointer();
+	private final ScreenSaver _screenSaver = new ScreenSaver();
 
 	/**
 	 * A lock used to protect the server from concurrent updates
@@ -193,6 +194,10 @@ public class Server extends Client {
 	
 	public Pointer getPointer() {
 		return _pointer;
+	}
+
+	public ScreenSaver getScreenSaver() {
+		return _screenSaver;
 	}
 
 	public Extensions getExtensions() {
