@@ -61,7 +61,7 @@ public class ListFontsWithInfo implements RequestHandler {
 			writeFontInfo(server, f, response, --countDown);
 			counter++;
 			
-			if (counter > maxNames) {
+			if (counter >= maxNames) {
 				break;
 			}
 		}

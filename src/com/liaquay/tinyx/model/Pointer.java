@@ -79,7 +79,7 @@ public class Pointer {
 	 */
 	public ButtonGrab findButtonGrab(final int buttonNumber, final int modifierKeyMask) {
 		final ButtonGrab.Trigger trigger = new ButtonGrab.Trigger(buttonNumber, modifierKeyMask);
-		final Window child = _screen.getRootWindow().childWindowAt(_x, _y);
+		final Window child = _screen.getRootWindow().windowAt(_x, _y);
 		final ButtonGrab grab = child.findFirstButtonGrab(trigger);
 		return grab;
 	}

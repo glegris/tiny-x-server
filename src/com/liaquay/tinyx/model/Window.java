@@ -755,7 +755,7 @@ public class Window implements Drawable {
 	public ButtonGrab findFirstButtonGrab(final Trigger trigger) {
 		ButtonGrab grab = null;
 		if(_parent != null) {
-			grab = findFirstButtonGrab(trigger);
+			grab = _parent.findFirstButtonGrab(trigger);
 		}
 		if(grab == null) {
 			grab = _buttonGrabs.get(trigger);
