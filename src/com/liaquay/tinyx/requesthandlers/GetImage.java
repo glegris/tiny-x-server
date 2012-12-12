@@ -23,7 +23,13 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.FontString;
+import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Server;
 
 public class GetImage implements RequestHandler {
@@ -33,11 +39,35 @@ public class GetImage implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		ImageType type = ImageType.getFromIndex(request.getData());
+
+		final XInputStream inputStream = request.getInputStream();
+
+		final int drawable = inputStream.readInt();
+		final Drawable drawableRes = server.getResources().get(drawable, Drawable.class);
+		if (drawableRes == null) {
+			response.error(Response.ErrorCode.Drawable, drawable);
+			return;
+		}
+		final int x = inputStream.readSignedShort();
+		final int y = inputStream.readSignedShort();
+
+		final int width = inputStream.readUnsignedShort();
+		final int height = inputStream.readUnsignedShort();
+
+		final int planeMask = inputStream.readInt();
+
+		final XOutputStream outputStream = response.respond(1);
+
+		// Depth of the drawable for which we are going to send back data.
+		outputStream.writeByte(drawableRes.getDepth());
+
+		outputStream.writeInt(drawableRes.getVisual().getId());
+		outputStream.writePad(20);
+
+		//TODO: Output the data!!!!!
+//	     n     LISTofBYTE                      data
+//	     p                                     unused, p=pad(n)
 	}
 }
