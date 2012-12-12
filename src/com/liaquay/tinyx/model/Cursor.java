@@ -26,6 +26,16 @@ public class Cursor extends AbstractResource {
 	Pixmap _sourcePixmapRes;
 	Pixmap _maskPixmapRes;
 	
+	int foregroundColorRed;
+	int foregroundColorGreen;
+	int foregroundColorBlue;
+	
+
+	int backgroundColorRed;
+	int backgroundColorGreen;
+	int backgroundColorBlue;
+
+	
 	public Cursor(final int id) {
 		super(id);
 	}
@@ -33,9 +43,17 @@ public class Cursor extends AbstractResource {
 	public void setX(int x) {
 		this._x = x;
 	}
+	
+	public int getX() {
+		return this._x;
+	}
 
 	public void setY(int y) {
 		this._y = y;
+	}
+
+	public int getY() {
+		return this._y;
 	}
 
 	public void setSourcePixmap(Pixmap sourcePixmapRes) {
@@ -53,4 +71,54 @@ public class Cursor extends AbstractResource {
 	public Pixmap getMaskPixmap() {
 		return _maskPixmapRes;
 	}
+
+	public int getForegroundColorRed() {
+		return foregroundColorRed;
+	}
+
+	public void setForegroundColorRed(int foregroundColorRed) {
+		this.foregroundColorRed = foregroundColorRed;
+	}
+
+	public int getForegroundColorGreen() {
+		return foregroundColorGreen;
+	}
+
+	public void setForegroundColorGreen(int foregroundColorGreen) {
+		this.foregroundColorGreen = foregroundColorGreen;
+	}
+
+	public int getForegroundColorBlue() {
+		return foregroundColorBlue;
+	}
+
+	public void setForegroundColorBlue(int foregroundColorBlue) {
+		this.foregroundColorBlue = foregroundColorBlue;
+	}
+
+	public int getBackgroundColorRed() {
+		return backgroundColorRed;
+	}
+
+	public void setBackgroundColorRed(int backgroundColorRed) {
+		this.backgroundColorRed = backgroundColorRed;
+	}
+
+	public int getBackgroundColorGreen() {
+		return backgroundColorGreen;
+	}
+
+	public void setBackgroundColorGreen(int backgroundColorGreen) {
+		this.backgroundColorGreen = backgroundColorGreen;
+	}
+
+	public int getBackgroundColorBlue() {
+		return backgroundColorBlue;
+	}
+
+	public void setBackgroundColorBlue(int backgroundColorBlue) {
+		this.backgroundColorBlue = backgroundColorBlue;
+	}
+
+	
 }

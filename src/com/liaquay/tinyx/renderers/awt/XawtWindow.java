@@ -30,7 +30,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
+import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,6 +41,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+import sun.awt.X11.XCustomCursor;
 import sun.awt.image.ByteBandedRaster;
 
 import com.liaquay.tinyx.model.Cursor;
@@ -48,6 +51,7 @@ import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
+import com.sun.java.swing.plaf.windows.resources.windows;
 
 public class XawtWindow  {
 
@@ -67,6 +71,8 @@ public class XawtWindow  {
 	}
 
 	private Server _server;
+	
+	private Window _window;
 
 	private Window.Listener _windowListener = new Listener() {
 
@@ -119,32 +125,40 @@ public class XawtWindow  {
 
 			if (xcursor != null) {
 				Pixmap p = xcursor.getSourcePixmap();
+				Pixmap m = xcursor.getMaskPixmap();
 
-				BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_INDEXED);
+				// Buffered image that has transparency.
+				BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+				WritableRaster newImage = image.getRaster();
 
+				// This seems horribly inefficient, but will probably do for the time being.
 				int i = 0;
 				for (int y = 0; y < p.getHeight() - 1; y++) {
 					for (int x = 0; x < (p.getWidth()/8); x++) {
-						int b = 0x00ff & p.getData()[i++];
-						System.out.println(Integer.toBinaryString(b));
-
+						int source = 0x00ff & p.getData()[i];
+						int mask = 0x00ff & m.getData()[i++];
+						
 						for (int a = 0; a < 8; a++) {
-							byte c = (byte) ((b >> 7-a) & 0x01);
+							byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
+							byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
 							
-							if (c > 0) {
-								image.setRGB((x*8) + a, y, 200);
+							if (sourcePixel > 0) {
+								newImage.setSample((x*8)+a, y, 0, xcursor.getForegroundColorRed());		// Red
+								newImage.setSample((x*8)+a, y, 1, xcursor.getForegroundColorGreen());	// Green
+								newImage.setSample((x*8)+a, y, 2, xcursor.getForegroundColorBlue());	// Blue
 							} else {
-								image.setRGB((x*8) + a, y, 0);
+								newImage.setSample((x*8)+a, y, 0, xcursor.getBackgroundColorRed());		// Red
+								newImage.setSample((x*8)+a, y, 1, xcursor.getBackgroundColorGreen());	// Green
+								newImage.setSample((x*8)+a, y, 2, xcursor.getBackgroundColorBlue());	// Blue
 							}
+							newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
 						}
 					}
 				}
 
 				if (image != null) {
-					//Load an image for the cursor
-					//				Image image = toolkit.getImage("pencil.gif");
-					Point hotSpot = new Point(0,0);
-					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, "Pencil");
+					Point hotSpot = new Point(xcursor.getX(),xcursor.getY());
+					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, xcursor.getId() + "");
 					_canvas.setCursor(c);
 				}
 			}
@@ -204,6 +218,7 @@ public class XawtWindow  {
 
 	public XawtWindow(final Server server, final Window window) {
 		this._server = server;
+		this._window = window;
 
 		_canvas.setBounds(
 				window.getX(),

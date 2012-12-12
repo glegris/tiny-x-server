@@ -52,13 +52,18 @@ public class ListFontsWithInfo implements RequestHandler {
 
 		final List<FontString> fonts = server.getFontFactory().getMatchingFonts(pattern);
 
-		int countDown = fonts.size();
+		int countDown = maxNames;//fonts.size();
+		int counter = 0;
 		for (final FontString font : fonts) {
-			
 			// TODO PS - Slightly strange use of the Font resource as it is never registered with the server
 			// Is it possible to use the font factory in writeFontInfo() rather than Font?
 			final Font f = new Font(1, font, server.getFontFactory());
 			writeFontInfo(server, f, response, --countDown);
+			counter++;
+			
+			if (counter > maxNames) {
+				break;
+			}
 		}
 
 		// Send a blank response to indicate the last query font response
