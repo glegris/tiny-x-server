@@ -759,6 +759,13 @@ public class Window implements Drawable {
 		}
 		if(grab == null) {
 			grab = _buttonGrabs.get(trigger);
+			
+			// Check the confine-to window is viewable
+			if(grab.getConfineToWindow() != null) {
+				if(!grab.getConfineToWindow().isViewable()) {
+					grab = null;
+				}
+			}
 		}
 		return grab;
 	}

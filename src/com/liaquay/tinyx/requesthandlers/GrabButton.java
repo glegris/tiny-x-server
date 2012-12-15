@@ -122,18 +122,7 @@ public class GrabButton implements RequestHandler {
 				trigger);
 
 		grabWindow.addButtonGrab(buttonGrab);
-		
-		//pointer.setPointerGrab(pointerGrab);
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
 
 		response.respond(GrabResponse.Success.ordinal());
-
-
-
 	}
 }

@@ -59,4 +59,12 @@ public class PointerGrab {
 	public int getTimestamp() {
 		return _timestamp;
 	}
+	
+	public boolean isKeyboardSynchronous() {
+		return _keyboardSynchronous;
+	}
+	
+	public boolean isPointerSynchronous() {
+		return _pointerSynchronous;	
+	}
 }

@@ -127,7 +127,7 @@ public class GrabPointer implements RequestHandler {
 				cursor,
 				time);
 		
-		pointer.setPointerGrab(pointerGrab);
+		server.setGrab(pointerGrab);
 
 		response.respond(GrabResponse.Success.ordinal());
 	}

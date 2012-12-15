@@ -24,6 +24,7 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
 
 public class ButtonFactoryImpl {
@@ -36,6 +37,15 @@ public class ButtonFactoryImpl {
 			final int keyButtonMask,
 			final int when) {
 
+		// Find out if this event is part of a grab
+		final PointerGrab pointerGrab = pointer.getPointerGrab();
+		
+		if(pointerGrab != null) {
+			// TODO work out how grab affects event creation...
+			
+		}
+		
+		
 		final Window focusWindow;
 		switch(focus.getMode()) {
 		case None:

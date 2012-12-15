@@ -107,6 +107,8 @@ public class Pointer {
 	
 	public void set(final Screen screen, final int x, final int y) {
 		_screen = screen;
+		
+		// TODO Consider confine-to-window handling
 		_x = x;
 		_y = y;
 	}

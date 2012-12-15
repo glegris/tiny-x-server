@@ -18,7 +18,6 @@
  */
 package com.liaquay.tinyx.model;
 
-
 public class ButtonGrab {
 	
 	private static final int AnyModifier = 0x8000;
@@ -104,49 +103,22 @@ public class ButtonGrab {
 	
 	public Trigger getTrigger() {
 		return _trigger;
-	}	
-	
-	/**
-	 * Check if this passive grab should be activated.
-	 * Note: key and pointer state must be updated prior to calling this method.
-	 * 
-	 * @param keyboard
-	 * @param pointer
-	 * @return
-	 */
-	public boolean checkActivation(
-			final Keyboard keyboard, 
-			final Pointer pointer) {
-		
-		// Check that only the required button is pressed
-		if(_trigger._button == AnyButton) {
-			// Check for any button pressed
-			if(pointer.getButtonMask() == 0) return false;
-		}
-		else {
-			// Check for the specific button (and only the specific button).
-			if(!pointer.isOnlyButtonPressed(_trigger._button - 1)) return false;
-		}
-		// Check the pointer is not grabbed
-		if(pointer.getPointerGrab() != null) return false;
-		// Check the required modifiers are in place
-		if(_trigger._keyMask != AnyModifier) {
-			if(_trigger._keyMask != keyboard.getModifierMask()) return false;
-		}
-		// Check the grab window contains the pointer
-		if(!_grabWindow.containsPixel(pointer.getX(), pointer.getY())) return false;
-		
-		for(Window ancestor = _grabWindow.getParent(); ancestor != null; ancestor = ancestor.getParent()) {
-			final ButtonGrab existingGrab = ancestor.getButtonGrab(_trigger);
-			if(existingGrab != null) return false;
-		}
-		
-		// Check the confine-to window is viewable
-		if(_confineToWindow != null) {
-			if(!_confineToWindow.isViewable()) return false;
-		}
-		
-		return true;
 	}
 
+	public PointerGrab getPointerGrab(final int timestamp) {
+		return new PointerGrab(
+				_client, 
+				_ownerEvents,
+				_grabWindow,
+				_eventMask,
+				_pointerSynchronous,
+				_keyboardSynchronous,
+				_confineToWindow,
+				_cursor,
+				timestamp);
+	}
+
+	public Window getConfineToWindow() {
+		return _confineToWindow;
+	}
 }

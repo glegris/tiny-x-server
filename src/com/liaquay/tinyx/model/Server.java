@@ -369,6 +369,8 @@ public class Server extends Client {
 
 	}	
 
+	private PointerGrab _keyDownPointerGrab = null;
+	
 	/**
 	 * Called by implementation to deliver a pointer button press to the server
 	 * 
@@ -404,10 +406,21 @@ public class Server extends Client {
 					final ButtonGrab buttonGrab = _pointer.findButtonGrab(buttonNumber, _keyboard.getModifierMask());
 
 					// Activate the button grab...
-					// TODO
+					final PointerGrab pointerGrab = buttonGrab.getPointerGrab(getTimestamp());
+					
+					// Set the grab on the server
+					setGrab(pointerGrab);
 				}
 				
-				// TODO Consider grabs - do they change the construction of the event?
+				if(grab == null) {
+					// TODO start an active grab. See X Window System page 253.
+//					_keyDownPointerGrab = new PointerGrab(
+//							
+//							);
+					// TODO this grab must terminate when the pointer has all buttons released.
+					
+				}
+				
 				final Event event = _eventFactories.getButtonPressFactory().create(
 						buttonNumber, 
 						_focus, 
@@ -423,6 +436,15 @@ public class Server extends Client {
 		});
 	}
 
+	public void setGrab(final PointerGrab pointerGrab) {
+		
+		// Set the grab on the pointer
+		_pointer.setPointerGrab(pointerGrab);
+		
+		// Freeze/thaw input queues
+		setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
+	}
+	
 	/**
 	 * Called by implementation to deliver a key release to the server
 	 * 
