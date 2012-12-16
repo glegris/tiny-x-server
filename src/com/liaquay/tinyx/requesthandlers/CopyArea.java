@@ -87,7 +87,11 @@ public class CopyArea implements RequestHandler {
 
 
 		if(d instanceof Window) {
-			((Window)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
+			if (s instanceof Window) {
+				((Window)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
+			} else if (s instanceof Pixmap) {
+				((Pixmap)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
+			}
 		} else if (d instanceof Pixmap) {
 			((Window)s).copyArea(((Pixmap) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
 		}

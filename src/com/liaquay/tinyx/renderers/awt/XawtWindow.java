@@ -117,15 +117,13 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void setCursor(int id) {
+		public void setCursor(Cursor cursor) {
 			//Get the default toolkit
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-			Cursor xcursor = (Cursor) _server.getResources().get(id, Cursor.class);
-
-			if (xcursor != null) {
-				Pixmap p = xcursor.getSourcePixmap();
-				Pixmap m = xcursor.getMaskPixmap();
+			if (cursor != null) {
+				Pixmap p = cursor.getSourcePixmap();
+				Pixmap m = cursor.getMaskPixmap();
 
 				// Buffered image that has transparency.
 				BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
@@ -143,13 +141,13 @@ public class XawtWindow  {
 							byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
 							
 							if (sourcePixel > 0) {
-								newImage.setSample((x*8)+a, y, 0, xcursor.getForegroundColorRed());		// Red
-								newImage.setSample((x*8)+a, y, 1, xcursor.getForegroundColorGreen());	// Green
-								newImage.setSample((x*8)+a, y, 2, xcursor.getForegroundColorBlue());	// Blue
+								newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
+								newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
+								newImage.setSample((x*8)+a, y, 2, cursor.getForegroundColorBlue());	// Blue
 							} else {
-								newImage.setSample((x*8)+a, y, 0, xcursor.getBackgroundColorRed());		// Red
-								newImage.setSample((x*8)+a, y, 1, xcursor.getBackgroundColorGreen());	// Green
-								newImage.setSample((x*8)+a, y, 2, xcursor.getBackgroundColorBlue());	// Blue
+								newImage.setSample((x*8)+a, y, 0, cursor.getBackgroundColorRed());		// Red
+								newImage.setSample((x*8)+a, y, 1, cursor.getBackgroundColorGreen());	// Green
+								newImage.setSample((x*8)+a, y, 2, cursor.getBackgroundColorBlue());	// Blue
 							}
 							newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
 						}
@@ -157,8 +155,8 @@ public class XawtWindow  {
 				}
 
 				if (image != null) {
-					Point hotSpot = new Point(xcursor.getX(),xcursor.getY());
-					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, xcursor.getId() + "");
+					Point hotSpot = new Point(cursor.getX(),cursor.getY());
+					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
 					_canvas.setCursor(c);
 				}
 			}
@@ -232,7 +230,10 @@ public class XawtWindow  {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
-				System.out.println(String.format("Button %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
+				System.out.println(String.format("Button %d, x=%d y=%d", e.getButton(), e.getX(),e.getY()));
+				if (evw != null) {
+					System.out.println(String.format("window=%x08", evw.getId()));
+				}
 			}
 
 			@Override
@@ -250,7 +251,11 @@ public class XawtWindow  {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
-				System.out.println(String.format("Button pressed %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
+				System.out.println(String.format("Button pressed %d, x=%d y=%d", e.getButton(), e.getX(),e.getY()));
+				if (evw != null) {
+					System.out.println(String.format("window=%x08", evw.getId()));
+				}
+				
 				// TODO pass in correct screen index
 				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
 			}
@@ -258,7 +263,10 @@ public class XawtWindow  {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				final Window evw = window.windowAt(e.getX(), e.getY());
-				System.out.println(String.format("Button release %d, x=%d y=%d window=%x08 ", e.getButton(), e.getX(),e.getY(),evw.getId()));
+				System.out.println(String.format("Button release %d, x=%d y=%d",  e.getButton(), e.getX(),e.getY()));
+				if (evw != null) {
+					System.out.println(String.format("window=%x08", evw.getId()));
+				}
 				// TODO pass in correct screen index
 				server.buttonReleased(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
 			}

@@ -116,4 +116,10 @@ public class Pixmap implements Drawable {
 //			System.out.println();
 //		}
 	}
+
+	public void copyArea(Window window, GraphicsContext graphicsContext,
+			int srcX, int srcY, int width, int height, int dstX, int dstY) {
+		// TODO Auto-generated method stub
+		
+	}
 }

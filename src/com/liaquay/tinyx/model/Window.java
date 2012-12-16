@@ -37,7 +37,7 @@ public class Window implements Drawable {
 		public void visible(final Window window, final boolean visible);
 		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY);
-		public void setCursor(int id);
+		public void setCursor(Cursor cursor);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Window implements Drawable {
 			
 		}
 		@Override
-		public void setCursor(int id) {
+		public void setCursor(Cursor cursor) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -143,7 +143,7 @@ public class Window implements Drawable {
 	private int _x, _y;			/* relative location of window */
 	private int _absX, _absY;      /* absolute location of window */
 
-	private int _cursorId;			/* The resource id of the cursor to use when the mouse is within this window */
+	private Cursor _cursor;			/* The cursor to use when the mouse is within this window */
 	private int _clipX, _clipY;    /* clip location of window */
 	private int _clipW, _clipH;    /* clip size of window */
 
@@ -583,15 +583,16 @@ public class Window implements Drawable {
 		return _heightPixels;
 	}
 
-	public int getCursorId() {
-		return this._cursorId;
+	public Cursor getCursor() {
+		return this._cursor;
 	}
 
-	public void setCursorId(int cursorId) {
-		this._cursorId = cursorId;
+	public void setCursor(Cursor cursor) {
+		this._cursor = cursor;
+		
 		
 		//TODO: Move this into event handling code.. Only here to test the drawing methods
-		_listener.setCursor(cursorId);
+		_listener.setCursor(cursor);
 	}
 
 	public int getAbsX() {

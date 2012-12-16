@@ -58,7 +58,7 @@ public class CreateCursor implements RequestHandler {
 			return;
 		}
 
-		// Both pixmaps must have a 
+		// Both pixmaps must have the same depth of 1 bitplane
 		if (maskPixmapRes.getDepth() != 1 || sourcePixmapRes.getDepth() != 1) {
 			response.error(Response.ErrorCode.Match, maskPixmap);
 			return;
@@ -86,6 +86,5 @@ public class CreateCursor implements RequestHandler {
 		cursor.setBackgroundColorRed(backgroundRed);
 		cursor.setBackgroundColorGreen(backgroundGreen);
 		cursor.setBackgroundColorBlue(backgroundBlue);
-		
 	}
 }

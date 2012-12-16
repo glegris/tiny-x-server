@@ -91,6 +91,9 @@ public class PutImage implements RequestHandler {
 		if (drawable instanceof Pixmap) {
 			// Pass it onto the drawable resource
 			((Pixmap) drawable).init(buffer);
+		} else {
+			// Drawable is not a pixmap.. Is it a window?
+			System.out.println("Put image to a " + drawable.getClass());
 		}
 	}
 }

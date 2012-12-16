@@ -36,10 +36,11 @@ public class Cursor extends WindowAttributeHandler {
 			final Request request,
 			final Response response, 
 			final Window window) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-		
+
 		final int cursorId = inputStream.readInt();
-		window.setCursorId(cursorId);
+		com.liaquay.tinyx.model.Cursor c = server.getResources().get(cursorId, com.liaquay.tinyx.model.Cursor.class);
+		window.setCursor(c);
 	}
 }
