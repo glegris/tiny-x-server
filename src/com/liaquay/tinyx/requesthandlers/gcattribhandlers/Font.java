@@ -30,7 +30,7 @@ import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
 public class Font implements AttributeHandler<GraphicsContext> {
-	
+
 	@Override
 	public void read(
 			final Server server, 
@@ -38,16 +38,19 @@ public class Font implements AttributeHandler<GraphicsContext> {
 			final Request request,
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-	
-		int font = inputStream.readInt();
-		//TODO Check that the window references a known font!
-		graphicsContext.setFont(font);
+
+		int fontId = inputStream.readInt();
+		com.liaquay.tinyx.model.Font font = server.getResources().get(fontId, com.liaquay.tinyx.model.Font.class);
+		if (font != null) {
+			//TODO Check that the window references a known font!
+			graphicsContext.setFont(font);
+		}
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeInt(graphicsContext.getFont());
+		outputStream.writeInt(graphicsContext.getFont().getId());
 	}
 }

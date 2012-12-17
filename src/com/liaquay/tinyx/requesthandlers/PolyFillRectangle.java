@@ -23,8 +23,12 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class PolyFillRectangle implements RequestHandler {
 
@@ -33,11 +37,43 @@ public class PolyFillRectangle implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}
+
+		int len = request.getLength();
+
+		for (int i=0; i < ((len-12)/8); i++) {
+
+//		     2     INT16     x
+//		     2     INT16     y
+//		     2     CARD16    width
+//		     2     CARD16    height
+		     
+			int x = inputStream.readSignedShort();
+			int y = inputStream.readSignedShort();
+
+			int width = inputStream.readUnsignedShort();
+			int height = inputStream.readUnsignedShort();
+
+			System.out.println("X: " + x + " Y: " + y + " Width: " + width + " Height: " + height);
+			if (drawable instanceof Window) {
+				((Window) drawable).polyRect(graphicsContext, x, y, width, height, true);
+			}
+		}
+		
+		
+//	     8n     LISTofRECTANGLE                rectangles
 	}
 }

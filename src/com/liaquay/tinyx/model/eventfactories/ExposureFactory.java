@@ -18,11 +18,21 @@
  */
 package com.liaquay.tinyx.model.eventfactories;
 
-public interface EventFactories {
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
-	public ButtonFactory getButtonPressFactory();
-	public ButtonFactory getButtonReleaseFactory();
-	public MappingNotifyFactory getMappingNotifyFactory();
-	public ExposureFactory getExposureFactory();
+import com.liaquay.tinyx.model.Event;
+
+public interface ExposureFactory {
+	
+	public enum Request {
+		Modifier,
+		Keyboard,
+		Pointer
+	};
+	
+	public Event create(
+			final int window,
+			final int x,
+			final int y,
+			final int width,
+			final int height,
+			final int count);
 }

@@ -61,38 +61,72 @@ public class FontString {
 			} else {
 				setFamilyName(name);
 			}
-		} else if (split.length == 15){
-			setFoundry(split[1]);
-			setFamilyName(split[2]);
-			setWeightName(split[3]);
-			setSlant(split[4]);
-			setWidthName(split[5]);
-			setAddStyleName(split[6]);
-			try {
-				setPixelSize(Integer.parseInt(split[7]));
-			} catch (NumberFormatException e) {
-			}
-			try {
-				setPointSize(Integer.parseInt(split[8]));
-			} catch (NumberFormatException e) {
-			}
-			try {
-				setResolutionX(Integer.parseInt(split[9]));
-			} catch (NumberFormatException e) {
-			}
-			try {
-				setResolutionY(Integer.parseInt(split[10]));
-			} catch (NumberFormatException e) {
-			}
-			setSpacing(split[11]);
-			try {
-				setAverageWidth(Integer.parseInt(split[12]));
-			} catch (NumberFormatException e) {
-			}
-			setCharsetRegistry(split[13]);
-			setCharsetEncoding(split[14]);
 		} else {
-			System.out.println("Kaboom: Name: " + name + "  Len: " + split.length);
+			if (split.length > 1) {
+				setFoundry(split[1]);
+			}
+			if (split.length > 2) {
+				setFamilyName(split[2]);
+			}
+			if (split.length > 3) {
+				setWeightName(split[3]);
+			}
+			
+			if (split.length > 4) {
+				setSlant(split[4]);
+			}
+			if (split.length > 5) {
+				setWidthName(split[5]);
+			} 
+			if (split.length > 6) {
+
+				setAddStyleName(split[6]);
+			}
+			if (split.length > 7) {
+
+				try {
+					setPixelSize(Integer.parseInt(split[7]));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (split.length > 8) {
+
+				try {
+					setPointSize(Integer.parseInt(split[8]));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (split.length > 9) {
+
+				try {
+					setResolutionX(Integer.parseInt(split[9]));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (split.length > 10) {
+
+				try {
+					setResolutionY(Integer.parseInt(split[10]));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (split.length > 11) {
+
+				setSpacing(split[11]);
+			}
+			if (split.length > 12) {
+
+				try {
+					setAverageWidth(Integer.parseInt(split[12]));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (split.length > 13) {
+				setCharsetRegistry(split[13]);
+			}
+			if (split.length > 14) {
+				setCharsetEncoding(split[14]);
+			}
 		}
 	}
 

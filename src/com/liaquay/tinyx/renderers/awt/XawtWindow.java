@@ -46,6 +46,7 @@ import sun.awt.image.ByteBandedRaster;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
@@ -55,23 +56,8 @@ import com.sun.java.swing.plaf.windows.resources.windows;
 
 public class XawtWindow  {
 
-	private static Color[] COLORS = new Color[] {
-		Color.BLACK,
-		Color.BLUE,
-		Color.CYAN,
-		Color.GREEN,
-		Color.MAGENTA,
-		Color.ORANGE
-	};
-
-	private static int _ci = 0;
-	private static Color getColor() {
-		_ci = (_ci + 1) % COLORS.length;
-		return COLORS[_ci];
-	}
-
 	private Server _server;
-	
+
 	private Window _window;
 
 	private Window.Listener _windowListener = new Listener() {
@@ -135,11 +121,11 @@ public class XawtWindow  {
 					for (int x = 0; x < (p.getWidth()/8); x++) {
 						int source = 0x00ff & p.getData()[i];
 						int mask = 0x00ff & m.getData()[i++];
-						
+
 						for (int a = 0; a < 8; a++) {
 							byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
 							byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
-							
+
 							if (sourcePixel > 0) {
 								newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
 								newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
@@ -159,6 +145,51 @@ public class XawtWindow  {
 					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
 					_canvas.setCursor(c);
 				}
+			}
+		}
+
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
+			int foregroundColor = graphicsContext.getForegroundColour();
+			Color c = new Color(foregroundColor);
+
+			Font f = graphicsContext.getFont();
+			f.getFontName();
+
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			graphics.setColor(c);
+			java.awt.Font newFont = new java.awt.Font(f.getFontName().getFamilyName(), java.awt.Font.PLAIN, 10);
+
+			graphics.setFont(newFont);
+
+			graphics.drawString(str, x, y);
+		}
+
+		@Override
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, int angle1, int angle2, boolean fill) {
+
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
+
+			if (fill) {
+				graphics.fillArc(x, y, width, height, angle1, angle2);
+			} else {
+				graphics.drawArc(x, y, width, height, angle1, angle2);
+			}
+		}
+
+		@Override
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, boolean fill) {
+
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
+
+			if (fill) {
+				graphics.fillRect(x, y, width, height);
+			} else {
+				graphics.drawRect(x, y, width, height);
 			}
 		}
 	};
@@ -198,7 +229,9 @@ public class XawtWindow  {
 	}
 
 	private void paintBorder(final Window window, final Graphics2D graphics) {
-		graphics.setColor(getColor());
+		int borderPixel = window.getBorderPixel();
+
+		graphics.setColor(new Color(borderPixel));
 		graphics.fillRect(
 				0, 
 				0,
@@ -207,7 +240,9 @@ public class XawtWindow  {
 	}
 
 	private void paintContent(final Window window, final Graphics2D graphics) {
-		graphics.setColor(getColor());
+
+		graphics.setColor(new Color(window.getBackgroundPixel()));
+
 		graphics.fillRect(0, 0, window.getWidth(), window.getHeight());    	
 
 		//Lets draw any pixmaps on the screen.
@@ -255,7 +290,7 @@ public class XawtWindow  {
 				if (evw != null) {
 					System.out.println(String.format("window=%x08", evw.getId()));
 				}
-				
+
 				// TODO pass in correct screen index
 				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
 			}

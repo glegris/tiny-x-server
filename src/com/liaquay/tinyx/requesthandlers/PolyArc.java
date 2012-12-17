@@ -23,21 +23,53 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class PolyArc implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}
+
+		int lne = request.getLength();
+
+		for (int i=0; i < ((lne-12)/12); i++) {
+
+			int x = inputStream.readSignedShort();
+			int y = inputStream.readSignedShort();
+
+			int width = inputStream.readUnsignedShort();
+			int height = inputStream.readUnsignedShort();
+
+			int angle1 = inputStream.readSignedShort();
+			int angle2 = inputStream.readSignedShort();
+
+			System.out.println("X: " + x + " Y: " + y + " Width: " + width + " Height: " + height + " Angle1: " + angle1 + " Angle2: " + angle2);
+			if (drawable instanceof Window) {
+				((Window) drawable).polyArc(graphicsContext, x, y, width, height, angle1, angle2, false);
+			}
+		}
+
 	}
 }

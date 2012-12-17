@@ -110,7 +110,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[53] = new CreatePixmap();
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
-		_handlers[56] = new ChangeGraphicsContext();
+		_handlers[56] = new ChangeGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[57] = new CopyGraphicsContext();
 		_handlers[58] = new SetDashes();
 		_handlers[59] = new SetClipRectangles();

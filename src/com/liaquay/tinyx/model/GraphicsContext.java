@@ -220,13 +220,13 @@ public class GraphicsContext extends AbstractResource {
 		return this._dashOffset;
 	}
 
-	int _font = 0;
+	Font _font = null;
 	
-	public void setFont(int font) {
+	public void setFont(Font font) {
 		_font = font;
 	}
 	
-	public int getFont() {
+	public Font getFont() {
 		return this._font;
 	}
 }

@@ -28,15 +28,16 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class PolyFillArc implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();
 		final int drawableResourceId = inputStream.readInt();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
@@ -50,14 +51,26 @@ public class PolyFillArc implements RequestHandler {
 			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
 			return;
 		}
-		
-		// TODO Read list of rectangle
-		
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		int lne = request.getLength();
+
+		for (int i=0; i < ((lne-12)/12); i++) {
+
+			int x = inputStream.readSignedShort();
+			int y = inputStream.readSignedShort();
+
+			int width = inputStream.readUnsignedShort();
+			int height = inputStream.readUnsignedShort();
+
+			int angle1 = inputStream.readSignedShort();
+			int angle2 = inputStream.readSignedShort();
+
+			System.out.println("X: " + x + " Y: " + y + " Width: " + width + " Height: " + height + " Angle1: " + angle1 + " Angle2: " + angle2);
+			if (drawable instanceof Window) {
+				((Window) drawable).polyArc(graphicsContext, x, y, width, height, angle1, angle2, true);
+				
+			}
+
+		}
 	}
 }

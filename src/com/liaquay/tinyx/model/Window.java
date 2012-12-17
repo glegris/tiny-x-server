@@ -38,6 +38,11 @@ public class Window implements Drawable {
 		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY);
 		public void setCursor(Cursor cursor);
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, int angle1, int angle2, boolean fill);
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, boolean fill);
 	}
 
 	/**
@@ -60,6 +65,22 @@ public class Window implements Drawable {
 		}
 		@Override
 		public void setCursor(Cursor cursor) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
+			// TODO Auto-generated method stub
+		}
+		@Override
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, int angle1, int angle2, boolean fill) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, boolean fill) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -425,6 +446,10 @@ public class Window implements Drawable {
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
 
+
+			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
+			deliver(exposeEvent, Event.Expose);
+			
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
 
@@ -627,6 +652,10 @@ public class Window implements Drawable {
 	public void setBackgroundPixel(final int backGroundPixel) {
 		_backgroundPixel = backGroundPixel;
 	}
+	
+	public int getBackgroundPixel() {
+		return _backgroundPixel;
+	}
 
 	public void setBorderPixel(final int borderPixel) {
 		_borderPixel = borderPixel;
@@ -656,6 +685,10 @@ public class Window implements Drawable {
 	public Pixmap getBorderPixmap() {
 		return _borderPixmap;
 	}
+	
+	public int getBorderPixel() {
+		return _borderPixel;
+	}	
 
 	public void setBorderPixmap(final Pixmap borderPixmap) {
 		_borderPixmap = borderPixmap;
@@ -769,5 +802,21 @@ public class Window implements Drawable {
 			}
 		}
 		return grab;
+	}
+
+	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
+		_listener.drawString(graphicsContext, str, x, y);
+		
+	}
+
+	public void polyArc(GraphicsContext graphicsContext, int x, int y,
+			int width, int height, int angle1, int angle2, boolean fill) {
+		_listener.polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
+		
+	}
+
+	public void polyRect(GraphicsContext graphicsContext, int x, int y,
+			int width, int height, boolean fill) {
+		_listener.polyRect(graphicsContext, x, y, width, height, fill);
 	}
 }
