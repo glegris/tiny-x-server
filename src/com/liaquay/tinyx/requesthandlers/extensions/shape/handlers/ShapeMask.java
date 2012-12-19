@@ -44,6 +44,7 @@ public class ShapeMask implements RequestHandler {
 				response.error(Response.ErrorCode.Pixmap, srcPixmapId);
 				return;
 			}
+			
 			//TODO Send shape notify with pixmap dimensions
 		}		
 	}

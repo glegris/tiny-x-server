@@ -13,7 +13,13 @@ public class ShapeOffset implements RequestHandler {
 	@Override
 	public void handleRequest(Server server, Client client, Request request,
 			Response response) throws IOException {
-		// TODO Auto-generated method stub
+		
+		// TODO logging
+		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+				request.getMajorOpCode(), 
+				request.getData(),
+				request.getLength(),
+				request.getSequenceNumber()));		// TODO Auto-generated method stub
 
 	}
 
