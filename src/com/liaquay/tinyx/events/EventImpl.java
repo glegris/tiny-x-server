@@ -21,7 +21,9 @@ package com.liaquay.tinyx.events;
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Window;
 
 public abstract class EventImpl implements Event {
 
@@ -33,14 +35,14 @@ public abstract class EventImpl implements Event {
 		_argument = argument;
 	}
 	@Override
-	public final void write(final XOutputStream outputStream, final int sequenceNumber) throws IOException {
+	public final void write(final XOutputStream outputStream, final int sequenceNumber, final Client client, final Window window) throws IOException {
 		outputStream.resetCounter();
 		outputStream.writeByte(_eventType);
 		outputStream.writeByte(_argument);
 		outputStream.writeShort(sequenceNumber);
-		writeBody(outputStream);
+		writeBody(outputStream, client, window);
 		outputStream.writePad(32 - outputStream.getCounter());
 	}
 	
-	public abstract void writeBody(final XOutputStream outputStream) throws IOException;
+	public abstract void writeBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException;
 }

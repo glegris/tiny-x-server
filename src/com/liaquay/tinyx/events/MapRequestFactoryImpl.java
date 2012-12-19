@@ -21,6 +21,7 @@ package com.liaquay.tinyx.events;
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.MapRequestFactory;
@@ -37,7 +38,7 @@ public class MapRequestFactoryImpl implements MapRequestFactory {
 
 		return new EventImpl(Event.MapRequest, 0) {
 			@Override
-			public final void writeBody(final XOutputStream outputStream) throws IOException {
+			public final void writeBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
 				outputStream.writeInt(parent == null ? 0 : parent.getId());
 				outputStream.writeInt(window.getId());
 			}

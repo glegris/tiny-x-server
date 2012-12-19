@@ -21,6 +21,8 @@ package com.liaquay.tinyx.events;
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Window;
 
 public abstract class TimestampedEventImpl extends EventImpl {
 
@@ -32,10 +34,10 @@ public abstract class TimestampedEventImpl extends EventImpl {
 	}
 
 	@Override
-	public final void writeBody(final XOutputStream outputStream) throws IOException {
+	public final void writeBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
 		outputStream.writeInt(_when);
-		writeTimestampedBody(outputStream);
+		writeTimestampedBody(outputStream, client, window);
 	}
 	
-	public abstract void writeTimestampedBody(final XOutputStream outputStream) throws IOException;
+	public abstract void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException;
 }

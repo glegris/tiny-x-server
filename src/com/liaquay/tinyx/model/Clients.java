@@ -25,7 +25,7 @@ import com.liaquay.tinyx.util.IntegerAllocator;
 /**
  * Map of clients against client identifier.
  */
-public class Clients implements PostBox {
+public class Clients {
 	
 	private final IntegerAllocator _clientIdAllocator = new IntegerAllocator(Resource.MAXCLIENTS);
 	private final Client[] _clients = new  Client[Resource.MAXCLIENTS];
@@ -90,11 +90,10 @@ public class Clients implements PostBox {
 	/**
 	 * Deliver an event to all clients
 	 */
-	@Override
 	public void send(final Event event) {
 		for(int i = _clientIdAllocator.nextAllocated(0) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
 			final Client client = _clients[i];
-			client.getPostBox().send(event);
+			client.getPostBox().send(event, client, null);
 		}
 	}
 }

@@ -25,68 +25,72 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
-import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
 
-public class ButtonFactoryImpl {
+public class KeyFactoryImpl {
 	
 	public Event create(
 			final int event,
 			final int button,
 			final Focus focus,
 			final Pointer pointer,
-			final int keyButtonMask,
+			final int key,
 			final int when) {
 
 		// Find out if this event is part of a grab
-		final PointerGrab pointerGrab = pointer.getPointerGrab();
-		
-		if(pointerGrab != null) {
-			// TODO work out how grab affects event creation...
-			
-		}
 
-		// probably can be false under grab
-		final boolean sameScreen = true;
+		
+		final Window focusWindow;
+		switch(focus.getMode()) {
+		case None:
+			// Do not deliver an event for a focus of none.
+			return null;
+		case PointerRoot:
+			// Deliver events relative to the pointer root.
+			focusWindow = pointer.getScreen().getRootWindow();
+			break;
+		default:
+			// Deliver events relative to the focus window.
+			focusWindow = focus.getWindow();
+			break;
+		}
+		final int focusWindowId = focusWindow.getId();
+
+		final boolean sameScreen = focusWindow.getRootWindow() == pointer.getScreen().getRootWindow();
 
 		// Obtain the root window for the event.
 		final Window rootWindow = pointer.getScreen().getRootWindow();
 		final int rootWindowId = rootWindow.getId ();
 
 		// Find the window that contained the event
-		final Window child = pointer.childWindowAt();
-		final int childWindowId = child.getId();
+		final Window child =pointer.childWindowAt();
+		final int childWindowId = child == null ? 0 : child.getId ();
 		
-		final int rootX = pointer.getX() - rootWindow.getAbsX();
-		final int rootY = pointer.getY() - rootWindow.getAbsY();
+		final int rootX = pointer.getX() - focusWindow.getAbsX();
+		final int rootY = pointer.getY() - focusWindow.getAbsY();
+		final int eventX;
+		final int eventY;
 
+		if(sameScreen) {
+			eventX = pointer.getX() - focusWindow.getAbsX();
+			eventY = pointer.getY() - focusWindow.getAbsY();
+		}
+		else {
+			eventX = 0;
+			eventY = 0;
+		}	
 		return new TimestampedEventImpl(event, button, when) {
 
 			@Override
-			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window eventWindow) throws IOException {
-				
-				final int eventWindowId = eventWindow.getId();
-				
-				final int eventX;
-				final int eventY;
-				
-				if(sameScreen) {
-					eventX = pointer.getX() - eventWindow.getAbsX();
-					eventY = pointer.getY() - eventWindow.getAbsY();
-				}
-				else {
-					eventX = 0;
-					eventY = 0;
-				}
-				
+			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
 				outputStream.writeInt (rootWindowId);
-				outputStream.writeInt (eventWindowId);
-				outputStream.writeInt (childWindowId == eventWindowId ? 0 : childWindowId);
+				outputStream.writeInt (focusWindowId);
+				outputStream.writeInt (childWindowId);
 				outputStream.writeShort (rootX);
 				outputStream.writeShort (rootY);
 				outputStream.writeShort (eventX);
 				outputStream.writeShort (eventY);
-				outputStream.writeShort (keyButtonMask);
+				outputStream.writeShort (key);
 				outputStream.writeByte (sameScreen ? 1 : 0);
 			}
 		};

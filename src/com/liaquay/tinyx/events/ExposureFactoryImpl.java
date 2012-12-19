@@ -21,7 +21,9 @@ package com.liaquay.tinyx.events;
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.ExposureFactory;
 
 public class ExposureFactoryImpl implements ExposureFactory {
@@ -39,7 +41,7 @@ public class ExposureFactoryImpl implements ExposureFactory {
 		
 		return new EventImpl(Event.Expose, 0) {
 			@Override
-			public void writeBody(final XOutputStream outputStream) throws IOException {
+			public void writeBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
 
 				outputStream.writeInt(windowId);
 				outputStream.writeShort(x);

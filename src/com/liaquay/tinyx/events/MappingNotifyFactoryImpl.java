@@ -21,7 +21,9 @@ package com.liaquay.tinyx.events;
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 
 public class MappingNotifyFactoryImpl implements MappingNotifyFactory {
@@ -36,7 +38,7 @@ public class MappingNotifyFactoryImpl implements MappingNotifyFactory {
 		
 		return new EventImpl(Event.MappingNotify, 0) {
 			@Override
-			public void writeBody(final XOutputStream outputStream) throws IOException {
+			public void writeBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
 				outputStream.writeByte (request.ordinal());
 				outputStream.writeByte (firstKeyCode);
 				outputStream.writeByte (count);	
