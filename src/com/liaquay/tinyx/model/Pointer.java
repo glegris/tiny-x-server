@@ -171,7 +171,7 @@ public class Pointer {
 	
 	public Window childWindowAt() {
 		if(_screen == null) return null;
-		return _screen.childWindowAt(_x, _y);
+		return _screen.windowAt(_x, _y);
 	}
 	
 	public int getButtonMask() {

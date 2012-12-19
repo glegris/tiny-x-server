@@ -21,6 +21,7 @@ package com.liaquay.tinyx.events;
 import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.MapNotifyFactory;
@@ -38,7 +39,7 @@ public class MapNotifyFactoryImpl implements MapNotifyFactory {
 
 		return new EventImpl(Event.MapNotify, 0) {
 			@Override
-			public final void writeBody(final XOutputStream outputStream) throws IOException {
+			public final void writeBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
 				outputStream.writeInt(event == null ? 0 : event.getId());
 				outputStream.writeInt(window.getId());
 				outputStream.writeBoolean(overideRedirect);

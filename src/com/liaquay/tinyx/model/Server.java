@@ -150,7 +150,7 @@ public class Server extends Client {
 		super(	0, 
 				new PostBox() {
 					@Override
-					public void send(final Event event) {
+					public void send(final Event event, final Client client, final Window window) {
 						// Do nothing. No messages should be sent to the server anyhow.
 					}
 				}, 
@@ -405,11 +405,13 @@ public class Server extends Client {
 					// There is no current grab on the pointer so consider activating a passive grab...
 					final ButtonGrab buttonGrab = _pointer.findButtonGrab(buttonNumber, _keyboard.getModifierMask());
 
-					// Activate the button grab...
-					final PointerGrab pointerGrab = buttonGrab.getPointerGrab(getTimestamp());
-					
-					// Set the grab on the server
-					setGrab(pointerGrab);
+					if(buttonGrab != null) {
+						// Activate the button grab...
+						final PointerGrab pointerGrab = buttonGrab.getPointerGrab(getTimestamp());
+
+						// Set the grab on the server
+						setGrab(pointerGrab);
+					}
 				}
 				
 				if(grab == null) {
@@ -421,6 +423,9 @@ public class Server extends Client {
 					
 				}
 				
+				final Window child = _pointer.childWindowAt();
+				
+				// TODO pass child to create method
 				final Event event = _eventFactories.getButtonPressFactory().create(
 						buttonNumber, 
 						_focus, 
@@ -429,8 +434,7 @@ public class Server extends Client {
 						(int)(when & 0xffffffff));
 				
 				if(event != null) {
-					// TODO send it to the correct clients
-					_clients.send(event);
+					child.deliver(event, Event.ButtonReleaseMask);
 				}
 			}
 		});
@@ -468,22 +472,25 @@ public class Server extends Client {
 			@Override
 			public void deliver() {
 				_pointer.buttonReleased(buttonNumber-1);
-				
+
 				// Update pointer position
 				_pointer.set(_screens.get(screenIndex), x, y);
 
-				// TODO Consider grabs - do they change the construction of the event?
-				final Event event = _eventFactories.getButtonReleaseFactory().create(
-						buttonNumber, 
-						_focus, 
-						_pointer, 
-						getKeyButtonMask(), 
-						(int)(when & 0xffffffff));
-				
-				if(event != null) {
-					// TODO send it to the correct clients
-					_clients.send(event);
-				}			
+				final Window child = _pointer.childWindowAt();
+
+				if(child != null && child.wouldDeliver(Event.ButtonReleaseMask) ) {
+					// TODO Consider grabs - do they change the construction of the event?
+					final Event event = _eventFactories.getButtonReleaseFactory().create(
+							buttonNumber, 
+							_focus, 
+							_pointer, 
+							getKeyButtonMask(), 
+							(int)(when & 0xffffffff));
+
+					if(event != null) {
+						child.deliver(event, Event.ButtonReleaseMask);
+					}	
+				}
 			}
 		});
 	}	

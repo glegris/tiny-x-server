@@ -33,6 +33,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.PostBox;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class Connection implements Executable, PostBox {
 	
@@ -162,9 +163,9 @@ public class Connection implements Executable, PostBox {
 	}
 	
 	@Override
-	public void send(final Event event) {
+	public void send(final Event event, final Client client, final Window window) {
 		try {
-			event.write(_eventOutputStream, _request.getSequenceNumber());
+			event.write(_eventOutputStream, _request.getSequenceNumber(), client,  window);
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

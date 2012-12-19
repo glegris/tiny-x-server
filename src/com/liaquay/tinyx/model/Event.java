@@ -86,5 +86,5 @@ public interface Event {
 	public static final int ColormapChangeMask=(1<<23); 
 	public static final int OwnerGrabButtonMask=(1<<24); 
 
-	public void write(final XOutputStream outputStream, final int sequenceNumber) throws IOException;
+	public void write(final XOutputStream outputStream, final int sequenceNumber, final Client client, final Window window) throws IOException;
 }

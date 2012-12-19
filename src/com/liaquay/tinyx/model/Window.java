@@ -19,6 +19,7 @@
 package com.liaquay.tinyx.model;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -431,24 +432,25 @@ public class Window implements Drawable {
 		if(!_mapped ) {
 			_mapped = true;
 
-			if (!_overrideRedirect && getParent() != null && getParent().checkForEvent(Event.SubstructureRedirectMask)) {
+			if (!_overrideRedirect && getParent() != null && wouldDeliver(Event.SubstructureRedirectMask)) {
 				final Event mapRequestEvent = _eventFactories.getMapRequestFactory().create(false, getParent(), this);
 				getParent().deliver(mapRequestEvent, Event.SubstructureRedirectMask);
 			}
 
-			if(checkForEvent(Event.StructureNotifyMask)) {
+			if(wouldDeliver(Event.StructureNotifyMask)) {
 				final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create(false, this, this, _overrideRedirect);
 				deliver(mapNotifyEvent, Event.StructureNotifyMask);
 			}
 
-			if(checkForEvent(Event.SubstructureNotifyMask)) {
+			if(wouldDeliver(Event.SubstructureNotifyMask)) {
 				final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create(false, getParent(), this, _overrideRedirect);
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
 
-
-			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
-			deliver(exposeEvent, Event.Expose);
+			if(wouldDeliver(Event.ExposureMask)) {
+				final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
+				deliver(exposeEvent, Event.ExposureMask);
+			}
 			
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
@@ -468,26 +470,39 @@ public class Window implements Drawable {
 	private boolean isMappedToRoot() {
 		return _mapped && (_parent == null || _parent.isMappedToRoot());
 	}
-
-	private boolean checkForEvent(final int mask) {
+	
+	public boolean wouldDeliver(final int mask) {
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
 			if((assoc.getEventMask() & mask) != 0) {
 				return true;
 			}
-		}	
+		}
+		if((_doNotPropagateMask & mask) == 0 && _parent != null) {
+			return _parent.wouldDeliver(mask);
+		}
 		return false;
 	}
-
-	private void deliver(final Event event, final int mask){
+	
+	public void deliver(final Event event, final int mask){
+		deliver(event, mask, new BitSet(Resource.MAXCLIENTS));
+	}
+	
+	private void deliver(final Event event, final int mask, final BitSet deliveredToClient){
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
-			if((assoc.getEventMask() & mask) != 0) {
-				assoc.getClient().getPostBox().send(event);
+			final Client client = assoc.getClient();
+			final int clientId = client.getClientId();
+			if((assoc.getEventMask() & mask) != 0 && !deliveredToClient.get(clientId)) {
+				assoc.getClient().getPostBox().send(event, client, assoc.getWindow());
+				deliveredToClient.set(clientId);
 			}
 		}
+		if((_doNotPropagateMask & mask) == 0 && _parent != null) {
+			_parent.deliver(event, mask, deliveredToClient);
+		}
 	}
-
+	
 	/**
 	 * Performs a MapWindow request on all unmapped children of the window,
 	 * in top-to-bottom stacking order.
@@ -795,7 +810,7 @@ public class Window implements Drawable {
 			grab = _buttonGrabs.get(trigger);
 			
 			// Check the confine-to window is viewable
-			if(grab.getConfineToWindow() != null) {
+			if(grab != null && grab.getConfineToWindow() != null) {
 				if(!grab.getConfineToWindow().isViewable()) {
 					grab = null;
 				}

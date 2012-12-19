@@ -47,6 +47,7 @@ import com.liaquay.tinyx.model.Resource;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Visual;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.requesthandlers.RequestHandlerMap;
 
 public class ConnectionFactory implements TinyXServer.ClientFactory {
@@ -262,8 +263,8 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		private PostBox _destination = null;
 		
 		@Override
-		public void send(final Event event) {
-			_destination.send(event);
+		public void send(final Event event, final Client client, final Window window) {
+			_destination.send(event, client, window);
 		}
 	}
 }
