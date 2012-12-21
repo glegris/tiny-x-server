@@ -292,7 +292,7 @@ public class XawtWindow  {
 				}
 
 				// TODO pass in correct screen index
-				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
+				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
@@ -303,7 +303,7 @@ public class XawtWindow  {
 					System.out.println(String.format("window=%x08", evw.getId()));
 				}
 				// TODO pass in correct screen index
-				server.buttonReleased(0, e.getX(), e.getY(), e.getButton(), e.getWhen());
+				server.buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
 

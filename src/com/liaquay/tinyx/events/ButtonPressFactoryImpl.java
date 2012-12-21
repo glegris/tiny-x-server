@@ -19,8 +19,9 @@
 package com.liaquay.tinyx.events;
 
 import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.PointerGrab;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
 
 public class ButtonPressFactoryImpl extends ButtonFactoryImpl implements ButtonFactory {
@@ -30,16 +31,18 @@ public class ButtonPressFactoryImpl extends ButtonFactoryImpl implements ButtonF
 	@Override
 	public Event create(
 			final int button,
-			final Focus focus, 
+			final PointerGrab grab, 
 			final Pointer pointer,
+			final Window child,
 			final int keyButtonMask,
 			final int when) {
 		
 		return  create(
 				Event.ButtonPress,
 				button,
-				focus,
+				grab,
 				pointer,
+				child,
 				keyButtonMask,
 				when);
 	}

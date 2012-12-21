@@ -484,6 +484,32 @@ public class Window implements Drawable {
 		return false;
 	}
 	
+	public ClientWindowAssociation getDeliverToAssociation(final int mask, final Client client) {
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			if((assoc.getClient() == client) && (assoc.getEventMask() & mask) != 0) {
+				return assoc;
+			}
+		}
+		if((_doNotPropagateMask & mask) == 0 && _parent != null) {
+			_parent.getDeliverToAssociation(mask, client);
+		}
+		return null;
+	}
+	
+	public ClientWindowAssociation getDeliverToAssociation(final int mask) {
+		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
+			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
+			if((assoc.getEventMask() & mask) != 0) {
+				return assoc;
+			}
+		}
+		if((_doNotPropagateMask & mask) == 0 && _parent != null) {
+			return _parent.getDeliverToAssociation(mask);
+		}
+		return null;
+	}
+	
 	public void deliver(final Event event, final int mask){
 		deliver(event, mask, new BitSet(Resource.MAXCLIENTS));
 	}
@@ -494,7 +520,7 @@ public class Window implements Drawable {
 			final Client client = assoc.getClient();
 			final int clientId = client.getClientId();
 			if((assoc.getEventMask() & mask) != 0 && !deliveredToClient.get(clientId)) {
-				assoc.getClient().getPostBox().send(event, client, assoc.getWindow());
+				client.getPostBox().send(event, assoc.getWindow());
 				deliveredToClient.set(clientId);
 			}
 		}
@@ -819,6 +845,10 @@ public class Window implements Drawable {
 		return grab;
 	}
 
+	public void removeButtonGrab(final ButtonGrab buttonGrab) {
+		_buttonGrabs.remove(buttonGrab.getTrigger());
+	}	
+	
 	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
 		_listener.drawString(graphicsContext, str, x, y);
 		
@@ -834,4 +864,5 @@ public class Window implements Drawable {
 			int width, int height, boolean fill) {
 		_listener.polyRect(graphicsContext, x, y, width, height, fill);
 	}
+
 }

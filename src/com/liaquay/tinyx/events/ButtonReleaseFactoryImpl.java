@@ -19,27 +19,30 @@
 package com.liaquay.tinyx.events;
 
 import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.PointerGrab;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
 
 public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements ButtonFactory {
 
 	public static ButtonFactory FACTORY = new ButtonReleaseFactoryImpl();
-	
+
 	@Override
 	public Event create(
 			final int button,
-			final Focus focus, 
+			final PointerGrab grab, 
 			final Pointer pointer,
+			final Window child,
 			final int keyButtonMask,
 			final int when) {
-	
+
 		return create(
 				Event.ButtonRelease,
 				button,
-				focus,
+				grab,
 				pointer,
+				child,
 				keyButtonMask,
 				when);
 	}

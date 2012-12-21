@@ -163,9 +163,9 @@ public class Connection implements Executable, PostBox {
 	}
 	
 	@Override
-	public void send(final Event event, final Client client, final Window window) {
+	public void send(final Event event, final Window window) {
 		try {
-			event.write(_eventOutputStream, _request.getSequenceNumber(), client,  window);
+			event.write(_eventOutputStream, _request.getSequenceNumber(), _client,  window);
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

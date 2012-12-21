@@ -105,6 +105,10 @@ public class ButtonGrab {
 		return _trigger;
 	}
 
+	public Window getGrabWindow() {
+		return _grabWindow;
+	}
+	
 	public PointerGrab getPointerGrab(final int timestamp) {
 		return new PointerGrab(
 				_client, 

@@ -150,7 +150,7 @@ public class Server extends Client {
 		super(	0, 
 				new PostBox() {
 					@Override
-					public void send(final Event event, final Client client, final Window window) {
+					public void send(final Event event, final Window window) {
 						// Do nothing. No messages should be sent to the server anyhow.
 					}
 				}, 
@@ -369,7 +369,7 @@ public class Server extends Client {
 
 	}	
 
-	private PointerGrab _keyDownPointerGrab = null;
+	private PointerGrab _buttonDownPointerGrab = null;
 	
 	/**
 	 * Called by implementation to deliver a pointer button press to the server
@@ -377,7 +377,7 @@ public class Server extends Client {
 	 * @param buttonNumber code representing physical button in the range 1-5
 	 * @param when time in milliseconds
 	 */
-	public void buttonPressed(final int screenIndex, final int x, final int y, final int buttonNumber, final long when) {
+	public void buttonPressed(final int screenIndex, final int x, final int y, final int buttonNumber, final int when) {
 
 		if(buttonNumber < 1 || buttonNumber >5) {
 			final String message = "Button number " + buttonNumber + " out of range";
@@ -399,54 +399,73 @@ public class Server extends Client {
 				// Update pointer position
 				_pointer.set(_screens.get(screenIndex), x, y);
 				
-				final PointerGrab grab = _pointer.getPointerGrab();
+				PointerGrab grab = _pointer.getPointerGrab();
 				
 				if(grab == null) {
 					// There is no current grab on the pointer so consider activating a passive grab...
 					final ButtonGrab buttonGrab = _pointer.findButtonGrab(buttonNumber, _keyboard.getModifierMask());
 
 					if(buttonGrab != null) {
+						// Remove the passive grab...
+						buttonGrab.getGrabWindow().removeButtonGrab(buttonGrab);
+						
 						// Activate the button grab...
 						final PointerGrab pointerGrab = buttonGrab.getPointerGrab(getTimestamp());
 
 						// Set the grab on the server
 						setGrab(pointerGrab);
+						
+						grab = pointerGrab;
 					}
-				}
-				
-				if(grab == null) {
-					// TODO start an active grab. See X Window System page 253.
-//					_keyDownPointerGrab = new PointerGrab(
-//							
-//							);
-					// TODO this grab must terminate when the pointer has all buttons released.
-					
 				}
 				
 				final Window child = _pointer.childWindowAt();
 				
-				// TODO pass child to create method
-				final Event event = _eventFactories.getButtonPressFactory().create(
-						buttonNumber, 
-						_focus, 
-						_pointer, 
-						getKeyButtonMask(), 
-						(int)(when & 0xffffffff));
-				
-				if(event != null) {
-					child.deliver(event, Event.ButtonReleaseMask);
+				// There are no grabs so create an active grab!
+				if(grab == null) {
+					// Start an active grab. See X Window System page 253.
+					
+					final ClientWindowAssociation clientWindowAssociation = child.getDeliverToAssociation(Event.ButtonPressMask);
+
+					// Find a client interested in the event
+					if(clientWindowAssociation != null) {
+						final Client client = clientWindowAssociation.getClient();
+						final Window eventWindow = clientWindowAssociation.getWindow();
+						final int eventMask = clientWindowAssociation.getEventMask();
+
+						_buttonDownPointerGrab = new PointerGrab(
+								client,
+								(eventMask & Event.OwnerGrabButtonMask) != 0,
+								eventWindow,
+								eventMask,
+								false,
+								false,
+								null,
+								null,
+								getTimestamp());
+
+						// Set the grab on the server
+						setGrab(_buttonDownPointerGrab);
+
+						grab = _buttonDownPointerGrab;
+					}
+				}
+
+				if(grab != null) {
+
+					// All buttons are delivered in the context of a grab
+					final Event event = _eventFactories.getButtonPressFactory().create(
+							buttonNumber, 
+							grab, 
+							_pointer, 
+							child,
+							getKeyButtonMask(), 
+							when);
+					
+					grab.getClient().getPostBox().send(event, null);
 				}
 			}
 		});
-	}
-
-	public void setGrab(final PointerGrab pointerGrab) {
-		
-		// Set the grab on the pointer
-		_pointer.setPointerGrab(pointerGrab);
-		
-		// Freeze/thaw input queues
-		setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
 	}
 	
 	/**
@@ -455,7 +474,7 @@ public class Server extends Client {
 	 * @param buttonNumber code representing physical button in the range 1-5
 	 * @param when time in milliseconds
 	 */
-	public void buttonReleased(final int screenIndex, final int x, final int y, final int buttonNumber, final long when){
+	public void buttonReleased(final int screenIndex, final int x, final int y, final int buttonNumber, final int when){
 
 		if(buttonNumber < 1 || buttonNumber >5) {
 			final String message = "Button number " + buttonNumber + " out of range";
@@ -476,25 +495,52 @@ public class Server extends Client {
 				// Update pointer position
 				_pointer.set(_screens.get(screenIndex), x, y);
 
-				final Window child = _pointer.childWindowAt();
-
-				if(child != null && child.wouldDeliver(Event.ButtonReleaseMask) ) {
-					// TODO Consider grabs - do they change the construction of the event?
+				final PointerGrab grab = _pointer.getPointerGrab();
+				
+				// All buttons are delivered in the context of a grab
+				if(grab != null) {
+					
+					final Window child = _pointer.childWindowAt();
+					
 					final Event event = _eventFactories.getButtonReleaseFactory().create(
 							buttonNumber, 
-							_focus, 
+							grab, 
 							_pointer, 
+							child,
 							getKeyButtonMask(), 
-							(int)(when & 0xffffffff));
-
-					if(event != null) {
-						child.deliver(event, Event.ButtonReleaseMask);
-					}	
+							when);
+					
+					grab.getClient().getPostBox().send(event, null);
+					
+					if(_buttonDownPointerGrab == grab) {
+						if(_pointer.getButtonMask() == 0) {
+							releasePointerGrab();
+						}
+					}
 				}
 			}
 		});
-	}	
+	}
+	
+	public void setGrab(final PointerGrab pointerGrab) {
+		
+		// Set the grab on the pointer
+		_pointer.setPointerGrab(pointerGrab);
+		
+		// Freeze/thaw input queues
+		setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
+	}
 
+	public void releasePointerGrab() {
+		// Set the grab on the pointer
+		_pointer.setPointerGrab(null);
+		
+		// Thaw input queues
+		setFreezeState(false, false);
+		
+		_buttonDownPointerGrab = null;
+	}
+	
 	private void enqueueKey(final InputEvent e) {
 		try {
 			lock();

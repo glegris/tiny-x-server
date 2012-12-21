@@ -19,15 +19,17 @@
 package com.liaquay.tinyx.model.eventfactories;
 
 import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.PointerGrab;
+import com.liaquay.tinyx.model.Window;
 
 public interface ButtonFactory {
 
 	public Event create(
 			final int button,
-			final Focus focus,
+			final PointerGrab grab,
 			final Pointer	pointer,
+			final Window child, 
 			final int keyButtonMask,
 			final int when);
 }

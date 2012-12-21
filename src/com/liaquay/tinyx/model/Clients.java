@@ -93,7 +93,7 @@ public class Clients {
 	public void send(final Event event) {
 		for(int i = _clientIdAllocator.nextAllocated(0) ; i >=0 ; i = _clientIdAllocator.nextAllocated(i)){
 			final Client client = _clients[i];
-			client.getPostBox().send(event, client, null);
+			client.getPostBox().send(event, null);
 		}
 	}
 }

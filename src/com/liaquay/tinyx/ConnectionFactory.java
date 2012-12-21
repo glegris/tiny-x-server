@@ -263,8 +263,8 @@ public class ConnectionFactory implements TinyXServer.ClientFactory {
 		private PostBox _destination = null;
 		
 		@Override
-		public void send(final Event event, final Client client, final Window window) {
-			_destination.send(event, client, window);
+		public void send(final Event event, final Window window) {
+			_destination.send(event, window);
 		}
 	}
 }

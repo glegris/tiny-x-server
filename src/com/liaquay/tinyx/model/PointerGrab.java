@@ -67,4 +67,12 @@ public class PointerGrab {
 	public boolean isPointerSynchronous() {
 		return _pointerSynchronous;	
 	}
+
+	public Window getGrabWindow() {
+		return _grabWindow;
+	}
+
+	public boolean isOwnerEvents() {
+		return _ownerEvents;
+	}
 }

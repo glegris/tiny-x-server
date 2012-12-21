@@ -19,5 +19,5 @@
 package com.liaquay.tinyx.model;
 
 public interface PostBox {
-	public void send(final Event event, final Client client, final Window window);
+	public void send(final Event event, final Window window);
 }

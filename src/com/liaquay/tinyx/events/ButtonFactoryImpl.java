@@ -22,8 +22,8 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.ClientWindowAssociation;
 import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
 import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
@@ -33,28 +33,18 @@ public class ButtonFactoryImpl {
 	public Event create(
 			final int event,
 			final int button,
-			final Focus focus,
+			final PointerGrab grab,
 			final Pointer pointer,
+			final Window child,
 			final int keyButtonMask,
 			final int when) {
 
-		// Find out if this event is part of a grab
-		final PointerGrab pointerGrab = pointer.getPointerGrab();
-		
-		if(pointerGrab != null) {
-			// TODO work out how grab affects event creation...
-			
-		}
-
-		// probably can be false under grab
-		final boolean sameScreen = true;
-
 		// Obtain the root window for the event.
-		final Window rootWindow = pointer.getScreen().getRootWindow();
+		final Window rootWindow = child.getRootWindow();
+		
 		final int rootWindowId = rootWindow.getId ();
 
 		// Find the window that contained the event
-		final Window child = pointer.childWindowAt();
 		final int childWindowId = child.getId();
 		
 		final int rootX = pointer.getX() - rootWindow.getAbsX();
@@ -63,8 +53,24 @@ public class ButtonFactoryImpl {
 		return new TimestampedEventImpl(event, button, when) {
 
 			@Override
-			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window eventWindow) throws IOException {
+			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window w) throws IOException {
 				
+				final Window eventWindow;
+				if(grab.isOwnerEvents()) {
+					// Get the window association that this event would have delivered to
+					final ClientWindowAssociation clientWindowAssociation = child.getDeliverToAssociation(Event.ButtonPressMask, client);
+					if(clientWindowAssociation == null) {
+						eventWindow = grab.getGrabWindow();
+					}
+					else {
+						eventWindow = clientWindowAssociation.getWindow();
+					}
+				}
+				else {
+					eventWindow = grab.getGrabWindow();
+				}
+
+				final boolean sameScreen = rootWindow == eventWindow.getRootWindow();
 				final int eventWindowId = eventWindow.getId();
 				
 				final int eventX;
