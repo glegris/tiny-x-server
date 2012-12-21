@@ -108,9 +108,22 @@ public class Pointer {
 	public void set(final Screen screen, final int x, final int y) {
 		_screen = screen;
 		
-		// TODO Consider confine-to-window handling
+		
 		_x = x;
 		_y = y;
+		
+		// TODO Consider confine-to-window handling
+//		final Window confineToWindow = _screen.getRootWindow();
+//		
+//		final int borderWidth = confineToWindow.getBorderWidth();
+//		final int minX = confineToWindow.getAbsX() - borderWidth;
+//		final int maxX = confineToWindow.getAbsX() + confineToWindow.getWidthPixels() + borderWidth;
+//		final int minY = confineToWindow.getAbsY() - borderWidth;
+//		final int maxY = confineToWindow.getAbsY() + confineToWindow.getHeightPixels() + borderWidth;
+//		if(_x < minX) _x = minX;
+//		if(_x >= maxX) _x = maxX-1;
+//		if(_y < minY) _y = minY;
+//		if(_y >= maxY) _y = maxY-1;
 	}
 
 	public void buttonPressed(final int buttonIndex) {

@@ -192,6 +192,31 @@ public class XawtWindow  {
 				graphics.drawRect(x, y, width, height);
 			}
 		}
+		
+		@Override
+		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
+
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
+
+			graphics.fillPolygon(x, y, x.length);
+		}
+		
+		@Override
+		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
+
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			System.out.println(Integer.toHexString(graphicsContext.getForegroundColour()));
+			
+			int red = (byte) (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
+			int blue = (byte)(graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
+			int green = (byte)(graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
+			
+			graphics.setColor(new Color(red, blue, green));
+
+			graphics.drawPolyline(x, y, x.length);
+		}
+		
 	};
 
 	private Canvas _canvas = new Canvas();

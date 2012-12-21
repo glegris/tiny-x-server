@@ -23,8 +23,13 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class PolyLine implements RequestHandler {
 
@@ -33,11 +38,39 @@ public class PolyLine implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
+		
+		final XInputStream inputStream = request.getInputStream();
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}
+
+		int len = request.getLength();
+
+		int numCoords = ((len-12)/4);
+		
+		int xCoords[] = new int[numCoords];
+		int yCoords[] = new int[numCoords];
+		
+		for (int i=0; i < numCoords; i++) {
+			xCoords[i] = inputStream.readSignedShort();
+			yCoords[i] = inputStream.readSignedShort();
+		}
+
+		if (drawable instanceof Window) {
+			((Window) drawable).polyLine(graphicsContext, xCoords, yCoords);
+		} else {
+			((Screen) drawable).polyLine(graphicsContext, xCoords, yCoords);
+		}
 	}
 }

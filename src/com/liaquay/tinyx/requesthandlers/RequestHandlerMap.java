@@ -30,6 +30,8 @@ import com.liaquay.tinyx.model.Extension;
 import com.liaquay.tinyx.model.Extensions;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.extensions.BigRequestHandler;
+import com.liaquay.tinyx.requesthandlers.extensions.RenderHandler;
+import com.liaquay.tinyx.requesthandlers.extensions.shape.ShapeExtensionHandler;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
@@ -52,6 +54,9 @@ public class RequestHandlerMap implements RequestHandler {
 
 	public RequestHandlerMap(final Extensions extensions) {
 		addExtension(extensions, "BIG-REQUESTS", 0,0, new BigRequestHandler());
+		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
+		
+//		addExtension(extensions, "RENDER", 0,0, new RenderHandler());
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
 		final WindowAttributeHandlers windowAttributeHandlers = new WindowAttributeHandlers();
@@ -190,9 +195,7 @@ public class RequestHandlerMap implements RequestHandler {
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
 		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "... opCode: " + majorOpCode);
-		if (requestHandler instanceof ListFonts) {
-			System.out.println();
-		}
+
 		requestHandler.handleRequest(server, client, request, response);
 	}
 }

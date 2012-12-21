@@ -32,6 +32,7 @@ public class ButtonFactoryImpl {
 	
 	public Event create(
 			final int event,
+			final int eventMask,
 			final int button,
 			final PointerGrab grab,
 			final Pointer pointer,
@@ -40,12 +41,12 @@ public class ButtonFactoryImpl {
 			final int when) {
 
 		// Obtain the root window for the event.
-		final Window rootWindow = child.getRootWindow();
+		final Window rootWindow = grab.getGrabWindow().getRootWindow();
 		
 		final int rootWindowId = rootWindow.getId ();
 
 		// Find the window that contained the event
-		final int childWindowId = child.getId();
+		final int childWindowId = child == null ? 0 : child.getId();
 		
 		final int rootX = pointer.getX() - rootWindow.getAbsX();
 		final int rootY = pointer.getY() - rootWindow.getAbsY();
@@ -56,9 +57,13 @@ public class ButtonFactoryImpl {
 			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window w) throws IOException {
 				
 				final Window eventWindow;
-				if(grab.isOwnerEvents()) {
+				if(child == null) {
+					eventWindow = grab.getGrabWindow();
+				}
+				else if(grab.isOwnerEvents()) {
 					// Get the window association that this event would have delivered to
-					final ClientWindowAssociation clientWindowAssociation = child.getDeliverToAssociation(Event.ButtonPressMask, client);
+					final ClientWindowAssociation clientWindowAssociation = child.getDeliverToAssociation(eventMask, client);
+					
 					if(clientWindowAssociation == null) {
 						eventWindow = grab.getGrabWindow();
 					}
@@ -70,7 +75,8 @@ public class ButtonFactoryImpl {
 					eventWindow = grab.getGrabWindow();
 				}
 
-				final boolean sameScreen = rootWindow == eventWindow.getRootWindow();
+				// TODO Is this correct?
+				final boolean sameScreen = rootWindow == pointer.getScreen().getRootWindow();
 				final int eventWindowId = eventWindow.getId();
 				
 				final int eventX;

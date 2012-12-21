@@ -23,21 +23,68 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class FillPoly implements RequestHandler {
 
+	public enum Shape {
+		Complex,
+		Nonconvex,
+		Convex;
+
+		public static Shape getFromIndex(final int index) {
+			final Shape[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+	}
+
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+
+
+		final XInputStream inputStream = request.getInputStream();
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}
+
+		Shape shape = Shape.getFromIndex(inputStream.readUnsignedByte());
+		CoordMode coordMode = CoordMode.getFromIndex(inputStream.readUnsignedByte());
+
+		inputStream.readUnsignedShort();
+
+		int len = request.getLength();
+
+		int numCoords = ((len-16)/4);
+		
+		int xCoords[] = new int[numCoords];
+		int yCoords[] = new int[numCoords];
+		
+		for (int i=0; i < numCoords; i++) {
+			xCoords[i] = inputStream.readSignedShort();
+			yCoords[i] = inputStream.readSignedShort();
+		}
+		
+		if (drawable instanceof Window) {
+			((Window) drawable).polyFill(graphicsContext, xCoords, yCoords);
+		}
 	}
 }

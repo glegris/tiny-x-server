@@ -39,6 +39,7 @@ public class ButtonPressFactoryImpl extends ButtonFactoryImpl implements ButtonF
 		
 		return  create(
 				Event.ButtonPress,
+				Event.ButtonPressMask,
 				button,
 				grab,
 				pointer,

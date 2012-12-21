@@ -39,6 +39,7 @@ public class ButtonReleaseFactoryImpl extends ButtonFactoryImpl implements Butto
 
 		return create(
 				Event.ButtonRelease,
+				Event.ButtonReleaseMask,
 				button,
 				grab,
 				pointer,

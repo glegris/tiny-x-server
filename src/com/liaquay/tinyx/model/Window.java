@@ -44,6 +44,9 @@ public class Window implements Drawable {
 				int width, int height, int angle1, int angle2, boolean fill);
 		public void polyRect(GraphicsContext graphicsContext, int x, int y,
 				int width, int height, boolean fill);
+		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
+		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
+
 	}
 
 	/**
@@ -82,6 +85,16 @@ public class Window implements Drawable {
 		@Override
 		public void polyRect(GraphicsContext graphicsContext, int x, int y,
 				int width, int height, boolean fill) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -865,4 +878,11 @@ public class Window implements Drawable {
 		_listener.polyRect(graphicsContext, x, y, width, height, fill);
 	}
 
+	public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
+		_listener.polyFill(graphicsContext, x, y);
+	}
+	
+	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
+		_listener.polyLine(graphicsContext, x, y);
+	}
 }
