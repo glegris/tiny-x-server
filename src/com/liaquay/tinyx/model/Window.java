@@ -46,6 +46,8 @@ public class Window implements Drawable {
 				int width, int height, boolean fill);
 		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+				int x2, int y2);
 
 	}
 
@@ -95,6 +97,12 @@ public class Window implements Drawable {
 		}
 		@Override
 		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+				int x2, int y2) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -854,5 +862,11 @@ public class Window implements Drawable {
 	
 	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
 		_listener.polyLine(graphicsContext, x, y);
+	}
+
+	public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2,
+			int y2) {
+		_listener.drawLine(graphicsContext, x1, y1, x2, y2);
+		
 	}
 }

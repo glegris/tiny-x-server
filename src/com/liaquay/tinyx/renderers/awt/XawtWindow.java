@@ -206,15 +206,30 @@ public class XawtWindow  {
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			System.out.println(Integer.toHexString(graphicsContext.getForegroundColour()));
 			
-			int red = (byte) (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
+			int red = (byte)(graphicsContext.getForegroundColour() & 0xff000000) >> 24;
 			int blue = (byte)(graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
 			int green = (byte)(graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
 			
-			graphics.setColor(new Color(red, blue, green));
+			graphics.setColor(Color.BLUE);
 
 			graphics.drawPolyline(x, y, x.length);
+		}
+
+		@Override
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+				int x2, int y2) {
+
+			
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+
+			int red = (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
+			int blue = (graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
+			int green = (graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
+			
+			graphics.setColor(Color.CYAN);
+			
+			graphics.drawLine(x1, y1, x2, y2);
 		}
 		
 	};
