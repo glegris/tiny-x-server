@@ -16,28 +16,18 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model;
+package com.liaquay.tinyx.model.eventfactories;
 
-public class PointerGrab extends Grab {
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.Window;
+
+public interface KeyFactory {
 	
-	private final int _eventMask; // TODO What are these for!
-	private final Window _confineToWindow;
-	private final Cursor _cursor;// TODO What is this these for!
-	
-	public PointerGrab(
-			final Client client, 
-			final boolean ownerEvents,
-			final Window grabWindow,
-			final int eventMask,
-			final boolean pointerSynchronous,
-			final boolean keyboardSynchronous,
-			final Window confineToWindow,
-			final Cursor cursor,
-			final int timestamp) {
-		super(client, ownerEvents, grabWindow, pointerSynchronous, keyboardSynchronous, timestamp);
-		
-		_eventMask = eventMask;
-		_confineToWindow = confineToWindow;
-		_cursor = cursor;
-	}
+	public Event create(
+			final Window focusWindow,
+			final Window child, 
+			final Pointer pointer,
+			final int key,
+			final int when);
 }

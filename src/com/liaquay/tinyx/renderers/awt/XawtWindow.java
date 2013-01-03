@@ -21,7 +21,6 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
@@ -29,20 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import sun.awt.X11.XCustomCursor;
-import sun.awt.image.ByteBandedRaster;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
@@ -52,7 +38,6 @@ import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
-import com.sun.java.swing.plaf.windows.resources.windows;
 
 public class XawtWindow  {
 
@@ -354,7 +339,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				server.keyReleased(e.getKeyCode(), e.getWhen());
+				server.keyReleased(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
@@ -363,7 +348,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				server.keyPressed(e.getKeyCode(), e.getWhen());
+				server.keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
 	}

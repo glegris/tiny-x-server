@@ -23,6 +23,8 @@ public interface EventFactories {
 	public MapRequestFactory getMapRequestFactory();
 	public ButtonFactory getButtonPressFactory();
 	public ButtonFactory getButtonReleaseFactory();
+	public KeyFactory getKeyPressFactory();
+	public KeyFactory getKeyReleaseFactory();
 	public MappingNotifyFactory getMappingNotifyFactory();
 	public ExposureFactory getExposureFactory();
 }

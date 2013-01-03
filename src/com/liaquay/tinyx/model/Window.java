@@ -395,6 +395,12 @@ public class Window implements Drawable {
 		_children.add(child);
 		_listener.childCreated(child);
 	}
+	
+	public boolean hasAncestor(final Window ancestor) {
+		if(this == ancestor) return true;
+		if(_parent != null) return _parent.hasAncestor(ancestor);
+		return false;
+	}
 
 	@Override
 	public int getId() {

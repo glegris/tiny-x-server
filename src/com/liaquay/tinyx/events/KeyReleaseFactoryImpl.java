@@ -16,28 +16,30 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model;
+package com.liaquay.tinyx.events;
 
-public class PointerGrab extends Grab {
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.eventfactories.KeyFactory;
+
+public class KeyReleaseFactoryImpl extends KeyFactoryImpl implements KeyFactory {
 	
-	private final int _eventMask; // TODO What are these for!
-	private final Window _confineToWindow;
-	private final Cursor _cursor;// TODO What is this these for!
+	public static KeyFactory FACTORY = new KeyReleaseFactoryImpl();
 	
-	public PointerGrab(
-			final Client client, 
-			final boolean ownerEvents,
-			final Window grabWindow,
-			final int eventMask,
-			final boolean pointerSynchronous,
-			final boolean keyboardSynchronous,
-			final Window confineToWindow,
-			final Cursor cursor,
-			final int timestamp) {
-		super(client, ownerEvents, grabWindow, pointerSynchronous, keyboardSynchronous, timestamp);
+	public Event create(
+			final Window focusWindow,
+			final Window child,
+			final Pointer pointer,
+			final int key,
+			final int when) {
 		
-		_eventMask = eventMask;
-		_confineToWindow = confineToWindow;
-		_cursor = cursor;
+		return create(
+				Event.KeyPress,
+				focusWindow,
+				child,
+				pointer,
+				key,
+				when);
 	}
 }

@@ -28,7 +28,7 @@ public interface ButtonFactory {
 	public Event create(
 			final int button,
 			final PointerGrab grab,
-			final Pointer	pointer,
+			final Pointer pointer,
 			final Window child, 
 			final int keyButtonMask,
 			final int when);

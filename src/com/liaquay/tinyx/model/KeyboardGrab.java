@@ -18,26 +18,15 @@
  */
 package com.liaquay.tinyx.model;
 
-public class PointerGrab extends Grab {
+public class KeyboardGrab extends Grab {
 	
-	private final int _eventMask; // TODO What are these for!
-	private final Window _confineToWindow;
-	private final Cursor _cursor;// TODO What is this these for!
-	
-	public PointerGrab(
+	public KeyboardGrab(
 			final Client client, 
 			final boolean ownerEvents,
 			final Window grabWindow,
-			final int eventMask,
 			final boolean pointerSynchronous,
 			final boolean keyboardSynchronous,
-			final Window confineToWindow,
-			final Cursor cursor,
 			final int timestamp) {
 		super(client, ownerEvents, grabWindow, pointerSynchronous, keyboardSynchronous, timestamp);
-		
-		_eventMask = eventMask;
-		_confineToWindow = confineToWindow;
-		_cursor = cursor;
 	}
 }

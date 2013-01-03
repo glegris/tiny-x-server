@@ -93,6 +93,11 @@ public class Keyboard {
 	private KeyClick _click = new KeyClick();
 	
 	/**
+	 * A grab
+	 */
+	private KeyboardGrab _keyboardGrab = null;
+	
+	/**
 	 * The LEDs
 	 */
 	private Leds _leds = new Leds();
@@ -221,4 +226,12 @@ public class Keyboard {
 		//TODO ...
 		
 	}	
+	
+	public void setKeyboardGrab(final KeyboardGrab keyboardGrab) {
+		_keyboardGrab = keyboardGrab;
+	}
+	
+	public KeyboardGrab getKeyboardGrab() {
+		return _keyboardGrab;
+	}
 }
