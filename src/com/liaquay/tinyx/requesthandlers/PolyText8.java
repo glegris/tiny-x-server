@@ -57,18 +57,18 @@ public class PolyText8 implements RequestHandler {
 		final int x = inputStream.readUnsignedShort();
 		final int y = inputStream.readUnsignedShort();
 
-		StringBuffer str = new StringBuffer();
+		final StringBuilder str = new StringBuilder();
 		final int len = inputStream.readUnsignedByte();
 		int delta = 0;
 		if (len == 255) {
-			int font = inputStream.readInt();
-			Font f = server.getResources().get(font, Font.class);
+			final int font = inputStream.readInt();
+			final Font f = server.getResources().get(font, Font.class);
 			graphicsContext.setFont(f);
 		} else {
 			delta = inputStream.readUnsignedByte();
 
 			for (int i = 0; i < len; i++) {
-				int a = inputStream.readUnsignedByte();
+				final int a = inputStream.readUnsignedByte();
 				str.append((char) a);
 			}
 		}
