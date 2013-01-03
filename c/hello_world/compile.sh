@@ -1,1 +1,1 @@
-gcc input_box.c -lX11
+gcc hello_world.c -lX11
