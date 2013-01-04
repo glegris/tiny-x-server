@@ -33,6 +33,7 @@ import java.awt.image.WritableRaster;
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
+import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
@@ -135,15 +136,17 @@ public class XawtWindow  {
 
 		@Override
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
-			int foregroundColor = graphicsContext.getForegroundColour();
-			Color c = new Color(foregroundColor);
+			final int foregroundColor = graphicsContext.getForegroundColour();
+			final Color c = new Color(foregroundColor); // TODO Don't keep newing these
 
-			Font f = graphicsContext.getFont();
-			f.getFontName();
+			final Font f = graphicsContext.getFont();
+			final FontInfo fontInfo = f.getFontInfo();
+			
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.setColor(c);
-			java.awt.Font newFont = new java.awt.Font(f.getFontName().getFamilyName(), java.awt.Font.PLAIN, 10);
+			// TODO don't keep creating these!
+			java.awt.Font newFont = new java.awt.Font(fontInfo.getFamilyName(), java.awt.Font.PLAIN, fontInfo.getPixelSize());
 
 			graphics.setFont(newFont);
 

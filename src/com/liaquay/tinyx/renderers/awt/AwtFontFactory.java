@@ -2,7 +2,6 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
@@ -10,54 +9,52 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.liaquay.tinyx.model.FontString;
+import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.model.font.FontFactory;
 
 public class AwtFontFactory implements FontFactory {
 
-	List<FontString> _fontNames;
+	List<FontInfo> _fontNames;
 	
 	public AwtFontFactory() {
 		_fontNames = initFontNames();
 	}
 	
-	private List<FontString> initFontNames() {
-		List<FontString> fontList = new ArrayList<FontString>();
+	private List<FontInfo> initFontNames() {
+		final List<FontInfo> fontList = new ArrayList<FontInfo>();
 		
-		GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		Font[] fonts = e.getAllFonts(); // Get the fonts
-		for (Font f : fonts) {
-			String familyName = f.getFamily();
-			System.out.println(f);
+		final GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final Font[] fonts = e.getAllFonts(); // Get the fonts
+		for (final Font f : fonts) {
+			final String familyName = f.getFamily();
+			//System.out.println(f);
 			
 			String foundryName = "*";
 			String charSet = "ISO8859";
 			String pointSize = "*";
 			String weightName = "*";
 			
-			FontString fontString = new FontString("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "R" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
-			fontList.add(fontString);		// TODO Auto-generated method stub
+			// TODO PS - Add new constructor
+			final FontInfo fontString = new FontInfo("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "r" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
+			fontList.add(fontString);
 			
-
+			System.out.println(fontString);
 		}
 		return fontList;
 	}
 	
 	@Override
-	public List<FontString> getFontNames() {
+	public List<FontInfo> getFontNames() {
 		return _fontNames;
 	}
 
 	@Override
-	public FontString getFirstMatchingFont(String requestedFontName) {
-		final FontString requestedFont = new FontString(requestedFontName);
-
+	public FontInfo getFirstMatchingFont(final FontInfo requestedFont) {
 		for (int i = 0; i < _fontNames.size(); i++) {
 			if (_fontNames.get(i).matches(requestedFont)) {
 				return _fontNames.get(i);
 			}
-
 		}
 		
 		//TODO: Nasty hack until I have proper matching code in place
@@ -65,10 +62,9 @@ public class AwtFontFactory implements FontFactory {
 	}
 	
 	@Override
-	public List<FontString> getMatchingFonts(String requestedFontName) {
-		FontString requestedFont = new FontString(requestedFontName);
+	public List<FontInfo> getMatchingFonts(final FontInfo requestedFont) {
 
-		List<FontString> matchingFonts = new ArrayList<FontString>();
+		List<FontInfo> matchingFonts = new ArrayList<FontInfo>();
 		
 		for (int i = 0; i < _fontNames.size(); i++) {
 			matchingFonts.add(_fontNames.get(i));
@@ -80,7 +76,7 @@ public class AwtFontFactory implements FontFactory {
 	@Override
 	public FontDetail getFontDetail(String name, int size) {
 		if (size==0)
-				size = 100;
+				size = 8;
 		Font f = new Font(name, Font.PLAIN, size);
 		
 		FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(f);

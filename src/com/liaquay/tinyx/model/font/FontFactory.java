@@ -20,14 +20,14 @@ package com.liaquay.tinyx.model.font;
 
 import java.util.List;
 
-import com.liaquay.tinyx.model.FontString;
+import com.liaquay.tinyx.model.FontInfo;
 
 public interface FontFactory {
-	List<FontString> getFontNames();
+	List<FontInfo> getFontNames();
 
-	FontString getFirstMatchingFont(String requestedFontName);
+	FontInfo getFirstMatchingFont(FontInfo requestedFontName);
 
-	List<FontString> getMatchingFonts(String pattern);
+	List<FontInfo> getMatchingFonts(FontInfo pattern);
 
 	FontDetail getFontDetail(String name, int size);
 }

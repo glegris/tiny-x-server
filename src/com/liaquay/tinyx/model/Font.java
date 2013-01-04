@@ -1,22 +1,20 @@
 package com.liaquay.tinyx.model;
 
 import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.GlyphDetail;
 
 
 public class Font extends AbstractResource {
 
-	private FontString fontName;
+	private FontInfo fontName;
 
 	private FontDetail fontDetail;
 	
-	public Font(int id, FontString fontName, FontFactory fontFactory) {
+	public Font(final int id, final FontInfo fontName, final FontDetail fontDetail) {
 		super(id);
 
 		this.fontName = fontName;
-		
-		fontDetail = fontFactory.getFontDetail(fontName.getFamilyName(), fontName.get_pixelSize());
+		this.fontDetail = fontDetail;
 	}
 
 	@Override
@@ -25,13 +23,13 @@ public class Font extends AbstractResource {
 
 	}
 
-	public FontString getFontName() {
+	public FontInfo getFontInfo() {
 		return fontName;
 	}
 
-	public void setFontName(FontString fontName) {
-		this.fontName = fontName;
-	}
+//	public void setFontName(FontString fontName) {
+//		this.fontName = fontName;
+//	}
 
 	
 	public int getMaxAscent() {

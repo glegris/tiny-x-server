@@ -27,8 +27,6 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.FontString;
-import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Server;
 
