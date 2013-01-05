@@ -91,7 +91,7 @@ public class FontInfo {
 	private static class FontSizeParser implements Parser {
 		@Override
 		public FontParameter<Integer> parse(final String s) {
-			return new FontParameter<Integer>(s.equals("*") || s.equals("0") ? null : Integer.parseInt(s));
+			return new FontParameter<Integer>(s == null ? null : s.equals("*") || s.equals("0") ? null : Integer.parseInt(s));
 		}
 	}	
 	
@@ -151,6 +151,8 @@ public class FontInfo {
 	}
 	
 	public FontInfo(final String name) {
+		// TODO this is called from xcalc with the name 'cursor'!
+		
 		_parameters = new FontParameter[PARSERS.length];
 		final String[] split = name.split("-");
 		for(int i = 0 ; i < PARSERS.length; ++i) {
