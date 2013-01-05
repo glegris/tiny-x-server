@@ -9,7 +9,7 @@ public class GraphicsContext extends AbstractResource {
 		_drawable = drawable;
 	}
 	
-	private int _foregroundColour = 0xffffffff;
+	private int _foregroundColour = 0x00000000;
 
 	public void setForegroundColour(int value) {
 		_foregroundColour = value;
@@ -19,7 +19,7 @@ public class GraphicsContext extends AbstractResource {
 		return _foregroundColour;
 	}
 
-	private int _backgroundColour = 0x00000000;
+	private int _backgroundColour = 0xffffffff;
 	
 	public void setBackgroundColour(int value) {
 		_backgroundColour = value;

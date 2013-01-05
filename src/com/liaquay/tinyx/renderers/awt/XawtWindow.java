@@ -22,6 +22,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -38,6 +39,12 @@ import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
 
+/**
+ * 
+ * TODO use colour map to look up colours.
+ * TODO translate graphics before and after each drawing operation.
+ *
+ */
 public class XawtWindow  {
 
 	private final Window _window;
@@ -151,6 +158,7 @@ public class XawtWindow  {
 			final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 			
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			final java.awt.Font awtFont = fontListener.getAwtFont();
 
 			graphics.setColor(c);
@@ -205,6 +213,7 @@ public class XawtWindow  {
 				final int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
 
 			graphics.fillPolygon(x, y, x.length);
@@ -217,12 +226,8 @@ public class XawtWindow  {
 				final int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			
-			final int red = (byte)(graphicsContext.getForegroundColour() & 0xff000000) >> 24;
-			final int blue = (byte)(graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
-			final int green = (byte)(graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
-			
-			graphics.setColor(Color.BLUE);
+			//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
 
 			graphics.drawPolyline(x, y, x.length);
 		}
@@ -235,15 +240,10 @@ public class XawtWindow  {
 				final int x2, 
 				final int y2) {
 
-			
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
 
-			final int red = (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
-			final int blue = (graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
-			final int green = (graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
-			
-			graphics.setColor(Color.CYAN);
-			
 			graphics.drawLine(x1, y1, x2, y2);
 		}
 		
@@ -253,6 +253,7 @@ public class XawtWindow  {
 
 	private void paintWindow(final Window window) {
 		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		graphics.setClip(
 				window.getClipX(), 
@@ -313,6 +314,9 @@ public class XawtWindow  {
 				window.getY(),
 				window.getWidthPixels() + window.getBorderWidth() + window.getBorderWidth(), 
 				window.getHeightPixels() + window.getBorderWidth() + window.getBorderWidth());
+
+		
+		_canvas.getAccessibleContext();
 
 		window.setListener(_windowListener);
 
