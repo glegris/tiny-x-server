@@ -1,3 +1,21 @@
+/*
+ *  Tiny X server - A Java X server
+ *
+ *   Copyright (C) 2012  Phil Scull
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.liaquay.tinyx.model;
 
 public class FontInfo {
@@ -15,12 +33,29 @@ public class FontInfo {
 		
 		public boolean matches(final FontParameter<T> t) {
 			if(_value == null || t._value == null) return true;
-			return _value.equals(t._value);
+			return matchesNotNull(t);
+		}
+		
+		protected boolean matchesNotNull(final FontParameter<T> t) {
+			return _value.equals(t._value);			
 		}
 		
 		public FontParameter<T> merge(final FontParameter<T> t) {
 			final T value = _value == null ? t._value : _value;
 			return new FontParameter<T>(value);
+		}
+		
+		public final T getValue() { return _value; }
+	}
+	
+	private static class StringParameter extends FontParameter<String> {
+
+		public StringParameter(final String value) {
+			super(value);
+		}
+
+		protected boolean matchesNotNull(final FontParameter<String> t) {
+			return getValue().equalsIgnoreCase(t.getValue());
 		}
 	}
 	
@@ -31,7 +66,7 @@ public class FontInfo {
 	private static class StringParser implements Parser<String> {
 		@Override
 		public FontParameter<String> parse(final String s) {
-			return new FontParameter<String>(s == null ? null : s.equals("*") ? null : s);
+			return new StringParameter(s == null ? null : s.equals("*") ? null : s);
 		}
 	}
 	
@@ -56,9 +91,6 @@ public class FontInfo {
 	private static final FontSizeParser FONT_SIZE_PARSER = new FontSizeParser();
 	
 	final static Parser[] PARSERS = new Parser[] {
-		
-		// ?
-		STRING_PARSER,
 		
 		//    FOUNDRY: Type foundry - vendor or supplier of this font
 		STRING_PARSER,
@@ -116,8 +148,8 @@ public class FontInfo {
 		final String[] split = name.split("-");
 		for(int i = 0 ; i < PARSERS.length; ++i) {
 			final Parser<?> parser = PARSERS[i];
-			if(split.length > i) {
-				_parameters[i] = parser.parse(split[i]);
+			if(split.length > i+1) {
+				_parameters[i] = parser.parse(split[i+1]);
 			}
 			else {
 				_parameters[i] = parser.parse(null);
@@ -156,21 +188,22 @@ public class FontInfo {
 	}
 	
 	public static void main(String[] a){
-		final FontInfo f1 = new FontInfo("--*-Arial-*-r-*-*-*-*-*-*-*-*-ISO8859-*");
+		final FontInfo f1 = new FontInfo("-*-Arial-*-r-*-*-*-*-*-*-*-*-ISO8859-*");
 		System.out.println(f1);
-		final FontInfo f2 = new FontInfo("--*-Arial-*-r-*-*-14-*-*-*-*-*-*-*");
+		final FontInfo f2 = new FontInfo("-*-Arial-*-r-*-*-14-*-*-*-*-*-*-*");
 		System.out.println(f2);
 		final FontInfo f3 = f1.merge(f2);
 		System.out.println(f3);
 		System.out.println(f2.getPixelSize());
+		System.out.println(f2.getFamilyName());
 		System.out.println(f1.matches(f2) + "");
 	}
 
 	public String getFamilyName() {
-		return (String)_parameters[2]._value;
+		return (String)_parameters[1]._value;
 	}
 
 	public int getPixelSize() {
-		return (Integer)_parameters[7]._value;
+		return (Integer)_parameters[6]._value;
 	}
 }
