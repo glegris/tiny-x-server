@@ -1,3 +1,21 @@
+/*
+ *  Tiny X server - A Java X server
+ *
+ *   Copyright (C) 2012  Nathan Ludkin
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.liaquay.tinyx.model;
 
 import com.liaquay.tinyx.model.font.FontDetail;
@@ -6,15 +24,14 @@ import com.liaquay.tinyx.renderers.awt.GlyphDetail;
 
 public class Font extends AbstractResource {
 
-	private FontInfo fontName;
-
-	private FontDetail fontDetail;
+	private final FontInfo _fontName;
+	private final FontDetail _fontDetail;
 	
 	public Font(final int id, final FontInfo fontName, final FontDetail fontDetail) {
 		super(id);
 
-		this.fontName = fontName;
-		this.fontDetail = fontDetail;
+		_fontName = fontName;
+		_fontDetail = fontDetail;
 	}
 
 	@Override
@@ -24,45 +41,38 @@ public class Font extends AbstractResource {
 	}
 
 	public FontInfo getFontInfo() {
-		return fontName;
+		return _fontName;
 	}
-
-//	public void setFontName(FontString fontName) {
-//		this.fontName = fontName;
-//	}
-
 	
 	public int getMaxAscent() {
-		return fontDetail.getMaxAscent();
+		return _fontDetail.getMaxAscent();
 	}
 
 	public int getMaxWidth() {
-		return fontDetail.getMaxWidth();
+		return _fontDetail.getMaxWidth();
 }
 
 	public int getMaxDescent() {
-		return fontDetail.getMaxDescent();
+		return _fontDetail.getMaxDescent();
 	}
 
 	public int getMinWidth() {
-		return fontDetail.getMinWidth();
+		return _fontDetail.getMinWidth();
 	}
 
 	public int getDefaultChar() {
-		return fontDetail.getDefaultChar();
+		return _fontDetail.getDefaultChar();
 	}
 
 	public int getFirstChar() {
-		return fontDetail.getFirstChar();
+		return _fontDetail.getFirstChar();
 	}
 
 	public int getLastChar() {
-		return fontDetail.getLastChar();
+		return _fontDetail.getLastChar();
 	}
 
 	public GlyphDetail getGlyphDetail(int i) {
-		return fontDetail.getGlyphDetail(i);
+		return _fontDetail.getGlyphDetail(i);
 	}
-	
-	
 }

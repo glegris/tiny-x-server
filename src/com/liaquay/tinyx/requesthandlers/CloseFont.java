@@ -31,15 +31,22 @@ import com.liaquay.tinyx.model.Server;
 public class CloseFont implements RequestHandler {
 
 	@Override
-	public void handleRequest(Server server, Client client, Request request,
-			Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
 
-		Font font = (Font) server.getResources().get(fid);
-		if (font != null) {
-			font.free();
-		}		
+		final Font font = (Font) server.getResources().get(fid);
+		if(font == null) {
+			response.error(Response.ErrorCode.Font, fid);	
+			return;
+		}
+		else {			
+			server.closeFont(font);
+		}
 	}
 }

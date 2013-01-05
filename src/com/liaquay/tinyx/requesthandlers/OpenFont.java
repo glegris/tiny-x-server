@@ -51,7 +51,7 @@ public class OpenFont implements RequestHandler {
 			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
 			final FontDetail fontDetail = server.getFontFactory().getFontDetail(mergedFontInfo.getFamilyName(), mergedFontInfo.getPixelSize());
 			final Font font = new Font(fid, mergedFontInfo, fontDetail);
-			server.getResources().add(font);
+			server.openFont(font);
 		}
 	}
 }

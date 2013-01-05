@@ -33,18 +33,15 @@ import java.awt.image.WritableRaster;
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
-import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
 
 public class XawtWindow  {
 
-	private Server _server;
-
-	private Window _window;
+	private final Window _window;
+	private final TinyXAwt _awtServer;
 
 	private Window.Listener _windowListener = new Listener() {
 
@@ -135,21 +132,20 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
+		public void drawString(
+				final GraphicsContext graphicsContext, 
+				final String str, 
+				final int x,
+				final int y) {
+			
 			final int foregroundColor = graphicsContext.getForegroundColour();
 			final Color c = new Color(foregroundColor); // TODO Don't keep newing these
-
-			final Font f = graphicsContext.getFont();
-			final FontInfo fontInfo = f.getFontInfo();
-			
-
+			final Font font = graphicsContext.getFont();
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			final java.awt.Font awtFont = _awtServer.getAwtFont(font);
+
 			graphics.setColor(c);
-			// TODO don't keep creating these!
-			java.awt.Font newFont = new java.awt.Font(fontInfo.getFamilyName(), java.awt.Font.PLAIN, fontInfo.getPixelSize());
-
-			graphics.setFont(newFont);
-
+			graphics.setFont(awtFont);
 			graphics.drawString(str, x, y);
 		}
 
@@ -277,9 +273,9 @@ public class XawtWindow  {
 
 	}
 
-	public XawtWindow(final Server server, final Window window) {
-		this._server = server;
-		this._window = window;
+	public XawtWindow(final TinyXAwt awtServer, final Window window) {
+		_awtServer = awtServer;
+		_window = window;
 
 		_canvas.setBounds(
 				window.getX(),
@@ -320,7 +316,7 @@ public class XawtWindow  {
 				}
 
 				// TODO pass in correct screen index
-				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
+				_awtServer.getServer().buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
@@ -331,7 +327,7 @@ public class XawtWindow  {
 					System.out.println(String.format("window=%x08", evw.getId()));
 				}
 				// TODO pass in correct screen index
-				server.buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
+				_awtServer.getServer().buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
 
@@ -342,7 +338,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				server.keyReleased(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
+				_awtServer.getServer().keyReleased(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
@@ -351,7 +347,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				server.keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
+				_awtServer.getServer().keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
 	}

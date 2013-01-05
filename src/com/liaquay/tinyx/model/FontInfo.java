@@ -18,6 +18,13 @@
  */
 package com.liaquay.tinyx.model;
 
+/**
+ * Holds info about a font derived from a font string. 
+ *
+ * TODO parsers for enumerated values.
+ * TODO error handling for parsers.
+ * TODO some unit tests would be useful for this class.
+ */
 public class FontInfo {
 	
 	/**

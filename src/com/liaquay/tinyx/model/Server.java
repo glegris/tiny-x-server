@@ -76,6 +76,42 @@ public class Server extends Client {
 	 */
 	private final Lock _syncLock = new ReentrantLock();
 
+	public interface Listener {
+		public void fontOpened(final Font font);
+		// TODO Move to Font listener
+		public void fontClosed(final Font font);
+	}
+	
+	/**
+	 * Empty implementation of the listener so that we don't have null checks 
+	 * throughout the code. 
+	 */
+	private static final class NullListener implements Listener {
+		@Override
+		public void fontOpened(final Font font) {}
+		@Override
+		public void fontClosed(final Font font) {}
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
+	public void openFont(final Font font) {
+		getResources().add(font);
+		_listener.fontOpened(font);
+	}
+	
+	public void closeFont(final Font font) {
+		_listener.fontClosed(font);
+		getResources().remove(font.getId());
+		font.free();
+	}
+	
 	/**
 	 * Lock the server for read/update
 	 */

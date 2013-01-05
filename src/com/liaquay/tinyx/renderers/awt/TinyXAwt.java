@@ -19,12 +19,15 @@
 package com.liaquay.tinyx.renderers.awt;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.liaquay.tinyx.ConnectionFactory;
 import com.liaquay.tinyx.TinyXServer;
 import com.liaquay.tinyx.events.EventFactoriesImpl;
 import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Depths;
+import com.liaquay.tinyx.model.Font;
+import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.KeyboardMapping;
 import com.liaquay.tinyx.model.Screen;
@@ -40,6 +43,39 @@ import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 
 public class TinyXAwt {
 
+	private final Server _server;
+	
+	// TODO Make this a tree map (requires a comparator for Font)
+	private Map<Font, java.awt.Font> _fontMap = new HashMap<Font, java.awt.Font>();
+	
+	public TinyXAwt(final Server server) {
+		_server = server;
+		
+		server.setListener(new Server.Listener() {
+			@Override
+			public void fontOpened(final Font font) {
+				final FontInfo fontInfo = font.getFontInfo();
+				// TODO construct correct font!
+				final java.awt.Font awtFont = new java.awt.Font(fontInfo.getFamilyName(), java.awt.Font.PLAIN, fontInfo.getPixelSize());
+				_fontMap.put(font, awtFont);
+			}
+			
+			// TODO Move to Font listener
+			@Override
+			public void fontClosed(final Font font) {
+				_fontMap.remove(font);
+			}
+		});
+	}
+	
+	public java.awt.Font getAwtFont(final Font font) {
+		return _fontMap.get(font);
+	}
+	
+	public Server getServer() {
+		return _server;
+	}
+	
 	/**
 	 * Just an example of how to configure a server.
 	 * 
@@ -108,7 +144,7 @@ public class TinyXAwt {
 
 		final TinyXServer tinyXServer = new TinyXServer(6001, server);
 		
-		final XawtScreen xawtScreen = new XawtScreen(server, screen);
+		final XawtScreen xawtScreen = new XawtScreen(new TinyXAwt(server), screen);
 		xawtScreen.getListeners().add(new Listener() {
 			@Override
 			public void closed() { 
