@@ -21,11 +21,35 @@ package com.liaquay.tinyx.model;
 import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.renderers.awt.GlyphDetail;
 
-
 public class Font extends AbstractResource {
 
 	private final FontInfo _fontName;
 	private final FontDetail _fontDetail;
+	
+	public interface Listener {
+		public void fontClosed(final Font font);
+	}
+	
+	/**
+	 * Empty implementation of the listener so that we don't have null checks 
+	 * throughout the code. 
+	 */
+	private static final class NullListener implements Listener {
+		@Override
+		public void fontClosed(final Font font) {}
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
+	public Listener getListener() {
+		return _listener;
+	}
 	
 	public Font(final int id, final FontInfo fontName, final FontDetail fontDetail) {
 		super(id);
@@ -36,8 +60,7 @@ public class Font extends AbstractResource {
 
 	@Override
 	public void free() {
-		// TODO Auto-generated method stub
-
+		_listener.fontClosed(this);
 	}
 
 	public FontInfo getFontInfo() {

@@ -78,8 +78,6 @@ public class Server extends Client {
 
 	public interface Listener {
 		public void fontOpened(final Font font);
-		// TODO Move to Font listener
-		public void fontClosed(final Font font);
 	}
 	
 	/**
@@ -89,8 +87,6 @@ public class Server extends Client {
 	private static final class NullListener implements Listener {
 		@Override
 		public void fontOpened(final Font font) {}
-		@Override
-		public void fontClosed(final Font font) {}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -107,7 +103,6 @@ public class Server extends Client {
 	}
 	
 	public void closeFont(final Font font) {
-		_listener.fontClosed(font);
 		getResources().remove(font.getId());
 		font.free();
 	}

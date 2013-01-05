@@ -67,16 +67,22 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void renderDrawable(Drawable drawable,
-				GraphicsContext graphicsContext, int srcX, int srcY, int width,
-				int height, int dstX, int dstY) {
+		public void renderDrawable(
+				final Drawable drawable,
+				final GraphicsContext graphicsContext, 
+				final int srcX,
+				final int srcY,
+				final int width,
+				final int height, 
+				final int dstX,
+				final int dstY) {
 
 			System.out.println("Render drawable: " + drawable + " X: " + srcX + " Y: " + srcY);
 
 			if (drawable instanceof Pixmap) {
-				Pixmap p = (Pixmap) drawable;
+				final Pixmap p = (Pixmap) drawable;
 
-				BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+				final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 
 				final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 
@@ -86,7 +92,7 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void setCursor(Cursor cursor) {
+		public void setCursor(final Cursor cursor) {
 			//Get the default toolkit
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
 
@@ -124,8 +130,8 @@ public class XawtWindow  {
 				}
 
 				if (image != null) {
-					Point hotSpot = new Point(cursor.getX(),cursor.getY());
-					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
+					final Point hotSpot = new Point(cursor.getX(),cursor.getY());
+					final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
 					_canvas.setCursor(c);
 				}
 			}
@@ -140,9 +146,12 @@ public class XawtWindow  {
 			
 			final int foregroundColor = graphicsContext.getForegroundColour();
 			final Color c = new Color(foregroundColor); // TODO Don't keep newing these
+			
 			final Font font = graphicsContext.getFont();
+			final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+			
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			final java.awt.Font awtFont = _awtServer.getAwtFont(font);
+			final java.awt.Font awtFont = fontListener.getAwtFont();
 
 			graphics.setColor(c);
 			graphics.setFont(awtFont);
@@ -150,8 +159,15 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, int angle1, int angle2, boolean fill) {
+		public void polyArc(
+				final GraphicsContext graphicsContext, 
+				final int x, 
+				final int y,
+				final int width,
+				final int height,
+				final int angle1, 
+				final int angle2,
+				final boolean fill) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
@@ -164,8 +180,13 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean fill) {
+		public void polyRect(
+				final GraphicsContext graphicsContext, 
+				final int x, 
+				final int y,
+				final int width, 
+				final int height,
+				final boolean fill) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
@@ -178,7 +199,10 @@ public class XawtWindow  {
 		}
 		
 		@Override
-		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
+		public void polyFill(
+				final GraphicsContext graphicsContext, 
+				final int x[], 
+				final int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
@@ -187,13 +211,16 @@ public class XawtWindow  {
 		}
 		
 		@Override
-		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
+		public void polyLine(
+				final GraphicsContext graphicsContext, 
+				final int x[], 
+				final int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			
-			int red = (byte)(graphicsContext.getForegroundColour() & 0xff000000) >> 24;
-			int blue = (byte)(graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
-			int green = (byte)(graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
+			final int red = (byte)(graphicsContext.getForegroundColour() & 0xff000000) >> 24;
+			final int blue = (byte)(graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
+			final int green = (byte)(graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
 			
 			graphics.setColor(Color.BLUE);
 
@@ -201,15 +228,19 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-				int x2, int y2) {
+		public void drawLine(
+				final GraphicsContext graphicsContext, 
+				final int x1, 
+				final int y1,
+				final int x2, 
+				final int y2) {
 
 			
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 
-			int red = (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
-			int blue = (graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
-			int green = (graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
+			final int red = (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
+			final int blue = (graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
+			final int green = (graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
 			
 			graphics.setColor(Color.CYAN);
 			
