@@ -209,7 +209,15 @@ public class FontInfo {
 	public String getFamilyName() {
 		return (String)_parameters[1]._value;
 	}
-
+	
+	public String getWeight() {
+		return (String)_parameters[2]._value;
+	}
+	
+	public String getSlant() {
+		return (String)_parameters[3]._value;
+	}
+	
 	public int getPixelSize() {
 		return (Integer)_parameters[6]._value;
 	}

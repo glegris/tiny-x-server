@@ -78,7 +78,7 @@ static void set_up_gc ()
 
 static void set_up_font ()
 {
-    const char * fontname = "-*-Arial-*-r-*-*-14-*-*-*-*-*-*-*";
+    const char * fontname = "-*-Arial-bold-i-*-*-14-*-*-*-*-*-*-*";
     text_box.font = XLoadQueryFont (text_box.display, fontname);
     /* If the font could not be loaded, revert to the "fixed" font. */
     if (! text_box.font) {

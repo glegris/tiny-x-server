@@ -54,7 +54,7 @@ public class AwtFontFactory implements FontFactory {
 			String weightName = "*";
 			
 			// TODO PS - Add new constructor
-			final FontInfo fontString = new FontInfo("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "r" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
+			final FontInfo fontString = new FontInfo("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "*" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
 			fontList.add(fontString);
 			
 			System.out.println(fontString);
