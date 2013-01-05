@@ -18,6 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
+import sun.security.util.BitArray;
+
+
 
 public class Pixmap implements Drawable {
 
@@ -49,7 +52,7 @@ public class Pixmap implements Drawable {
 	public byte[] getData() {
 		return this._data;
 	}
-	
+
 	@Override
 	public void free() {
 		// TODO Auto-generated method stub
@@ -99,27 +102,57 @@ public class Pixmap implements Drawable {
 
 	public void init(byte[] data) {
 		this._data = data;
-
-//		int widthInBytes = getWidth() / 8;
-//
-//		for (int y=0; y < getHeight(); y++) {
-//			for (int x=0; x < widthInBytes; x++) {
-//				String str = Integer.toBinaryString((int) data[(widthInBytes * y) + x] & 0xFF);
-//
-//				if (str.length() < 8) {
-//					for (int j=0; j < (8-str.length()); j++) {
-//						System.out.print("0");
-//					}
-//				}
-//				System.out.print(str);
-//			}
-//			System.out.println();
-//		}
 	}
 
 	public void copyArea(Window window, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	/* Create a blank image with the given dimensions */
+	private void initImage() {
+		int size = (_width * _height * _depth);
+		this._data = new byte[size];
+		for (int a = 0; a < size; a++) {
+			this._data[a] = 0;
+		}
+	}
+
+	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+			int width, int height, int destinationX, int destinationY,
+			int leftPad, int depth) {
+
+		if (getData() == null) {
+			initImage();
+		}
+
+		// Nice simple case 
+		if (depth == 1) {
+
+			if (_depth == 1) {
+				// Depends on the Pixmap type
+				for (int y = 0; y < height - 1; y++) {
+					for (int x = 0; x < width - 1; x++) {
+						int srcByte = (x/8) + (y * (width/8));
+						int srcBit = x % 8;
+						int destByte = destinationX + (destinationY * y + leftPad);
+						// TODO Fix this line.. Just having a laugh atm
+						this._data[destByte] = (byte) (this._data[destByte] & (buffer[srcByte] & (1 << srcBit)));
+					}
+				}
+			} else if (_depth == 8) {
+				// Depends on the Pixmap type
+				for (int y = 0; y < height - 1; y++) {
+					for (int x = 0; x < width - 1; x++) {
+						int srcByte = (x/8) + (y * height);
+						int destByte = destinationX + (destinationY * y + leftPad);
+						this._data[destByte] = buffer[srcByte];
+					}
+				}
+
+			}
+		}
+
 	}
 }

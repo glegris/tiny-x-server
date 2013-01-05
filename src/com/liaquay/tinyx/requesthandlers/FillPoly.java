@@ -66,6 +66,7 @@ public class FillPoly implements RequestHandler {
 			return;
 		}
 
+		//TODO Implement
 		Shape shape = Shape.getFromIndex(inputStream.readUnsignedByte());
 		CoordMode coordMode = CoordMode.getFromIndex(inputStream.readUnsignedByte());
 

@@ -23,6 +23,7 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
@@ -65,6 +66,22 @@ public class GetImage implements RequestHandler {
 
 		outputStream.writeInt(drawableRes.getVisual().getId());
 		outputStream.writePad(20);
+		
+		if (drawableRes instanceof Pixmap) {
+			Pixmap p = (Pixmap) drawableRes;
+			
+			// Check that the specified region is wholly contained within the pixmap
+			if (x+width > p.getWidth() || y+height > p.getHeight()) {
+				response.error(ErrorCode.Match, p.getId());
+			}
+			
+			// Null image
+			if (p.getData() != null) {
+				PixmapUtils.writeZPixmap(p, planeMask, x, y, width, height);
+			} else {
+				PixmapUtils.writeNullZPixmap(outputStream, p, planeMask, x, y, width, height);
+			}
+		}
 
 		//TODO: Output the data!!!!!
 //	     n     LISTofBYTE                      data

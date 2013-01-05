@@ -76,14 +76,5 @@ public class PolySegment implements RequestHandler {
 				((Screen) drawable).drawLine(graphicsContext, xCoords1[i], yCoords1[i], xCoords2[i], yCoords2[i]);
 			}
 		}
-
-
-		//	     8n     LISTofSEGMENT                  segments
-		//
-		//	  SEGMENT
-		//	     2     INT16                           x1
-		//	     2     INT16                           y1
-		//	     2     INT16                           x2
-		//	     2     INT16                           y2	
 	}
 }

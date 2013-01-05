@@ -48,8 +48,8 @@ public class PutImage implements RequestHandler {
 			return;
 		}
 		final int drawableResourceId = inputStream.readInt();
-		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
-		if(drawable == null) {
+		final Drawable destDrawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(destDrawable == null) {
 			response.error(Response.ErrorCode.Drawable, drawableResourceId);
 			return;
 		}
@@ -68,11 +68,11 @@ public class PutImage implements RequestHandler {
 		final int depth = inputStream.readUnsignedByte();
 		inputStream.skip(2);
 
-		// TODO This test does not seem correct
-		if(depth != drawable.getDepth()) {
-			response.error(Response.ErrorCode.Match, drawableResourceId);
-			return;
-		}
+		// TODO This test does not seem correct (Weird X doesn't do this check!)
+//		if(depth != drawable.getDepth() && (imageType.equals(ImageType.XYPixmap) || imageType.equals(ImageType.ZPixmap))) {
+//			response.error(Response.ErrorCode.Match, drawableResourceId);/
+//			return;
+//		}
 
 		// Image must also be in XY Format?
 		if (imageType.equals(ImageType.BitMap) && depth != 1) {
@@ -81,19 +81,20 @@ public class PutImage implements RequestHandler {
 
 		// Read image data...
 		final int remainingBytes = request.getLength() - inputStream.getCounter() ;
-
 		byte[] buffer = new byte[remainingBytes];
 		int bytesRead = inputStream.read(buffer, 0, remainingBytes);
 		while (bytesRead < remainingBytes) {
 			bytesRead+=inputStream.read(buffer, bytesRead, buffer.length - bytesRead);
 		}
 
-		if (drawable instanceof Pixmap) {
+		// The drawable is the thing we are writing into. The image data we are writing is present in this request!
+		if (destDrawable instanceof Pixmap) {
 			// Pass it onto the drawable resource
-			((Pixmap) drawable).init(buffer);
+			Pixmap p = (Pixmap) destDrawable;
+			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
 		} else {
 			// Drawable is not a pixmap.. Is it a window?
-			System.out.println("Put image to a " + drawable.getClass());
+			System.out.println("Put image to a " + destDrawable.getClass());
 		}
 	}
 }

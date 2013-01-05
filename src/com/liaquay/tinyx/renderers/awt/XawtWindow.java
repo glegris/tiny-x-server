@@ -197,7 +197,7 @@ public class XawtWindow  {
 		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
+			graphics.setColor(Color.RED);
 
 			graphics.fillPolygon(x, y, x.length);
 		}

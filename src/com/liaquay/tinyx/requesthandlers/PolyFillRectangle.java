@@ -55,25 +55,15 @@ public class PolyFillRectangle implements RequestHandler {
 		int len = request.getLength();
 
 		for (int i=0; i < ((len-12)/8); i++) {
-
-//		     2     INT16     x
-//		     2     INT16     y
-//		     2     CARD16    width
-//		     2     CARD16    height
-		     
 			int x = inputStream.readSignedShort();
 			int y = inputStream.readSignedShort();
 
 			int width = inputStream.readUnsignedShort();
 			int height = inputStream.readUnsignedShort();
 
-			System.out.println("X: " + x + " Y: " + y + " Width: " + width + " Height: " + height);
 			if (drawable instanceof Window) {
 				((Window) drawable).polyRect(graphicsContext, x, y, width, height, true);
 			}
 		}
-		
-		
-//	     8n     LISTofRECTANGLE                rectangles
 	}
 }

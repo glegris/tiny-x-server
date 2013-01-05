@@ -39,6 +39,7 @@ public class PolyLine implements RequestHandler {
 			                   final Request request, 
 			                   final Response response) throws IOException {
 
+		//TODO: Implement this
 		CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
 		
 		final XInputStream inputStream = request.getInputStream();
