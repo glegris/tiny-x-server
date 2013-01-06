@@ -2,16 +2,22 @@ package com.liaquay.tinyx.model;
 
 public class GraphicsContext extends AbstractResource {
 
-	private Drawable _drawable;
+	private final Drawable _drawable;
 	
-	public GraphicsContext(final int resourceId, final Drawable drawable) {
+	public GraphicsContext(
+			final int resourceId, 
+			final Drawable drawable, 
+			final Font font) {
+		
 		super(resourceId);
+		
 		_drawable = drawable;
+		_font = font;
 	}
 	
 	private int _foregroundColour = 0x00000000;
 
-	public void setForegroundColour(int value) {
+	public void setForegroundColour(final int value) {
 		_foregroundColour = value;
 	}
 
@@ -21,7 +27,7 @@ public class GraphicsContext extends AbstractResource {
 
 	private int _backgroundColour = 0xffffffff;
 	
-	public void setBackgroundColour(int value) {
+	public void setBackgroundColour(final int value) {
 		_backgroundColour = value;
 	}
 
@@ -31,18 +37,18 @@ public class GraphicsContext extends AbstractResource {
 
 	private int _planeMask = 0xffffffff;
 	
-	public void setPlaneMask(int planeMask) {
+	public void setPlaneMask(final int planeMask) {
 		_planeMask = planeMask;
 	}
 	
 	public int getPlaneMask() {
-		return this._planeMask;
+		return _planeMask;
 	}
 
 	private int _subWindowMode = 0;
 	
-	public void setSubWindowMode(int subWindowMode) {
-		this._subWindowMode = subWindowMode;
+	public void setSubWindowMode(final int subWindowMode) {
+		_subWindowMode = subWindowMode;
 	}
 
 	public int getSubWindowMode() {
@@ -51,7 +57,7 @@ public class GraphicsContext extends AbstractResource {
 
 	private int _function = 0;
 	
-	public void setFunction(int function) {
+	public void setFunction(final int function) {
 		_function = function;
 	}
 
@@ -59,140 +65,140 @@ public class GraphicsContext extends AbstractResource {
 		return _function;
 	}
 
-	public int _lineWidth = 0;
+	private int _lineWidth = 0;
 	
-	public void setLineWidth(int lineWidth) {
-		this._lineWidth = lineWidth;
+	public void setLineWidth(final int lineWidth) {
+		_lineWidth = lineWidth;
 	}
 
 	public int getLineWidth() {
 		return _lineWidth;
 	}
 
-	public int _lineStyle = 0;
+	private int _lineStyle = 0;
 	
 	public int getLineStyle() {
 		return _lineStyle;
 	}
 
-	public void setLineStyle(int lineStyle) {
-		this._lineStyle = lineStyle;
+	public void setLineStyle(final int lineStyle) {
+		_lineStyle = lineStyle;
 	}
 
-	public int _capStyle = 0;
+	private int _capStyle = 0;
 
 	
 	public int getCapStyle() {
 		return _capStyle;
 	}
 
-	public void setCapStyle(int capStyle) {
-		this._capStyle = capStyle;
+	public void setCapStyle(final int capStyle) {
+		_capStyle = capStyle;
 	}
 
-	public boolean graphicsExposures = false;
+	private boolean _graphicsExposures = false;
 	
 	public boolean getGraphicsExposures() {
-		return this.graphicsExposures;
+		return _graphicsExposures;
 	}
-	public void setGraphicsExposures(boolean graphicsExposures) {
-		this.graphicsExposures = graphicsExposures;
+	public void setGraphicsExposures(final boolean graphicsExposures) {
+		_graphicsExposures = graphicsExposures;
 	}
 
-	int _arcMode = 0;
+	private int _arcMode = 0;
 	
-	public void setArcMode(int arcMode) {
-		this._arcMode = arcMode;
+	public void setArcMode(final int arcMode) {
+		_arcMode = arcMode;
 	}
 	
 	public int getArcMode() {
-		return this._arcMode;
+		return _arcMode;
 	}
 
-	int _joinStyle = 0;
+	private int _joinStyle = 0;
 	
-	public void setJoinStyle(int joinStyle) {
-		this._joinStyle = joinStyle;
+	public void setJoinStyle(final int joinStyle) {
+		_joinStyle = joinStyle;
 	}
 	
 	public int getJoinStyle() {
-		return this._joinStyle;
+		return _joinStyle;
 	}
 	
-	int _fillStyle = 0;
+	private int _fillStyle = 0;
 
-	public void setFillStyle(int fillStyle) {
-		this._fillStyle = fillStyle;
+	public void setFillStyle(final int fillStyle) {
+		_fillStyle = fillStyle;
 	}
 	
 	public int getFillStyle() {
-		return this._fillStyle;
+		return _fillStyle;
 	}
 
-	int _fillRule = 0;
+	private int _fillRule = 0;
 	
-	public void setFillRule(int fillRule) {
-		this._fillRule = fillRule;
+	public void setFillRule(final int fillRule) {
+		_fillRule = fillRule;
 	}
 	
 	public int getFillRule() {
-		return this._fillRule;
+		return _fillRule;
 	}
 	
-	int _tilePixmap = 0;
+	private int _tilePixmap = 0;
 
-	public void setTile(int tilePixmap) {
-		this._tilePixmap = tilePixmap;
+	public void setTile(final int tilePixmap) {
+		_tilePixmap = tilePixmap;
 	}
 	
 	public int getTile() {
-		return this._tilePixmap;
+		return _tilePixmap;
 	}
 	
-	int _stipple = 0;
+	private int _stipple = 0;
 
-	public void setStipple(int stipple) {
-		this._stipple = stipple;
+	public void setStipple(final int stipple) {
+		_stipple = stipple;
 	}
 	
 	public int getStipple() {
-		return this._stipple;
+		return _stipple;
 	}
 
-	int _tileStippleXOrigin = 0;
+	private int _tileStippleXOrigin = 0;
 	
-	public void setTileStippleXOrigin(int tileStippleXOrigin) {
-		this._tileStippleXOrigin = tileStippleXOrigin;
+	public void setTileStippleXOrigin(final int tileStippleXOrigin) {
+		_tileStippleXOrigin = tileStippleXOrigin;
 	}	
 	
 	public int getTileStippleXOrigin() {
-		return this._tileStippleXOrigin;
+		return _tileStippleXOrigin;
 	}
 
-	int _tileStippleYOrigin = 0;
+	private int _tileStippleYOrigin = 0;
 	
-	public void setTileStippleYOrigin(int clipYOrigin) {
+	public void setTileStippleYOrigin(final int clipYOrigin) {
 		this._tileStippleYOrigin = clipYOrigin;
 	}	
 	
 	public int getTileStippleYOrigin() {
-		return this._tileStippleYOrigin;
+		return _tileStippleYOrigin;
 	}
 
-	int _clipXOrigin = 0;
+	private int _clipXOrigin = 0;
 	
-	public void setClipXOrigin(int clipXOrigin) {
-		this._clipXOrigin = clipXOrigin;
+	public void setClipXOrigin(final int clipXOrigin) {
+		_clipXOrigin = clipXOrigin;
 	}
 	
 	public int getClipXOrigin() {
 		return this._clipXOrigin;
 	}
 
-	int _clipYOrigin = 0;
+	private int _clipYOrigin = 0;
 	
-	public void setClipYOrigin(int clipYOrigin) {
-		this._clipYOrigin = clipYOrigin;
+	public void setClipYOrigin(final int clipYOrigin) {
+		_clipYOrigin = clipYOrigin;
 	}
 	
 	public int getClipYOrigin() {
@@ -200,33 +206,33 @@ public class GraphicsContext extends AbstractResource {
 	}
 
 	/** Weird X seems to imply that this can either be a pixmap or a bunch of rectanges.. */
-	int _clipMask = 0;
+	private int _clipMask = 0;
 	
-	public void setClipMask(int clipMask) {
-		this._clipMask = clipMask;
+	public void setClipMask(final int clipMask) {
+		_clipMask = clipMask;
 	}
 	
 	public int getClipMask() {
 		return this._clipMask;
 	}
 
-	int _dashOffset = 0;
+	private int _dashOffset = 0;
 	
-	public void setDashOffset(int dashOffset) {
-		this._dashOffset = dashOffset;
+	public void setDashOffset(final int dashOffset) {
+		_dashOffset = dashOffset;
 	}
 
 	public int getDashOffset() {
-		return this._dashOffset;
+		return _dashOffset;
 	}
 
-	Font _font = null;
+	private Font _font;
 	
-	public void setFont(Font font) {
+	public void setFont(final Font font) {
 		_font = font;
 	}
 	
 	public Font getFont() {
-		return this._font;
+		return _font;
 	}
 }

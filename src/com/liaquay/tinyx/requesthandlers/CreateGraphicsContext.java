@@ -54,7 +54,7 @@ public class CreateGraphicsContext implements RequestHandler {
 			response.error(Response.ErrorCode.Drawable, drawableResourceId);
 			return;
 		}
-		final GraphicsContext graphicsContext = new GraphicsContext(graphicsContextId, drawable);
+		final GraphicsContext graphicsContext = new GraphicsContext(graphicsContextId, drawable, server.getDefaultFont());
 		final int attributeMask = inputStream.readInt();
 		_attributeHandlers.read(server, client, request, response, graphicsContext, attributeMask);
 
