@@ -26,8 +26,9 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
-import com.liaquay.tinyx.model.FontString;
+import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class OpenFont implements RequestHandler {
 
@@ -41,8 +42,16 @@ public class OpenFont implements RequestHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
 		final String requestedFontName = inputStream.readString();
-		final FontString fontName = server.getFontFactory().getFirstMatchingFont(requestedFontName);
-		final Font font = new Font(fid, fontName, server.getFontFactory());
-		server.getResources().add(font);
+		final FontInfo pattern = new FontInfo(requestedFontName);
+		final FontInfo fontInfo = server.getFontFactory().getFirstMatchingFont(pattern);
+		if(fontInfo == null) {
+			// TODO no matching font
+		}
+		else {
+			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
+			final FontDetail fontDetail = server.getFontFactory().getFontDetail(mergedFontInfo.getFamilyName(), mergedFontInfo.getPixelSize());
+			final Font font = new Font(fid, mergedFontInfo, fontDetail);
+			server.openFont(font);
+		}
 	}
 }

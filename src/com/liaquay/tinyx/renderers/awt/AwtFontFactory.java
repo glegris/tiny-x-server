@@ -1,74 +1,90 @@
+/*
+ *  Tiny X server - A Java X server
+ *
+ *   Copyright (C) 2012  Nathan Ludkin
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import com.liaquay.tinyx.model.FontString;
+import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.model.font.FontFactory;
 
 public class AwtFontFactory implements FontFactory {
 
-	List<FontString> _fontNames;
+	private final List<FontInfo> _fontNames;
 	
 	public AwtFontFactory() {
 		_fontNames = initFontNames();
 	}
 	
-	private List<FontString> initFontNames() {
-		List<FontString> fontList = new ArrayList<FontString>();
+	private List<FontInfo> initFontNames() {
+		final List<FontInfo> fontList = new ArrayList<FontInfo>();
 		
-		GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		Font[] fonts = e.getAllFonts(); // Get the fonts
-		for (Font f : fonts) {
-			String familyName = f.getFamily();
-			System.out.println(f);
+		final GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final Font[] fonts = e.getAllFonts(); // Get the fonts
+		for (final Font f : fonts) {
+			final String familyName = f.getFamily();
 			
 			String foundryName = "*";
 			String charSet = "ISO8859";
 			String pointSize = "*";
 			String weightName = "*";
 			
-			FontString fontString = new FontString("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "R" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
-			fontList.add(fontString);		// TODO Auto-generated method stub
+			// TODO PS - Add new constructor
+			final FontInfo fontString = new FontInfo("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "*" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
+			fontList.add(fontString);
 			
-
+			System.out.println(fontString);
 		}
 		return fontList;
 	}
 	
 	@Override
-	public List<FontString> getFontNames() {
+	public List<FontInfo> getFontNames() {
 		return _fontNames;
 	}
 
 	@Override
-	public FontString getFirstMatchingFont(String requestedFontName) {
-		final FontString requestedFont = new FontString(requestedFontName);
-
+	public FontInfo getFirstMatchingFont(final FontInfo requestedFont) {
+		
+		// TODO is there a more efficient way to do this?
 		for (int i = 0; i < _fontNames.size(); i++) {
 			if (_fontNames.get(i).matches(requestedFont)) {
 				return _fontNames.get(i);
 			}
-
 		}
 		
-		//TODO: Nasty hack until I have proper matching code in place
+		// TODO This should return the default font.
 		return _fontNames.get(0);
 	}
 	
 	@Override
-	public List<FontString> getMatchingFonts(String requestedFontName) {
-		FontString requestedFont = new FontString(requestedFontName);
+	public List<FontInfo> getMatchingFonts(final FontInfo requestedFont) {
 
-		List<FontString> matchingFonts = new ArrayList<FontString>();
+		final List<FontInfo> matchingFonts = new ArrayList<FontInfo>();
 		
 		for (int i = 0; i < _fontNames.size(); i++) {
 			matchingFonts.add(_fontNames.get(i));
@@ -78,36 +94,42 @@ public class AwtFontFactory implements FontFactory {
 	}
 
 	@Override
-	public FontDetail getFontDetail(String name, int size) {
-		if (size==0)
-				size = 100;
-		Font f = new Font(name, Font.PLAIN, size);
+	public FontDetail getFontDetail(final String name, final int size) {
 		
-		FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(f);
-		FontRenderContext frc = new FontRenderContext(null, true, true);
-		
-		FontDetail fd = new FontDetail();
-		fd.setMaxAscent(fm.getMaxAscent());
-		fd.setMaxDescent(fm.getMaxDescent());
-		fd.setHeight(fm.getHeight());
-		fd.setLeading(fm.getLeading());
-		fd.setDefaultChar(f.getMissingGlyphCode());
-		fd.setMaxWidth(fm.getMaxAdvance());
+		final Font f = new Font(name, Font.PLAIN, size == 0 ? 12: size);
+		final FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(f);
+		final FontRenderContext frc = new FontRenderContext(null, true, true);
+		final Collection<GlyphDetail> glyphDetails = new ArrayList<GlyphDetail>();
 
-		char[] chr = new char[1];
-		for (int i = fd.getFirstChar(); i <= fd.getLastChar(); i++) {
+		//TODO: Try and get the first and last character for this font from somewhere more meaningful
+		final int firstChar = 32;
+		final int lastChar = 255;
+		
+		final char[] chr = new char[1];
+		for (int i = firstChar; i <= lastChar; i++) {
 			chr[0] = (char) i;
-			Rectangle2D bounds = f.getStringBounds(chr, 0, 1, frc);
-			LineMetrics lm = f.getLineMetrics(chr, 0, 1, frc);
+			final Rectangle2D bounds = f.getStringBounds(chr, 0, 1, frc);
+			final LineMetrics lm = f.getLineMetrics(chr, 0, 1, frc);
 			
-			GlyphDetail gd = new GlyphDetail(chr[0]);
+			final GlyphDetail gd = new GlyphDetail(chr[0]);
 			gd.setAscent((int) lm.getAscent());
 			gd.setDescent((int) lm.getDescent());
 			gd.setWidth((int) bounds.getWidth());
-			fd.addGlyph(gd);
+			glyphDetails.add(gd);
 		}
+		
+		final FontDetail fd = new FontDetail(
+				fm.getMaxAscent(),
+				fm.getMaxDescent(),
+				0, // Minimum width
+				fm.getMaxAdvance(), // Maximum width
+				f.getMissingGlyphCode(),
+				32, // First char
+				255, // Last char
+				fm.getHeight(),
+				fm.getLeading(),
+				glyphDetails);
 		
 		return fd;
 	}
-
 }

@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Server;
 
 public class UngrabPointer implements RequestHandler {
@@ -34,11 +37,18 @@ public class UngrabPointer implements RequestHandler {
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+		final XInputStream inputStream = request.getInputStream();
+		final int time = inputStream.readInt();
+		final Pointer pointer = server.getPointer();
+		final PointerGrab pointerGrab = pointer.getPointerGrab();
+		if(pointerGrab == null) return;
+		if((time - pointerGrab.getTimestamp()) < 0) return;
+		if(pointer.getButtonMask() == 0) {
+			server.releasePointerGrab();
+		}
+		else {
+			pointerGrab.setExitWhenAllReleased();
+		}
 	}
 }

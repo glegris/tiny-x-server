@@ -55,8 +55,7 @@ public class SetInputFocus implements RequestHandler {
 		}
 		
 		// The specified focus window must be viewable at the time XSetInputFocus() is called, or a BadMatch error results. 
-		// TODO Is viewable the same as mapped?
-		if(!window.isMapped()) {
+		if(!window.isViewable()) {
 			response.error(Response.ErrorCode.Match, windowId);		
 			return;
 		}

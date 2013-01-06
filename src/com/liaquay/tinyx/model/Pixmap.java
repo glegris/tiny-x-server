@@ -18,6 +18,12 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+import java.util.Arrays;
+
 import sun.security.util.BitArray;
 
 
@@ -42,6 +48,7 @@ public class Pixmap implements Drawable {
 		_width = width;
 		_height = height;
 		_drawable = drawable;
+		initImage();
 	}
 
 	@Override
@@ -110,12 +117,33 @@ public class Pixmap implements Drawable {
 
 	}
 
+	public void clear() {
+		Arrays.fill(this._data, 0, this._data.length, (byte) 0xff);
+	}
+
 	/* Create a blank image with the given dimensions */
 	private void initImage() {
-		int size = (_width * _height * _depth);
-		this._data = new byte[size];
-		for (int a = 0; a < size; a++) {
-			this._data[a] = 0;
+		int numberBytes = ((_width * _height) * _depth)/8;
+		this._data = new byte[numberBytes];
+		Arrays.fill(this._data, 0, numberBytes, (byte) 0);
+	}
+
+	public void print() {
+		int widthInBytes = getWidth() / 8;
+
+		for (int y=0; y < getHeight(); y++) {
+			for (int x=0; x < widthInBytes; x++) {
+				int i = (int) getData()[(widthInBytes * y) + x] & 0xFF;
+				String str = Integer.toBinaryString(i);
+
+				if (str.length() < 8) {
+					for (int j=0; j < (8-str.length()); j++) {
+						System.out.print("0");
+					}
+				}
+				System.out.print(str);
+			}
+			System.out.println();
 		}
 	}
 
@@ -131,28 +159,46 @@ public class Pixmap implements Drawable {
 		if (depth == 1) {
 
 			if (_depth == 1) {
+
 				// Depends on the Pixmap type
-				for (int y = 0; y < height - 1; y++) {
-					for (int x = 0; x < width - 1; x++) {
+				for (int y = 0; y < height ; y++) {
+					for (int x = 0; x < width ; x++) {
 						int srcByte = (x/8) + (y * (width/8));
 						int srcBit = x % 8;
-						int destByte = destinationX + (destinationY * y + leftPad);
+						int destPixel = (destinationX + x) + ((destinationY + y) * getWidth() + leftPad);
+						int destByte = destPixel/8;
+						int destBitMask = 0x01 << (7 - destPixel % 8);
+						String mask = Integer.toBinaryString(destBitMask);
+						//System.out.println("X: " + x + " Y: " + y + "  Dest pixel: " + destPixel + "  Mask: " + mask);
 						// TODO Fix this line.. Just having a laugh atm
-						this._data[destByte] = (byte) (this._data[destByte] & (buffer[srcByte] & (1 << srcBit)));
-					}
-				}
-			} else if (_depth == 8) {
-				// Depends on the Pixmap type
-				for (int y = 0; y < height - 1; y++) {
-					for (int x = 0; x < width - 1; x++) {
-						int srcByte = (x/8) + (y * height);
-						int destByte = destinationX + (destinationY * y + leftPad);
-						this._data[destByte] = buffer[srcByte];
+						if (destByte < this._data.length) {
+							this._data[destByte] = (byte) (this._data[destByte] | (buffer[srcByte] & destBitMask));
+						}
 					}
 				}
 
 			}
+			print();
 		}
 
+	}
+
+	public static void main(String args[]) {
+		Pixmap p = new Pixmap(1, null, 1, 8, 8);
+		p.clear();
+		p.print();
+
+		System.out.println("-------------------");
+
+		Pixmap p1 = new Pixmap(1, null, 1, 16, 16);
+		p1.putImage(null, p.getData(), p.getWidth(), p.getHeight(), 4, 4, 0, 1);
+		p1.print();
+	}
+
+	public Raster toRaster() {
+		WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
+				getWidth(), getHeight(), 1, 1, null);
+
+		return raster;
 	}
 }

@@ -76,6 +76,37 @@ public class Server extends Client {
 	 */
 	private final Lock _syncLock = new ReentrantLock();
 
+	public interface Listener {
+		public void fontOpened(final Font font);
+	}
+	
+	/**
+	 * Empty implementation of the listener so that we don't have null checks 
+	 * throughout the code. 
+	 */
+	private static final class NullListener implements Listener {
+		@Override
+		public void fontOpened(final Font font) {}
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
+	public void openFont(final Font font) {
+		getResources().add(font);
+		_listener.fontOpened(font);
+	}
+	
+	public void closeFont(final Font font) {
+		getResources().remove(font.getId());
+		font.free();
+	}
+	
 	/**
 	 * Lock the server for read/update
 	 */
@@ -342,36 +373,6 @@ public class Server extends Client {
 	//
 
 	/**
-	 * Called by implementation to deliver a key press to the server
-	 * 
-	 * @param keycode code representing physical key in the range 0-255
-	 * @param when time in milliseconds
-	 */
-	public void keyPressed(final int keycode, final long when) {
-		_keyboard.keyPressed(keycode, when);
-		
-
-		
-		//TODO ...
-
-	}
-
-	/**
-	 * Called by implementation to deliver a key release to the server
-	 * 
-	 * @param keycode code representing physical key in the range 0-255
-	 * @param when time in milliseconds
-	 */
-	public void keyReleased(final int keycode, final long when){
-		_keyboard.keyPressed(keycode, when);
-
-		//TODO ...
-
-	}	
-
-	private PointerGrab _buttonDownPointerGrab = null;
-	
-	/**
 	 * Called by implementation to deliver a pointer button press to the server
 	 * 
 	 * @param buttonNumber code representing physical button in the range 1-5
@@ -379,7 +380,7 @@ public class Server extends Client {
 	 */
 	public void buttonPressed(final int screenIndex, final int x, final int y, final int buttonNumber, final int when) {
 
-		if(buttonNumber < 1 || buttonNumber >5) {
+		if(buttonNumber < 1 || buttonNumber > 5) {
 			final String message = "Button number " + buttonNumber + " out of range";
 			LOGGER.log(Level.SEVERE, message);
 			throw new RuntimeException(message);
@@ -413,7 +414,7 @@ public class Server extends Client {
 						final PointerGrab pointerGrab = buttonGrab.getPointerGrab(getTimestamp());
 
 						// Set the grab on the server
-						setGrab(pointerGrab);
+						setPointerGrab(pointerGrab);
 						
 						grab = pointerGrab;
 					}
@@ -433,7 +434,7 @@ public class Server extends Client {
 						final Window eventWindow = clientWindowAssociation.getWindow();
 						final int eventMask = clientWindowAssociation.getEventMask();
 
-						_buttonDownPointerGrab = new PointerGrab(
+						final PointerGrab buttonDownPointerGrab = new PointerGrab(
 								client,
 								(eventMask & Event.OwnerGrabButtonMask) != 0,
 								eventWindow,
@@ -443,11 +444,13 @@ public class Server extends Client {
 								null,
 								null,
 								getTimestamp());
+						
+						buttonDownPointerGrab.setExitWhenAllReleased();
 
 						// Set the grab on the server
-						setGrab(_buttonDownPointerGrab);
+						setPointerGrab(buttonDownPointerGrab);
 
-						grab = _buttonDownPointerGrab;
+						grab = buttonDownPointerGrab;
 					}
 				}
 
@@ -512,7 +515,7 @@ public class Server extends Client {
 					
 					grab.getClient().getPostBox().send(event, null);
 					
-					if(_buttonDownPointerGrab == grab) {
+					if(grab.getExitWhenAllReleased()) {
 						if(_pointer.getButtonMask() == 0) {
 							releasePointerGrab();
 						}
@@ -522,10 +525,12 @@ public class Server extends Client {
 		});
 	}
 	
-	public void setGrab(final PointerGrab pointerGrab) {
+	public void setPointerGrab(final PointerGrab pointerGrab) {
 		
 		// Set the grab on the pointer
 		_pointer.setPointerGrab(pointerGrab);
+		
+		// TODO set the cursor
 		
 		// Freeze/thaw input queues
 		setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
@@ -536,21 +541,10 @@ public class Server extends Client {
 		_pointer.setPointerGrab(null);
 		
 		// Thaw input queues
+		// TODO what state do we set these to if there is a keyboard grab?
 		setFreezeState(false, false);
 		
-		_buttonDownPointerGrab = null;
-	}
-	
-	private void enqueueKey(final InputEvent e) {
-		try {
-			lock();
-			_keyEventQueue.add(e);
-			dequeueAll();
-		}
-		finally {
-			unlock();
-		}
-
+		// TODO  It also generates EnterNotify and LeaveNotify events.
 	}
 
 	private void enqueuePtr(final InputEvent e) {
@@ -563,6 +557,171 @@ public class Server extends Client {
 			unlock();
 		}
 	}	
+	
+	private Window getKeyFocusWindow(final int eventMask) {
+		
+		final KeyboardGrab grab = _keyboard.getKeyboardGrab();
+		
+		Window focusWindow = null;
+
+		if(grab == null || grab.isOwnerEvents()) {
+			
+			switch(_focus.getMode()) {
+			case None:
+				// Do not deliver an event for a focus of none.
+				return null;
+			case PointerRoot:
+				// Deliver events relative to the pointer root.
+				focusWindow = _pointer.getScreen().getRootWindow();
+				break;
+			default:
+				// Deliver events relative to the focus window.
+				focusWindow = _focus.getWindow();
+				break;
+			}
+		}
+		
+		if(grab != null) {
+			if(focusWindow != null) {
+				// If we wouldn't have reported the event then deliver it from the grab window
+				if(grab.isOwnerEvents() && focusWindow.getDeliverToAssociation(eventMask, grab.getClient()) == null) {
+					focusWindow = grab.getGrabWindow();
+				}
+			}
+			if(focusWindow == null) {
+				focusWindow = grab.getGrabWindow();
+			}
+		}
+
+		return focusWindow;
+	}
+	
+	/**
+	 * Called by implementation to deliver a key press to the server
+	 * 
+	 * @param keycode code representing physical key in the range 0-255
+	 * @param when time in milliseconds
+	 */
+	public void keyPressed(final int keycode, final int when) {
+		
+		if(keycode < 0 || keycode > 255) {
+			final String message = "Keycode " + keycode + " out of range";
+			LOGGER.log(Level.SEVERE, message);
+			throw new RuntimeException(message);
+		}
+		
+		enqueueKey(new InputEvent() {
+			@Override
+			public long getWhen() {
+				return when;
+			}
+			
+			@Override
+			public void deliver() {
+				_keyboard.keyPressed(keycode, when);
+				
+				final Window focusWindow = getKeyFocusWindow(Event.KeyPressMask);
+				final Window child = _pointer.childWindowAt();
+				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
+
+				final Event event = _eventFactories.getKeyPressFactory().create(
+						focusWindow,
+						child,
+						_pointer, 
+						keycode,
+						when);
+				
+				final KeyboardGrab grab = _keyboard.getKeyboardGrab();
+				
+				if(grab == null) {
+					w.deliver(event, Event.KeyPressMask);
+				}
+				else {
+					// TODO probably rubbish
+					grab.getClient().getPostBox().send(event, grab.getGrabWindow());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Called by implementation to deliver a key release to the server
+	 * 
+	 * @param keycode code representing physical key in the range 0-255
+	 * @param when time in milliseconds
+	 */
+	public void keyReleased(final int keycode, final int when){
+		
+		if(keycode < 0 || keycode > 255) {
+			final String message = "Keycode " + keycode + " out of range";
+			LOGGER.log(Level.SEVERE, message);
+			throw new RuntimeException(message);
+		}
+		
+		enqueueKey(new InputEvent() {
+			@Override
+			public long getWhen() {
+				return when;
+			}
+			
+			@Override
+			public void deliver() {
+				_keyboard.keyReleased(keycode, when);
+				
+				final Window focusWindow = getKeyFocusWindow(Event.KeyReleaseMask);
+				final Window child = _pointer.childWindowAt();
+				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
+				
+				final Event event = _eventFactories.getKeyReleaseFactory().create(
+						focusWindow,
+						child,
+						_pointer, 
+						keycode,
+						when);
+				
+				final KeyboardGrab grab = _keyboard.getKeyboardGrab();
+				
+				if(grab == null) {
+					w.deliver(event, Event.KeyReleaseMask);
+				}
+				else {
+					// TODO probably rubbish
+					grab.getClient().getPostBox().send(event, null);
+				}
+			}
+		});
+	}	
+	
+	public void setKeyboardGrab(final KeyboardGrab keyboardGrab) {
+		
+		// Set the grab on the keyboard
+		_keyboard.setKeyboardGrab(keyboardGrab);
+		
+		// Freeze/thaw input queues
+		setFreezeState(keyboardGrab.isKeyboardSynchronous(), keyboardGrab.isPointerSynchronous());
+	}
+
+	public void releaseKeyboardGrab() {
+		// Set the grab on the keyboard
+		_keyboard.setKeyboardGrab(null);
+		
+		// Thaw input queues
+		// TODO what state do we set these to if there is a pointer grab?
+		setFreezeState(false, false);
+		
+		// TODO  It also generates EnterNotify and LeaveNotify events.
+	}
+	
+	private void enqueueKey(final InputEvent e) {
+		try {
+			lock();
+			_keyEventQueue.add(e);
+			dequeueAll();
+		}
+		finally {
+			unlock();
+		}
+	}
 
 	// TODO worry about these getting too large
 	private Queue<InputEvent> _keyEventQueue = new ArrayDeque<InputEvent>(100);

@@ -31,6 +31,7 @@ import com.liaquay.tinyx.model.Image;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Image.ImageType;
+import com.liaquay.tinyx.model.Window;
 
 public class PutImage implements RequestHandler {
 
@@ -92,9 +93,22 @@ public class PutImage implements RequestHandler {
 			// Pass it onto the drawable resource
 			Pixmap p = (Pixmap) destDrawable;
 			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
-		} else {
+		} else if (destDrawable instanceof Window) {
+			Window w = (Window) destDrawable;
+			
+			Pixmap p = new Pixmap(1, null, depth, width, height);
+			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
+			
+			w.renderDrawable(p, graphicsContext, 0,
+					0,
+					width,
+					height, 
+					destinationX,
+					destinationY);
+			
 			// Drawable is not a pixmap.. Is it a window?
 			System.out.println("Put image to a " + destDrawable.getClass());
+			
 		}
 	}
 }

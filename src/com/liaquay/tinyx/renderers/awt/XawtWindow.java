@@ -21,44 +21,38 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import sun.awt.X11.XCustomCursor;
-import sun.awt.image.ByteBandedRaster;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.Listener;
-import com.sun.java.swing.plaf.windows.resources.windows;
 
+/**
+ * 
+ * TODO use colour map to look up colours.
+ * TODO translate graphics before and after each drawing operation.
+ *
+ */
 public class XawtWindow  {
 
-	private Server _server;
+	private final Window _window;
+	private final TinyXAwt _awtServer;
 
-	private Window _window;
+	private Canvas _canvas = new Canvas();
+	
+	BufferedImage _backingImage;
 
 	private Window.Listener _windowListener = new Listener() {
 
@@ -84,26 +78,31 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void renderDrawable(Drawable drawable,
-				GraphicsContext graphicsContext, int srcX, int srcY, int width,
-				int height, int dstX, int dstY) {
+		public void renderDrawable(
+				final Drawable drawable,
+				final GraphicsContext graphicsContext, 
+				final int srcX,
+				final int srcY,
+				final int width,
+				final int height, 
+				final int dstX,
+				final int dstY) {
 
 			System.out.println("Render drawable: " + drawable + " X: " + srcX + " Y: " + srcY);
 
 			if (drawable instanceof Pixmap) {
-				Pixmap p = (Pixmap) drawable;
-
-				BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+				final Pixmap p = (Pixmap) drawable;
+				
+				final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+				image.setData(p.toRaster());
 
 				final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-
-
-
+				graphics.drawImage(image, dstX, dstY, width, height, null);
 			}
 		}
 
 		@Override
-		public void setCursor(Cursor cursor) {
+		public void setCursor(final Cursor cursor) {
 			//Get the default toolkit
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
 
@@ -141,33 +140,45 @@ public class XawtWindow  {
 				}
 
 				if (image != null) {
-					Point hotSpot = new Point(cursor.getX(),cursor.getY());
-					java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
+					final Point hotSpot = new Point(cursor.getX(),cursor.getY());
+					final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
 					_canvas.setCursor(c);
 				}
 			}
 		}
 
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
-			int foregroundColor = graphicsContext.getForegroundColour();
-			Color c = new Color(foregroundColor);
-
-			Font f = graphicsContext.getFont();
-			f.getFontName();
-
+		public void drawString(
+				final GraphicsContext graphicsContext, 
+				final String str, 
+				final int x,
+				final int y) {
+			
+			final int foregroundColor = graphicsContext.getForegroundColour();
+			final Color c = new Color(foregroundColor); // TODO Don't keep newing these
+			
+			final Font font = graphicsContext.getFont();
+			final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+			
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			final java.awt.Font awtFont = fontListener.getAwtFont();
+
 			graphics.setColor(c);
-			java.awt.Font newFont = new java.awt.Font(f.getFontName().getFamilyName(), java.awt.Font.PLAIN, 10);
-
-			graphics.setFont(newFont);
-
+			graphics.setFont(awtFont);
 			graphics.drawString(str, x, y);
 		}
 
 		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, int angle1, int angle2, boolean fill) {
+		public void polyArc(
+				final GraphicsContext graphicsContext, 
+				final int x, 
+				final int y,
+				final int width,
+				final int height,
+				final int angle1, 
+				final int angle2,
+				final boolean fill) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
@@ -180,8 +191,13 @@ public class XawtWindow  {
 		}
 
 		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean fill) {
+		public void polyRect(
+				final GraphicsContext graphicsContext, 
+				final int x, 
+				final int y,
+				final int width, 
+				final int height,
+				final boolean fill) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
@@ -194,50 +210,59 @@ public class XawtWindow  {
 		}
 		
 		@Override
-		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
+		public void polyFill(
+				
+				final GraphicsContext graphicsContext, 
+				final int x[], 
+				final int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			graphics.setColor(Color.RED);
+			//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
 
 			graphics.fillPolygon(x, y, x.length);
 		}
 		
 		@Override
-		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
+		public void polyLine(
+				final GraphicsContext graphicsContext, 
+				final int x[], 
+				final int y[]) {
 
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			
-			int red = (byte)(graphicsContext.getForegroundColour() & 0xff000000) >> 24;
-			int blue = (byte)(graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
-			int green = (byte)(graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
-			
-			graphics.setColor(Color.BLUE);
+			//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
 
 			graphics.drawPolyline(x, y, x.length);
 		}
 
 		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-				int x2, int y2) {
+		public void drawLine(
+				final GraphicsContext graphicsContext, 
+				final int x1, 
+				final int y1,
+				final int x2, 
+				final int y2) {
 
-			
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(new Color(graphicsContext.getForegroundColour()));
 
-			int red = (graphicsContext.getForegroundColour() & 0xff000000) >> 24;
-			int blue = (graphicsContext.getForegroundColour() & 0x00ff0000) >> 16;
-			int green = (graphicsContext.getForegroundColour() & 0x0000ff00) >> 8;
-			
-			graphics.setColor(Color.CYAN);
-			
 			graphics.drawLine(x1, y1, x2, y2);
+		}
+		
+
+		@Override
+		public int getPixel(int x, int y) {
+			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			return _backingImage.getRGB(x, y);
 		}
 		
 	};
 
-	private Canvas _canvas = new Canvas();
-
 	private void paintWindow(final Window window) {
 		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		graphics.setClip(
 				window.getClipX(), 
@@ -289,15 +314,22 @@ public class XawtWindow  {
 
 	}
 
-	public XawtWindow(final Server server, final Window window) {
-		this._server = server;
-		this._window = window;
+	public XawtWindow(final TinyXAwt awtServer, final Window window) {
+		_awtServer = awtServer;
+		_window = window;
 
+		//TODO: Make the type of the image dependant on the depth, etc.
+		_backingImage = new BufferedImage(window.getWidthPixels(), window.getHeightPixels(), BufferedImage.TYPE_BYTE_BINARY);
 		_canvas.setBounds(
 				window.getX(),
 				window.getY(),
 				window.getWidthPixels() + window.getBorderWidth() + window.getBorderWidth(), 
 				window.getHeightPixels() + window.getBorderWidth() + window.getBorderWidth());
+
+		_canvas.getGraphics().drawImage(_backingImage, window.getX(), window.getY(), window.getWidth() ,  window.getHeight(),  null);
+		
+		_canvas.getAccessibleContext();
+
 
 		window.setListener(_windowListener);
 
@@ -332,7 +364,7 @@ public class XawtWindow  {
 				}
 
 				// TODO pass in correct screen index
-				server.buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
+				_awtServer.getServer().buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
@@ -343,7 +375,7 @@ public class XawtWindow  {
 					System.out.println(String.format("window=%x08", evw.getId()));
 				}
 				// TODO pass in correct screen index
-				server.buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
+				_awtServer.getServer().buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
 
@@ -354,7 +386,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				server.keyReleased(e.getKeyCode(), e.getWhen());
+				_awtServer.getServer().keyReleased(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
@@ -363,7 +395,7 @@ public class XawtWindow  {
 				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
-				server.keyPressed(e.getKeyCode(), e.getWhen());
+				_awtServer.getServer().keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
 	}

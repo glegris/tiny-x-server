@@ -27,7 +27,7 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.FontString;
+import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Server;
 
 public class ListFonts implements RequestHandler {
@@ -48,7 +48,7 @@ public class ListFonts implements RequestHandler {
 		final String pattern = inputStream.readString();
 
 		// Query our fonts registry
-		final List<FontString> matches = server.getFontFactory().getMatchingFonts(pattern);
+		final List<FontInfo> matches = server.getFontFactory().getMatchingFonts(new FontInfo(pattern));
 
 		// Response
 		final XOutputStream outputStream = response.respond(1);//, (length+3)/4);
@@ -59,7 +59,7 @@ public class ListFonts implements RequestHandler {
 		response.padHeader();
 
 		int counter = 1;
-		for (final FontString currentFont : matches) {
+		for (final FontInfo currentFont : matches) {
 			outputStream.writeString(currentFont.toString());
 
 			if (counter >= maxNames)

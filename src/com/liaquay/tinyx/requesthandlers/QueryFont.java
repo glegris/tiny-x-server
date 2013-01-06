@@ -45,8 +45,8 @@ public class QueryFont implements RequestHandler {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
-		final Font f = (Font) server.getResources().get(fid);
-		final String fontName = f.getFontName().toString();
+		final Font font = (Font) server.getResources().get(fid);
+		final String fontName = font.getFontInfo().toString();
 		
 		LOGGER.log(Level.INFO, "QueryFont for name: " + fontName);
 		
@@ -59,7 +59,7 @@ public class QueryFont implements RequestHandler {
 		// Min-bounds
 		outputStream.writeShort(0);
 		outputStream.writeShort(0);
-		outputStream.writeShort(f.getMinWidth());
+		outputStream.writeShort(font.getMinWidth());
 		outputStream.writeShort(0);
 		outputStream.writeShort(0);
 		outputStream.writeShort(0);
@@ -69,19 +69,19 @@ public class QueryFont implements RequestHandler {
 
 		// Max-bounds
 		outputStream.writeShort(0);						// left-side-bearing
-		outputStream.writeShort(f.getMaxWidth());		// right-side-bearing
-		outputStream.writeShort(f.getMaxWidth());       // character-width
-		outputStream.writeShort(f.getMaxAscent());		// ascent
-		outputStream.writeShort(f.getMaxDescent());		// descent
+		outputStream.writeShort(font.getMaxWidth());		// right-side-bearing
+		outputStream.writeShort(font.getMaxWidth());       // character-width
+		outputStream.writeShort(font.getMaxAscent());		// ascent
+		outputStream.writeShort(font.getMaxDescent());		// descent
 		outputStream.writeShort(0);						// attribute
 
 		outputStream.writePad(4);
 
 
-		outputStream.writeShort(f.getFirstChar());		// min-char-or-byte2
-		outputStream.writeShort(f.getLastChar());		// max-char-or-byte2
+		outputStream.writeShort(font.getFirstChar());		// min-char-or-byte2
+		outputStream.writeShort(font.getLastChar());		// max-char-or-byte2
 
-		outputStream.writeShort(f.getDefaultChar());	// default-char
+		outputStream.writeShort(font.getDefaultChar());	// default-char
 		outputStream.writeShort(prop!=null ? prop.length/2 : 0); // m
 		outputStream.writeByte(0);  // draw-direction
 		//	         0     LeftToRight
@@ -90,10 +90,10 @@ public class QueryFont implements RequestHandler {
 		outputStream.writeByte(0);						// min-byte1
 		outputStream.writeByte(0);						// max-byte1
 		outputStream.writeByte(0);						// all-char-exists
-		outputStream.writeShort(f.getMaxAscent());		// font-ascent
-		outputStream.writeShort(f.getMaxDescent());		// font-descent
+		outputStream.writeShort(font.getMaxAscent());		// font-ascent
+		outputStream.writeShort(font.getMaxDescent());		// font-descent
 
-		outputStream.writeInt(f.getLastChar()-f.getFirstChar()+1); // m 
+		outputStream.writeInt(font.getLastChar()-font.getFirstChar()+1); // m 
 
 		//		outputStream.writeInt(0);//fontName.length()); // reply-hint
 
@@ -103,8 +103,8 @@ public class QueryFont implements RequestHandler {
 			}
 		}
 
-		for(int i=f.getFirstChar(); i<=f.getLastChar(); i++){
-			final GlyphDetail gd = f.getGlyphDetail(i);
+		for(int i=font.getFirstChar(); i<=font.getLastChar(); i++){
+			final GlyphDetail gd = font.getGlyphDetail(i);
 			if (gd != null) {
 				outputStream.writeShort(0);//gd.leftSideBearing());	// left-side-bearing
 				outputStream.writeShort(0);//gd.rightSideBearing());	// right-side-bearing

@@ -33,8 +33,6 @@ import com.liaquay.tinyx.model.Window;
 
 public class GrabPointer implements RequestHandler {
 
-	// TODO work out when to respond with 'Frozen'
-	
 	enum GrabResponse {
 		Success,
 		AlreadyGrabbed,
@@ -111,7 +109,11 @@ public class GrabPointer implements RequestHandler {
 				}
 			}
 			else {
-				response.respond(GrabResponse.AlreadyGrabbed.ordinal());
+				response.respond(
+						currentPointerGrab.isPointerSynchronous() ?
+								GrabResponse.Frozen.ordinal() :
+								GrabResponse.AlreadyGrabbed.ordinal()
+						);
 			}
 			return;
 		}
@@ -127,7 +129,7 @@ public class GrabPointer implements RequestHandler {
 				cursor,
 				time);
 		
-		server.setGrab(pointerGrab);
+		server.setPointerGrab(pointerGrab);
 
 		response.respond(GrabResponse.Success.ordinal());
 	}

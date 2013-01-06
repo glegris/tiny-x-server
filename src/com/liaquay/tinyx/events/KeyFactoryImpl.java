@@ -23,7 +23,6 @@ import java.io.IOException;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Event;
-import com.liaquay.tinyx.model.Focus;
 import com.liaquay.tinyx.model.Pointer;
 import com.liaquay.tinyx.model.Window;
 
@@ -31,60 +30,41 @@ public class KeyFactoryImpl {
 	
 	public Event create(
 			final int event,
-			final int button,
-			final Focus focus,
+			final Window focusWindow,
+			final Window child,
 			final Pointer pointer,
 			final int key,
 			final int when) {
-
-		// Find out if this event is part of a grab
-
-		
-		final Window focusWindow;
-		switch(focus.getMode()) {
-		case None:
-			// Do not deliver an event for a focus of none.
-			return null;
-		case PointerRoot:
-			// Deliver events relative to the pointer root.
-			focusWindow = pointer.getScreen().getRootWindow();
-			break;
-		default:
-			// Deliver events relative to the focus window.
-			focusWindow = focus.getWindow();
-			break;
-		}
-		final int focusWindowId = focusWindow.getId();
-
-		final boolean sameScreen = focusWindow.getRootWindow() == pointer.getScreen().getRootWindow();
 
 		// Obtain the root window for the event.
 		final Window rootWindow = pointer.getScreen().getRootWindow();
 		final int rootWindowId = rootWindow.getId ();
 
 		// Find the window that contained the event
-		final Window child =pointer.childWindowAt();
 		final int childWindowId = child == null ? 0 : child.getId ();
 		
-		final int rootX = pointer.getX() - focusWindow.getAbsX();
-		final int rootY = pointer.getY() - focusWindow.getAbsY();
-		final int eventX;
-		final int eventY;
+		final int rootX = pointer.getX() - rootWindow.getAbsX();
+		final int rootY = pointer.getY() - rootWindow.getAbsY();
 
-		if(sameScreen) {
-			eventX = pointer.getX() - focusWindow.getAbsX();
-			eventY = pointer.getY() - focusWindow.getAbsY();
-		}
-		else {
-			eventX = 0;
-			eventY = 0;
-		}	
-		return new TimestampedEventImpl(event, button, when) {
+		return new TimestampedEventImpl(event, key, when) {
 
 			@Override
-			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window window) throws IOException {
+			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window eventWindow) throws IOException {
+				
+				final Window w = eventWindow.hasAncestor(focusWindow) ? eventWindow : focusWindow;
+				final boolean sameScreen = w.getRootWindow() == pointer.getScreen().getRootWindow();
+				final int eventX;
+				final int eventY;
+				if(sameScreen) {
+					eventX = pointer.getX() - w.getAbsX();
+					eventY = pointer.getY() - w.getAbsY();
+				}
+				else {
+					eventX = 0;
+					eventY = 0;
+				}
 				outputStream.writeInt (rootWindowId);
-				outputStream.writeInt (focusWindowId);
+				outputStream.writeInt (eventWindow.getId());
 				outputStream.writeInt (childWindowId);
 				outputStream.writeShort (rootX);
 				outputStream.writeShort (rootY);

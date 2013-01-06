@@ -28,10 +28,10 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.FontString;
-import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Image.ImageType;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class GetImage implements RequestHandler {
 
@@ -81,6 +81,14 @@ public class GetImage implements RequestHandler {
 			} else {
 				PixmapUtils.writeNullZPixmap(outputStream, p, planeMask, x, y, width, height);
 			}
+		} else if (drawableRes instanceof Window) {
+			Window w = (Window) drawableRes;
+
+			int size = (width * height * drawableRes.getDepth()) / 8;
+
+			for (int i = 0; i < size; i++)
+				outputStream.writeByte(0);
+			
 		}
 
 		//TODO: Output the data!!!!!

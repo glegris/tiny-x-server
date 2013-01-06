@@ -16,18 +16,18 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.model.eventfactories;
 
-import java.util.List;
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Pointer;
+import com.liaquay.tinyx.model.Window;
 
-import com.liaquay.tinyx.model.FontInfo;
-
-public interface FontFactory {
-	List<FontInfo> getFontNames();
-
-	FontInfo getFirstMatchingFont(FontInfo requestedFontName);
-
-	List<FontInfo> getMatchingFonts(FontInfo pattern);
-
-	FontDetail getFontDetail(String name, int size);
+public interface KeyFactory {
+	
+	public Event create(
+			final Window focusWindow,
+			final Window child, 
+			final Pointer pointer,
+			final int key,
+			final int when);
 }

@@ -16,18 +16,17 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.model;
 
-import java.util.List;
-
-import com.liaquay.tinyx.model.FontInfo;
-
-public interface FontFactory {
-	List<FontInfo> getFontNames();
-
-	FontInfo getFirstMatchingFont(FontInfo requestedFontName);
-
-	List<FontInfo> getMatchingFonts(FontInfo pattern);
-
-	FontDetail getFontDetail(String name, int size);
+public class KeyboardGrab extends Grab {
+	
+	public KeyboardGrab(
+			final Client client, 
+			final boolean ownerEvents,
+			final Window grabWindow,
+			final boolean pointerSynchronous,
+			final boolean keyboardSynchronous,
+			final int timestamp) {
+		super(client, ownerEvents, grabWindow, pointerSynchronous, keyboardSynchronous, timestamp);
+	}
 }

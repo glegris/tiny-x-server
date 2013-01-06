@@ -59,15 +59,10 @@ public class Pointer {
 	}
 	
 	public void setPointerGrab(final PointerGrab pointerGrab) {
-		if(_pointerGrab != null) {
-			// TODO uninstall old grab
-			LOGGER.log(Level.SEVERE, "uninstall old grab not implemented");
-		}
-		
 		_pointerGrab = pointerGrab;
 		
-		// TODO install new grab
-		LOGGER.log(Level.SEVERE, "install grab not implemented");
+		// TODO set confine to window
+		
 	}
 	
 	/**

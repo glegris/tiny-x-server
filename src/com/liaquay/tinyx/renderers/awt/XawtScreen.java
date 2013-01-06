@@ -51,7 +51,7 @@ public class XawtScreen {
 	private final Frame _frame;
 	private final XawtWindow _rootWindow;
 	
-	public XawtScreen(final Server server, final Screen screen) {
+	public XawtScreen(final TinyXAwt server, final Screen screen) {
 		
 		_frame = new Frame();
 		_frame.setResizable(false);

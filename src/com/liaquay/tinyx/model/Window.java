@@ -36,19 +36,15 @@ public class Window implements Drawable {
 		public void childCreated(final Window child);
 		public void mapped(final Window window, final boolean mapped);
 		public void visible(final Window window, final boolean visible);
-		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext,
-			int srcX, int srcY, int width, int height, int dstX, int dstY);
+		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY);
 		public void setCursor(Cursor cursor);
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, int angle1, int angle2, boolean fill);
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean fill);
+		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
+		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill);
 		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-				int x2, int y2);
-
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
+		public int getPixel(int x, int y);
 	}
 
 	/**
@@ -63,48 +59,25 @@ public class Window implements Drawable {
 		@Override
 		public void visible(Window window, boolean visible) {}
 		@Override
-		public void renderDrawable(Drawable drawable,
-				GraphicsContext graphicsContext, int srcX, int srcY, int width,
-				int height, int dstX, int dstY) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void renderDrawable(Drawable drawable, GraphicsContext graphicsContext, int srcX, int srcY, int width,				int height, int dstX, int dstY) {}
 		@Override
-		public void setCursor(Cursor cursor) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void setCursor(Cursor cursor) {}
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
-			// TODO Auto-generated method stub
-		}
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {}
 		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, int angle1, int angle2, boolean fill) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
 		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean fill) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill) {}
 		@Override
-		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {}
 		@Override
-		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {}
 		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-				int x2, int y2) {
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2) {}
+		@Override
+		public int getPixel(int x, int y) {
 			// TODO Auto-generated method stub
-			
+			return 0;
 		}
 	}
 
@@ -394,6 +367,12 @@ public class Window implements Drawable {
 	private void addChild(final Window child) {
 		_children.add(child);
 		_listener.childCreated(child);
+	}
+	
+	public boolean hasAncestor(final Window ancestor) {
+		if(this == ancestor) return true;
+		if(_parent != null) return _parent.hasAncestor(ancestor);
+		return false;
 	}
 
 	@Override
@@ -897,6 +876,13 @@ public class Window implements Drawable {
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2,
 			int y2) {
 		_listener.drawLine(graphicsContext, x1, y1, x2, y2);
+		
+	}
+
+	public void renderDrawable(Drawable d, GraphicsContext graphicsContext,
+			int i, int j, int width, int height, int destinationX,
+			int destinationY) {
+		_listener.renderDrawable(d, graphicsContext, i, j, width, height, destinationX, destinationY);
 		
 	}
 }

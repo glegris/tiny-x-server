@@ -39,8 +39,7 @@ public class PolyLine implements RequestHandler {
 			                   final Request request, 
 			                   final Response response) throws IOException {
 
-		//TODO: Implement this
-		CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
+		final CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int drawableResourceId = inputStream.readInt();
@@ -56,12 +55,12 @@ public class PolyLine implements RequestHandler {
 			return;
 		}
 
-		int len = request.getLength();
+		final int len = request.getLength();
 
-		int numCoords = ((len-12)/4);
+		final int numCoords = ((len-12)/4);
 		
-		int xCoords[] = new int[numCoords];
-		int yCoords[] = new int[numCoords];
+		final int xCoords[] = new int[numCoords];
+		final int yCoords[] = new int[numCoords];
 		
 		for (int i=0; i < numCoords; i++) {
 			xCoords[i] = inputStream.readSignedShort();

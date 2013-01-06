@@ -34,7 +34,8 @@ import com.liaquay.tinyx.model.Window;
 public class PolyText8 implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
@@ -54,21 +55,22 @@ public class PolyText8 implements RequestHandler {
 			return;
 		}	   
 
-		final int x = inputStream.readUnsignedShort();
-		final int y = inputStream.readUnsignedShort();
+		final int x = inputStream.readSignedShort();
+		final int y = inputStream.readSignedShort();
 
-		StringBuffer str = new StringBuffer();
+		final StringBuilder str = new StringBuilder();
 		final int len = inputStream.readUnsignedByte();
-		int delta = 0;
+		final int delta;
 		if (len == 255) {
-			int font = inputStream.readInt();
-			Font f = server.getResources().get(font, Font.class);
+			final int font = inputStream.readInt();
+			final Font f = server.getResources().get(font, Font.class);
 			graphicsContext.setFont(f);
+			delta = 0;
 		} else {
 			delta = inputStream.readUnsignedByte();
 
 			for (int i = 0; i < len; i++) {
-				int a = inputStream.readUnsignedByte();
+				final int a = inputStream.readUnsignedByte();
 				str.append((char) a);
 			}
 		}

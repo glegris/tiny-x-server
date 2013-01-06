@@ -21,6 +21,7 @@ package com.liaquay.tinyx.events;
 import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.ExposureFactory;
+import com.liaquay.tinyx.model.eventfactories.KeyFactory;
 import com.liaquay.tinyx.model.eventfactories.MapNotifyFactory;
 import com.liaquay.tinyx.model.eventfactories.MapRequestFactory;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
@@ -55,5 +56,15 @@ public final class EventFactoriesImpl implements EventFactories {
 	@Override
 	public ExposureFactory getExposureFactory() {
 		return ExposureFactoryImpl.FACTORY;
+	}
+
+	@Override
+	public KeyFactory getKeyPressFactory() {
+		return KeyPressFactoryImpl.FACTORY;
+	}
+
+	@Override
+	public KeyFactory getKeyReleaseFactory() {
+		return KeyReleaseFactoryImpl.FACTORY;
 	}
 }

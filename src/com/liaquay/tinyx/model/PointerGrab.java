@@ -18,17 +18,11 @@
  */
 package com.liaquay.tinyx.model;
 
-public class PointerGrab {
+public class PointerGrab extends Grab {
 	
-	private final boolean _ownerEvents;
-	private final Window _grabWindow;
-	private final int _eventMask;
-	private final boolean _pointerSynchronous;
-	private final boolean _keyboardSynchronous;
+	private final int _eventMask; // TODO What are these for!
 	private final Window _confineToWindow;
-	private final Cursor _cursor;
-	private final int _timestamp;
-	private final Client _client;
+	private final Cursor _cursor;// TODO What is this these for!
 	
 	public PointerGrab(
 			final Client client, 
@@ -40,39 +34,10 @@ public class PointerGrab {
 			final Window confineToWindow,
 			final Cursor cursor,
 			final int timestamp) {
+		super(client, ownerEvents, grabWindow, pointerSynchronous, keyboardSynchronous, timestamp);
 		
-		_ownerEvents = ownerEvents;
-		_grabWindow = grabWindow;
 		_eventMask = eventMask;
-		_pointerSynchronous = pointerSynchronous;
-		_keyboardSynchronous = keyboardSynchronous;
 		_confineToWindow = confineToWindow;
 		_cursor = cursor;
-		_timestamp = timestamp;
-		_client = client;
-	}
-	
-	public Client getClient() {
-		return _client;
-	}
-	
-	public int getTimestamp() {
-		return _timestamp;
-	}
-	
-	public boolean isKeyboardSynchronous() {
-		return _keyboardSynchronous;
-	}
-	
-	public boolean isPointerSynchronous() {
-		return _pointerSynchronous;	
-	}
-
-	public Window getGrabWindow() {
-		return _grabWindow;
-	}
-
-	public boolean isOwnerEvents() {
-		return _ownerEvents;
 	}
 }
