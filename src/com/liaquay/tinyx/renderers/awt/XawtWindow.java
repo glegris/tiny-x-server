@@ -37,7 +37,6 @@ import com.liaquay.tinyx.model.Window;
 /**
  * 
  * TODO use colour map to look up colours.
- * TODO translate graphics before and after each drawing operation.
  *
  */
 public class XawtWindow implements Window.Listener {
@@ -52,17 +51,18 @@ public class XawtWindow implements Window.Listener {
 	}
 
 	@Override
-	public void mapped(final Window window, final boolean mapped) {
+	public void mapped(final boolean mapped) {
 
-		paintWindow(window);
-		for(int i = 0; i < window.getChildCount(); i++) {
-			final Window child = window.getChild(i);
-			mapped(child, mapped);
+		paintWindow();
+		for(int i = 0; i < _window.getChildCount(); i++) {
+			final Window child = _window.getChild(i);
+			final XawtWindow awtChild = (XawtWindow)child.getListener();
+			awtChild.mapped(mapped);
 		}
 	}
 
 	@Override
-	public void visible(final Window window, final boolean visible) {
+	public void visible(final boolean visible) {
 		// TODO Auto-generated method stub
 
 	}
@@ -85,7 +85,7 @@ public class XawtWindow implements Window.Listener {
 
 			final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 
-			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+			final Graphics2D graphics = translateAndClipToWindow();
 
 
 
@@ -96,26 +96,26 @@ public class XawtWindow implements Window.Listener {
 	@Override
 	public void setCursor(final Cursor cursor) {
 		//Get the default toolkit
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
 		if (cursor != null) {
-			Pixmap p = cursor.getSourcePixmap();
-			Pixmap m = cursor.getMaskPixmap();
+			final Pixmap p = cursor.getSourcePixmap();
+			final Pixmap m = cursor.getMaskPixmap();
 
 			// Buffered image that has transparency.
-			BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-			WritableRaster newImage = image.getRaster();
+			final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			final WritableRaster newImage = image.getRaster();
 
 			// This seems horribly inefficient, but will probably do for the time being.
 			int i = 0;
 			for (int y = 0; y < p.getHeight() - 1; y++) {
 				for (int x = 0; x < (p.getWidth()/8); x++) {
-					int source = 0x00ff & p.getData()[i];
-					int mask = 0x00ff & m.getData()[i++];
+					final int source = 0x00ff & p.getData()[i];
+					final int mask = 0x00ff & m.getData()[i++];
 
 					for (int a = 0; a < 8; a++) {
-						byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
-						byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
+						final byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
+						final byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
 
 						if (sourcePixel > 0) {
 							newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
@@ -248,58 +248,52 @@ public class XawtWindow implements Window.Listener {
 		return graphics;
 	}
 	
-	private void paintWindow(final Window window) {
+	private void paintWindow() {
 		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		graphics.setClip(
-				window.getClipX(), 
-				window.getClipY(),
-				window.getClipWidth(), 
-				window.getClipHeight());
+				_window.getClipX(), 
+				_window.getClipY(),
+				_window.getClipWidth(), 
+				_window.getClipHeight());
 
-		final int borderWidth = window.getBorderWidth();
-		graphics.translate(window.getAbsX()-borderWidth, window.getAbsY()-borderWidth);
+		final int borderWidth = _window.getBorderWidth();
+		graphics.translate(_window.getAbsX()-borderWidth, _window.getAbsY()-borderWidth);
 
-		paintBorder(window, graphics);
+		paintBorder(graphics);
 
 		final int borderWidthX2 = borderWidth + borderWidth;
-
 
 		graphics.setClip(
 				borderWidth, 
 				borderWidth, 
-				window.getClipWidth() - borderWidthX2, 
-				window.getClipHeight() - borderWidthX2);
+				_window.getClipWidth() - borderWidthX2, 
+				_window.getClipHeight() - borderWidthX2);
 
 		graphics.translate(borderWidth, borderWidth);
 
-		paintContent(window, graphics);
+		paintContent(graphics);
 
 		graphics.translate(
-				-window.getAbsX() - borderWidth, 
-				-window.getAbsY() - borderWidth);
+				-_window.getAbsX() - borderWidth, 
+				-_window.getAbsY() - borderWidth);
 	}
 
-	private void paintBorder(final Window window, final Graphics2D graphics) {
-		int borderPixel = window.getBorderPixel();
+	private void paintBorder(final Graphics2D graphics) {
+		final int borderPixel = _window.getBorderPixel();
 
 		graphics.setColor(new Color(borderPixel));
 		graphics.fillRect(
 				0, 
 				0,
-				window.getWidth() + window.getBorderWidth()+ window.getBorderWidth(), 
-				window.getHeight() + window.getBorderWidth()+ window.getBorderWidth());
+				_window.getWidth() + _window.getBorderWidth()+ _window.getBorderWidth(), 
+				_window.getHeight() + _window.getBorderWidth()+ _window.getBorderWidth());
 	}
 
-	private void paintContent(final Window window, final Graphics2D graphics) {
-
-		graphics.setColor(new Color(window.getBackgroundPixel()));
-
-		graphics.fillRect(0, 0, window.getWidth(), window.getHeight());    	
-
-		//Lets draw any pixmaps on the screen.
-
+	private void paintContent(final Graphics2D graphics) {
+		graphics.setColor(new Color(_window.getBackgroundPixel()));
+		graphics.fillRect(0, 0, _window.getWidth(), _window.getHeight());    	
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
