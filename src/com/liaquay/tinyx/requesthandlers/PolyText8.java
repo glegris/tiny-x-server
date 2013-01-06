@@ -53,7 +53,7 @@ public class PolyText8 implements RequestHandler {
 		if(graphicsContext == null) {
 			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
 			return;
-		}	   
+		}
 
 		final int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
