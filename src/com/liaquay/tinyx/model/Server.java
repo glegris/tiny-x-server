@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
+import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.model.font.FontFactory;
 
 /**
@@ -41,6 +42,7 @@ public class Server extends Client {
 	private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
 
 	private static final byte[] VENDOR = "Liaquay".getBytes();
+	private static final String DEFAULT_FONT_NAME = "-*-Arial-*-*-*-*-12-*-*-*-*-*-ISO8859-*-*";
 
 	private static Format[] FORMATS = new Format[] {
 		new Format (32, 24, 8)
@@ -95,6 +97,20 @@ public class Server extends Client {
 
 	public void setListener(final Listener listener) {
 		_listener = listener;
+	}
+	
+	private Font _defaultFont = null;
+
+	public Font getDefaultFont() {
+		if(_defaultFont == null) {
+			final FontInfo pattern = new FontInfo(DEFAULT_FONT_NAME);
+			final FontInfo fontInfo = getFontFactory().getFirstMatchingFont(pattern);
+			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
+			final FontDetail fontDetail = getFontFactory().getFontDetail(mergedFontInfo.getFamilyName(), mergedFontInfo.getPixelSize());
+			_defaultFont = new Font(allocateResourceId(), mergedFontInfo, fontDetail);
+			openFont(_defaultFont);
+		}
+		return _defaultFont;
 	}
 	
 	public void openFont(final Font font) {

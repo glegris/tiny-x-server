@@ -33,9 +33,9 @@ public class Window implements Drawable {
 	private final List<Window> _children = new ArrayList<Window>();
 
 	public interface Listener {
-		public void childCreated(final Window child);
-		public void mapped(final Window window, final boolean mapped);
-		public void visible(final Window window, final boolean visible);
+		public void childCreated(Window child);
+		public void mapped(boolean mapped);
+		public void visible(boolean visible);
 		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY);
 		public void setCursor(Cursor cursor);
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
@@ -53,11 +53,11 @@ public class Window implements Drawable {
 	 */
 	private static final class NullListener implements Listener {
 		@Override
-		public void childCreated(final Window child) {}
+		public void childCreated(Window child) {}
 		@Override
-		public void mapped(final Window window, final boolean mapped) {}
+		public void mapped(boolean mapped) {}
 		@Override
-		public void visible(Window window, boolean visible) {}
+		public void visible(boolean visible) {}
 		@Override
 		public void renderDrawable(Drawable drawable, GraphicsContext graphicsContext, int srcX, int srcY, int width,				int height, int dstX, int dstY) {}
 		@Override
@@ -305,14 +305,14 @@ public class Window implements Drawable {
 		
 		if(!_viewable && newVisibility) {
 			// Expose
-			_listener.visible(this, true);
+			_listener.visible(true);
 
 			// TODO issue visibility event
 //			final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create()
 		}
 		else if(_viewable && !newVisibility){
 			// Hide
-			_listener.visible(this, false);
+			_listener.visible(false);
 			
 			// TODO issue visibility event
 		}
@@ -456,7 +456,7 @@ public class Window implements Drawable {
 			// TODO Send visibility events 
 
 			if(isMappedToRoot()) {
-				_listener.mapped(this,true);
+				_listener.mapped(true);
 			}
 			
 			updateVisibility();
@@ -545,7 +545,7 @@ public class Window implements Drawable {
 		if(_mapped) {
 			_mapped = false;
 			// TODO issue some unmapped event
-			_listener.mapped(this, false);
+			_listener.mapped(false);
 		}
 	}
 
@@ -883,6 +883,9 @@ public class Window implements Drawable {
 			int i, int j, int width, int height, int destinationX,
 			int destinationY) {
 		_listener.renderDrawable(d, graphicsContext, i, j, width, height, destinationX, destinationY);
-		
+	}
+
+	public Listener getListener() {
+		return _listener;
 	}
 }

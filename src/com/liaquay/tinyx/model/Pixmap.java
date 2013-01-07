@@ -177,6 +177,8 @@ public class Pixmap implements Drawable {
 					}
 				}
 
+			} else {
+				System.out.println("Unsupported depth at present: " + _depth);
 			}
 			print();
 		}
