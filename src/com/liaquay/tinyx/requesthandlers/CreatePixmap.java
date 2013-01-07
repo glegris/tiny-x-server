@@ -30,6 +30,7 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.renderers.awt.XawtScreen.PixmapProducer;
 
 public class CreatePixmap implements RequestHandler {
 

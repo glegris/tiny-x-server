@@ -20,13 +20,19 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Cursor;
@@ -45,8 +51,6 @@ public class XawtWindow implements Window.Listener {
 
 	private final Window _window;
 	private final Canvas _canvas;
-
-	BufferedImage _backingImage;
 
 	@Override
 	public void childCreated(final Window child) {
@@ -82,33 +86,33 @@ public class XawtWindow implements Window.Listener {
 			final Pixmap m = cursor.getMaskPixmap();
 
 			// Buffered image that has transparency.
-			final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-			final WritableRaster newImage = image.getRaster();
+			final Image image = p.getImage();//new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+//leRaster newImage = p.getImage();//image.getRaster();
 
-			// This seems horribly inefficient, but will probably do for the time being.
-			int i = 0;
-			for (int y = 0; y < p.getHeight() - 1; y++) {
-				for (int x = 0; x < (p.getWidth()/8); x++) {
-					final int source = 0x00ff & p.getData()[i];
-					final int mask = 0x00ff & m.getData()[i++];
-
-					for (int a = 0; a < 8; a++) {
-						final byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
-						final byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
-
-						if (sourcePixel > 0) {
-							newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
-							newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
-							newImage.setSample((x*8)+a, y, 2, cursor.getForegroundColorBlue());	// Blue
-						} else {
-							newImage.setSample((x*8)+a, y, 0, cursor.getBackgroundColorRed());		// Red
-							newImage.setSample((x*8)+a, y, 1, cursor.getBackgroundColorGreen());	// Green
-							newImage.setSample((x*8)+a, y, 2, cursor.getBackgroundColorBlue());	// Blue
-						}
-						newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
-					}
-				}
-			}
+//			// This seems horribly inefficient, but will probably do for the time being.
+//			int i = 0;
+//			for (int y = 0; y < p.getHeight() - 1; y++) {
+//				for (int x = 0; x < (p.getWidth()/8); x++) {
+//					final int source = 0x00ff & p.getData()[i];
+//					final int mask = 0x00ff & m.getData()[i++];
+//
+//					for (int a = 0; a < 8; a++) {
+//						final byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
+//						final byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
+//
+//						if (sourcePixel > 0) {
+//							newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
+//							newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
+//							newImage.setSample((x*8)+a, y, 2, cursor.getForegroundColorBlue());	// Blue
+//						} else {
+//							newImage.setSample((x*8)+a, y, 0, cursor.getBackgroundColorRed());		// Red
+//							newImage.setSample((x*8)+a, y, 1, cursor.getBackgroundColorGreen());	// Green
+//							newImage.setSample((x*8)+a, y, 2, cursor.getBackgroundColorBlue());	// Blue
+//						}
+//						newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
+//					}
+//				}
+//			}
 
 			if (image != null) {
 				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
@@ -131,12 +135,12 @@ public class XawtWindow implements Window.Listener {
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 
-		final Graphics2D graphics = translateAndClipToWindow();
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final java.awt.Font awtFont = fontListener.getAwtFont();
+		final Graphics graphics = translateAndClipToWindow();
+		//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		graphics.setColor(Color.WHITE);
+		final java.awt.Font awtFont = fontListener.getAwtFont();
 		graphics.setFont(awtFont);
+		graphics.setColor(c);
 		graphics.drawString(str, x, y);
 	}
 
@@ -228,7 +232,7 @@ public class XawtWindow implements Window.Listener {
 	}
 
 	private void paintWindow() {
-		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+		final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
 
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -279,7 +283,6 @@ public class XawtWindow implements Window.Listener {
 	public XawtWindow(final Window window, final Canvas canvas) {
 		_window = window;
 		_canvas = canvas;
-		_backingImage = new BufferedImage(window.getWidthPixels(), window.getHeightPixels(), BufferedImage.TYPE_INT_ARGB);
 	}
 
 	@Override
@@ -313,4 +316,22 @@ public class XawtWindow implements Window.Listener {
 		return 0;
 	}
 
+
+	@Override
+	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+			int width, int height, int destinationX, int destinationY,
+			int leftPad, int depth) {
+
+		int[] arr = {(byte)0xff};
+
+		//        IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
+		//        Raster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
+		//                                           width, height, 1, 1, null);
+
+
+		Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, leftPad, arr), 
+				new DataBufferByte(buffer, buffer.length), new Point(destinationX, destinationY));
+
+		System.out.println("Raster: " + r);
+	}
 }

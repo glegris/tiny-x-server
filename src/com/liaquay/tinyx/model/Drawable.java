@@ -18,21 +18,30 @@
  */
 package com.liaquay.tinyx.model;
 
+
 public interface Drawable extends Resource {
 
 	public Screen getScreen();
 
 	public Visual getVisual();
-	
+
 	public int getDepth();
-	
+
 	public int getX();
-	
+
 	public int getY();
-	
+
 	public int getWidth();
-	
+
 	public int getHeight();
-	
+
 	public int getBorderWidth();
+
+//	abstract Graphics getGraphics();
+	//	  abstract void restoreClip();
+
+	//	  abstract Graphics getGraphics(GC gc, int mask);   
+	//	  abstract Colormap getColormap();
+//	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
+
 }

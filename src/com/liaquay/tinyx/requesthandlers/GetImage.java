@@ -76,11 +76,11 @@ public class GetImage implements RequestHandler {
 			}
 			
 			// Null image
-			if (p.getData() != null) {
-				PixmapUtils.writeZPixmap(p, planeMask, x, y, width, height);
-			} else {
-				PixmapUtils.writeNullZPixmap(outputStream, p, planeMask, x, y, width, height);
-			}
+//			if (p.getData() != null) {
+//				PixmapUtils.writeZPixmap(p, planeMask, x, y, width, height);
+//			} else {
+//				PixmapUtils.writeNullZPixmap(outputStream, p, planeMask, x, y, width, height);
+//			}
 		} else if (drawableRes instanceof Window) {
 			Window w = (Window) drawableRes;
 

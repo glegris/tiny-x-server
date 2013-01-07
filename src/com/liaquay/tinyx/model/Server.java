@@ -258,7 +258,7 @@ public class Server extends Client {
 	public FontFactory getFontFactory() {
 		return _fontFactory;
 	}
-
+	
 	private int allocateResourceId(){
 		final int id =_serverResourceId++;
 		if (id !=_endServerResourceId){

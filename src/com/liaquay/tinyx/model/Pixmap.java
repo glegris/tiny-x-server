@@ -18,18 +18,56 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
-import sun.security.util.BitArray;
+import com.liaquay.tinyx.renderers.awt.XawtScreen.PixmapProducer;
 
 
 
 public class Pixmap implements Drawable {
 
+	public interface Listener {
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer, int width, int height, int destinationX, int destinationY, int leftPad, int depth);
+		public void createImage(int width, int height);
+		public void copyArea(Window window, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY);
+		public Image getImage();
+	}
+
+	private static final class NullListener implements Listener {
+
+		@Override
+		public void createImage(int width, int height) {
+
+		}
+
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftPad, int depth) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void copyArea(Window window, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public BufferedImage getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
 	private final int _resourceId;
 	private final Drawable _drawable;
 	private final int _depth;
@@ -38,6 +76,10 @@ public class Pixmap implements Drawable {
 
 	private byte[] _data;
 
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+	
 	public Pixmap(final int resourceId,
 			final Drawable drawable,
 			final int depth,
@@ -48,7 +90,9 @@ public class Pixmap implements Drawable {
 		_width = width;
 		_height = height;
 		_drawable = drawable;
-		initImage();
+		_listener = PixmapProducer.getPixmapListener();
+
+		_listener.createImage(width, height);
 	}
 
 	@Override
@@ -107,25 +151,14 @@ public class Pixmap implements Drawable {
 		return 0;
 	}
 
-	public void init(byte[] data) {
-		this._data = data;
-	}
-
 	public void copyArea(Window window, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
-		// TODO Auto-generated method stub
 
+		_listener.copyArea(window, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
 
 	public void clear() {
 		Arrays.fill(this._data, 0, this._data.length, (byte) 0xff);
-	}
-
-	/* Create a blank image with the given dimensions */
-	private void initImage() {
-		int numberBytes = ((_width * _height) * _depth)/8;
-		this._data = new byte[numberBytes];
-		Arrays.fill(this._data, 0, numberBytes, (byte) 0);
 	}
 
 	public void print() {
@@ -151,37 +184,39 @@ public class Pixmap implements Drawable {
 			int width, int height, int destinationX, int destinationY,
 			int leftPad, int depth) {
 
-		if (getData() == null) {
-			initImage();
-		}
+		_listener.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
 
-		// Nice simple case 
-		if (depth == 1) {
-
-			if (_depth == 1) {
-
-				// Depends on the Pixmap type
-				for (int y = 0; y < height ; y++) {
-					for (int x = 0; x < width ; x++) {
-						int srcByte = (x/8) + (y * (width/8));
-						int srcBit = x % 8;
-						int destPixel = (destinationX + x) + ((destinationY + y) * getWidth() + leftPad);
-						int destByte = destPixel/8;
-						int destBitMask = 0x01 << (7 - destPixel % 8);
-						String mask = Integer.toBinaryString(destBitMask);
-						//System.out.println("X: " + x + " Y: " + y + "  Dest pixel: " + destPixel + "  Mask: " + mask);
-						// TODO Fix this line.. Just having a laugh atm
-						if (destByte < this._data.length) {
-							this._data[destByte] = (byte) (this._data[destByte] | (buffer[srcByte] & destBitMask));
-						}
-					}
-				}
-
-			} else {
-				System.out.println("Unsupported depth at present: " + _depth);
-			}
-			print();
-		}
+//		if (getData() == null) {
+//			initImage();
+//		}
+//
+//		// Nice simple case 
+//		if (depth == 1) {
+//
+//			if (_depth == 1) {
+//
+//				// Depends on the Pixmap type
+//				for (int y = 0; y < height ; y++) {
+//					for (int x = 0; x < width ; x++) {
+//						int srcByte = (x/8) + (y * (width/8));
+//						int srcBit = x % 8;
+//						int destPixel = (destinationX + x) + ((destinationY + y) * getWidth() + leftPad);
+//						int destByte = destPixel/8;
+//						int destBitMask = 0x01 << (7 - destPixel % 8);
+//						String mask = Integer.toBinaryString(destBitMask);
+//						//System.out.println("X: " + x + " Y: " + y + "  Dest pixel: " + destPixel + "  Mask: " + mask);
+//						// TODO Fix this line.. Just having a laugh atm
+//						if (destByte < this._data.length) {
+//							this._data[destByte] = (byte) (this._data[destByte] | (buffer[srcByte] & destBitMask));
+//						}
+//					}
+//				}
+//
+//			} else {
+//				System.out.println("Unsupported depth at present: " + _depth);
+//			}
+//			print();
+//		}
 
 	}
 
@@ -203,4 +238,9 @@ public class Pixmap implements Drawable {
 
 		return raster;
 	}
+
+	public Image getImage() {
+		return _listener.getImage();
+	}
+
 }

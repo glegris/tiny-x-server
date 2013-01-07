@@ -29,6 +29,7 @@ import java.awt.event.WindowEvent;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Window;
 
@@ -37,9 +38,9 @@ public class XawtScreen {
 	public interface Listener {
 		public void closed();
 	}
-	
+
 	private Set<Listener> _listeners = new HashSet<Listener>(1);
-	
+
 	private Listener _proxy = new Listener() {
 		@Override
 		public void closed() {
@@ -48,20 +49,28 @@ public class XawtScreen {
 			}
 		}
 	};
-	
+
 	public Set<Listener> getListeners() {
 		return _listeners;
 	}
-	
+
 	private final Frame _frame;
 	private final XawtWindow _rootWindowListener;
 	private final Canvas _canvas = new Canvas();
+	private static XawtPixmap _pixmapListener;
+
+	public static class PixmapProducer {
+		public static Pixmap.Listener getPixmapListener() {
+			return _pixmapListener;
+		}
+	}
 
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
-		
+
+
 		_frame = new Frame();
 		_frame.setResizable(false);
-		
+
 		_frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent arg0) {
@@ -69,9 +78,9 @@ public class XawtScreen {
 				_frame.dispose();
 			}
 		});
-		
+
 		final Window rootWindow = screen.getRootWindow();
-		
+
 		_canvas.setBounds(
 				rootWindow.getX(),
 				rootWindow.getY(),
@@ -79,15 +88,18 @@ public class XawtScreen {
 				rootWindow.getHeightPixels() + rootWindow.getBorderWidth() + rootWindow.getBorderWidth());
 
 		_canvas.getAccessibleContext();
-		
+
 		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
 		rootWindow.setListener(_rootWindowListener);
+
+		_pixmapListener = new XawtPixmap(_canvas);
+
 		_frame.add(_canvas);
 		_frame.pack();
 		_frame.setVisible(true);
-		
+
 		screen.map();
-		
+
 		_canvas.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {

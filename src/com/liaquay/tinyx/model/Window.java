@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.liaquay.tinyx.model.ButtonGrab.Trigger;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.renderers.awt.XawtPixmap;
 
 public class Window implements Drawable {
 
@@ -45,6 +46,10 @@ public class Window implements Drawable {
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
+		
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftPad, int depth);
 	}
 
 	/**
@@ -78,6 +83,13 @@ public class Window implements Drawable {
 		public int getPixel(int x, int y) {
 			// TODO Auto-generated method stub
 			return 0;
+		}
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftPad, int depth) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
@@ -887,5 +899,12 @@ public class Window implements Drawable {
 
 	public Listener getListener() {
 		return _listener;
+	}
+
+	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+			int width, int height, int destinationX, int destinationY,
+			int leftPad, int depth) {
+		
+		_listener.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
 	}
 }
