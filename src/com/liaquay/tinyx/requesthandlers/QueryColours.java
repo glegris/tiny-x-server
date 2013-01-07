@@ -27,7 +27,6 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.ColorMap;
-import com.liaquay.tinyx.model.ColorMap.Color;
 import com.liaquay.tinyx.model.Server;
 
 public class QueryColours implements RequestHandler {
@@ -47,7 +46,6 @@ public class QueryColours implements RequestHandler {
 		}
 		final int remaingBytes = request.getLength() - inputStream.getCounter();
 		final int n = remaingBytes >> 2;
-		final Color color = new Color();
 		final int[] pixels = new int[n];		
 		for(int i = 0; i < n; ++i) {
 			final int pixel = inputStream.readInt();
@@ -64,10 +62,9 @@ public class QueryColours implements RequestHandler {
 		response.padHeader();
 		for(int i = 0; i < n; ++i) {
 			final int pixel = pixels[i];
-			colorMap.getColor(pixel, color);
-			outputStream.writeShort(color._red);
-			outputStream.writeShort(color._green);
-			outputStream.writeShort(color._blue);
+			outputStream.writeShort(colorMap.getExactRed(pixel));
+			outputStream.writeShort(colorMap.getExactGreen(pixel));
+			outputStream.writeShort(colorMap.getExactBlue(pixel));
 			response.padAlign();
 		}
 	}
