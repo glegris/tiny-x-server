@@ -19,12 +19,6 @@
 package com.liaquay.tinyx.model;
 
 public abstract class ColorMap extends AbstractResource {
-
-	public static class Color {
-		public int _red;
-		public int _green;
-		public int _blue;
-	}
 	
 	public enum AllocType {
 		AllocNone,
@@ -56,7 +50,17 @@ public abstract class ColorMap extends AbstractResource {
 	 */
 	public abstract int getWhitePixel ();
 	
+	/**
+	 * Return the pixel of the named colour
+	 * @param colorName
+	 * @return the pixel of the named colour
+	 */
+	public abstract int lookupNamedColor(final String colorName);
 	public abstract boolean isValidColor(final int pixel);
-	
-	public abstract void getColor(final int pixel, final Color color);
+	public abstract int getExactRed(final int pixel);
+	public abstract int getExactGreen(final int pixel);
+	public abstract int getExactBlue(final int pixel);
+	public abstract int getVisualRed(final int pixel);
+	public abstract int getVisualGreen(final int pixel);
+	public abstract int getVisualBlue(final int pixel);
 }

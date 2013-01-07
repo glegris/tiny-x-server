@@ -42,9 +42,46 @@ public class Pallette extends ColorMap {
 		return pixel >= 0 && pixel < _red.length;
 	}
 	
-	public void getColor(final int pixel, final Color color) {
-		color._red = _red[pixel];
-		color._green = _green[pixel];
-		color._blue = _blue[pixel];
+
+	@Override
+	public int lookupNamedColor(String colorName) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getExactRed(int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getExactGreen(int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getExactBlue(int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getVisualRed(int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getVisualGreen(int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getVisualBlue(int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -103,9 +103,9 @@ public class TinyXAwt {
 						VisualClass.TrueColor, 
 						8,  // Bits Per RGB
 						256, // TODO How do colour maps relate to visuals
-						0x000000ff, // Red mask
+						0x00ff0000, // Red mask
 						0x0000ff00, // Green mask
-						0x00ff0000  // Blue mask
+						0x000000ff  // Blue mask
 						);
 			}
 		});
