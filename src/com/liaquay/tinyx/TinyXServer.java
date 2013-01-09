@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,8 +61,8 @@ public class TinyXServer {
 				new Thread() {
 					public void run() {
 						try {
-							final InputStream inputStream = socket.getInputStream();
-							final OutputStream outputStream = socket.getOutputStream();
+							final InputStream inputStream = new BufferedInputStream(socket.getInputStream());
+							final OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 							final InetAddress address = socket.getInetAddress();
 							
 							final Executable client = clientFactory.createClient(inputStream, outputStream, address);

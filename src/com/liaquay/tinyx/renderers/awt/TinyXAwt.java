@@ -28,6 +28,7 @@ import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.KeyboardMapping;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Server.ResourceFactory;
@@ -63,6 +64,11 @@ public class TinyXAwt {
 				final java.awt.Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize);
 
 				font.setListener(new XawtFontListener(awtFont));
+			}
+
+			@Override
+			public void pixmapCreated(final Pixmap pixmap) {
+				pixmap.setListener(new XawtPixmapListener(pixmap));
 			}
 		});
 	}

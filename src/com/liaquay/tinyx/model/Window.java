@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -26,18 +27,25 @@ import java.util.Map;
 
 import com.liaquay.tinyx.model.ButtonGrab.Trigger;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
-import com.liaquay.tinyx.renderers.awt.XawtPixmap;
 
-public class Window implements Drawable {
+public class Window extends Drawable {
 
 	private final Window _parent;
 	private final List<Window> _children = new ArrayList<Window>();
 
-	public interface Listener {
+	public interface Listener extends Drawable.Listener {
 		public void childCreated(Window child);
 		public void mapped(boolean mapped);
 		public void visible(boolean visible);
-		public void renderDrawable(final Drawable drawable, final GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY);
+		public void renderDrawable(
+				final BufferedImage image,
+				final GraphicsContext graphicsContext, 
+				final int srcX,
+				final int srcY,
+				final int width,
+				final int height, 
+				final int dstX,
+				final int dstY);
 		public void setCursor(Cursor cursor);
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
@@ -46,10 +54,6 @@ public class Window implements Drawable {
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
-		
-		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
-				int width, int height, int destinationX, int destinationY,
-				int leftPad, int depth);
 	}
 
 	/**
@@ -64,7 +68,15 @@ public class Window implements Drawable {
 		@Override
 		public void visible(boolean visible) {}
 		@Override
-		public void renderDrawable(Drawable drawable, GraphicsContext graphicsContext, int srcX, int srcY, int width,				int height, int dstX, int dstY) {}
+		public void renderDrawable(
+				final BufferedImage image,
+				final GraphicsContext graphicsContext, 
+				final int srcX,
+				final int srcY,
+				final int width,
+				final int height, 
+				final int dstX,
+				final int dstY) {}
 		@Override
 		public void setCursor(Cursor cursor) {}
 		@Override
@@ -85,12 +97,19 @@ public class Window implements Drawable {
 			return 0;
 		}
 		@Override
-		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+		public void copyArea(Drawable srcDrawable, Drawable d, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+
+		}
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] data,
 				int width, int height, int destinationX, int destinationY,
 				int leftPad, int depth) {
 			// TODO Auto-generated method stub
-			
+
 		}
+
 	}
 
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -196,7 +215,7 @@ public class Window implements Drawable {
 	private boolean _parentRelativeBackgroundPixmap = false;
 	private final EventFactories _eventFactories;
 	private final Map<ButtonGrab.Trigger, ButtonGrab> _buttonGrabs = new HashMap<ButtonGrab.Trigger, ButtonGrab>(4);
-	
+
 
 	//  Window root;                /* root of screen containing window */
 	//    int backing_store;          /* NotUseful, WhenMapped, Always */
@@ -248,11 +267,11 @@ public class Window implements Drawable {
 	public ButtonGrab getButtonGrab(final ButtonGrab.Trigger trigger) {
 		return _buttonGrabs.get(trigger);
 	}
-	
+
 	public void addButtonGrab(final ButtonGrab buttonGrab) {
 		_buttonGrabs.put(buttonGrab.getTrigger(), buttonGrab);
 	}
-	
+
 	/**
 	 * Update the absolute position of the window and its clip rectangle.
 	 */
@@ -312,30 +331,30 @@ public class Window implements Drawable {
 
 	// TODO Work out difference between visible and exposed.
 	private void updateVisibility() {
-		
+
 		final boolean newVisibility = isMappedToRoot() && nonZeroClippedArea() && !isInputOnly();
-		
+
 		if(!_viewable && newVisibility) {
 			// Expose
 			_listener.visible(true);
 
 			// TODO issue visibility event
-//			final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create()
+			//			final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create()
 		}
 		else if(_viewable && !newVisibility){
 			// Hide
 			_listener.visible(false);
-			
+
 			// TODO issue visibility event
 		}
-		
+
 		_viewable = newVisibility;
-		
+
 		for(int i = 0; i < _children.size() ; ++i) {
 			_children.get(i).updateVisibility();
 		}
 	}
-	
+
 	public boolean containsPixel(final int absX, final int absY) {
 		return absX >= _clipX && absX < (_clipX + _clipW) &&
 				absY >= _clipY && absY < (_clipY + _clipH);  
@@ -380,7 +399,7 @@ public class Window implements Drawable {
 		_children.add(child);
 		_listener.childCreated(child);
 	}
-	
+
 	public boolean hasAncestor(final Window ancestor) {
 		if(this == ancestor) return true;
 		if(_parent != null) return _parent.hasAncestor(ancestor);
@@ -463,14 +482,14 @@ public class Window implements Drawable {
 				final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
 				deliver(exposeEvent, Event.ExposureMask);
 			}
-			
+
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
 
 			if(isMappedToRoot()) {
 				_listener.mapped(true);
 			}
-			
+
 			updateVisibility();
 		}
 	}
@@ -482,7 +501,7 @@ public class Window implements Drawable {
 	private boolean isMappedToRoot() {
 		return _mapped && (_parent == null || _parent.isMappedToRoot());
 	}
-	
+
 	public boolean wouldDeliver(final int mask) {
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -495,7 +514,7 @@ public class Window implements Drawable {
 		}
 		return false;
 	}
-	
+
 	public ClientWindowAssociation getDeliverToAssociation(final int mask, final Client client) {
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -508,7 +527,7 @@ public class Window implements Drawable {
 		}
 		return null;
 	}
-	
+
 	public ClientWindowAssociation getDeliverToAssociation(final int mask) {
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -521,11 +540,11 @@ public class Window implements Drawable {
 		}
 		return null;
 	}
-	
+
 	public void deliver(final Event event, final int mask){
 		deliver(event, mask, new BitSet(Resource.MAXCLIENTS));
 	}
-	
+
 	private void deliver(final Event event, final int mask, final BitSet deliveredToClient){
 		for(int i = 0; i < _clientWindowAssociations.size(); ++i) {
 			final ClientWindowAssociation assoc = _clientWindowAssociations.get(i);
@@ -540,7 +559,7 @@ public class Window implements Drawable {
 			_parent.deliver(event, mask, deliveredToClient);
 		}
 	}
-	
+
 	/**
 	 * Performs a MapWindow request on all unmapped children of the window,
 	 * in top-to-bottom stacking order.
@@ -667,8 +686,8 @@ public class Window implements Drawable {
 
 	public void setCursor(Cursor cursor) {
 		this._cursor = cursor;
-		
-		
+
+
 		//TODO: Move this into event handling code.. Only here to test the drawing methods
 		_listener.setCursor(cursor);
 	}
@@ -705,7 +724,7 @@ public class Window implements Drawable {
 	public void setBackgroundPixel(final int backGroundPixel) {
 		_backgroundPixel = backGroundPixel;
 	}
-	
+
 	public int getBackgroundPixel() {
 		return _backgroundPixel;
 	}
@@ -738,7 +757,7 @@ public class Window implements Drawable {
 	public Pixmap getBorderPixmap() {
 		return _borderPixmap;
 	}
-	
+
 	public int getBorderPixel() {
 		return _borderPixel;
 	}	
@@ -796,49 +815,20 @@ public class Window implements Drawable {
 	public final boolean isViewable() {
 		return _viewable;
 	}
-	
+
 	private final boolean nonZeroClippedArea() {
 		return _clipH > 0 && _clipW > 0;
 	}
-	
+
 	public void copyArea(Window window, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
-
-		_listener.renderDrawable(window, graphicsContext, srcX, srcY, width, height, dstX, dstY);
-
-//		Graphics g=dst.getGraphics();
-//		if(g==null) return;
-//
-//		if(window==dst){ 
-//			copyArea(srcx, srcy, width, height, destx-srcx, desty-srcy); 
-//			dst.draw(destx, desty, width, height);
-//			return;
-//		}
-//
-//		Image img=window.getImage(gc, srcx, srcy, width, height);
-//		if(srcx==0 && srcy==0 && width==window.width && height==window.height){
-//			dst.ddxwindow.drawImage(gc.clip_mask, img, destx, desty, width, height);
-//		}
-//		else{
-//			java.awt.Shape tmp=g.getClip();
-//			g.clipRect(destx, desty, width, height);
-//			dst.ddxwindow.drawImage(gc.clip_mask, img, destx-srcx, desty-srcy, 
-//					window.width, window.height);
-//			if(tmp==null){ g.setClip(0, 0, dst.width, dst.height);}
-//			else{g.setClip(tmp);}
-//		}
-//		dst.draw(destx, desty, width, height);
-//		if(img!=window.getImage()){
-//			img.flush();
-//		}
 	}
 
 	public void copyArea(Pixmap pixmap, GraphicsContext graphicsContext,
 			int srcX, int srcY, int width, int height, int dstX, int dstY) {
 
-		_listener.renderDrawable(pixmap, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
-	
+
 	public ButtonGrab findFirstButtonGrab(final Trigger trigger) {
 		ButtonGrab grab = null;
 		if(_parent != null) {
@@ -846,7 +836,7 @@ public class Window implements Drawable {
 		}
 		if(grab == null) {
 			grab = _buttonGrabs.get(trigger);
-			
+
 			// Check the confine-to window is viewable
 			if(grab != null && grab.getConfineToWindow() != null) {
 				if(!grab.getConfineToWindow().isViewable()) {
@@ -860,16 +850,16 @@ public class Window implements Drawable {
 	public void removeButtonGrab(final ButtonGrab buttonGrab) {
 		_buttonGrabs.remove(buttonGrab.getTrigger());
 	}	
-	
+
 	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
 		_listener.drawString(graphicsContext, str, x, y);
-		
+
 	}
 
 	public void polyArc(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, int angle1, int angle2, boolean fill) {
 		_listener.polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
-		
+
 	}
 
 	public void polyRect(GraphicsContext graphicsContext, int x, int y,
@@ -880,7 +870,7 @@ public class Window implements Drawable {
 	public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
 		_listener.polyFill(graphicsContext, x, y);
 	}
-	
+
 	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
 		_listener.polyLine(graphicsContext, x, y);
 	}
@@ -888,23 +878,29 @@ public class Window implements Drawable {
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2,
 			int y2) {
 		_listener.drawLine(graphicsContext, x1, y1, x2, y2);
-		
+
 	}
 
-	public void renderDrawable(Drawable d, GraphicsContext graphicsContext,
-			int i, int j, int width, int height, int destinationX,
-			int destinationY) {
-		_listener.renderDrawable(d, graphicsContext, i, j, width, height, destinationX, destinationY);
+	public void renderDrawable(
+			final BufferedImage image,
+			final GraphicsContext graphicsContext, 
+			final int srcX,
+			final int srcY,
+			final int width,
+			final int height, 
+			final int dstX,
+			final int dstY) {
+		_listener.renderDrawable(image, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
 
 	public Listener getListener() {
 		return _listener;
 	}
 
-	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+	public void putImage(GraphicsContext graphicsContext, byte[] data,
 			int width, int height, int destinationX, int destinationY,
 			int leftPad, int depth) {
-		
-		_listener.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
+
+		_listener.putImage(graphicsContext, data, width, height, destinationX, destinationY, leftPad, depth);
 	}
 }

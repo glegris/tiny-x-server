@@ -19,23 +19,35 @@
 package com.liaquay.tinyx.model;
 
 
-public interface Drawable extends Resource {
 
-	public Screen getScreen();
+public abstract class Drawable implements Resource {
 
-	public Visual getVisual();
+	public interface Listener {
+		public void copyArea(Drawable srcDrawable, Drawable d, GraphicsContext graphicsContext, int srcX,
+				int srcY, int width, int height, int dstX, int dstY);
+		
+		public void putImage(GraphicsContext graphicsContext,
+				byte[] buffer, int width, int height,
+				int destinationX, int destinationY, int leftPad, int depth);
+	}
 
-	public int getDepth();
+	public abstract Listener getListener();
 
-	public int getX();
+	public abstract Screen getScreen();
 
-	public int getY();
+	public abstract Visual getVisual();
 
-	public int getWidth();
+	public abstract int getDepth();
 
-	public int getHeight();
+	public abstract int getX();
 
-	public int getBorderWidth();
+	public abstract int getY();
+
+	public abstract int getWidth();
+
+	public abstract int getHeight();
+
+	public abstract int getBorderWidth();
 
 //	abstract Graphics getGraphics();
 	//	  abstract void restoreClip();

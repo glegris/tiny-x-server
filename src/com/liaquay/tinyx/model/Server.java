@@ -80,6 +80,7 @@ public class Server extends Client {
 
 	public interface Listener {
 		public void fontOpened(final Font font);
+		public void pixmapCreated(final Pixmap pixmap);
 	}
 	
 	/**
@@ -89,6 +90,10 @@ public class Server extends Client {
 	private static final class NullListener implements Listener {
 		@Override
 		public void fontOpened(final Font font) {}
+
+		@Override
+		public void pixmapCreated(Pixmap pixmap) {
+		}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -116,6 +121,12 @@ public class Server extends Client {
 	public void openFont(final Font font) {
 		getResources().add(font);
 		_listener.fontOpened(font);
+	}
+	
+
+	public void pixmapCreated(Pixmap pixmap) {
+		getResources().add(pixmap);
+		_listener.pixmapCreated(pixmap);
 	}
 	
 	public void closeFont(final Font font) {
@@ -385,7 +396,7 @@ public class Server extends Client {
 	}
 
 	//
-	// TODO should the following be part of an input device adapter?
+	// TODO should the following be part of an input device adapter?_listener
 	//
 
 	/**
@@ -786,4 +797,5 @@ public class Server extends Client {
 		_prtFrozen = pointer;
 		dequeueAll();
 	}
+
 }

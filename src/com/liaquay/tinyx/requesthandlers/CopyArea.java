@@ -28,9 +28,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
-import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 
 public class CopyArea implements RequestHandler {
 
@@ -85,15 +83,6 @@ public class CopyArea implements RequestHandler {
 		final int width = inputStream.readUnsignedByte();
 		final int height = inputStream.readUnsignedByte();
 
-
-		if(d instanceof Window) {
-			if (s instanceof Window) {
-				((Window)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
-			} else if (s instanceof Pixmap) {
-				((Pixmap)s).copyArea(((Window) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
-			}
-		} else if (d instanceof Pixmap) {
-			((Window)s).copyArea(((Pixmap) d), graphicsContext, srcX, srcY, width, height, dstX, dstY); 
-		}
+		s.getListener().copyArea(s, d, graphicsContext, srcX, srcY, width, height, dstX, dstY); 
 	}
 }

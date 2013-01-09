@@ -70,10 +70,10 @@ public class PutImage implements RequestHandler {
 		inputStream.skip(2);
 
 		// TODO This test does not seem correct (Weird X doesn't do this check!)
-//		if(depth != drawable.getDepth() && (imageType.equals(ImageType.XYPixmap) || imageType.equals(ImageType.ZPixmap))) {
-//			response.error(Response.ErrorCode.Match, drawableResourceId);/
-//			return;
-//		}
+		//		if(depth != drawable.getDepth() && (imageType.equals(ImageType.XYPixmap) || imageType.equals(ImageType.ZPixmap))) {
+		//			response.error(Response.ErrorCode.Match, drawableResourceId);/
+		//			return;
+		//		}
 
 		// Image must also be in XY Format?
 		if (imageType.equals(ImageType.BitMap) && depth != 1) {
@@ -88,29 +88,21 @@ public class PutImage implements RequestHandler {
 			bytesRead+=inputStream.read(buffer, bytesRead, buffer.length - bytesRead);
 		}
 
-		// The drawable is the thing we are writing into. The image data we are writing is present in this request!
-		if (destDrawable instanceof Pixmap) {
-			// Pass it onto the drawable resource
-			Pixmap p = (Pixmap) destDrawable;
-			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
+			// The drawable is the thing we are writing into. The image data we are writing is present in this request!
+		destDrawable.getListener().putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
 
-		} else if (destDrawable instanceof Window) {
-			Window w = (Window) destDrawable;
-			w.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
+			//			Pixmap p = new Pixmap(1, null, depth, width, height);
+			//			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
+			//			
+			//			w.renderDrawable(p, graphicsContext, 0,
+			//					0,
+			//					width,
+			//					height, 
+			//					destinationX,
+			//					destinationY);
+			//			
+			//			// Drawable is not a pixmap.. Is it a window?
+			//			System.out.println("Put image to a " + destDrawable.getClass());
 
-//			Pixmap p = new Pixmap(1, null, depth, width, height);
-//			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
-//			
-//			w.renderDrawable(p, graphicsContext, 0,
-//					0,
-//					width,
-//					height, 
-//					destinationX,
-//					destinationY);
-//			
-//			// Drawable is not a pixmap.. Is it a window?
-//			System.out.println("Put image to a " + destDrawable.getClass());
-			
-		}
 	}
 }

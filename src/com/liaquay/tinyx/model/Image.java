@@ -1,6 +1,6 @@
 package com.liaquay.tinyx.model;
 
-public interface Image {
+public class Image {
 
 	public enum ImageType {
 		BitMap,
@@ -13,4 +13,11 @@ public interface Image {
 			return null;
 		}
 	}
+
+	interface Listener {
+		Image createImage(Pixmap p);
+	}
+	
+	
+	
 }
