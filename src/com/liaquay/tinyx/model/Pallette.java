@@ -84,4 +84,10 @@ public class Pallette extends ColorMap {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public int allocNamedColor(String colorName) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

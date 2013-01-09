@@ -56,6 +56,9 @@ public abstract class ColorMap extends AbstractResource {
 	 * @return the pixel of the named colour
 	 */
 	public abstract int lookupNamedColor(final String colorName);
+	public abstract int allocNamedColor(final String colorName);
+	
+	
 	public abstract boolean isValidColor(final int pixel);
 	public abstract int getExactRed(final int pixel);
 	public abstract int getExactGreen(final int pixel);

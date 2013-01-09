@@ -61,20 +61,22 @@ public class TrueColorMap extends ColorMap {
 
 	}
 
-// TODO Need to work out what these are for!
 	@Override
 	public int getVisualRed(final int pixel) {
-		return getExactRed(pixel);
+		final int r = pixel & 0xff0000;
+		return r >> 8;
 	}
 
 	@Override
 	public int getVisualGreen(final int pixel) {
-		return getExactGreen(pixel);
+		final int g = pixel & 0x00ff00;
+		return g;
 	}
 
 	@Override
 	public int getVisualBlue(final int pixel) {
-		return getExactGreen(pixel);
+		final int b = pixel & 0x0000ff;
+		return b << 8;
 	}
 	
 	@Override
@@ -83,6 +85,12 @@ public class TrueColorMap extends ColorMap {
 		if(c == null) return -1;
 		return c._b | (c._g << 8) | (c._r << 16) | 0xff000000;
 	}
+
+	@Override
+	public int allocNamedColor(final String colorName) {
+		return lookupNamedColor(colorName);
+	}
+	
 	
 	private static class Color {
 		public int _r;
@@ -763,4 +771,5 @@ public class TrueColorMap extends ColorMap {
 			NAMED_COLOR_MAP.put(n.toLowerCase(), c);
 		}
 	}
+
 }

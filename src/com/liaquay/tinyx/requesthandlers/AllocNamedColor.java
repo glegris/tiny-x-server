@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Server;
 
 public class AllocNamedColor implements RequestHandler {
@@ -35,15 +38,27 @@ public class AllocNamedColor implements RequestHandler {
 			final Request request, 
 			final Response response) throws IOException {
 		
+		final XInputStream inputStream = request.getInputStream();
+		final int colorMapResourceId = inputStream.readInt();
+		final String colorName = inputStream.readString();
+		final ColorMap colorMap = server.getResources().get(colorMapResourceId, ColorMap.class);
+		if(colorMap == null) {
+			response.error(Response.ErrorCode.Colormap, colorMapResourceId);		
+			return;
+		}
+		final int pixel = colorMap.allocNamedColor(colorName);
+		if(pixel == -1) {
+			response.error(Response.ErrorCode.Name, 0); // TODO is this the correct error code?
+			return;
+		}
 		
-		
-		
-		
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		final XOutputStream outputStream = response.respond(1, 0);
+		outputStream.writeInt(pixel);
+		outputStream.writeShort(colorMap.getExactRed(pixel));
+		outputStream.writeShort(colorMap.getExactGreen(pixel));
+		outputStream.writeShort(colorMap.getExactBlue(pixel));
+		outputStream.writeShort(colorMap.getVisualRed(pixel));
+		outputStream.writeShort(colorMap.getVisualGreen(pixel));
+		outputStream.writeShort(colorMap.getVisualBlue(pixel));
 	}
 }
