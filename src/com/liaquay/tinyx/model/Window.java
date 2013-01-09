@@ -909,4 +909,16 @@ public class Window implements Drawable {
 		
 		_listener.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
 	}
+	
+	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth) {
+		_x = x;
+		_y = y;
+		_widthPixels = width;
+		_heightPixels = height;
+		_borderWidth = borderWidth;
+		
+		updateLocation();
+		
+		// TODO Events eyc.
+	}
 }
