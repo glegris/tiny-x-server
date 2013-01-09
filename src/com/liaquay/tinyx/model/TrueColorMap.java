@@ -91,7 +91,11 @@ public class TrueColorMap extends ColorMap {
 		return lookupNamedColor(colorName);
 	}
 	
-	
+	@Override
+	public int allocColor(int exactRed, int exactGreen, int exactBlue) {
+		return ((exactRed & 0xff00) << 8) | (exactGreen & 0xff00) | ((exactBlue &0xff00) >> 8);
+	}
+
 	private static class Color {
 		public int _r;
 		public int _g;
@@ -771,5 +775,4 @@ public class TrueColorMap extends ColorMap {
 			NAMED_COLOR_MAP.put(n.toLowerCase(), c);
 		}
 	}
-
 }

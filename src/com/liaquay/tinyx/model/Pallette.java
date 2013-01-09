@@ -90,4 +90,10 @@ public class Pallette extends ColorMap {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public int allocColor(int exactRed, int exactGreen, int exactBlue) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -48,7 +48,7 @@ public class AllocNamedColor implements RequestHandler {
 		}
 		final int pixel = colorMap.allocNamedColor(colorName);
 		if(pixel == -1) {
-			response.error(Response.ErrorCode.Name, 0); // TODO is this the correct error code?
+			response.error(Response.ErrorCode.Name, 0);
 			return;
 		}
 		

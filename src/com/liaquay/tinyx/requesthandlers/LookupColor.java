@@ -48,7 +48,7 @@ public class LookupColor implements RequestHandler {
 		}
 		final int pixel = colorMap.lookupNamedColor(colorName);
 		if(pixel == -1) {
-			response.error(Response.ErrorCode.Name, 0); // TODO is this the correct error code?
+			response.error(Response.ErrorCode.Name, 0);
 			return;
 		}
 		
