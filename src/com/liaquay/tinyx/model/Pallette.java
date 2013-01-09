@@ -84,4 +84,28 @@ public class Pallette extends ColorMap {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public int allocNamedColor(String colorName) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int allocColor(int exactRed, int exactGreen, int exactBlue) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isReadOnlyColor(int pixel) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getRGB(final int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

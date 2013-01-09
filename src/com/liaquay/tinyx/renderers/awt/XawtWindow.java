@@ -126,18 +126,16 @@ public class XawtWindow implements Window.Listener {
 			final int x,
 			final int y) {
 
-		final int foregroundColor = graphicsContext.getForegroundColour();
-		final Color c = new Color(foregroundColor); // TODO Don't keep newing these
-
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 
 		final Graphics graphics = translateAndClipToWindow();
+		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
 		//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final java.awt.Font awtFont = fontListener.getAwtFont();
 		graphics.setFont(awtFont);
-		graphics.setColor(c);
 		graphics.drawString(str, x, y);
 	}
 
@@ -153,8 +151,9 @@ public class XawtWindow implements Window.Listener {
 			final boolean fill) {
 
 		final Graphics2D graphics = translateAndClipToWindow();
-		graphics.setColor(new Color(graphicsContext.getForegroundColour()));
-
+		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+		
 		if (fill) {
 			graphics.fillArc(x, y, width, height, angle1, angle2);
 		} else {
@@ -172,8 +171,9 @@ public class XawtWindow implements Window.Listener {
 			final boolean fill) {
 
 		final Graphics2D graphics = translateAndClipToWindow();
-		graphics.setColor(new Color(graphicsContext.getForegroundColour()));
-
+		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+		
 		if (fill) {
 			graphics.fillRect(x, y, width, height);
 		} else {
@@ -189,8 +189,9 @@ public class XawtWindow implements Window.Listener {
 
 		final Graphics2D graphics = translateAndClipToWindow();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics.setColor(new Color(graphicsContext.getForegroundColour()));
-
+		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+		
 		graphics.fillPolygon(x, y, x.length);
 	}
 
@@ -202,8 +203,9 @@ public class XawtWindow implements Window.Listener {
 
 		final Graphics2D graphics = translateAndClipToWindow();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics.setColor(new Color(graphicsContext.getForegroundColour()));
-
+		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+		
 		graphics.drawPolyline(x, y, x.length);
 	}
 
@@ -217,7 +219,8 @@ public class XawtWindow implements Window.Listener {
 
 		final Graphics2D graphics = translateAndClipToWindow();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics.setColor(new Color(graphicsContext.getForegroundColour()));
+		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
 
 		graphics.drawLine(x1, y1, x2, y2);
 	}
@@ -262,9 +265,8 @@ public class XawtWindow implements Window.Listener {
 	}
 
 	private void paintBorder(final Graphics2D graphics) {
-		final int borderPixel = _window.getBorderPixel();
-
-		graphics.setColor(new Color(borderPixel));
+		final int rgb = _window.getColorMap().getRGB(_window.getBorderPixel());
+		graphics.setColor(new Color(rgb));
 		graphics.fillRect(
 				0, 
 				0,
@@ -273,7 +275,8 @@ public class XawtWindow implements Window.Listener {
 	}
 
 	private void paintContent(final Graphics2D graphics) {
-		graphics.setColor(new Color(_window.getBackgroundPixel()));
+		final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
+		graphics.setColor(new Color(rgb));
 		graphics.fillRect(0, 0, _window.getWidth(), _window.getHeight());    	
 	}
 

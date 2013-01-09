@@ -243,7 +243,8 @@ public class Window extends Drawable {
 			final int y,
 			final int borderWidth,
 			final WindowClass windowClass,
-			final EventFactories eventFactories) {
+			final EventFactories eventFactories,
+			final ColorMap colorMap) {
 
 		_parent = parent;
 		_resourceId = resourceId;
@@ -256,6 +257,7 @@ public class Window extends Drawable {
 		_borderWidth = borderWidth;
 		_windowClass = windowClass;
 		_eventFactories = eventFactories;
+		_colorMap = colorMap;
 
 		if(_parent != null) {
 			_parent.addChild(this);
@@ -902,5 +904,17 @@ public class Window extends Drawable {
 			int leftPad, int depth) {
 
 		_listener.putImage(graphicsContext, data, width, height, destinationX, destinationY, leftPad, depth);
+	}
+	
+	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth) {
+		_x = x;
+		_y = y;
+		_widthPixels = width;
+		_heightPixels = height;
+		_borderWidth = borderWidth;
+		
+		updateLocation();
+		
+		// TODO Events eyc.
 	}
 }

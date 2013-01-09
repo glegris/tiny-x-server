@@ -51,7 +51,8 @@ public class Screen extends Window {
 				0, // y
 				0, // border width
 				WindowClass.InputOutput,
-				eventFactories);
+				eventFactories,
+				defaultColorMap);
 
 		_defaultColorMap = defaultColorMap;
 		_widthMM = widthMM;
