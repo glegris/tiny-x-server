@@ -96,4 +96,16 @@ public class Pallette extends ColorMap {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public boolean isReadOnlyColor(int pixel) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getRGB(final int pixel) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

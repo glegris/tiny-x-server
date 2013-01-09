@@ -224,7 +224,8 @@ public class Window implements Drawable {
 			final int y,
 			final int borderWidth,
 			final WindowClass windowClass,
-			final EventFactories eventFactories) {
+			final EventFactories eventFactories,
+			final ColorMap colorMap) {
 
 		_parent = parent;
 		_resourceId = resourceId;
@@ -237,6 +238,7 @@ public class Window implements Drawable {
 		_borderWidth = borderWidth;
 		_windowClass = windowClass;
 		_eventFactories = eventFactories;
+		_colorMap = colorMap;
 
 		if(_parent != null) {
 			_parent.addChild(this);
