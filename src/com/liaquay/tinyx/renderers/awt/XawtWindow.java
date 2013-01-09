@@ -42,7 +42,7 @@ import com.liaquay.tinyx.model.Window;
  * TODO use colour map to look up colours.
  *
  */
-public class XawtWindow implements Window.Listener {
+public class XawtWindow extends XawtDrawableListener implements Window.Listener {
 
 	private final Window _window;
 	private final Canvas _canvas;
@@ -57,7 +57,6 @@ public class XawtWindow implements Window.Listener {
 
 	@Override
 	public void mapped(final boolean mapped) {
-
 		paintWindow();
 		for(int i = 0; i < _window.getChildCount(); i++) {
 			final Window child = _window.getChild(i);
@@ -281,6 +280,8 @@ public class XawtWindow implements Window.Listener {
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
+		super(window);
+		
 		_window = window;
 		_canvas = canvas;
 	}
@@ -318,42 +319,79 @@ public class XawtWindow implements Window.Listener {
 	}
 
 
+//	@Override
+//	public void putImage(GraphicsContext graphicsContext, byte[] data,
+//			int width, int height, int destinationX, int destinationY,
+//			int leftPad, int depth) {
+//
+//		
+//		
+//		if (depth == 1) {
+//			byte[] arr = {(byte)0, (byte)0xff};
+//
+//			WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
+//					width, height, 1, 1, null);
+//
+//
+//
+////			Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, bMask), 
+////					new DataBufferByte(buffer, buffer.length), null);
+////
+////			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+////			bi.setData(r);
+////
+////			final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
+////			graphics.drawImage(bi, null, 0,0);
+//
+//
+//		} else {
+//			System.out.println("Depth of " + depth + " not currently supported for putImage on XawtWindow");
+//		}
+//
+//	}
+
+
 	@Override
-	public void putImage(GraphicsContext graphicsContext, byte[] data,
-			int width, int height, int destinationX, int destinationY,
-			int leftPad, int depth) {
-
+	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
+			int srcY, int width, int height, int dstX, int dstY) {
+		// TODO Auto-generated method stub
 		
+
+		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
+
+		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
+
+		Graphics dg = destImage.createGraphics();
+		Graphics sg = srcImage.createGraphics();
 		
-		if (depth == 1) {
-			byte[] arr = {(byte)0, (byte)0xff};
+		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
 
-			WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
-					width, height, 1, 1, null);
-
-
-
-//			Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, bMask), 
-//					new DataBufferByte(buffer, buffer.length), null);
-//
-//			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-//			bi.setData(r);
-//
-//			final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
-//			graphics.drawImage(bi, null, 0,0);
-
-
-		} else {
-			System.out.println("Depth of " + depth + " not currently supported for putImage on XawtWindow");
-		}
 
 	}
 
 
 	@Override
-	public void copyArea(Drawable srcDrawable, Drawable d, GraphicsContext graphicsContext, int srcX,
-			int srcY, int width, int height, int dstX, int dstY) {
-		// TODO Auto-generated method stub
+	public void createImage(Drawable drawable) {
+		BufferedImage i = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+		XawtImageListener image = new XawtImageListener(i);
+		drawable.setImage(image);
+	}
+
+
+	@Override
+	public Image getImage() {
+		Image i = new Image();
 		
+        int w = _canvas.getWidth();
+        int h = _canvas.getHeight();
+        int type = BufferedImage.TYPE_INT_RGB;
+        BufferedImage image = new BufferedImage(w,h,type);
+        Graphics2D g2 = image.createGraphics();
+        _canvas.paint(g2);
+        g2.dispose();
+        
+        
+		i.setListener(new XawtImageListener(image));
+		return i;
 	}
 }

@@ -20,18 +20,76 @@ package com.liaquay.tinyx.model;
 
 
 
+
 public abstract class Drawable implements Resource {
 
+	Image.Listener _image;
+
 	public interface Listener {
-		public void copyArea(Drawable srcDrawable, Drawable d, GraphicsContext graphicsContext, int srcX,
+		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
 				int srcY, int width, int height, int dstX, int dstY);
 		
 		public void putImage(GraphicsContext graphicsContext,
 				byte[] buffer, int width, int height,
 				int destinationX, int destinationY, int leftPad, int depth);
+		
+		Image getImage();
+		
+		public void createImage(Drawable drawable);
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
+	private static final class NullListener implements Listener {
+
+		@Override
+		public void copyArea(Drawable d, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftPad, int depth) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public Image getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void createImage(Drawable drawable) {
+			// TODO Auto-generated method stub
+			
+		}
+
+
+
 	}
 
-	public abstract Listener getListener();
+	public Image.Listener getImage() {
+		return this._image;
+	}
+
+	public com.liaquay.tinyx.model.Drawable.Listener getListener() {
+		return _listener;
+	}
+
+	public void setImage(Image.Listener listener) {
+		_image = listener;
+	}
 
 	public abstract Screen getScreen();
 

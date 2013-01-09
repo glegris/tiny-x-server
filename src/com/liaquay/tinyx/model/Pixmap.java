@@ -18,55 +18,18 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.awt.image.BufferedImage;
+
 
 
 
 
 public class Pixmap extends Drawable {
 
-	public interface Listener extends Drawable.Listener {
-		Image createImage(Pixmap pixmap);	
-	}
-
-
-	private static final Listener NULL_LISTENER = new NullListener();
-
-	private Listener _listener = NULL_LISTENER;
-
-	public void setListener(final Listener listener) {
-		_listener = listener;
-	}
-	private static final class NullListener implements Listener {
-
-		@Override
-		public void copyArea(Drawable srcDrawable, Drawable d, GraphicsContext graphicsContext,
-				int srcX, int srcY, int width, int height, int dstX, int dstY) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public Image createImage(Pixmap pixmap) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
-				int width, int height, int destinationX, int destinationY,
-				int leftPad, int depth) {
-
-		}
-
-	}
-	
 	private final int _resourceId;
 	private final Drawable _drawable;
 	private final int _depth;
 	private final int _width;
 	private final int _height;
-	BufferedImage _image;
 	
 	public Pixmap(final int resourceId,
 			final Drawable drawable,
@@ -78,10 +41,6 @@ public class Pixmap extends Drawable {
 		_width = width;
 		_height = height;
 		_drawable = drawable;
-	}
-
-	public BufferedImage getImage() {
-		return this._image;
 	}
 	
 	@Override
@@ -134,22 +93,5 @@ public class Pixmap extends Drawable {
 	@Override
 	public int getBorderWidth() {
 		return 0;
-	}
-
-	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
-			int width, int height, int destinationX, int destinationY,
-			int leftPad, int depth) {
-
-		_listener.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
-	}
-
-	@Override
-	public com.liaquay.tinyx.model.Drawable.Listener getListener() {
-		return _listener;
-	}
-
-	public void setImage(BufferedImage image) {
-		this._image = image;
-		
 	}
 }

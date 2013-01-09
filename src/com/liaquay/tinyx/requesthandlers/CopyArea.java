@@ -83,6 +83,6 @@ public class CopyArea implements RequestHandler {
 		final int width = inputStream.readUnsignedByte();
 		final int height = inputStream.readUnsignedByte();
 
-		s.getListener().copyArea(s, d, graphicsContext, srcX, srcY, width, height, dstX, dstY); 
+		s.getListener().copyArea(d, graphicsContext, srcX, srcY, width, height, dstX, dstY); 
 	}
 }

@@ -97,7 +97,7 @@ public class Window extends Drawable {
 			return 0;
 		}
 		@Override
-		public void copyArea(Drawable srcDrawable, Drawable d, GraphicsContext graphicsContext,
+		public void copyArea(Drawable d, GraphicsContext graphicsContext,
 				int srcX, int srcY, int width, int height, int dstX, int dstY) {
 			// TODO Auto-generated method stub
 
@@ -109,7 +109,15 @@ public class Window extends Drawable {
 			// TODO Auto-generated method stub
 
 		}
-
+		@Override
+		public void createImage(Drawable drawable) {
+			// TODO Auto-generated method stub
+		}
+		@Override
+		public Image getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	private static final Listener NULL_LISTENER = new NullListener();
