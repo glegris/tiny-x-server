@@ -54,6 +54,8 @@ public class Window extends Drawable {
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
+		public void clearArea(boolean exposures, int x, int y, int width,
+				int height);
 	}
 
 	/**
@@ -117,6 +119,12 @@ public class Window extends Drawable {
 		public Image getImage() {
 			// TODO Auto-generated method stub
 			return null;
+		}
+		@Override
+		public void clearArea(boolean exposures, int x, int y, int width,
+				int height) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
@@ -811,8 +819,7 @@ public class Window extends Drawable {
 	}
 
 	public void clearArea(final boolean exposures, final int x, final int y, final int width, final int height) {
-		// TODO Auto-generated method stub
-
+		_listener.clearArea(exposures, x, y, width, height);
 	}
 
 	public void add(final ClientWindowAssociation assoc) {

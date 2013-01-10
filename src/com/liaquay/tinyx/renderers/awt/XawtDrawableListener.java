@@ -46,11 +46,12 @@ public class XawtDrawableListener implements Drawable.Listener {
 		
 		Image srcImage = ((Drawable.Listener) _drawable.getListener()).getImage();
 		
-
-		Graphics dg = ((XawtImageListener) destImage.getListener()).getXawtImage().createGraphics();
-		Graphics sg = ((XawtImageListener) srcImage.getListener()).getXawtImage().createGraphics();
+		BufferedImage srcbi = ((XawtImageListener) srcImage.getListener()).getXawtImage();
 		
-		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
+		Graphics dg = ((XawtImageListener) destImage.getListener()).getXawtGraphics();
+
+		dg.translate(dstX,  dstY);
+		dg.drawImage(srcbi, width, height, null);
 	}
 
 	@Override
@@ -64,18 +65,15 @@ public class XawtDrawableListener implements Drawable.Listener {
 			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
 			byte[] arr = {(byte)0, (byte)0xff};
-
-			IndexColorModel colorModel 
-			= new IndexColorModel(1, 2, arr, arr, arr);
-
+			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 			BufferedImage image = new BufferedImage(colorModel, raster, false, null);
 
-			XawtImageListener xawtImage = new XawtImageListener(image);
+			XawtImageListener xawtImage = new XawtImageListener(image, image.getGraphics());
 			_drawable.setImage(xawtImage);
 			
 			
 			Image srcImage = ((Drawable.Listener) _drawable.getListener()).getImage();
-			Graphics sg = ((XawtImageListener) srcImage.getListener()).getXawtImage().createGraphics();
+			Graphics sg = ((XawtImageListener) srcImage.getListener()).getXawtGraphics();
 			
 			sg.drawImage(image, destinationX, destinationY, width, height, null);			
 			
@@ -89,7 +87,7 @@ public class XawtDrawableListener implements Drawable.Listener {
 	public void createImage(Drawable drawable) {
 		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 		
-		XawtImageListener i = new XawtImageListener(image);
+		XawtImageListener i = new XawtImageListener(image, image.getGraphics());
 		drawable.setImage(i);
 	}
 
@@ -98,13 +96,14 @@ public class XawtDrawableListener implements Drawable.Listener {
 		Image i = new Image();
 		if (_drawable.getImage() instanceof XawtImageListener) {
 			BufferedImage image = ((XawtImageListener) _drawable.getImage()).getXawtImage();
-			i.setListener(new XawtImageListener(image));
+			Graphics g = ((XawtImageListener) _drawable.getImage()).getXawtGraphics();
+			
+			i.setListener(new XawtImageListener(image, g));
 		} else {
 			System.out.println("Unable to get image");
 		}
 		
 		return i;
-
 	}
 
 

@@ -278,6 +278,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		graphics.setColor(new Color(rgb));
 		graphics.fillRect(0, 0, _window.getWidth(), _window.getHeight());    	
 	}
+	
+	@Override
+	public void clearArea(boolean exposures, int x, int y, int width, int height) {
+		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+
+		final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
+		graphics.setColor(new Color(rgb));
+
+		graphics.clearRect(x, y, width, height);
+	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
 		super(window);
@@ -351,29 +361,30 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 //	}
 
 
-	@Override
-	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
-			int srcY, int width, int height, int dstX, int dstY) {
-		// TODO Auto-generated method stub
-		
-
-		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
-
-		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
-
-		Graphics dg = destImage.createGraphics();
-		Graphics sg = srcImage.createGraphics();
-		
-		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
-
-
-	}
+//	@Override
+//	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
+//			int srcY, int width, int height, int dstX, int dstY) {
+//		// TODO Auto-generated method stub
+//		
+//
+//		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
+//
+//		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
+//
+//		Graphics dg = destImage.createGraphics();
+//		Graphics sg = srcImage.createGraphics();
+//		
+//		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
+//
+//
+//	}
 
 
 	@Override
 	public void createImage(Drawable drawable) {
 		BufferedImage i = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-		XawtImageListener image = new XawtImageListener(i);
+		
+		XawtImageListener image = new XawtImageListener(i, i.getGraphics());
 		drawable.setImage(image);
 	}
 
@@ -391,7 +402,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
         g2.dispose();
         
         
-		i.setListener(new XawtImageListener(image));
+		i.setListener(new XawtImageListener(null, _canvas.getGraphics()));
 		return i;
 	}
 }
