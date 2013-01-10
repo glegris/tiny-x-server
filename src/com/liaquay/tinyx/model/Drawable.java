@@ -19,23 +19,93 @@
 package com.liaquay.tinyx.model;
 
 
-public interface Drawable extends Resource {
 
-	public Screen getScreen();
 
-	public Visual getVisual();
+public abstract class Drawable implements Resource {
 
-	public int getDepth();
+	Image.Listener _image;
 
-	public int getX();
+	public interface Listener {
+		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
+				int srcY, int width, int height, int dstX, int dstY);
+		
+		public void putImage(GraphicsContext graphicsContext,
+				byte[] buffer, int width, int height,
+				int destinationX, int destinationY, int leftPad, int depth);
+		
+		Image getImage();
+		
+		public void createImage(Drawable drawable);
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
 
-	public int getY();
+	private Listener _listener = NULL_LISTENER;
 
-	public int getWidth();
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
+	private static final class NullListener implements Listener {
 
-	public int getHeight();
+		@Override
+		public void copyArea(Drawable d, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
 
-	public int getBorderWidth();
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftPad, int depth) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public Image getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void createImage(Drawable drawable) {
+			// TODO Auto-generated method stub
+			
+		}
+
+
+
+	}
+
+	public Image.Listener getImage() {
+		return this._image;
+	}
+
+	public com.liaquay.tinyx.model.Drawable.Listener getListener() {
+		return _listener;
+	}
+
+	public void setImage(Image.Listener listener) {
+		_image = listener;
+	}
+
+	public abstract Screen getScreen();
+
+	public abstract Visual getVisual();
+
+	public abstract int getDepth();
+
+	public abstract int getX();
+
+	public abstract int getY();
+
+	public abstract int getWidth();
+
+	public abstract int getHeight();
+
+	public abstract int getBorderWidth();
 
 //	abstract Graphics getGraphics();
 	//	  abstract void restoreClip();

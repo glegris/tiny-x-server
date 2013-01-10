@@ -30,7 +30,6 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.renderers.awt.XawtScreen.PixmapProducer;
 
 public class CreatePixmap implements RequestHandler {
 
@@ -68,6 +67,6 @@ public class CreatePixmap implements RequestHandler {
 		}
 		
 		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);
-		server.getResources().add(pixmap);
+		server.drawableCreated(pixmap);
 	}
 }

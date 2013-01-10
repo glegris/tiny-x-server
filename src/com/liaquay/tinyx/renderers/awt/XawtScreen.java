@@ -57,13 +57,8 @@ public class XawtScreen {
 	private final Frame _frame;
 	private final XawtWindow _rootWindowListener;
 	private final Canvas _canvas = new Canvas();
-	private static XawtPixmap _pixmapListener;
-
-	public static class PixmapProducer {
-		public static Pixmap.Listener getPixmapListener() {
-			return _pixmapListener;
-		}
-	}
+	
+//	private final XawtPixmap _pixmapListener;
 
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
 
@@ -92,8 +87,8 @@ public class XawtScreen {
 		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
 		rootWindow.setListener(_rootWindowListener);
 
-		_pixmapListener = new XawtPixmap(_canvas);
-
+//		_pixmapListener = new XawtPixmap(pixmap);
+		
 		_frame.add(_canvas);
 		_frame.pack();
 		_frame.setVisible(true);

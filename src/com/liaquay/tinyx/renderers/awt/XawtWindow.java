@@ -22,23 +22,18 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Image;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 
@@ -47,10 +42,11 @@ import com.liaquay.tinyx.model.Window;
  * TODO use colour map to look up colours.
  *
  */
-public class XawtWindow implements Window.Listener {
+public class XawtWindow extends XawtDrawableListener implements Window.Listener {
 
 	private final Window _window;
 	private final Canvas _canvas;
+
 
 	@Override
 	public void childCreated(final Window child) {
@@ -61,7 +57,6 @@ public class XawtWindow implements Window.Listener {
 
 	@Override
 	public void mapped(final boolean mapped) {
-
 		paintWindow();
 		for(int i = 0; i < _window.getChildCount(); i++) {
 			final Window child = _window.getChild(i);
@@ -72,7 +67,7 @@ public class XawtWindow implements Window.Listener {
 
 	@Override
 	public void visible(final boolean visible) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub//
 
 	}
 
@@ -86,39 +81,40 @@ public class XawtWindow implements Window.Listener {
 			final Pixmap m = cursor.getMaskPixmap();
 
 			// Buffered image that has transparency.
-			final Image image = p.getImage();//new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-//leRaster newImage = p.getImage();//image.getRaster();
+//			final Image image = p.getImage();//new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+//			image.getListener();
+			//leRaster newImage = p.getImage();//image.getRaster();
 
-//			// This seems horribly inefficient, but will probably do for the time being.
-//			int i = 0;
-//			for (int y = 0; y < p.getHeight() - 1; y++) {
-//				for (int x = 0; x < (p.getWidth()/8); x++) {
-//					final int source = 0x00ff & p.getData()[i];
-//					final int mask = 0x00ff & m.getData()[i++];
-//
-//					for (int a = 0; a < 8; a++) {
-//						final byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
-//						final byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
-//
-//						if (sourcePixel > 0) {
-//							newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
-//							newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
-//							newImage.setSample((x*8)+a, y, 2, cursor.getForegroundColorBlue());	// Blue
-//						} else {
-//							newImage.setSample((x*8)+a, y, 0, cursor.getBackgroundColorRed());		// Red
-//							newImage.setSample((x*8)+a, y, 1, cursor.getBackgroundColorGreen());	// Green
-//							newImage.setSample((x*8)+a, y, 2, cursor.getBackgroundColorBlue());	// Blue
-//						}
-//						newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
-//					}
-//				}
+			//			// This seems horribly inefficient, but will probably do for the time being.
+			//			int i = 0;
+			//			for (int y = 0; y < p.getHeight() - 1; y++) {
+			//				for (int x = 0; x < (p.getWidth()/8); x++) {
+			//					final int source = 0x00ff & p.getData()[i];
+			//					final int mask = 0x00ff & m.getData()[i++];
+			//
+			//					for (int a = 0; a < 8; a++) {
+			//						final byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
+			//						final byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
+			//
+			//						if (sourcePixel > 0) {
+			//							newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
+			//							newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
+			//							newImage.setSample((x*8)+a, y, 2, cursor.getForegroundColorBlue());	// Blue
+			//						} else {
+			//							newImage.setSample((x*8)+a, y, 0, cursor.getBackgroundColorRed());		// Red
+			//							newImage.setSample((x*8)+a, y, 1, cursor.getBackgroundColorGreen());	// Green
+			//							newImage.setSample((x*8)+a, y, 2, cursor.getBackgroundColorBlue());	// Blue
+			//						}
+			//						newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
+			//					}
+			//				}
+			//			}
+
+//			if (image != null) {
+//				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
+//				final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
+//				_canvas.setCursor(c);
 //			}
-
-			if (image != null) {
-				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
-				final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
-				_canvas.setCursor(c);
-			}
 		}
 	}
 
@@ -284,13 +280,15 @@ public class XawtWindow implements Window.Listener {
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
+		super(window);
+		
 		_window = window;
 		_canvas = canvas;
 	}
 
 	@Override
 	public void renderDrawable(
-			final Drawable drawable,
+			final BufferedImage image,
 			final GraphicsContext graphicsContext, 
 			final int srcX,
 			final int srcY,
@@ -299,17 +297,18 @@ public class XawtWindow implements Window.Listener {
 			final int dstX,
 			final int dstY) {
 
-		System.out.println("Render drawable: " + drawable + " X: " + srcX + " Y: " + srcY);
 
-		if (drawable instanceof Pixmap) {
-			final Pixmap p = (Pixmap) drawable;
 
-			final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-			image.setData(p.toRaster());
-
+		
+//		if (drawable instanceof Pixmap) {
+//			final Pixmap p = (Pixmap) drawable;
+//
+//			final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+//			image.setData(p.toRaster());
+//
 			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 			graphics.drawImage(image, dstX, dstY, width, height, null);
-		}
+//		}
 	}
 
 
@@ -320,21 +319,79 @@ public class XawtWindow implements Window.Listener {
 	}
 
 
+//	@Override
+//	public void putImage(GraphicsContext graphicsContext, byte[] data,
+//			int width, int height, int destinationX, int destinationY,
+//			int leftPad, int depth) {
+//
+//		
+//		
+//		if (depth == 1) {
+//			byte[] arr = {(byte)0, (byte)0xff};
+//
+//			WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
+//					width, height, 1, 1, null);
+//
+//
+//
+////			Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, bMask), 
+////					new DataBufferByte(buffer, buffer.length), null);
+////
+////			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+////			bi.setData(r);
+////
+////			final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
+////			graphics.drawImage(bi, null, 0,0);
+//
+//
+//		} else {
+//			System.out.println("Depth of " + depth + " not currently supported for putImage on XawtWindow");
+//		}
+//
+//	}
+
+
 	@Override
-	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
-			int width, int height, int destinationX, int destinationY,
-			int leftPad, int depth) {
+	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
+			int srcY, int width, int height, int dstX, int dstY) {
+		// TODO Auto-generated method stub
+		
 
-		int[] arr = {(byte)0xff};
+		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
 
-		//        IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
-		//        Raster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
-		//                                           width, height, 1, 1, null);
+		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
+
+		Graphics dg = destImage.createGraphics();
+		Graphics sg = srcImage.createGraphics();
+		
+		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
 
 
-		Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, leftPad, arr), 
-				new DataBufferByte(buffer, buffer.length), new Point(destinationX, destinationY));
+	}
 
-		System.out.println("Raster: " + r);
+
+	@Override
+	public void createImage(Drawable drawable) {
+		BufferedImage i = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+		XawtImageListener image = new XawtImageListener(i);
+		drawable.setImage(image);
+	}
+
+
+	@Override
+	public Image getImage() {
+		Image i = new Image();
+		
+        int w = _canvas.getWidth();
+        int h = _canvas.getHeight();
+        int type = BufferedImage.TYPE_INT_RGB;
+        BufferedImage image = new BufferedImage(w,h,type);
+        Graphics2D g2 = image.createGraphics();
+        _canvas.paint(g2);
+        g2.dispose();
+        
+        
+		i.setListener(new XawtImageListener(image));
+		return i;
 	}
 }

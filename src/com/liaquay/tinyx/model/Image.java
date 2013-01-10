@@ -1,6 +1,8 @@
 package com.liaquay.tinyx.model;
 
-public interface Image {
+
+
+public class Image {
 
 	public enum ImageType {
 		BitMap,
@@ -13,4 +15,24 @@ public interface Image {
 			return null;
 		}
 	}
+
+	public interface Listener {
+	}
+	
+	private static final class NullListener implements Listener {
+	}
+
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+
+	public Listener getListener() {
+		return _listener;
+	}
+
+	
 }
