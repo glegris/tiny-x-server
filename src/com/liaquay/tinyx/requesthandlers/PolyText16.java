@@ -23,21 +23,66 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.Font;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class PolyText16 implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}
+
+		final int x = inputStream.readSignedShort();
+		final int y = inputStream.readSignedShort();
+
+		while(true) {
+			final int len = inputStream.readUnsignedByte();
+
+			if(len == 0) {
+				break;
+			}
+			if (len == 255) {
+				final int font = inputStream.readInt();
+				final Font f = server.getResources().get(font, Font.class);
+				if(f != null) graphicsContext.setFont(f);
+			}
+			else {
+				final int delta = inputStream.readUnsignedByte();
+
+				final StringBuilder str = new StringBuilder();
+				for (int i = 0; i < len; i++) {
+					final int ah = inputStream.readUnsignedByte();
+					final int al = inputStream.readUnsignedByte();
+					str.append((char) (ah<<8 | al));
+				}
+
+				((Window) drawable).drawString(graphicsContext, str.toString(), x + delta, y);
+				
+				// TODO modify x and y for next text draw...
+			}
+		}		
 	}
 }

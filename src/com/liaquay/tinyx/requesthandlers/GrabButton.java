@@ -57,11 +57,11 @@ public class GrabButton implements RequestHandler {
 			response.error(Response.ErrorCode.Window, windowId);
 			return;
 		}
-		if(!grabWindow.isViewable()) {
-			response.respond(GrabResponse.NotViewable.ordinal());
-			return;
-		}
-		final int eventMask = inputStream.readInt();
+//		if(!grabWindow.isViewable()) {
+//			response.respond(GrabResponse.NotViewable.ordinal());
+//			return;
+//		}
+		final int eventMask = inputStream.readUnsignedShort();
 		final boolean pointerSynchronous = inputStream.readUnsignedByte() == 0;
 		final boolean keyboardSynchronous = inputStream.readUnsignedByte() == 0;
 
@@ -76,10 +76,10 @@ public class GrabButton implements RequestHandler {
 				response.error(Response.ErrorCode.Window, confineToWindowId);
 				return;
 			}
-			if(!confineToWindow.isViewable()) {
-				response.respond(GrabResponse.NotViewable.ordinal());
-				return;
-			}
+//			if(!confineToWindow.isViewable()) {
+//				response.respond(GrabResponse.NotViewable.ordinal());
+//				return;
+//			}
 		}
 
 		final int cursorId = inputStream.readInt();
@@ -89,7 +89,7 @@ public class GrabButton implements RequestHandler {
 		}
 		else {
 			cursor = server.getResources().get(cursorId, Cursor.class);
-			if(confineToWindow == null) {
+			if(cursor == null) {
 				response.error(Response.ErrorCode.Cursor, cursorId);
 				return;
 			}
@@ -122,7 +122,7 @@ public class GrabButton implements RequestHandler {
 				trigger);
 
 		grabWindow.addButtonGrab(buttonGrab);
-
-		response.respond(GrabResponse.Success.ordinal());
+//
+//		response.respond(GrabResponse.Success.ordinal());
 	}
 }

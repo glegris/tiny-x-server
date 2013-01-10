@@ -155,11 +155,11 @@ public class ResponseAdaptor implements Response {
 			_outputStream.writeByte(_replyCode.ordinal());
 			_outputStream.writeByte(_data);
 			_outputStream.writeShort(_request.getSequenceNumber() & 0xffff);
-			final int extraLength = _extra.size() - 24;
+			final int extraLength =_extra.size() < 24 ? 0 :  _extra.size() - 24;
 			_outputStream.writeInt((extraLength+3)>>2); // Send the size of the extra bytes but do not include the 32 byte header.
 			_outputStream.write(_extra.toByteArray(), 0, _extra.size());
-			if(_outputStream.getCounter() < 32) {
-				throw new IOException("Response message too short");
+			if(_extra.size() < 24) {
+				_outputStream.writePad(24-_extra.size());
 			}
 		}
 		_outputStream.send();

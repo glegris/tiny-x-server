@@ -58,23 +58,30 @@ public class PolyText8 implements RequestHandler {
 		final int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
 
-		final StringBuilder str = new StringBuilder();
-		final int len = inputStream.readUnsignedByte();
-		final int delta;
-		if (len == 255) {
-			final int font = inputStream.readInt();
-			final Font f = server.getResources().get(font, Font.class);
-			graphicsContext.setFont(f);
-			delta = 0;
-		} else {
-			delta = inputStream.readUnsignedByte();
+		while(true) {
+			final int len = inputStream.readUnsignedByte();
 
-			for (int i = 0; i < len; i++) {
-				final int a = inputStream.readUnsignedByte();
-				str.append((char) a);
+			if(len == 0) {
+				break;
+			}
+			if (len == 255) {
+				final int font = inputStream.readInt();
+				final Font f = server.getResources().get(font, Font.class);
+				if(f != null) graphicsContext.setFont(f);
+			}
+			else {
+				final int delta = inputStream.readUnsignedByte();
+
+				final StringBuilder str = new StringBuilder();
+				for (int i = 0; i < len; i++) {
+					final int a = inputStream.readUnsignedByte();
+					str.append((char) a);
+				}
+
+				((Window) drawable).drawString(graphicsContext, str.toString(), x + delta, y);
+				
+				// TODO modify x and y for next text draw...
 			}
 		}
-
-		((Window) drawable).drawString(graphicsContext, str.toString(), x + delta, y);
 	}
 }
