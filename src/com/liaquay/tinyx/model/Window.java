@@ -461,10 +461,7 @@ public class Window implements Drawable {
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
 
-			if(wouldDeliver(Event.ExposureMask)) {
-				final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
-				deliver(exposeEvent, Event.ExposureMask);
-			}
+			exposed();
 			
 			// TODO check for visibility changes 
 			// TODO Send visibility events 
@@ -477,6 +474,13 @@ public class Window implements Drawable {
 		}
 	}
 
+	private void exposed() {
+		if(wouldDeliver(Event.ExposureMask)) {
+			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
+			deliver(exposeEvent, Event.ExposureMask);
+		}
+	}
+	
 	/**
 	 * Determine if all the window up to the root window are mapped,
 	 * in which case this window is mapped and displayable.
@@ -560,7 +564,13 @@ public class Window implements Drawable {
 			_mapped = false;
 			// TODO issue some unmapped event
 			_listener.mapped(false);
+			
+			if(_parent != null && _parent.isViewable()) {
+				exposed();
+			}
 		}
+		
+		
 	}
 
 	/**
