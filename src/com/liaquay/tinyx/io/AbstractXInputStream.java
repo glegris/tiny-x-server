@@ -95,10 +95,16 @@ public abstract class AbstractXInputStream implements XInputStream {
 	}
 
 	private byte[] _stringBuffer = new byte[64];
-
+	
 	public String readString() throws IOException {
 		final int length = readUnsignedShort();
 	    skip(-_counter & 3);
+	    final String text = readString(length);
+	    skip((-length) & 3);
+	    return text;
+	}
+	
+	public String readString(final int length) throws IOException {
 	    final byte[] buffer;
 	    if(length <= _stringBuffer.length) {
 	    	buffer = _stringBuffer;
@@ -107,8 +113,25 @@ public abstract class AbstractXInputStream implements XInputStream {
 	    	buffer = new byte[length];
 	    }
 	    read(buffer, 0, length);
-	    skip((-length) & 3);
 	    return new String(buffer, 0, length);
 	}
+	
+	public String readString16() throws IOException {
+		final int length = readUnsignedShort();
+	    skip(-_counter & 3);
+	    final String text = readString16(length);
+	    skip((-length) & 3);
+	    return text;
+	}
+	
+	public String readString16(final int length) throws IOException {
+	    final char[] buffer = new char[length];;
+	    for(int i = 0; i < length; ++i) {
+			final int ah = readUnsignedByte();
+			final int al = readUnsignedByte();
+	    	buffer[i] = (char) (ah<<8 | al);
+	    }
+	    return new String(buffer, 0, length);
+	}	
 }
 

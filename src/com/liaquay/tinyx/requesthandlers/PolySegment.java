@@ -34,7 +34,8 @@ import com.liaquay.tinyx.model.Window;
 public class PolySegment implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {

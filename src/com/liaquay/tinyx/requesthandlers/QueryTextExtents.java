@@ -23,21 +23,39 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.TextExtents;
 
 public class QueryTextExtents implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+		final int fid = inputStream.readInt();
+		final Font font = (Font) server.getResources().get(fid);
+		if(font == null) {
+			response.error(Response.ErrorCode.Font, fid);
+			return;
+		}
+		final boolean odd = request.getData() != 0;
+		final String text = inputStream.readString16((request.getLength()>>1) - (odd ? 5 : 4));
+		final TextExtents textExtents = font.getTextExtents(text);		
+		final XOutputStream outputStream = response.respond(font.isLeftToRight() ? 0 : 1);
+		outputStream.writeShort(font.getMaxAscent());
+		outputStream.writeShort(font.getMaxDescent());
+		outputStream.writeShort(textExtents.getAscent());
+		outputStream.writeShort(textExtents.getDescent());
+		outputStream.writeInt(textExtents.getWidth());
+		outputStream.writeInt(textExtents.getLeft());
+		outputStream.writeInt(textExtents.getRight());
 	}
 }

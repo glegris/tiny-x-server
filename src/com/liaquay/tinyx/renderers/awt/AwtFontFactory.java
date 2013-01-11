@@ -98,25 +98,10 @@ public class AwtFontFactory implements FontFactory {
 		
 		final Font f = new Font(name, Font.PLAIN, size == 0 ? 12: size);
 		final FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(f);
-		final FontRenderContext frc = new FontRenderContext(null, true, true);
-		final Collection<GlyphDetail> glyphDetails = new ArrayList<GlyphDetail>();
 
 		//TODO: Try and get the first and last character for this font from somewhere more meaningful
 		final int firstChar = 32;
 		final int lastChar = 255;
-		
-		final char[] chr = new char[1];
-		for (int i = firstChar; i <= lastChar; i++) {
-			chr[0] = (char) i;
-			final Rectangle2D bounds = f.getStringBounds(chr, 0, 1, frc);
-			final LineMetrics lm = f.getLineMetrics(chr, 0, 1, frc);
-			
-			final GlyphDetail gd = new GlyphDetail(chr[0]);
-			gd.setAscent((int) lm.getAscent());
-			gd.setDescent((int) lm.getDescent());
-			gd.setWidth((int) bounds.getWidth());
-			glyphDetails.add(gd);
-		}
 		
 		final FontDetail fd = new FontDetail(
 				fm.getMaxAscent(),
@@ -127,8 +112,7 @@ public class AwtFontFactory implements FontFactory {
 				32, // First char
 				255, // Last char
 				fm.getHeight(),
-				fm.getLeading(),
-				glyphDetails);
+				fm.getLeading());
 		
 		return fd;
 	}

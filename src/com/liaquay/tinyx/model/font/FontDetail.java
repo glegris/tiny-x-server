@@ -18,11 +18,6 @@
  */
 package com.liaquay.tinyx.model.font;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.liaquay.tinyx.renderers.awt.GlyphDetail;
 
 public class FontDetail {
 
@@ -36,8 +31,6 @@ public class FontDetail {
 	private final int _height;
 	private final int _leading;
 	
-	private final Map<Integer, GlyphDetail> _glyphDetails = new HashMap<Integer, GlyphDetail>();
-
 	public FontDetail(
 			final int maxAscent,
 			final int maxDescent,
@@ -47,8 +40,7 @@ public class FontDetail {
 			final int firstChar,
 			final int lastChar,
 			final int height,
-			final int leading,
-			final Collection<GlyphDetail> glyphDetails) {
+			final int leading) {
 
 		_maxAscent = maxAscent;
 		_maxDescent = maxDescent;
@@ -59,10 +51,6 @@ public class FontDetail {
 		_lastChar = lastChar;
 		_height = height;
 		_leading = leading;
-		
-		for(final GlyphDetail glyphDetail : glyphDetails) {
-			_glyphDetails.put((int) glyphDetail.getChr(), glyphDetail);
-		}
 	}
 
 	public int getMaxAscent() {
@@ -99,9 +87,5 @@ public class FontDetail {
 
 	public int getLeading() {
 		return _leading;
-	}
-
-	public GlyphDetail getGlyphDetail(int i) {
-		return _glyphDetails.get(i);
 	}
 }

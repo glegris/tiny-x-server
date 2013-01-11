@@ -71,15 +71,9 @@ public class PolyText16 implements RequestHandler {
 			}
 			else {
 				final int delta = inputStream.readUnsignedByte();
+				final String text = inputStream.readString16(len);
 
-				final StringBuilder str = new StringBuilder();
-				for (int i = 0; i < len; i++) {
-					final int ah = inputStream.readUnsignedByte();
-					final int al = inputStream.readUnsignedByte();
-					str.append((char) (ah<<8 | al));
-				}
-
-				((Window) drawable).drawString(graphicsContext, str.toString(), x + delta, y);
+				((Window) drawable).drawString(graphicsContext, text, x + delta, y);
 				
 				// TODO modify x and y for next text draw...
 			}

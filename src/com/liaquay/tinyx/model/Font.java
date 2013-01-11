@@ -19,7 +19,6 @@
 package com.liaquay.tinyx.model;
 
 import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.renderers.awt.GlyphDetail;
 
 public class Font extends AbstractResource {
 
@@ -28,6 +27,8 @@ public class Font extends AbstractResource {
 	
 	public interface Listener {
 		public void fontClosed(final Font font);
+		public TextExtents getTextExtents(final int character);
+		public TextExtents getTextExtents(final String text);
 	}
 	
 	/**
@@ -37,6 +38,16 @@ public class Font extends AbstractResource {
 	private static final class NullListener implements Listener {
 		@Override
 		public void fontClosed(final Font font) {}
+
+		@Override
+		public TextExtents getTextExtents(final int character) {
+			return new TextExtents(0,0,0,0,0,0);
+		}
+
+		@Override
+		public TextExtents getTextExtents(final String text) {
+			return new TextExtents(0,0,0,0,0,0);
+		}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -95,7 +106,15 @@ public class Font extends AbstractResource {
 		return _fontDetail.getLastChar();
 	}
 
-	public GlyphDetail getGlyphDetail(int i) {
-		return _fontDetail.getGlyphDetail(i);
+	public TextExtents getTextExtents(final int character) {
+		return _listener.getTextExtents(character);
+	}
+	
+	public TextExtents getTextExtents(final String text) {
+		return _listener.getTextExtents(text);
+	}
+	
+	public boolean isLeftToRight() {
+		return true; // TODO move to font detail.
 	}
 }

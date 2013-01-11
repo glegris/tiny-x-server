@@ -71,14 +71,9 @@ public class PolyText8 implements RequestHandler {
 			}
 			else {
 				final int delta = inputStream.readUnsignedByte();
+				final String text = inputStream.readString(len);
 
-				final StringBuilder str = new StringBuilder();
-				for (int i = 0; i < len; i++) {
-					final int a = inputStream.readUnsignedByte();
-					str.append((char) a);
-				}
-
-				((Window) drawable).drawString(graphicsContext, str.toString(), x + delta, y);
+				((Window) drawable).drawString(graphicsContext, text, x + delta, y);
 				
 				// TODO modify x and y for next text draw...
 			}

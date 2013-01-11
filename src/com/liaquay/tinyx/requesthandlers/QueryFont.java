@@ -30,7 +30,7 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.renderers.awt.GlyphDetail;
+import com.liaquay.tinyx.model.TextExtents;
 
 public class QueryFont implements RequestHandler {
 
@@ -46,6 +46,11 @@ public class QueryFont implements RequestHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
 		final Font font = (Font) server.getResources().get(fid);
+		if(font == null) {
+			response.error(Response.ErrorCode.Font, fid);
+			return;
+		}
+		
 		final String fontName = font.getFontInfo().toString();
 		
 		LOGGER.log(Level.INFO, "QueryFont for name: " + fontName);
@@ -95,27 +100,38 @@ public class QueryFont implements RequestHandler {
 
 		outputStream.writeInt(font.getLastChar()-font.getFirstChar()+1); // m 
 
-		//		outputStream.writeInt(0);//fontName.length()); // reply-hint
-
 		if(prop!=null){
 			for(int j=0; j<prop.length; j++){
 				outputStream.writeInt(prop[j]);
 			}
 		}
 
+//		for(int i=font.getFirstChar(); i<=font.getLastChar(); i++){
+//			final GlyphDetail gd = font.getGlyphDetail(i);
+//			if (gd != null) {
+//				outputStream.writeShort(0);//gd.leftSideBearing());	// left-side-bearing
+//				outputStream.writeShort(0);//gd.rightSideBearing());	// right-side-bearing
+//				outputStream.writeShort(gd.getWidth());			// character-width
+//				outputStream.writeShort(gd.getAscent());		// ascent
+//				outputStream.writeShort(gd.getDescent());		// descent
+//				outputStream.writeShort(0);                    // attribute
+//			} else {
+//				LOGGER.log(Level.WARNING, "No Glyph details found for char: " + i);
+//			}
+//		}	
+
 		for(int i=font.getFirstChar(); i<=font.getLastChar(); i++){
-			final GlyphDetail gd = font.getGlyphDetail(i);
-			if (gd != null) {
-				outputStream.writeShort(0);//gd.leftSideBearing());	// left-side-bearing
-				outputStream.writeShort(0);//gd.rightSideBearing());	// right-side-bearing
-				outputStream.writeShort(gd.getWidth());			// character-width
-				outputStream.writeShort(gd.getAscent());		// ascent
-				outputStream.writeShort(gd.getDescent());		// descent
-				outputStream.writeShort(0);                    // attribute
+			final TextExtents textExtents = font.getTextExtents(i);
+			if (textExtents != null) {
+				outputStream.writeShort(textExtents.getLeft());			// left-side-bearing
+				outputStream.writeShort(textExtents.getRight());			// right-side-bearing
+				outputStream.writeShort(textExtents.getWidth());			// character-width
+				outputStream.writeShort(textExtents.getAscent());		// ascent
+				outputStream.writeShort(textExtents.getDescent());		// descent
+				outputStream.writeShort(0);						// attribute
 			} else {
 				LOGGER.log(Level.WARNING, "No Glyph details found for char: " + i);
 			}
-		}	
-
+		}			
 	}
 }
