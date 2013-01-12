@@ -76,7 +76,7 @@ public class PolyText16 implements RequestHandler {
 				final int delta = inputStream.readUnsignedByte();
 				final String text = inputStream.readString16(len);
 				x += delta;
-				// Do not upcast
+				// TODO Do not upcast
 				((Window) drawable).drawString(graphicsContext, text, x, y);
 				
 				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);

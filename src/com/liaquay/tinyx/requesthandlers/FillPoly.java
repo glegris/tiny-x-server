@@ -45,12 +45,11 @@ public class FillPoly implements RequestHandler {
 	}
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
-
-
 
 		final XInputStream inputStream = request.getInputStream();
 		final int drawableResourceId = inputStream.readInt();
@@ -67,21 +66,28 @@ public class FillPoly implements RequestHandler {
 		}
 
 		//TODO Implement
-		Shape shape = Shape.getFromIndex(inputStream.readUnsignedByte());
-		CoordMode coordMode = CoordMode.getFromIndex(inputStream.readUnsignedByte());
+		final Shape shape = Shape.getFromIndex(inputStream.readUnsignedByte());
+		final CoordMode coordMode = CoordMode.getFromIndex(inputStream.readUnsignedByte());
 
 		inputStream.readUnsignedShort();
 
-		int len = request.getLength();
+		final int len = request.getLength();
 
-		int numCoords = ((len-16)/4);
+		final int numCoords = ((len-16)/4);
 		
-		int xCoords[] = new int[numCoords];
-		int yCoords[] = new int[numCoords];
+		final int xCoords[] = new int[numCoords];
+		final int yCoords[] = new int[numCoords];
 		
 		for (int i=0; i < numCoords; i++) {
 			xCoords[i] = inputStream.readSignedShort();
 			yCoords[i] = inputStream.readSignedShort();
+		}
+		
+		if(CoordMode.Previous.equals(coordMode)) {
+			for (int i=1; i < numCoords; i++) {
+				xCoords[i] = xCoords[i] + xCoords[i-1];
+				yCoords[i] = yCoords[i] + yCoords[i-1];
+			}
 		}
 		
 		if (drawable instanceof Window) {

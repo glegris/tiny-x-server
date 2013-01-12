@@ -34,13 +34,14 @@ import com.liaquay.tinyx.model.Window;
 public class PolyLine implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
-		
+
 		final XInputStream inputStream = request.getInputStream();
 		final int drawableResourceId = inputStream.readInt();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
@@ -58,13 +59,20 @@ public class PolyLine implements RequestHandler {
 		final int len = request.getLength();
 
 		final int numCoords = ((len-12)/4);
-		
+
 		final int xCoords[] = new int[numCoords];
 		final int yCoords[] = new int[numCoords];
-		
+
 		for (int i=0; i < numCoords; i++) {
 			xCoords[i] = inputStream.readSignedShort();
 			yCoords[i] = inputStream.readSignedShort();
+		}
+
+		if(CoordMode.Previous.equals(coordsMode)) {
+			for (int i=1; i < numCoords; i++) {
+				xCoords[i] = xCoords[i] + xCoords[i-1];
+				yCoords[i] = yCoords[i] + yCoords[i-1];
+			}
 		}
 
 		if (drawable instanceof Window) {

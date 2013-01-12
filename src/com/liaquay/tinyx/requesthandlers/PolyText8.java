@@ -77,7 +77,7 @@ public class PolyText8 implements RequestHandler {
 				final String text = inputStream.readString(len);
 				x += delta;
 
-				// Do not upcast
+				// TODO Do not upcast
 				((Window) drawable).drawString(graphicsContext, text, x, y);
 				
 				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
