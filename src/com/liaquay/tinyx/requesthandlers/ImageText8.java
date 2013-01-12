@@ -57,14 +57,10 @@ public class ImageText8 implements RequestHandler {
 		final int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
 
-		final int len = request.getData();
-
-		final StringBuilder str = new StringBuilder();
-		for (int i = 0; i < len; i++) {
-			final int a = inputStream.readUnsignedByte();
-			str.append((char) a);
-		}
+		final int length = request.getData();
+		final String text = inputStream.readString(length);
+		
 		// TODO this should be image text
-		((Window) drawable).drawString(graphicsContext, str.toString(), x , y);
+		((Window) drawable).drawString(graphicsContext, text, x , y);
 	}
 }

@@ -25,9 +25,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
@@ -286,7 +283,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
 		graphics.setColor(new Color(rgb));
 
-		graphics.clearRect(x, y, width, height);
+		graphics.fillRect(x, y, width, height);
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
@@ -306,7 +303,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 
 //	@Override
 //	public void putImage(GraphicsContext graphicsContext, byte[] data,

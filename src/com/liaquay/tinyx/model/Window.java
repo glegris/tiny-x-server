@@ -279,9 +279,12 @@ public class Window extends Drawable {
 		_windowClass = windowClass;
 		_eventFactories = eventFactories;
 		_colorMap = colorMap;
-
 		if(_parent != null) {
 			_parent.addChild(this);
+			_backgroundPixel = _parent._backgroundPixel;
+		}
+		else {
+			_backgroundPixel = colorMap.getWhitePixel();
 		}
 
 		updateLocation();
@@ -515,7 +518,7 @@ public class Window extends Drawable {
 	}
 
 	private void exposed() {
-		if(wouldDeliver(Event.ExposureMask)) {
+		if(!isInputOnly() && wouldDeliver(Event.ExposureMask)) {
 			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
 			deliver(exposeEvent, Event.ExposureMask);
 		}

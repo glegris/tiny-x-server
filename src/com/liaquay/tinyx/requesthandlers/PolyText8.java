@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.Window;
 
 public class PolyText8 implements RequestHandler {
@@ -55,32 +56,32 @@ public class PolyText8 implements RequestHandler {
 			return;
 		}
 
-		final int x = inputStream.readSignedShort();
+		// TODO check drawable is not input only
+		
+		int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
 
-		while(true) {
+		while(request.getLength() - inputStream.getCounter() > 2) {
 			final int len = inputStream.readUnsignedByte();
 
 			if(len == 0) {
 				break;
 			}
 			if (len == 255) {
-				final int font = inputStream.readInt();
+				final int font = inputStream.readInlineFontId();
 				final Font f = server.getResources().get(font, Font.class);
 				if(f != null) graphicsContext.setFont(f);
 			}
 			else {
 				final int delta = inputStream.readUnsignedByte();
+				final String text = inputStream.readString(len);
+				x += delta;
 
-				final StringBuilder str = new StringBuilder();
-				for (int i = 0; i < len; i++) {
-					final int a = inputStream.readUnsignedByte();
-					str.append((char) a);
-				}
-
-				((Window) drawable).drawString(graphicsContext, str.toString(), x + delta, y);
+				// TODO Do not upcast
+				((Window) drawable).drawString(graphicsContext, text, x, y);
 				
-				// TODO modify x and y for next text draw...
+				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+				x += textExtents.getWidth();
 			}
 		}
 	}

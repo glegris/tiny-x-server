@@ -98,6 +98,7 @@ public class Connection implements Executable, PostBox {
 						synchronized (_outputStream) {
 							try {
 								_outputStream.write(event, 0, event.length);
+								_outputStream.send();
 							}
 							catch(final Exception e) {
 								LOGGER.log(Level.SEVERE, "Failed to deliver event", e);

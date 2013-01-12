@@ -21,7 +21,10 @@ package com.liaquay.tinyx.io;
 import java.io.IOException;
 
 public interface XInputStream {
+	public String readString(final int length) throws IOException;
+	public String readString16(final int length) throws IOException;
 	public String readString() throws IOException;
+	public String readString16() throws IOException;
 	public int readUnsignedByte() throws IOException;
 	public int readSignedByte() throws IOException;
 	public int readUnsignedShort() throws IOException;
@@ -34,4 +37,5 @@ public interface XInputStream {
 	public void skip(int remaining) throws IOException;
 	public ByteOrder getByteOrder();
 	public void close() throws IOException;
+	public int readInlineFontId() throws IOException;
 }
