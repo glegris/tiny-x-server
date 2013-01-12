@@ -29,7 +29,6 @@ import java.awt.event.WindowEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Window;
 
@@ -54,7 +53,7 @@ public class XawtScreen {
 		return _listeners;
 	}
 
-	private final Frame _frame;
+	private final Frame _frame= new Frame();
 	private final XawtWindow _rootWindowListener;
 	private final Canvas _canvas = new Canvas();
 	
@@ -63,7 +62,7 @@ public class XawtScreen {
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
 
 
-		_frame = new Frame();
+		
 		_frame.setResizable(false);
 
 		_frame.addWindowListener(new WindowAdapter() {
@@ -92,7 +91,10 @@ public class XawtScreen {
 		_frame.add(_canvas);
 		_frame.pack();
 		_frame.setVisible(true);
-
+		
+		// WTF If I don't do this the background is rendered grey!?!
+		// TODO Nathan any ideas? I guess there is a delayed AWT event but my all attempts to prevent the redraw have failed?
+		try { Thread.sleep(1000); } catch(final Exception e){}
 		screen.map();
 
 		_canvas.addMouseListener(new MouseListener() {

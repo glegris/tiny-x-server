@@ -61,7 +61,7 @@ public class PolyText8 implements RequestHandler {
 		int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
 
-		while(true) {
+		while(request.getLength() - inputStream.getCounter() > 2) {
 			final int len = inputStream.readUnsignedByte();
 
 			if(len == 0) {
@@ -75,11 +75,13 @@ public class PolyText8 implements RequestHandler {
 			else {
 				final int delta = inputStream.readUnsignedByte();
 				final String text = inputStream.readString(len);
+				x += delta;
 
-				((Window) drawable).drawString(graphicsContext, text, x + delta, y);
+				// Do not upcast
+				((Window) drawable).drawString(graphicsContext, text, x, y);
 				
 				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
-				x += delta + textExtents.getWidth();
+				x += textExtents.getWidth();
 			}
 		}
 	}

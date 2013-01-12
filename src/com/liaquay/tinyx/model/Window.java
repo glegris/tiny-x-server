@@ -274,9 +274,12 @@ public class Window extends Drawable {
 		_windowClass = windowClass;
 		_eventFactories = eventFactories;
 		_colorMap = colorMap;
-
 		if(_parent != null) {
 			_parent.addChild(this);
+			_backgroundPixel = _parent._backgroundPixel;
+		}
+		else {
+			_backgroundPixel = colorMap.getWhitePixel();
 		}
 
 		updateLocation();

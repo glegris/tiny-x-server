@@ -100,10 +100,11 @@ static void draw_screen ()
     XCharStruct overall;
 
     /* Centre the text in the middle of the box. */
-/*
     XTextExtents (text_box.font, text_box.text, text_box.text_len,
                   & direction, & ascent, & descent, & overall);
-*/    
+
+    printf("ascent %d, descent %d, overall %d\n" , ascent, descent, overall.width);
+    
     XQueryTextExtents (text_box.display, text_box.font->fid, text_box.text, text_box.text_len,
                   & direction, & ascent, & descent, & overall);
                  
