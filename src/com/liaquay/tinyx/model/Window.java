@@ -510,7 +510,7 @@ public class Window extends Drawable {
 	}
 
 	private void exposed() {
-		if(wouldDeliver(Event.ExposureMask)) {
+		if(!isInputOnly() && wouldDeliver(Event.ExposureMask)) {
 			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
 			deliver(exposeEvent, Event.ExposureMask);
 		}

@@ -37,4 +37,5 @@ public interface XInputStream {
 	public void skip(int remaining) throws IOException;
 	public ByteOrder getByteOrder();
 	public void close() throws IOException;
+	public int readInlineFontId() throws IOException;
 }

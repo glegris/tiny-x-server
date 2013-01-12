@@ -133,5 +133,13 @@ public abstract class AbstractXInputStream implements XInputStream {
 	    }
 	    return new String(buffer, 0, length);
 	}	
+	
+	public int readInlineFontId() throws IOException {
+		final int b4 = readUnsignedByte();
+		final int b3 = readUnsignedByte();
+		final int b2 = readUnsignedByte();
+		final int b1 = readUnsignedByte();
+		return b1 | (b2 << 8) | (b3 << 16) | (b4 <<24);
+	}
 }
 

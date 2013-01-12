@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.Window;
 
 public class PolyText8 implements RequestHandler {
@@ -55,7 +56,9 @@ public class PolyText8 implements RequestHandler {
 			return;
 		}
 
-		final int x = inputStream.readSignedShort();
+		// TODO check drawable is not input only
+		
+		int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
 
 		while(true) {
@@ -65,7 +68,7 @@ public class PolyText8 implements RequestHandler {
 				break;
 			}
 			if (len == 255) {
-				final int font = inputStream.readInt();
+				final int font = inputStream.readInlineFontId();
 				final Font f = server.getResources().get(font, Font.class);
 				if(f != null) graphicsContext.setFont(f);
 			}
@@ -75,7 +78,8 @@ public class PolyText8 implements RequestHandler {
 
 				((Window) drawable).drawString(graphicsContext, text, x + delta, y);
 				
-				// TODO modify x and y for next text draw...
+				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+				x += delta + textExtents.getWidth();
 			}
 		}
 	}
