@@ -18,7 +18,7 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
-import java.awt.Graphics;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -27,31 +27,21 @@ import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
-import com.liaquay.tinyx.model.Image;
 
-public class XawtDrawableListener implements Drawable.Listener {
+public abstract class XawtDrawableListener implements Drawable.Listener {
 
-	final Drawable _drawable;
-
-	public XawtDrawableListener(Drawable drawable) {
-		_drawable = drawable;
-		createImage(drawable);
-	}
-
+	public abstract Drawable getDrawable();
+	
 	@Override
 	public void copyArea(Drawable destDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 		
-		Image destImage = ((Drawable.Listener) destDrawable.getListener()).getImage();
-		
-		Image srcImage = ((Drawable.Listener) _drawable.getListener()).getImage();
-		
-		BufferedImage srcbi = ((XawtImageListener) srcImage.getListener()).getXawtImage();
-		
-		Graphics dg = ((XawtImageListener) destImage.getListener()).getXawtGraphics();
+		java.awt.Image destGraphics = ((XawtDrawableListener) destDrawable.getListener()).getImage();
 
-		dg.translate(dstX,  dstY);
-		dg.drawImage(srcbi, width, height, null);
+		java.awt.Image srcGraphics = ((XawtDrawableListener) getDrawable().getListener()).getImage();
+
+		srcGraphics.getGraphics().translate(dstX,  dstY);
+		srcGraphics.getGraphics().drawImage(destGraphics, width, height, null);
 	}
 
 	@Override
@@ -60,51 +50,36 @@ public class XawtDrawableListener implements Drawable.Listener {
 			int destinationX, int destinationY, int leftPad, int depth) { 
 
 		if (depth == 1) {
-
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
 			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
-			byte[] arr = {(byte)0, (byte)0xff};
+			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 			BufferedImage image = new BufferedImage(colorModel, raster, false, null);
 
-			XawtImageListener xawtImage = new XawtImageListener(image, image.getGraphics());
-			_drawable.setImage(xawtImage);
+			java.awt.Image destGraphics = ((XawtDrawableListener) getDrawable().getListener()).getImage();
 			
-			
-			Image srcImage = ((Drawable.Listener) _drawable.getListener()).getImage();
-			Graphics sg = ((XawtImageListener) srcImage.getListener()).getXawtGraphics();
-			
-			sg.drawImage(image, destinationX, destinationY, width, height, null);			
+			destGraphics.getGraphics().drawImage(image, destinationX, destinationY, width, height, Color.CYAN, null);			
 			
 		} else {
 			System.out.println("Unsupported depth");
 		}
 	}
 
-
-	@Override
-	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-		
-		XawtImageListener i = new XawtImageListener(image, image.getGraphics());
-		drawable.setImage(i);
-	}
-
-	@Override
-	public Image getImage() {
-		Image i = new Image();
-		if (_drawable.getImage() instanceof XawtImageListener) {
-			BufferedImage image = ((XawtImageListener) _drawable.getImage()).getXawtImage();
-			Graphics g = ((XawtImageListener) _drawable.getImage()).getXawtGraphics();
-			
-			i.setListener(new XawtImageListener(image, g));
-		} else {
-			System.out.println("Unable to get image");
-		}
-		
-		return i;
-	}
+//	@Override
+//	public Image getImage() {
+//		Image i = new Image();
+//		if (getDrawable().getImage() instanceof XawtImageListener) {
+//			BufferedImage image = ((XawtImageListener) getDrawable().getImage()).getXawtImage();
+//			Graphics g = ((XawtImageListener) getDrawable().getImage()).getXawtGraphics();
+//			
+//			i.setListener(new XawtImageListener(image, g));
+//		} else {
+//			System.out.println("Unable to get image");
+//		}
+//		
+//		return i;
+//	}
 
 
 //	@Override

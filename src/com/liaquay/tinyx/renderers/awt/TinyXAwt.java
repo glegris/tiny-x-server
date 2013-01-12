@@ -24,11 +24,11 @@ import com.liaquay.tinyx.TinyXServer;
 import com.liaquay.tinyx.events.EventFactoriesImpl;
 import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Depths;
-import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.KeyboardMapping;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Server.ResourceFactory;
@@ -36,6 +36,7 @@ import com.liaquay.tinyx.model.TrueColorMap;
 import com.liaquay.tinyx.model.Visual;
 import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
+import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
@@ -67,9 +68,14 @@ public class TinyXAwt {
 			}
 
 			@Override
-			public void drawableCreated(final Drawable drawable) {
-				drawable.setListener(new XawtDrawableListener(drawable));
+			public void windowCreated(final Window window) {
+//				window.setListener(new XawtWindow(window));
 			}
+			
+			public void pixmapCreated(final Pixmap pixmap) {
+				pixmap.setListener(new XawtPixmapListener(pixmap));
+			}
+			
 		});
 	}
 	

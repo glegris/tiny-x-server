@@ -21,9 +21,10 @@ package com.liaquay.tinyx.model;
 
 
 
+
 public abstract class Drawable implements Resource {
 
-	Image.Listener _image;
+//	Image.Listener _image;
 
 	public interface Listener {
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
@@ -33,63 +34,22 @@ public abstract class Drawable implements Resource {
 				byte[] buffer, int width, int height,
 				int destinationX, int destinationY, int leftPad, int depth);
 		
-		Image getImage();
+		public java.awt.Image getImage();
+//		Image getImage();
+//		}
 		
 		public void createImage(Drawable drawable);
 	}
 	
-	private static final Listener NULL_LISTENER = new NullListener();
+//	public Image.Listener getImage() {
+//		return this._image;
+//	}
 
-	private Listener _listener = NULL_LISTENER;
+	public abstract com.liaquay.tinyx.model.Drawable.Listener getListener();
 
-	public void setListener(final Listener listener) {
-		_listener = listener;
-	}
-	
-	private static final class NullListener implements Listener {
-
-		@Override
-		public void copyArea(Drawable d, GraphicsContext graphicsContext,
-				int srcX, int srcY, int width, int height, int dstX, int dstY) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
-				int width, int height, int destinationX, int destinationY,
-				int leftPad, int depth) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public Image getImage() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void createImage(Drawable drawable) {
-			// TODO Auto-generated method stub
-			
-		}
-
-
-
-	}
-
-	public Image.Listener getImage() {
-		return this._image;
-	}
-
-	public com.liaquay.tinyx.model.Drawable.Listener getListener() {
-		return _listener;
-	}
-
-	public void setImage(Image.Listener listener) {
-		_image = listener;
-	}
+//	public void setImage(Image.Listener listener) {
+//		_image = listener;
+//	}
 
 	public abstract Screen getScreen();
 
@@ -106,12 +66,4 @@ public abstract class Drawable implements Resource {
 	public abstract int getHeight();
 
 	public abstract int getBorderWidth();
-
-//	abstract Graphics getGraphics();
-	//	  abstract void restoreClip();
-
-	//	  abstract Graphics getGraphics(GC gc, int mask);   
-	//	  abstract Colormap getColormap();
-//	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
-
 }

@@ -97,6 +97,6 @@ public class CreateWindow implements RequestHandler {
 			return;
 		}
 
-		server.drawableCreated(window);
+		server.windowCreated(window);
 	}
 }

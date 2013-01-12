@@ -80,7 +80,8 @@ public class Server extends Client {
 
 	public interface Listener {
 		public void fontOpened(final Font font);
-		public void drawableCreated(final Drawable drawable);
+		public void windowCreated(final Window window);
+		public void pixmapCreated(final Pixmap pixmap);
 	}
 	
 	/**
@@ -92,7 +93,15 @@ public class Server extends Client {
 		public void fontOpened(final Font font) {}
 
 		@Override
-		public void drawableCreated(Drawable drawable) {
+		public void windowCreated(Window window) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void pixmapCreated(Pixmap pixmap) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 	
@@ -122,11 +131,15 @@ public class Server extends Client {
 		getResources().add(font);
 		_listener.fontOpened(font);
 	}
-	
 
-	public void drawableCreated(Drawable drawable) {
-		getResources().add(drawable);
-		_listener.drawableCreated(drawable);
+	public void pixmapCreated(Pixmap pixmap) {
+		getResources().add(pixmap);
+		_listener.pixmapCreated(pixmap);
+	}
+	
+	public void windowCreated(Window window) {
+		getResources().add(window);
+		_listener.windowCreated(window);
 	}
 	
 	public void closeFont(final Font font) {

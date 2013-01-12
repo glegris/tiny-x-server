@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -37,15 +39,15 @@ public class Window extends Drawable {
 		public void childCreated(Window child);
 		public void mapped(boolean mapped);
 		public void visible(boolean visible);
-		public void renderDrawable(
-				final BufferedImage image,
-				final GraphicsContext graphicsContext, 
-				final int srcX,
-				final int srcY,
-				final int width,
-				final int height, 
-				final int dstX,
-				final int dstY);
+//		public void renderDrawable(
+//				final BufferedImage image,
+//				final GraphicsContext graphicsContext, 
+//				final int srcX,
+//				final int srcY,
+//				final int width,
+//				final int height, 
+//				final int dstX,
+//				final int dstY);
 		public void setCursor(Cursor cursor);
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
@@ -69,16 +71,7 @@ public class Window extends Drawable {
 		public void mapped(boolean mapped) {}
 		@Override
 		public void visible(boolean visible) {}
-		@Override
-		public void renderDrawable(
-				final BufferedImage image,
-				final GraphicsContext graphicsContext, 
-				final int srcX,
-				final int srcY,
-				final int width,
-				final int height, 
-				final int dstX,
-				final int dstY) {}
+
 		@Override
 		public void setCursor(Cursor cursor) {}
 		@Override
@@ -115,16 +108,28 @@ public class Window extends Drawable {
 		public void createImage(Drawable drawable) {
 			// TODO Auto-generated method stub
 		}
-		@Override
-		public Image getImage() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+//		@Override
+//		public Image getImage() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
 		@Override
 		public void clearArea(boolean exposures, int x, int y, int width,
 				int height) {
 			// TODO Auto-generated method stub
 			
+		}
+//		@Override
+//		public void renderDrawable(BufferedImage image,
+//				GraphicsContext graphicsContext, int srcX, int srcY, int width,
+//				int height, int dstX, int dstY) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+		@Override
+		public Image getImage() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
@@ -908,17 +913,17 @@ public class Window extends Drawable {
 
 	}
 
-	public void renderDrawable(
-			final BufferedImage image,
-			final GraphicsContext graphicsContext, 
-			final int srcX,
-			final int srcY,
-			final int width,
-			final int height, 
-			final int dstX,
-			final int dstY) {
-		_listener.renderDrawable(image, graphicsContext, srcX, srcY, width, height, dstX, dstY);
-	}
+//	public void renderDrawable(
+//			final BufferedImage image,
+//			final GraphicsContext graphicsContext, 
+//			final int srcX,
+//			final int srcY,
+//			final int width,
+//			final int height, 
+//			final int dstX,
+//			final int dstY) {
+//		_listener.renderDrawable(image, graphicsContext, srcX, srcY, width, height, dstX, dstY);
+//	}
 
 	public Listener getListener() {
 		return _listener;

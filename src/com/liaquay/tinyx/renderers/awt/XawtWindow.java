@@ -290,36 +290,15 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
-		super(window);
+//		super(window);
 		
 		_window = window;
 		_canvas = canvas;
-	}
-
-	@Override
-	public void renderDrawable(
-			final BufferedImage image,
-			final GraphicsContext graphicsContext, 
-			final int srcX,
-			final int srcY,
-			final int width,
-			final int height, 
-			final int dstX,
-			final int dstY) {
-
-
-
 		
-//		if (drawable instanceof Pixmap) {
-//			final Pixmap p = (Pixmap) drawable;
-//
-//			final BufferedImage image = new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-//			image.setData(p.toRaster());
-//
-			final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-			graphics.drawImage(image, dstX, dstY, width, height, null);
-//		}
+		createImage(_window);
 	}
+
+
 
 
 	@Override
@@ -382,15 +361,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	@Override
 	public void createImage(Drawable drawable) {
-		BufferedImage i = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+//		BufferedImage i = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 		
-		XawtImageListener image = new XawtImageListener(i, i.getGraphics());
-		drawable.setImage(image);
+		XawtImageListener image = new XawtImageListener(null, _canvas.getGraphics());
+//		drawable.setImage(image);
 	}
 
 
 	@Override
-	public Image getImage() {
+	public java.awt.Image getImage() {
+//		return _canvas.getGraphics();
 		Image i = new Image();
 		
         int w = _canvas.getWidth();
@@ -400,9 +380,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
         Graphics2D g2 = image.createGraphics();
         _canvas.paint(g2);
         g2.dispose();
+
+       	return image;
         
-        
-		i.setListener(new XawtImageListener(null, _canvas.getGraphics()));
-		return i;
+//		i.setListener(new XawtImageListener(null, _canvas.getGraphics()));
+//		return i;
+	}
+
+
+	@Override
+	public Window getDrawable() {
+		return _window;
 	}
 }

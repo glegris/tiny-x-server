@@ -18,9 +18,8 @@
  */
 package com.liaquay.tinyx.model;
 
-
-
-
+import java.awt.Graphics;
+import java.awt.Image;
 
 
 public class Pixmap extends Drawable {
@@ -30,6 +29,57 @@ public class Pixmap extends Drawable {
 	private final int _depth;
 	private final int _width;
 	private final int _height;
+	
+	public interface Listener extends Drawable.Listener {
+	}
+
+	private static final class NullListener implements Listener {
+
+		@Override
+		public void copyArea(Drawable d, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftXawtDrawableListenerPad, int depth) {
+			// TODO Auto-generated method stub
+			
+		}
+
+//		@Override
+//		public Image getImage() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+
+		@Override
+		public void createImage(Drawable drawable) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public Image getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
+
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
+	public Listener getListener() {
+		return _listener;
+	}
 	
 	public Pixmap(final int resourceId,
 			final Drawable drawable,
@@ -79,7 +129,7 @@ public class Pixmap extends Drawable {
 	public int getY() {		
 		return 0;
 	}
-
+	
 	@Override
 	public int getWidth() {
 		return _width;
@@ -94,4 +144,6 @@ public class Pixmap extends Drawable {
 	public int getBorderWidth() {
 		return 0;
 	}
+
+
 }
