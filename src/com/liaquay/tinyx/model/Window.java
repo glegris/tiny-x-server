@@ -18,9 +18,6 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -67,6 +64,7 @@ public class Window extends Drawable {
 	private static final class NullListener implements Listener {
 		@Override
 		public void childCreated(Window child) {}
+		
 		@Override
 		public void mapped(boolean mapped) {}
 		@Override
@@ -105,7 +103,7 @@ public class Window extends Drawable {
 
 		}
 		@Override
-		public void createImage(Drawable drawable) {
+		public void createImage() {
 			// TODO Auto-generated method stub
 		}
 //		@Override
@@ -113,7 +111,7 @@ public class Window extends Drawable {
 //			// TODO Auto-generated method stub
 //			return null;
 //		}
-		@Override
+
 		public void clearArea(boolean exposures, int x, int y, int width,
 				int height) {
 			// TODO Auto-generated method stub
@@ -126,8 +124,10 @@ public class Window extends Drawable {
 //			// TODO Auto-generated method stub
 //			
 //		}
+//	
+
 		@Override
-		public Image getImage() {
+		public com.liaquay.tinyx.model.Image.Listener getImage() {
 			// TODO Auto-generated method stub
 			return null;
 		}

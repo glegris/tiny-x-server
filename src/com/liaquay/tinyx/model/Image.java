@@ -17,6 +17,7 @@ public class Image {
 	}
 
 	public interface Listener {
+		
 	}
 	
 	private static final class NullListener implements Listener {
@@ -33,6 +34,4 @@ public class Image {
 	public Listener getListener() {
 		return _listener;
 	}
-
-	
 }

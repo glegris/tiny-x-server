@@ -44,7 +44,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	private final Window _window;
 	private final Canvas _canvas;
 
-
 	@Override
 	public void childCreated(final Window child) {
 		final XawtWindow listener = new XawtWindow(child, _canvas);
@@ -78,8 +77,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final Pixmap m = cursor.getMaskPixmap();
 
 			// Buffered image that has transparency.
-//			final Image image = p.getImage();//new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-//			image.getListener();
+			//			final Image image = p.getImage();//new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			//			image.getListener();
 			//leRaster newImage = p.getImage();//image.getRaster();
 
 			//			// This seems horribly inefficient, but will probably do for the time being.
@@ -107,11 +106,11 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			//				}
 			//			}
 
-//			if (image != null) {
-//				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
-//				final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
-//				_canvas.setCursor(c);
-//			}
+			//			if (image != null) {
+			//				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
+			//				final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
+			//				_canvas.setCursor(c);
+			//			}
 		}
 	}
 
@@ -149,7 +148,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		final Graphics2D graphics = translateAndClipToWindow();
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		
+
 		if (fill) {
 			graphics.fillArc(x, y, width, height, angle1, angle2);
 		} else {
@@ -169,7 +168,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		final Graphics2D graphics = translateAndClipToWindow();
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		
+
 		if (fill) {
 			graphics.fillRect(x, y, width, height);
 		} else {
@@ -187,7 +186,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		
+
 		graphics.fillPolygon(x, y, x.length);
 	}
 
@@ -201,7 +200,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		
+
 		graphics.drawPolyline(x, y, x.length);
 	}
 
@@ -275,7 +274,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		graphics.setColor(new Color(rgb));
 		graphics.fillRect(0, 0, _window.getWidth(), _window.getHeight());    	
 	}
-	
+
 	@Override
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
 		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
@@ -287,12 +286,12 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
-//		super(window);
-		
+		//		super(window);
+
 		_window = window;
 		_canvas = canvas;
-		
-		createImage(_window);
+
+		createImage();
 	}
 
 
@@ -304,88 +303,96 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		return 0;
 	}
 
-//	@Override
-//	public void putImage(GraphicsContext graphicsContext, byte[] data,
-//			int width, int height, int destinationX, int destinationY,
-//			int leftPad, int depth) {
-//
-//		
-//		
-//		if (depth == 1) {
-//			byte[] arr = {(byte)0, (byte)0xff};
-//
-//			WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
-//					width, height, 1, 1, null);
-//
-//
-//
-////			Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, bMask), 
-////					new DataBufferByte(buffer, buffer.length), null);
-////
-////			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-////			bi.setData(r);
-////
-////			final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
-////			graphics.drawImage(bi, null, 0,0);
-//
-//
-//		} else {
-//			System.out.println("Depth of " + depth + " not currently supported for putImage on XawtWindow");
-//		}
-//
-//	}
+	//	@Override
+	//	public void putImage(GraphicsContext graphicsContext, byte[] data,
+	//			int width, int height, int destinationX, int destinationY,
+	//			int leftPad, int depth) {
+	//
+	//		
+	//		
+	//		if (depth == 1) {
+	//			byte[] arr = {(byte)0, (byte)0xff};
+	//
+	//			WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
+	//					width, height, 1, 1, null);
+	//
+	//
+	//
+	////			Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, bMask), 
+	////					new DataBufferByte(buffer, buffer.length), null);
+	////
+	////			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+	////			bi.setData(r);
+	////
+	////			final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
+	////			graphics.drawImage(bi, null, 0,0);
+	//
+	//
+	//		} else {
+	//			System.out.println("Depth of " + depth + " not currently supported for putImage on XawtWindow");
+	//		}
+	//
+	//	}
 
 
-//	@Override
-//	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
-//			int srcY, int width, int height, int dstX, int dstY) {
-//		// TODO Auto-generated method stub
-//		
-//
-//		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
-//
-//		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
-//
-//		Graphics dg = destImage.createGraphics();
-//		Graphics sg = srcImage.createGraphics();
-//		
-//		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
-//
-//
-//	}
-
-
-	@Override
-	public void createImage(Drawable drawable) {
-//		BufferedImage i = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-		
-		XawtImageListener image = new XawtImageListener(null, _canvas.getGraphics());
-//		drawable.setImage(image);
-	}
+	//	@Override
+	//	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
+	//			int srcY, int width, int height, int dstX, int dstY) {
+	//		// TODO Auto-generated method stub
+	//		
+	//
+	//		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
+	//
+	//		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
+	//
+	//		Graphics dg = destImage.createGraphics();
+	//		Graphics sg = srcImage.createGraphics();
+	//		
+	//		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
+	//
+	//
+	//	}
 
 
 	@Override
-	public java.awt.Image getImage() {
-//		return _canvas.getGraphics();
-		Image i = new Image();
-		
-        int w = _canvas.getWidth();
-        int h = _canvas.getHeight();
-        int type = BufferedImage.TYPE_INT_RGB;
-        BufferedImage image = new BufferedImage(w,h,type);
-        Graphics2D g2 = image.createGraphics();
-        _canvas.paint(g2);
-        g2.dispose();
+	public void createImage() {
+		BufferedImage _windowImage = new BufferedImage(_window.getWidth(), _window.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
-       	return image;
-        
-//		i.setListener(new XawtImageListener(null, _canvas.getGraphics()));
-//		return i;
+		XawtImageListener image = new XawtImageListener(_windowImage);
+		_window.setImage(image);
 	}
 
+	@Override
+	public Image.Listener getImage() {
+		return (Image.Listener) _window.getImage();
+	}
+
+	//	@Override
+	//	public Image getImage() {
+	//		
+	//		
+	//        int w = _canvas.getWidth();
+	//        int h = _canvas.getHeight();
+	//        int type = BufferedImage.TYPE_INT_RGB;
+	//        BufferedImage image = new BufferedImage(w,h,type);
+	//        Graphics2D g2 = image.createGraphics();
+	//        _canvas.paint(g2);
+	//        g2.dispose();
+	//
+	//       	return image;
+	//        
+	////		i.setListener(new XawtImageListener(null, _canvas.getGraphics()));
+	////		return i;
+	//	}
+
+	//	@Override
+	//	public Canvas getCanvas() {
+	//		return _canvas;
+	//	}
 
 	@Override
 	public Window getDrawable() {
 		return _window;
 	}
+
 }

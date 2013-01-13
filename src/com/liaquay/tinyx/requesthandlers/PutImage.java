@@ -28,10 +28,8 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image;
-import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Image.ImageType;
-import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.Server;
 
 public class PutImage implements RequestHandler {
 

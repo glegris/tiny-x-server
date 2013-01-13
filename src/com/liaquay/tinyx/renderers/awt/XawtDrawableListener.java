@@ -27,6 +27,7 @@ import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Image;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
@@ -36,12 +37,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void copyArea(Drawable destDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 		
-		java.awt.Image destGraphics = ((XawtDrawableListener) destDrawable.getListener()).getImage();
-
-		java.awt.Image srcGraphics = ((XawtDrawableListener) getDrawable().getListener()).getImage();
-
-		srcGraphics.getGraphics().translate(dstX,  dstY);
-		srcGraphics.getGraphics().drawImage(destGraphics, width, height, null);
+		BufferedImage destImage = ((XawtImageListener) getDrawable().getImage()).getXawtImage();
+				
+		BufferedImage srcImage = ((XawtImageListener) destDrawable.getImage()).getXawtImage();
+				
+		srcImage.getGraphics().translate(dstX,  dstY);
+		srcImage.getGraphics().drawImage(destImage, width, height, null);
 	}
 
 	@Override
@@ -56,11 +57,14 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 			BufferedImage image = new BufferedImage(colorModel, raster, false, null);
-
-			java.awt.Image destGraphics = ((XawtDrawableListener) getDrawable().getListener()).getImage();
-			
-			destGraphics.getGraphics().drawImage(image, destinationX, destinationY, width, height, Color.CYAN, null);			
-			
+//
+//			Image i = ((XawtDrawableListener) getDrawable().getListener()).getImage();
+//			java.awt.Image destGraphics = ((XawtImageListener) i.getListener()).getXawtImage();
+//
+////			java.awt.Image destGraphics = ((XawtDrawableListener) getDrawable().getListener()).getImage();
+//			
+//			destGraphics.getGraphics().drawImage(image, destinationX, destinationY, width, height, Color.CYAN, null);			
+//			
 		} else {
 			System.out.println("Unsupported depth");
 		}
@@ -81,9 +85,4 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 //		return i;
 //	}
 
-
-//	@Override
-//	public Image getImage() {
-//		return _drawable.getImage();
-//	}
 }

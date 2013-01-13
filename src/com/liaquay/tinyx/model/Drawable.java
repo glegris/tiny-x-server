@@ -19,12 +19,9 @@
 package com.liaquay.tinyx.model;
 
 
-
-
-
 public abstract class Drawable implements Resource {
 
-//	Image.Listener _image;
+	Image.Listener _image;
 
 	public interface Listener {
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
@@ -34,22 +31,21 @@ public abstract class Drawable implements Resource {
 				byte[] buffer, int width, int height,
 				int destinationX, int destinationY, int leftPad, int depth);
 		
-		public java.awt.Image getImage();
-//		Image getImage();
-//		}
+		// When a drawable is created, we need the ability to get the image information from it
+		Image.Listener getImage();
 		
-		public void createImage(Drawable drawable);
+		public void createImage();
 	}
 	
-//	public Image.Listener getImage() {
-//		return this._image;
-//	}
+	public Image.Listener getImage() {
+		return this._image;
+	}
 
 	public abstract com.liaquay.tinyx.model.Drawable.Listener getListener();
 
-//	public void setImage(Image.Listener listener) {
-//		_image = listener;
-//	}
+	public void setImage(Image.Listener listener) {
+		_image = listener;
+	}
 
 	public abstract Screen getScreen();
 

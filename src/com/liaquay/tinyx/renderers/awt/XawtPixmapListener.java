@@ -18,47 +18,49 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
-import java.awt.Image;
+
 import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.Image;
 import com.liaquay.tinyx.model.Pixmap;
 
 public class XawtPixmapListener extends XawtDrawableListener implements Pixmap.Listener {
 
 	final Pixmap _pixmap;
-	BufferedImage _image = null;
+	XawtImageListener _imageListener;
 
 	public XawtPixmapListener(Pixmap pixmap) {
 		_pixmap = pixmap;
-		createImage(pixmap);
+		
+		createImage();
 	}
-
-	@Override
-	public Image getImage() {
-		return _image;
-//		Image i = new Image();
-		
-//		((XawtDrawableListener) getDrawable()).getgetListener())
-		
-//		if (getDrawable().getImage() instanceof XawtImageListener) {
-//			BufferedImage image = ((XawtImageListener) getDrawable().getImage()).getXawtImage();
-//			Graphics g = ((XawtImageListener) getDrawable().getImage()).getXawtGraphics();
-//			
-//			i.setListener(new XawtImageListener(image, g));
-//		} else {
-//			System.out.println("Unable to get image");
-//		}
-		
-//		return null;
-	}
+//
+//	@Override
+//	public Image getImage() {
+//		return _image;
+////		Image i = new Image();
+//		
+////		((XawtDrawableListener) getDrawable()).getgetListener())
+//		
+////		if (getDrawable().getImage() instanceof XawtImageListener) {
+////			BufferedImage image = ((XawtImageListener) getDrawable().getImage()).getXawtImage();
+////			Graphics g = ((XawtImageListener) getDrawable().getImage()).getXawtGraphics();
+////			
+////			i.setListener(new XawtImageListener(image, g));
+////		} else {
+////			System.out.println("Unable to get image");
+////		}
+//		
+////		return null;
+//	}
 	
 	@Override
-	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-		_image = image;
-//		XawtImageListener i = new XawtImageListener(image, image.getGraphics());
-//		drawable.setImage(i);
+	public void createImage() {
+		BufferedImage image = new BufferedImage(_pixmap.getWidth(), _pixmap.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+		
+		XawtImageListener i = new XawtImageListener(image);
+		_imageListener = i;
 	}
 
 	@Override
@@ -66,4 +68,8 @@ public class XawtPixmapListener extends XawtDrawableListener implements Pixmap.L
 		return _pixmap;
 	}
 
+
+	public Image.Listener getImage() {
+		return (Image.Listener) _imageListener;
+	}
 }
