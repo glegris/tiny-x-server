@@ -18,19 +18,29 @@
  */
 package com.liaquay.tinyx.model;
 
-
-
-
-
-
 public class Pixmap extends Drawable {
 
+	
+	public interface Listener extends Drawable.Listener {
+	}
+	
+	private static final class NullListener extends Drawable.NullListener implements Listener {
+	}
+	
+	private static final Listener NULL_LISTENER = new NullListener();
+
+	private Listener _listener = NULL_LISTENER;
+
+	public void setListener(final Listener listener) {
+		_listener = listener;
+	}
+	
 	private final int _resourceId;
 	private final Drawable _drawable;
 	private final int _depth;
 	private final int _width;
 	private final int _height;
-	
+
 	public Pixmap(final int resourceId,
 			final Drawable drawable,
 			final int depth,
@@ -93,5 +103,10 @@ public class Pixmap extends Drawable {
 	@Override
 	public int getBorderWidth() {
 		return 0;
+	}
+
+	@Override
+	public Listener getDrawableListener() {
+		return _listener;
 	}
 }

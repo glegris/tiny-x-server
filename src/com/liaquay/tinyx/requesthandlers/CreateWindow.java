@@ -96,7 +96,7 @@ public class CreateWindow implements RequestHandler {
 			window.free();
 			return;
 		}
-
-		server.drawableCreated(window);
+		
+		server.getResources().add(window);
 	}
 }

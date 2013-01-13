@@ -18,7 +18,10 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -26,6 +29,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image;
 
@@ -42,9 +46,9 @@ public class XawtDrawableListener implements Drawable.Listener {
 	public void copyArea(Drawable destDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 		
-		Image destImage = ((Drawable.Listener) destDrawable.getListener()).getImage();
+		Image destImage = destDrawable.getDrawableListener().getImage();
 		
-		Image srcImage = ((Drawable.Listener) _drawable.getListener()).getImage();
+		Image srcImage = _drawable.getDrawableListener().getImage();
 		
 		BufferedImage srcbi = ((XawtImageListener) srcImage.getListener()).getXawtImage();
 		
@@ -72,7 +76,7 @@ public class XawtDrawableListener implements Drawable.Listener {
 			_drawable.setImage(xawtImage);
 			
 			
-			Image srcImage = ((Drawable.Listener) _drawable.getListener()).getImage();
+			Image srcImage = _drawable.getDrawableListener().getImage();
 			Graphics sg = ((XawtImageListener) srcImage.getListener()).getXawtGraphics();
 			
 			sg.drawImage(image, destinationX, destinationY, width, height, null);			
@@ -104,6 +108,35 @@ public class XawtDrawableListener implements Drawable.Listener {
 		}
 		
 		return i;
+	}
+
+	@Override
+	public void drawString(
+			final GraphicsContext graphicsContext, 
+			final String str, 
+			final int x,
+			final int y, 
+			final int bx,
+			final int by, 
+			final int bw,
+			final int bh) {
+//
+//		Nathan ...
+//		1) We need some generic method to get hold to the awt graphics.
+//		2) I don't know how we deal with windows having a colormap and pixmaps not ?!?
+//		3) Sorry if I have made a mess trying to add this method :-(
+//		HELP!		
+		
+//		final Font font = graphicsContext.getFont();
+//		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+//
+//		final Graphics2D graphics = translateAndClipToWindow();
+//		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+//		graphics.setColor(new Color(rgb));
+//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		final java.awt.Font awtFont = fontListener.getAwtFont();
+//		graphics.setFont(awtFont);
+//		graphics.drawString(str, x, y);		
 	}
 
 

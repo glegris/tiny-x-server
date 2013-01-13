@@ -26,6 +26,9 @@ public abstract class Drawable implements Resource {
 	Image.Listener _image;
 
 	public interface Listener {
+		
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y, int bx, int by, int bw, int bh);
+
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
 				int srcY, int width, int height, int dstX, int dstY);
 		
@@ -38,15 +41,7 @@ public abstract class Drawable implements Resource {
 		public void createImage(Drawable drawable);
 	}
 	
-	private static final Listener NULL_LISTENER = new NullListener();
-
-	private Listener _listener = NULL_LISTENER;
-
-	public void setListener(final Listener listener) {
-		_listener = listener;
-	}
-	
-	private static final class NullListener implements Listener {
+	protected static class NullListener implements Listener {
 
 		@Override
 		public void copyArea(Drawable d, GraphicsContext graphicsContext,
@@ -75,17 +70,19 @@ public abstract class Drawable implements Resource {
 			
 		}
 
-
-
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str,
+				int x, int y, int bx, int by, int bw, int bh) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	public Image.Listener getImage() {
 		return this._image;
 	}
 
-	public com.liaquay.tinyx.model.Drawable.Listener getListener() {
-		return _listener;
-	}
+	public abstract Listener getDrawableListener();
 
 	public void setImage(Image.Listener listener) {
 		_image = listener;
@@ -114,4 +111,17 @@ public abstract class Drawable implements Resource {
 	//	  abstract Colormap getColormap();
 //	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
 
+	
+	
+	public void drawString(
+			final GraphicsContext graphicsContext, 
+			final String str, 
+			final int x, 
+			final int y, 
+			final int bx, 
+			final int by, 
+			final int bw, 
+			final int bh){
+		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
+	}
 }

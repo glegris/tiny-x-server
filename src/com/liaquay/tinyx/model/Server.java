@@ -80,7 +80,7 @@ public class Server extends Client {
 
 	public interface Listener {
 		public void fontOpened(final Font font);
-		public void drawableCreated(final Drawable drawable);
+		public void pixmapCreated(final Pixmap pixmap);
 	}
 	
 	/**
@@ -90,10 +90,8 @@ public class Server extends Client {
 	private static final class NullListener implements Listener {
 		@Override
 		public void fontOpened(final Font font) {}
-
 		@Override
-		public void drawableCreated(Drawable drawable) {
-		}
+		public void pixmapCreated(final Pixmap pixmap) {}
 	}
 	
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -124,9 +122,9 @@ public class Server extends Client {
 	}
 	
 
-	public void drawableCreated(Drawable drawable) {
-		getResources().add(drawable);
-		_listener.drawableCreated(drawable);
+	public void pixmapCreated(final Pixmap pixmap) {
+		getResources().add(pixmap);
+		_listener.pixmapCreated(pixmap);
 	}
 	
 	public void closeFont(final Font font) {

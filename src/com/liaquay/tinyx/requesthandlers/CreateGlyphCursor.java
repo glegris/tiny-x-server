@@ -13,31 +13,33 @@ import com.liaquay.tinyx.model.Server;
 public class CreateGlyphCursor implements RequestHandler {
 
 	@Override
-	public void handleRequest(Server server, Client client, Request request,
-			Response response) throws IOException {
-		// TODO Auto-generated method stub
-
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 		
-		int cursorId = inputStream.readInt();
+		final int cursorId = inputStream.readInt();
 
-		int sourceFont = inputStream.readInt();
-		Resource sourceFontRes = server.getResources().get(sourceFont);
+		final int sourceFont = inputStream.readInt();
+		final Resource sourceFontRes = server.getResources().get(sourceFont);
 
-		int maskFont = inputStream.readInt();
+		final int maskFont = inputStream.readInt();
 
-		int sourceChar = inputStream.readUnsignedShort();
-		int maskChar = inputStream.readUnsignedShort();
+		final int sourceChar = inputStream.readUnsignedShort();
+		final int maskChar = inputStream.readUnsignedShort();
 
-		int foregroundRed = inputStream.readUnsignedShort();
-		int foregroundGreen = inputStream.readUnsignedShort();
-		int foregroundBlue = inputStream.readUnsignedShort();
+		final int foregroundRed = inputStream.readUnsignedShort();
+		final int foregroundGreen = inputStream.readUnsignedShort();
+		final int foregroundBlue = inputStream.readUnsignedShort();
 
-		int backgroundRed = inputStream.readUnsignedShort();
-		int backgroundGreen = inputStream.readUnsignedShort();
-		int backgroundBlue = inputStream.readUnsignedShort();
+		final int backgroundRed = inputStream.readUnsignedShort();
+		final int backgroundGreen = inputStream.readUnsignedShort();
+		final int backgroundBlue = inputStream.readUnsignedShort();
 
+		// TODO implement
 	}
 
 }

@@ -67,6 +67,6 @@ public class CreatePixmap implements RequestHandler {
 		}
 		
 		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);
-		server.drawableCreated(pixmap);
+		server.pixmapCreated(pixmap);
 	}
 }
