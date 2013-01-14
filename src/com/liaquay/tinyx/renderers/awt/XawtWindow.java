@@ -27,7 +27,6 @@ import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
@@ -117,17 +116,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x,
 			final int y) {
 
-		final Font font = graphicsContext.getFont();
-		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
-
-		final Graphics2D graphics = getGraphics();
-		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		final java.awt.Font awtFont = fontListener.getAwtFont();
-		graphics.setFont(awtFont);
-		graphics.drawString(str, x, y);
+		super.drawString(graphicsContext, str, x, y);
+		
 		updateCanvas();
 	}
 
@@ -142,15 +132,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int angle2,
 			final boolean fill) {
 
-		final Graphics2D graphics = getGraphics();
-		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		super.polyArc(graphicsContext, x, y, width, height, angle1, angle2, fill);
 
-		if (fill) {
-			graphics.fillArc(x, y, width, height, angle1, angle2);
-		} else {
-			graphics.drawArc(x, y, width, height, angle1, angle2);
-		}
 		updateCanvas();
 	}
 
@@ -174,12 +157,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x[], 
 			final int y[]) {
 
-		final Graphics2D graphics = getGraphics();
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		graphics.fillPolygon(x, y, x.length);
+		super.polyFill(graphicsContext, x, y);
+		
 		updateCanvas();
 	}
 
@@ -202,12 +181,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x2, 
 			final int y2) {
 
-		final Graphics2D graphics = getGraphics();
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		graphics.drawLine(x1, y1, x2, y2);
+		super.drawLine(graphicsContext, x1, y1, x2, y2);
+		
 		updateCanvas();
 	}
 
@@ -275,12 +250,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	@Override
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
-		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
-
-		final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
-		graphics.setColor(new Color(rgb));
-
-		graphics.fillRect(x, y, width, height);
+		super.clearArea(exposures, x, y, width, height);
+		
 		updateCanvas();
 	}
 
@@ -307,7 +278,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 
 	@Override
-	public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
+	public void copyPlane(Drawable s, 		
+int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 		super.copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
 		updateCanvas();
@@ -344,7 +316,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	private void updateCanvas() {
-		
 		_canvas.getGraphics().drawImage(getImage(), _window.getAbsX(), _window.getAbsY(), _window.getWidth(), _window.getHeight(), null);
 	}
 }

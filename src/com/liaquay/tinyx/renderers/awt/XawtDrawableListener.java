@@ -29,8 +29,10 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Window;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
@@ -131,6 +133,21 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		graphics.drawString(str, x, y);		
 	}
 
+	public void drawString(GraphicsContext graphicsContext, String str, int x,
+			int y) {
+		final Font font = graphicsContext.getFont();
+		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+
+		final Graphics2D graphics = getGraphics();
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		final java.awt.Font awtFont = fontListener.getAwtFont();
+		graphics.setFont(awtFont);
+		graphics.drawString(str, x, y);
+	}
+
 	@Override
 	public void polyRect(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, boolean fill) {
@@ -165,5 +182,53 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public BufferedImage getImage() {
 		return _image;
+	}
+
+	public void polyArc(GraphicsContext graphicsContext, int x, int y,
+			int width, int height, int angle1, int angle2, boolean fill) {
+		final Graphics2D graphics = getGraphics();
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		if (fill) {
+			graphics.fillArc(x, y, width, height, angle1, angle2);
+		} else {
+			graphics.drawArc(x, y, width, height, angle1, angle2);
+		}
+	}
+
+	public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
+		final Graphics2D graphics = getGraphics();
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		graphics.fillPolygon(x, y, x.length);
+	}
+
+	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+			int x2, int y2) {
+		final Graphics2D graphics = getGraphics();
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		graphics.drawLine(x1, y1, x2, y2);
+	}
+
+	public void clearArea(boolean exposures, int x, int y, int width, int height) {
+		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
+
+		final int rgb = _drawable.getColorMap().getRGB(_drawable.getScreen().getBackgroundPixel());
+		graphics.setBackground(new Color(rgb));
+
+		graphics.clearRect(x, y, width, height);
+		
+		if (exposures && _drawable instanceof Window) {
+			Window w = (Window) _drawable;
+			
+			final Event exposeEvent = w.getEventFactories().getExposureFactory().create(w.getId(), w.getX(), w.getY(), w.getClipWidth(), w.getClipHeight(), 0);
+			w.deliver(exposeEvent, Event.ExposureMask);
+		}
 	}
 }

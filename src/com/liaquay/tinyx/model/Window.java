@@ -523,6 +523,10 @@ public class Window extends Drawable {
 			updateVisibility();
 		}
 	}
+	
+	public EventFactories getEventFactories() {
+		return _eventFactories;
+	}
 
 	private void exposed() {
 		if(!isInputOnly() && wouldDeliver(Event.ExposureMask)) {
