@@ -18,6 +18,44 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-public class DashList extends Unimplemented {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.liaquay.tinyx.Request;
+import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.requesthandlers.AttributeHandler;
+
+public class DashList implements AttributeHandler<GraphicsContext> {
+
+	@Override
+	public void read(
+			final Server server, 
+			final Client client, 
+			final Request request,
+			final Response response, 
+			final GraphicsContext graphicsContext) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+
+		int dashes = inputStream.readSignedByte();
+		List<Integer> dashList = new ArrayList<Integer>();
+		dashList.add(dashes);
+		dashList.add(dashes);
+		graphicsContext.setDashes(dashList);
+	}
+
+	@Override
+	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
+		List<Integer> dashList = graphicsContext.getDashes();
+
+		for (int i=0; i < dashList.size(); i++) {
+			outputStream.writeByte(dashList.get(i));
+		}
+	}
 }

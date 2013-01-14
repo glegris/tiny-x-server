@@ -19,25 +19,43 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 
 public class SetDashes implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		XInputStream inputStream = request.getInputStream();
+
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}	          
+
+		int dashOffset = inputStream.readSignedShort();
+		int length = inputStream.readUnsignedShort();
+
+		List<Integer> dashes = new ArrayList<Integer>();
+		for (int i = 0; i < length; i++) {
+			dashes.add((Integer) inputStream.readSignedByte());
+		}
+
+		graphicsContext.setDashOffset(dashOffset);
+		graphicsContext.setDashes(dashes);
 	}
 }

@@ -103,4 +103,9 @@ public class Pixmap extends Drawable {
 	public Listener getDrawableListener() {
 		return _listener;
 	}
+
+	@Override
+	public ColorMap getColorMap() {
+		return _drawable.getColorMap();
+	}
 }

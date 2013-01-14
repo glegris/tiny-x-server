@@ -1,5 +1,8 @@
 package com.liaquay.tinyx.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GraphicsContext extends AbstractResource {
 
 	private final Drawable _drawable;
@@ -225,7 +228,7 @@ public class GraphicsContext extends AbstractResource {
 	public int getDashOffset() {
 		return _dashOffset;
 	}
-
+	
 	private Font _font;
 	
 	public void setFont(final Font font) {
@@ -234,5 +237,15 @@ public class GraphicsContext extends AbstractResource {
 	
 	public Font getFont() {
 		return _font;
+	}
+
+	private List<Integer> _dashes = new ArrayList<Integer>();
+
+	public void setDashes(List<Integer> dashes) {
+		_dashes = dashes;
+	}
+	
+	public List<Integer> getDashes() {
+		return _dashes;
 	}
 }

@@ -28,7 +28,18 @@ int main(int argc, char* argv[])
                 printf("Failed to open font2.\n");
                 return 0;
         }
-
+		XFontStruct * font3 = XLoadQueryFont (dpy, "fixed");
+		if(!font3) 
+		{
+                printf("Failed to open font3.\n");
+                return 0;
+        }
+		XFontStruct * font4 = XLoadQueryFont (dpy, "cursor");
+		if(!font4) 
+		{
+                printf("Failed to open font4.\n");
+                return 0;
+        }
 		XTextItem textItems[2];
 		textItems[0].chars = "Hello";
 		textItems[0].nchars = strlen(textItems[0].chars);
@@ -47,7 +58,7 @@ int main(int argc, char* argv[])
         int greenColor = green.pixel;
  
         // Create the window
-        Window w = XCreateSimpleWindow(dpy, DefaultRootWindow(dpy), 0, 0, 220, 150,40, greenColor, blackColor);
+        Window w = XCreateSimpleWindow(dpy, DefaultRootWindow(dpy), 0, 0, 220, 200,40, greenColor, blackColor);
         XStoreName(dpy, w, "Hello World!");
  
  
@@ -76,6 +87,10 @@ int main(int argc, char* argv[])
 				        XDrawText(dpy, w, gc, 20, 50, &textItems, 2);
 				        XSetBackground(dpy, gc, greenColor);
                         XDrawImageString(dpy, w, gc, 20, 100, "Hello World!", strlen("Hello World!"));
+						XSetFont (dpy, gc, font3->fid);
+                        XDrawString(dpy, w, gc, 20, 130, "Hello World!", strlen("Hello World!"));
+						XSetFont (dpy, gc, font4->fid);
+                        XDrawString(dpy, w, gc, 20, 150, "Hello World!", strlen("Hello World!"));
                         // Send the requests to the server
                         XFlush(dpy);
                 }

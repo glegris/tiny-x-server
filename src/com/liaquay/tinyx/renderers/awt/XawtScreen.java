@@ -83,14 +83,15 @@ public class XawtScreen {
 
 		_canvas.getAccessibleContext();
 
+		_frame.add(_canvas);
+		_frame.pack();
+		_frame.setVisible(true);
+
 		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
 		rootWindow.setListener(_rootWindowListener);
 
 //		_pixmapListener = new XawtPixmap(pixmap);
 		
-		_frame.add(_canvas);
-		_frame.pack();
-		_frame.setVisible(true);
 		
 		// WTF If I don't do this the background is rendered grey!?!
 		// TODO Nathan any ideas? I guess there is a delayed AWT event but my all attempts to prevent the redraw have failed?
@@ -156,7 +157,7 @@ public class XawtScreen {
 			@Override
 			public void keyPressed(final KeyEvent e) {
 				System.out.println("Pressed ");
-				System.out.println("Keycode " + e.getKeyCode());
+				System.out.println("KupdateCanvaseycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
 				server.getServer().keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));

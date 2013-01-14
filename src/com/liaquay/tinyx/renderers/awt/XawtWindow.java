@@ -20,7 +20,6 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -30,13 +29,10 @@ import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
-import com.liaquay.tinyx.model.Image;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 
 /**
- * 
- * TODO use colour map to look up colours.
  *
  */
 public class XawtWindow extends XawtDrawableListener implements Window.Listener {
@@ -124,39 +120,17 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 
-		final Graphics graphics = translateAndClipToWindow();
+		final Graphics2D graphics = getGraphics();
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final java.awt.Font awtFont = fontListener.getAwtFont();
 		graphics.setFont(awtFont);
 		graphics.drawString(str, x, y);
+		updateCanvas();
 	}
 
-	@Override
-	public void drawString(
-			final GraphicsContext graphicsContext, 
-			final String str, 
-			final int x,
-			final int y, 
-			final int bx,
-			final int by, 
-			final int bw,
-			final int bh) {
-
-		final Font font = graphicsContext.getFont();
-		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
-		final Graphics2D graphics = translateAndClipToWindow();
-		graphics.setColor(new Color(_window.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
-		graphics.fillRect(bx, by, bw, bh);
-		graphics.setColor(new Color(_window.getColorMap().getRGB(graphicsContext.getForegroundColour())));
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final java.awt.Font awtFont = fontListener.getAwtFont();
-		graphics.setFont(awtFont);
-		graphics.drawString(str, x, y);		
-	}	
-	
 	@Override
 	public void polyArc(
 			final GraphicsContext graphicsContext, 
@@ -168,7 +142,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int angle2,
 			final boolean fill) {
 
-		final Graphics2D graphics = translateAndClipToWindow();
+		final Graphics2D graphics = getGraphics();
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
@@ -177,6 +151,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		} else {
 			graphics.drawArc(x, y, width, height, angle1, angle2);
 		}
+		updateCanvas();
 	}
 
 	@Override
@@ -188,7 +163,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int height,
 			final boolean fill) {
 
-		final Graphics2D graphics = translateAndClipToWindow();
+		final Graphics2D graphics = getGraphics();
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
@@ -197,6 +172,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		} else {
 			graphics.drawRect(x, y, width, height);
 		}
+		updateCanvas();
 	}
 
 	@Override
@@ -205,12 +181,13 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x[], 
 			final int y[]) {
 
-		final Graphics2D graphics = translateAndClipToWindow();
+		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
 		graphics.fillPolygon(x, y, x.length);
+		updateCanvas();
 	}
 
 	@Override
@@ -219,12 +196,13 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x[], 
 			final int y[]) {
 
-		final Graphics2D graphics = translateAndClipToWindow();
+		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
 		graphics.drawPolyline(x, y, x.length);
+		updateCanvas();
 	}
 
 	@Override
@@ -235,22 +213,29 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x2, 
 			final int y2) {
 
-		final Graphics2D graphics = translateAndClipToWindow();
+		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
 		graphics.drawLine(x1, y1, x2, y2);
+		updateCanvas();
 	}
 
-	private Graphics2D translateAndClipToWindow() {
-		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
-		graphics.translate(_window.getAbsX(), _window.getAbsY());
-		return graphics;
+	@Override
+	protected Graphics2D getGraphics() {
+		return (Graphics2D) _image.getGraphics();
+//		return translateAndClipToWindow();
 	}
+	
+//	private Graphics2D translateAndClipToWindow() {
+//		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
+//		graphics.translate(_window.getAbsX(), _window.getAbsY());
+//		return graphics;
+//	}
 
 	private void paintWindow() {
-		final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
+		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
 
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -280,6 +265,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		graphics.translate(
 				-_window.getAbsX() - borderWidth, 
 				-_window.getAbsY() - borderWidth);
+		updateCanvas();
 	}
 
 	private void paintBorder(final Graphics2D graphics) {
@@ -300,24 +286,52 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	@Override
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
-		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
+		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
 
 		final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
 		graphics.setColor(new Color(rgb));
 
 		graphics.fillRect(x, y, width, height);
+		updateCanvas();
+	}
+
+	@Override
+	public void copyArea(Drawable destDrawable,
+			GraphicsContext graphicsContext, int srcX, int srcY, int width,
+			int height, int dstX, int dstY) {
+
+		super.copyArea(destDrawable, graphicsContext, srcX, srcY, width, height, dstX,
+				dstY);
+		updateCanvas();
+	}
+
+
+	@Override
+	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+			int width, int height, int destinationX, int destinationY,
+			int leftPad, int depth) {
+
+		super.putImage(graphicsContext, buffer, width, height, destinationX,
+				destinationY, leftPad, depth);
+		updateCanvas();
+	}
+
+
+	@Override
+	public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
+			int width, int height, int dstX, int dstY) {
+		super.copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
+		updateCanvas();
 	}
 
 	public XawtWindow(final Window window, final Canvas canvas) {
-		//		super(window);
+		super(window);
 
 		_window = window;
 		_canvas = canvas;
 
-		createImage();
+		paintWindow();
 	}
-
-
 
 
 	@Override
@@ -326,96 +340,15 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		return 0;
 	}
 
-	//	@Override
-	//	public void putImage(GraphicsContext graphicsContext, byte[] data,
-	//			int width, int height, int destinationX, int destinationY,
-	//			int leftPad, int depth) {
-	//
-	//		
-	//		
-	//		if (depth == 1) {
-	//			byte[] arr = {(byte)0, (byte)0xff};
-	//
-	//			WritableRaster raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
-	//					width, height, 1, 1, null);
-	//
-	//
-	//
-	////			Raster r = WritableRaster.createWritableRaster(new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, width, height, bMask), 
-	////					new DataBufferByte(buffer, buffer.length), null);
-	////
-	////			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-	////			bi.setData(r);
-	////
-	////			final Graphics2D graphics = (Graphics2D) _canvas.getGraphics();
-	////			graphics.drawImage(bi, null, 0,0);
-	//
-	//
-	//		} else {
-	//			System.out.println("Depth of " + depth + " not currently supported for putImage on XawtWindow");
-	//		}
-	//
-	//	}
-
-
-	//	@Override
-	//	public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
-	//			int srcY, int width, int height, int dstX, int dstY) {
-	//		// TODO Auto-generated method stub
-	//		
-	//
-	//		BufferedImage destImage = ((XawtImageListener) d.getListener()).getXawtImage();
-	//
-	//		BufferedImage srcImage = ((XawtImageListener) _window.getListener()).getXawtImage();
-	//
-	//		Graphics dg = destImage.createGraphics();
-	//		Graphics sg = srcImage.createGraphics();
-	//		
-	//		dg.copyArea(srcX, srcY, width, height, dstX, dstY);
-	//
-	//
-	//	}
-
 
 	@Override
-	public void createImage() {
-		BufferedImage _windowImage = new BufferedImage(_window.getWidth(), _window.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-		XawtImageListener image = new XawtImageListener(_windowImage);
-		_window.setImage(image);
+	public void createImage(Drawable drawable) {
+		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		setImage(image);
 	}
 
-	@Override
-	public Image.Listener getImage() {
-		return (Image.Listener) _window.getImage();
+	private void updateCanvas() {
+		
+		_canvas.getGraphics().drawImage(getImage(), _window.getAbsX(), _window.getAbsY(), _window.getWidth(), _window.getHeight(), null);
 	}
-
-	//	@Override
-	//	public Image getImage() {
-	//		
-	//		
-	//        int w = _canvas.getWidth();
-	//        int h = _canvas.getHeight();
-	//        int type = BufferedImage.TYPE_INT_RGB;
-	//        BufferedImage image = new BufferedImage(w,h,type);
-	//        Graphics2D g2 = image.createGraphics();
-	//        _canvas.paint(g2);
-	//        g2.dispose();
-	//
-	//       	return image;
-	//        
-	////		i.setListener(new XawtImageListener(null, _canvas.getGraphics()));
-	////		return i;
-	//	}
-
-	//	@Override
-	//	public Canvas getCanvas() {
-	//		return _canvas;
-	//	}
-
-	@Override
-	public Window getDrawable() {
-		return _window;
-	}
-
 }

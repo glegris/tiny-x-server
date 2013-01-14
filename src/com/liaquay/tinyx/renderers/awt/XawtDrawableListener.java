@@ -31,22 +31,47 @@ import java.awt.image.WritableRaster;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
-import com.liaquay.tinyx.model.Image;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
-	public abstract Drawable getDrawable();
+	final Drawable _drawable;
 	
+	BufferedImage _image;
+
+	protected abstract Graphics2D getGraphics();
+	
+	public XawtDrawableListener(Drawable drawable) {
+		_drawable = drawable;
+		createImage(drawable);
+	}
+
+	public void setImage(BufferedImage image) {
+		this._image =  image;
+	}
+
+	@Override
+	public abstract void createImage(Drawable drawable);
+
 	@Override
 	public void copyArea(Drawable destDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 		
-		BufferedImage destImage = ((XawtImageListener) getDrawableListener().getImage()).getXawtImage();
-				
-		BufferedImage srcImage = ((XawtImageListener) destDrawable.getDrawableListener()).getXawtImage();
-				
+		BufferedImage srcImage = getImage();
+		BufferedImage destImage = destDrawable.getDrawableListener().getImage();
+
 		srcImage.getGraphics().translate(dstX,  dstY);
-		srcImage.getGraphics().drawImage(destImage, width, height, null);
+		srcImage.getGraphics().drawImage(destImage, srcX, srcY, width, height, null);
+	}
+
+	@Override
+	public void copyPlane(Drawable destDrawable, int bitplane, int srcX, int srcY,
+			int width, int height, int dstX, int dstY) {
+		
+		BufferedImage srcImage = getImage();
+		BufferedImage destImage = destDrawable.getDrawableListener().getImage();
+
+		srcImage.getGraphics().translate(dstX,  dstY);
+		srcImage.getGraphics().drawImage(destImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
@@ -61,14 +86,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 			BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+//			setImage(image);
 
-			XawtImageListener xawtImage = new XawtImageListener(image, image.getGraphics());
-			_drawable.setImage(xawtImage);
-			
-			
-			Image srcImage = _drawable.getDrawableListener().getImage();
-			Graphics sg = ((XawtImageListener) srcImage.getListener()).getXawtGraphics();
-			
+			Graphics sg = _image.getGraphics();
 			sg.drawImage(image, destinationX, destinationY, width, height, null);			
 			
 		} else {
@@ -76,29 +96,20 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		}
 	}
 
-
-	@Override
-	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-		
-		XawtImageListener i = new XawtImageListener(image, image.getGraphics());
-		drawable.setImage(i);
-	}
-
-	@Override
-	public Image getImage() {
-		Image i = new Image();
-		if (_drawable.getImage() instanceof XawtImageListener) {
-			BufferedImage image = ((XawtImageListener) _drawable.getImage()).getXawtImage();
-			Graphics g = ((XawtImageListener) _drawable.getImage()).getXawtGraphics();
-			
-			i.setListener(new XawtImageListener(image, g));
-		} else {
-			System.out.println("Unable to get image");
-		}
-		
-		return i;
-	}
+//	@Override
+//	public Image getImage() {
+//		Image i = new Image();
+//		if (_drawable.getImage() instanceof XawtImageListener) {
+//			BufferedImage image = ((XawtImageListener) _drawable.getImage()).getXawtImage();
+//			Graphics g = ((XawtImageListener) _drawable.getImage()).getXawtGraphics();
+//			
+//			i.setListener(new XawtImageListener(image, g));
+//		} else {
+//			System.out.println("Unable to get image");
+//		}
+//		
+//		return i;
+//	}
 
 	@Override
 	public void drawString(
@@ -110,27 +121,23 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int by, 
 			final int bw,
 			final int bh) {
-//
-//		Nathan ...
-//		1) We need some generic method to get hold to the awt graphics.
-//		2) I don't know how we deal with windows having a colormap and pixmaps not ?!?
-//		3) Sorry if I have made a mess trying to add this method :-(
-//		HELP!		
 		
-//		final Font font = graphicsContext.getFont();
-//		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
-//
-//		final Graphics2D graphics = translateAndClipToWindow();
-//		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-//		graphics.setColor(new Color(rgb));
-//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		final java.awt.Font awtFont = fontListener.getAwtFont();
-//		graphics.setFont(awtFont);
-//		graphics.drawString(str, x, y);		
+		final Font font = graphicsContext.getFont();
+		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+		final Graphics2D graphics = getGraphics();
+		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
+		graphics.fillRect(bx, by, bw, bh);
+		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getForegroundColour())));
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final java.awt.Font awtFont = fontListener.getAwtFont();
+		graphics.setFont(awtFont);
+		graphics.drawString(str, x, y);		
 	}
 
-//	@Override
-//	public Image getImage() {
+	@Override
+	public BufferedImage getImage() {
+		return _image;
+	}
 //		Image i = new Image();
 //		if (getDrawable().getImage() instanceof XawtImageListener) {
 //			BufferedImage image = ((XawtImageListener) getDrawable().getImage()).getXawtImage();

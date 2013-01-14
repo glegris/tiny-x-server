@@ -67,10 +67,7 @@ public class Window extends Drawable {
 			// TODO Auto-generated method stub
 
 		}
-		@Override
-		public void createImage() {
-			// TODO Auto-generated method stub
-		}
+
 		@Override
 		public void drawString(GraphicsContext graphicsContext, String str,
 				int x, int y, int bx, int by, int bw, int bh) {
@@ -703,6 +700,7 @@ public class Window extends Drawable {
 		return _overrideRedirect;
 	}
 
+	@Override
 	public ColorMap getColorMap() {
 		return _colorMap;
 	}

@@ -152,6 +152,252 @@ main()
 
       XMapWindow(dpy, w);
 
+      // MapSubwindows
+      
+      XMapSubwindows(dpy, w);
+
+      // UnmapWindow
+      
+      XUnmapWindow(dpy, w);
+
+      // UnmapSubwindows
+
+      XMapWindow(dpy, w);
+      XUnmapSubwindows(dpy, w2);
+      XMapSubwindows(dpy, w);
+
+      // ConfigureWindow
+
+      Window w3 = XCreateWindow(dpy, w, 10, 50, 100, 10, 2,
+			 CopyFromParent, CopyFromParent, CopyFromParent, 0, NIL);
+
+      XMapWindow(dpy, w3);
+
+      XWindowChanges wc;
+      wc.x = -5;
+      wc.y = -10;
+      wc.width = 50;
+      wc.height = 40;
+      wc.border_width = 7;
+      wc.sibling = w2;
+      wc.stack_mode = Opposite;
+      XConfigureWindow(dpy, w3, 
+		       CWX | CWY | CWWidth | CWHeight | CWBorderWidth | CWSibling | CWStackMode, 
+		       &wc);
+
+      // CirculateWindow
+
+      XCirculateSubwindows(dpy, w, RaiseLowest);
+
+      // GetGeometry
+
+      Window root;
+      int x, y;
+      unsigned width, height, border_width, depth;
+      XGetGeometry(dpy, w, &root, &x, &y, &width, &height, &border_width, &depth);
+
+      // QueryTree
+
+      Window parent;
+      Window *children;
+      unsigned nchildren;
+      success = XQueryTree(dpy, w, &root, &parent, &children, &nchildren);
+      XFree(children);
+
+      // InternAtom
+
+      Atom a = XInternAtom(dpy, "WM_PROTOCOLS", True);
+
+      // GetAtomName
+
+      char *string = XGetAtomName(dpy, XA_PRIMARY);
+      XFree(string);
+
+      // ChangeProperty
+
+      XStoreName(dpy, w, "test window");
+
+      // DeleteProperty
+
+      XDeleteProperty(dpy, w, XA_WM_NAME);
+
+      // GetProperty
+      // TODO
+
+      // ListProperties
+
+      int num_prop;
+      Atom *list = XListProperties(dpy, w, &num_prop);
+      XFree(list);
+
+      // SetSelectionOwner
+
+      XSetSelectionOwner(dpy, XA_PRIMARY, w, 12000);
+      XSetSelectionOwner(dpy, XA_SECONDARY, w, CurrentTime);
+
+      // GetSelectionOwner
+
+      Window wx = XGetSelectionOwner(dpy, XA_PRIMARY);
+
+      // ConvertSelection
+
+      XConvertSelection(dpy, XA_SECONDARY, XA_CURSOR, XA_POINT, w, CurrentTime);
+
+      // SendEvent
+
+      // GrabPointer
+
+      std::cerr << "Grabbing" << std::endl;
+      int res = XGrabPointer(dpy, w, False, Button5MotionMask | PointerMotionHintMask,
+			     GrabModeSync, GrabModeAsync, w, None, CurrentTime);
+      XSync(dpy, False);
+//      sleep(5);
+
+      // UngrabPointer
+
+      std::cerr << "Ungrabbing" << std::endl;
+      XUngrabPointer(dpy, CurrentTime);
+
+      // GrabButton
+
+      XGrabButton(dpy, 3, ShiftMask | ControlMask, w, False, PointerMotionHintMask | Button2MotionMask, 
+		  GrabModeAsync, GrabModeSync, None, None);
+		  
+      XGrabButton(dpy, 2, AnyModifier, w, False, PointerMotionHintMask | Button2MotionMask, 
+		  GrabModeAsync, GrabModeSync, None, None);
+		  
+      // UngrabButton
+
+      XUngrabButton(dpy, 2, LockMask, w);
+
+      // ChangeActivePointerGrab
+
+      XChangeActivePointerGrab(dpy, ButtonPressMask, None, CurrentTime);
+
+      // GrabKeyboard
+
+      XGrabKeyboard(dpy, w, True, GrabModeSync, GrabModeSync, 12000);
+
+      // UngrabKeyboard
+
+      XUngrabKeyboard(dpy, 13000);
+
+      // GrabKey
+
+      XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Tab), ShiftMask | Mod3Mask, w, True, GrabModeSync,
+	       GrabModeSync);
+
+      // UngrabKey
+
+      XUngrabKey(dpy, AnyKey, AnyModifier, w);
+
+      // AllowEvents
+
+      XAllowEvents(dpy, AsyncPointer, 14000);
+
+      // GrabServer
+
+      XGrabServer(dpy);
+
+      // UngrabServer
+
+      XUngrabServer(dpy);
+
+      // QueryPointer
+
+      Window child;
+      int root_x, root_y, win_x, win_y;
+      unsigned mask;
+      Bool bres = XQueryPointer(dpy, w, &root, &child, &root_x, &root_y, &win_x, &win_y, &mask);
+
+      // GetMotionEvents
+
+      int nevents;
+      XGetMotionEvents(dpy, w, 15000, 16000, &nevents);
+
+      // TranslateCoordinates
+
+      int dest_x, dest_y;
+
+      XTranslateCoordinates(dpy, w, w2, 10, 20, &dest_x, &dest_y, &child);
+
+      // WarpPointer
+
+      XWarpPointer(dpy, w, w2, 0, 0, 100, 100, 20, 30);
+
+      // SetInputFocus
+
+      XSetInputFocus(dpy,w, RevertToPointerRoot, 17000);
+      XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, 17000);
+
+      // GetInputFocus
+
+      Window focus;
+      int revert_to;
+      XGetInputFocus(dpy, &focus, &revert_to);
+
+      // QueryKeymap
+
+      char keys_return[32];
+      XQueryKeymap(dpy, keys_return);
+
+      // OpenFont
+
+      Font fid = XLoadFont(dpy, "cursor");
+
+      // CloseFont
+
+      XUnloadFont(dpy, fid);
+
+      // QueryFont
+
+      XFontStruct *fs = XLoadQueryFont(dpy, "cursor");
+      assert(fs);
+
+      // QueryTextExtents
+
+      int direction, font_ascent, font_descent;
+      XCharStruct overall;
+      XQueryTextExtents(dpy, fs -> fid, "toto", 4, &direction, &font_ascent, &font_descent, &overall);
+      XQueryTextExtents(dpy, fs -> fid, "odd__length", 11, &direction, &font_ascent, &font_descent, &overall);
+
+      XChar2b c2bs;
+      c2bs.byte1 = '$';
+      c2bs.byte2 = 'B';
+      XQueryTextExtents16(dpy, fs -> fid, &c2bs, 1, &direction, &font_ascent, &font_descent, &overall);
+
+      XQueryTextExtents(dpy, fs -> fid, longString, strlen(longString), &direction, &font_ascent, 
+			&font_descent, &overall);
+
+      // ListFonts
+
+      int actual_count;
+      char **fontList = XListFonts(dpy, "*", 100, &actual_count);
+      XFree((char *)fontList);
+
+      // ListFontsWithInfo
+
+      int count;
+      XFontStruct *info;
+      char **names = XListFontsWithInfo(dpy, "*", 100, &count, &info);
+      XFreeFontInfo(names, info, count);
+
+      // SetFontPath
+      // GetFontPath
+
+      int npaths;
+      char **charList = XGetFontPath(dpy, &npaths);
+
+      char **charList2 = new char *[npaths + 1];
+      memcpy(charList2, charList, npaths * sizeof(char *));
+      charList2[npaths] = charList2[0];
+
+      XSetFontPath(dpy, charList2, npaths + 1);
+      XSetFontPath(dpy, charList, npaths); // Reset to some reasonnable value
+
+      XFreeFontPath(charList);
+      delete [] charList2;
+
       // CreatePixmap
 
       Pixmap pix2 = XCreatePixmap(dpy, w, 100, 200, DefaultDepthOfScreen(scr));
@@ -181,7 +427,7 @@ main()
       gcv.stipple = bitmap;
       gcv.ts_x_origin = 3;
       gcv.ts_y_origin = 4;
-//      gcv.font = fs -> fid;
+      gcv.font = fs -> fid;
       gcv.subwindow_mode = ClipByChildren;
       gcv.graphics_exposures = True;
       gcv.clip_x_origin = 5;
@@ -237,6 +483,45 @@ main()
       // This won't work if the Screen doesn't have at least 3 planes
       XCopyPlane(dpy, pixmap, w, gc, 20, 10, 40, 30, 0, 0, 0x4);
 
+      // PolyPoint
+
+      XDrawPoint(dpy, w, gc, 1, 2);
+
+      XPoint points[] = { { 3, 4 }, { 5, 6 } };
+      XDrawPoints(dpy, w, gc, points, SIZEOF(points), CoordModeOrigin);
+
+      // PolyLine
+
+      XDrawLines(dpy, w, gc, points, SIZEOF(points), CoordModePrevious);
+
+      // PolySegment
+
+      XSegment segments[] = { { 7, 8, 9, 10 }, { 11, 12, 13, 14 }, { 15, 16, 17, 18 } };
+      XDrawSegments(dpy, w, gc, segments, SIZEOF(segments));
+
+      // PolyRectangle
+
+      XDrawRectangles(dpy, w, gc, rectangles, SIZEOF(rectangles));
+
+      // PolyArc
+
+      XArc arcs[] = { { 10, 20, 30, 40, 50, 60 }, { -70, 80, 90, 100, 110, 120 }, 
+		      { 10, 20, 30, 40, 50, -30 } };
+
+      XDrawArcs(dpy, w, gc, arcs, SIZEOF(arcs));
+
+      // FillPoly
+
+      XFillPolygon(dpy, w, gc, points, SIZEOF(points), Convex, CoordModePrevious);
+
+      // PolyFillRectangle
+      
+      XFillRectangles(dpy, w, gc, rectangles, SIZEOF(rectangles));
+
+      // PolyFillArc
+      
+      XFillArcs(dpy, w, gc, arcs, SIZEOF(arcs));
+
       // PutImage
       // GetImage
 
@@ -244,8 +529,253 @@ main()
       XPutImage(dpy, w, gc, image, 0, 0, 50, 60, 40, 30);
       XSync(dpy, False); // Make the next request starts at the beginning of a packet
 
+      // PolyText8
+
+#define STRINGL(x) x, strlen(x)
+      XTextItem items[] = { STRINGL("toto"), -3, fs -> fid, 
+			    STRINGL("titi"), 3, None,
+			    STRINGL("tutu"), 0, fs -> fid };
+      XDrawText(dpy, w, gc, 10, 10, items, SIZEOF(items));
+
+      XTextItem items2[] = { STRINGL("totox"), -3, fs -> fid, 
+			    STRINGL("titi"), 3, None,
+			    STRINGL("tutu"), 0, fs -> fid };
+      XDrawText(dpy, w, gc, 10, 10, items2, SIZEOF(items2));
+
+      // PolyText16
+
+      XChar2b c2b2[] = { 0, 't', 0, 'x' };
+
+      XTextItem16 items16[] = { { &c2bs, 1, -5, None }, { NULL, 0, 0, None }, { c2b2, 2, 0, fs -> fid } };
+      XDrawText16(dpy, w, gc, 10, 0, items16, SIZEOF(items16));
+
+      // ImageText8
+
+      XDrawImageString(dpy, w, gc, 10, 10, "toto", 4);
+
+      // ImageText16
+
+      XDrawImageString16(dpy, w, gc, 10, 10, &c2bs, 1);
+      XDrawImageString16(dpy, w, gc, 10, 20, c2b2, 2);
+
+      // CreateColormap
+      // Don't forget to tell the kids how it was when we had only 8 bits per pixel.
+
+      Colormap colormap = XCreateColormap(dpy, w, DefaultVisualOfScreen(scr), None);
+
+      // FreeColormap
+
+      XFreeColormap(dpy, colormap);
+      colormap = XCreateColormap(dpy, w, DefaultVisualOfScreen(scr), None);
+
+      // CopyColormapAndFree
+
+      Colormap colormap2 = XCopyColormapAndFree(dpy, colormap);
+
+      // InstallColormap
+
+      XInstallColormap(dpy, colormap2);
+
+      // UninstallColormap
+
+      XUninstallColormap(dpy, colormap2);
+
+      // ListInstalledColormaps
+
+      int num;
+      Colormap *colormapList = XListInstalledColormaps(dpy, w, &num);
+
+      // AllocColor
+
+      XColor screen;
+      screen.red = 0;
+      screen.green = 32767;
+      screen.blue = 65535;
+      screen.flags = DoRed | DoGreen | DoBlue;
+      success = XAllocColor(dpy, colormap, &screen);
+
+      // AllocNamedColor
 
       XColor screen2, exact;
+      success = XAllocNamedColor(dpy, colormap, "Wheat", &screen2, &exact);
+
+      // AllocColorCells
+
+      unsigned long plane_masks, pixels;
+      success = XAllocColorCells(dpy, colormap, False, &plane_masks, 1, &pixels, 1);
+
+      // AllocColorPlanes
+
+      unsigned long rmask, gmask, bmask;
+      success = XAllocColorPlanes(dpy, colormap, False, &pixels, 1, 0, 0, 0, &rmask, &gmask, &bmask);
+
+      // FreeColors
+
+      unsigned long pixels2[2] = { screen.pixel, screen2.pixel };
+      XFreeColors(dpy, colormap, pixels2, 2, 0);
+
+      // StoreColors
+
+      success = XAllocColorCells(dpy, colormap, False, NIL, 0, pixels2, 2);
+
+      // On many contemporary (that is, year 2000) video cards, you can't allocate read / write cells
+      // I want my requests to be sent, however.
+      if (!success) {
+	    XSetErrorHandler(errorHandler);
+      }
+
+      XColor colors[2];
+      colors[0] = screen;  colors[0].pixel = pixels2[0];
+      colors[1] = screen2; colors[1].pixel = pixels2[1];
+      XStoreColors(dpy, colormap, colors, 2);
+
+      // StoreNamedColor
+
+      XStoreNamedColor(dpy, colormap, "Wheat", colors[0].pixel, DoBlue);
+
+      XSync(dpy, False);
+      XSetErrorHandler(NIL); // Restore the default handler
+
+      // QueryColors
+
+      screen2.pixel = WhitePixelOfScreen(scr);
+      XQueryColor(dpy, colormap, &screen2);
+
+      // LookupColor
+
+      success = XLookupColor(dpy, colormap, "DarkCyan", &exact, &screen);
+
+      // CreateCursor
+
+      Cursor cursor = XCreatePixmapCursor(dpy, pixmap, None, &exact, colors, 10, 10);
+
+      // CreateGlyphCursor
+      
+      Cursor cursor2 = XCreateGlyphCursor(dpy, fs -> fid, fs -> fid, 'X', 0, &exact, colors);
+
+      // FreeCursor
+      
+      XFreeCursor(dpy, cursor2);
+
+      // RecolorCursor
+
+      XRecolorCursor(dpy, cursor, colors, &exact);
+
+      // QueryBestSize
+
+      success = XQueryBestSize(dpy, CursorShape, RootWindowOfScreen(scr), 100, 20, &width, &height);
+
+      // QueryExtension
+
+      int major_opcode, first_event, first_error;
+      XQueryExtension(dpy, "toto", &major_opcode, &first_event, &first_error);
+
+      // ListExtensions
+
+      int nextensions;
+      char **extensionList = XListExtensions(dpy, &nextensions);
+      for(char **p = extensionList; nextensions; nextensions--, p++) std::cout << *p << std::endl;
+      XFree(extensionList);
+
+      // ChangeKeyboardMapping
+      // GetKeyboardMapping
+
+      int min_keycodes, max_keycodes;
+      XDisplayKeycodes(dpy, &min_keycodes, &max_keycodes);
+
+      int keysyms_per_keycode;
+      KeySym *keysyms = XGetKeyboardMapping(dpy, min_keycodes, max_keycodes - min_keycodes + 1,
+					    &keysyms_per_keycode);
+      XChangeKeyboardMapping(dpy, min_keycodes, keysyms_per_keycode, keysyms, 
+			     max_keycodes - min_keycodes + 1);
+
+      // ChangeKeyboardControl
+      // GetKeyboardControl
+
+      XKeyboardState keyboardState;
+      XGetKeyboardControl(dpy, &keyboardState);
+
+      XKeyboardControl keyboardValues;
+      keyboardValues.key_click_percent = keyboardState.key_click_percent;
+      keyboardValues.bell_percent = keyboardState.bell_percent;
+      keyboardValues.bell_pitch = keyboardState.bell_pitch;
+      keyboardValues.bell_duration = keyboardState.bell_duration;
+      keyboardValues.led = 1;
+      keyboardValues.led_mode = LedModeOn;
+      keyboardValues.key = min_keycodes;
+      keyboardValues.auto_repeat_mode = AutoRepeatModeDefault;
+      XChangeKeyboardControl(dpy, 
+			       KBKeyClickPercent | KBBellPercent | KBBellPitch | KBBellDuration
+			     | KBLed | KBLedMode | KBKey | KBAutoRepeatMode,
+			     &keyboardValues);
+
+      // Bell
+
+      XBell(dpy, 90);
+
+      // ChangePointerControl
+      // GetPointerControl
+
+      int accel_numerator, accel_denominator, threshold;
+      XGetPointerControl(dpy, &accel_numerator, &accel_denominator, &threshold);
+
+      XChangePointerControl(dpy, True, True, accel_numerator, accel_denominator, threshold);
+
+      // SetScreenSaver
+      // GetScreenSaver
+
+      int timeout, interval, prefer_blanking, allow_exposures;
+      XGetScreenSaver(dpy, &timeout, &interval, &prefer_blanking, &allow_exposures);
+      XSetScreenSaver(dpy, timeout, interval, prefer_blanking, allow_exposures);
+
+      // ChangeHosts
+      // ListHosts
+
+      int nhosts;
+      Bool state;
+      XHostAddress *hostList = XListHosts(dpy, &nhosts, &state);
+
+      XHostAddress host;
+      host.family = FamilyInternet;
+      host.length = 4;
+      host.address = "\001\002\003\004";
+      XAddHost(dpy, &host);
+
+      // SetAccessControl
+
+      XSetAccessControl(dpy, EnableAccess);
+
+      // SetCloseDownMode
+
+      XSetCloseDownMode(dpy, RetainTemporary);
+
+      // KillClient
+
+      XKillClient(dpy, AllTemporary);
+
+      // RotateProperties
+
+      Atom properties[] = { XInternAtom(dpy, "CUT_BUFFER0", False), 
+			    XInternAtom(dpy, "CUT_BUFFER1", False),
+			    XInternAtom(dpy, "CUT_BUFFER2", False) };
+      XRotateWindowProperties(dpy, RootWindowOfScreen(scr), properties, SIZEOF(properties), -1);
+
+      // ForceScreenSaver
+
+      XForceScreenSaver(dpy, ScreenSaverReset);
+
+      // SetPointerMapping
+      // GetPointerMapping
+
+      unsigned char map[64];
+      int map_length = XGetPointerMapping(dpy, map, 64);
+      XSetPointerMapping(dpy, map, map_length);
+
+      // SetModifierMapping
+      // GetModifierMapping
+
+      XModifierKeymap *modmap = XGetModifierMapping(dpy);
+      XSetModifierMapping(dpy, modmap);
 
       // NoOperation
 

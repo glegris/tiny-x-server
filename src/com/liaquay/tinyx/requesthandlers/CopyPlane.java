@@ -56,5 +56,7 @@ public class CopyPlane implements RequestHandler {
 
 		Drawable s = server.getResources().get(srcDrawable, Drawable.class);
 		Drawable d = server.getResources().get(dstDrawable, Drawable.class);
+		
+		d.getDrawableListener().copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
 	}
 }

@@ -18,6 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
 
 public abstract class Drawable implements Resource {
 
@@ -30,12 +33,62 @@ public abstract class Drawable implements Resource {
 		public void putImage(GraphicsContext graphicsContext,
 				byte[] buffer, int width, int height,
 				int destinationX, int destinationY, int leftPad, int depth);
-		
-		public void createImage();
+
+		void createImage(Drawable drawable);
+
+		BufferedImage getImage();
+
+		public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
+				int width, int height, int dstX, int dstY);
 	}
 	
+	protected static class NullListener implements Listener {
 
-	public abstract com.liaquay.tinyx.model.Drawable.Listener getListener();
+		@Override
+		public void copyArea(Drawable d, GraphicsContext graphicsContext,
+				int srcX, int srcY, int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+				int width, int height, int destinationX, int destinationY,
+				int leftPad, int depth) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str,
+				int x, int y, int bx, int by, int bw, int bh) {
+			// TODO Auto-generated method stub
+			
+		}
+
+
+		@Override
+		public void createImage(Drawable drawable) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public BufferedImage getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
+				int width, int height, int dstX, int dstY) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+
+
+	public abstract com.liaquay.tinyx.model.Drawable.Listener getDrawableListener();
 
 	public abstract Screen getScreen();
 
@@ -52,4 +105,26 @@ public abstract class Drawable implements Resource {
 	public abstract int getHeight();
 
 	public abstract int getBorderWidth();
+
+	public abstract ColorMap getColorMap();
+//	abstract Graphics getGraphics();
+	//	  abstract void restoreClip();
+
+	//	  abstract Graphics getGraphics(GC gc, int mask);   
+	//	  abstract Colormap getColormap();
+//	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
+
+	
+	
+	public void drawString(
+			final GraphicsContext graphicsContext, 
+			final String str, 
+			final int x, 
+			final int y, 
+			final int bx, 
+			final int by, 
+			final int bw, 
+			final int bh){
+		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
+	}
 }

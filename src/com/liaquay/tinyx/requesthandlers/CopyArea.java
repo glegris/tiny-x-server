@@ -83,6 +83,6 @@ public class CopyArea implements RequestHandler {
 		final int width = inputStream.readSignedShort();
 		final int height = inputStream.readSignedShort();
 
-		d.getListener().copyArea(s, graphicsContext, srcX, srcY, width, height, dstX, dstY);
+		d.getDrawableListener().copyArea(s, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
 }
