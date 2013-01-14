@@ -41,7 +41,6 @@ public class Window extends Drawable {
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
 		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill);
 		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
-		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
 		public void clearArea(boolean exposures, int x, int y, int width, int height);
@@ -906,37 +905,17 @@ public class Window extends Drawable {
 
 	}
 
-	public void polyRect(GraphicsContext graphicsContext, int x, int y,
-			int width, int height, boolean fill) {
-		_listener.polyRect(graphicsContext, x, y, width, height, fill);
-	}
-
 	public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
 		_listener.polyFill(graphicsContext, x, y);
 	}
 
-	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
-		_listener.polyLine(graphicsContext, x, y);
-	}
 
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2,
 			int y2) {
 		_listener.drawLine(graphicsContext, x1, y1, x2, y2);
-
 	}
 
-//	public void renderDrawable(
-//			final BufferedImage image,
-//			final GraphicsContext graphicsContext, 
-//			final int srcX,
-//			final int srcY,
-//			final int width,
-//			final int height, 
-//			final int dstX,
-//			final int dstY) {
-//		_listener.renderDrawable(image, graphicsContext, srcX, srcY, width, height, dstX, dstY);
-//	}
-
+	
 	public Listener getListener() {
 		return _listener;
 	}

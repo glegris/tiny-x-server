@@ -18,7 +18,6 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 
@@ -40,6 +39,15 @@ public abstract class Drawable implements Resource {
 
 		public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
 				int width, int height, int dstX, int dstY);
+
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, boolean b);
+
+		public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
+				int[] yCoords);
+
+		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
+				int[] yCoords);
 	}
 	
 	protected static class NullListener implements Listener {
@@ -85,6 +93,27 @@ public abstract class Drawable implements Resource {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, boolean b) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
+				int[] yCoords) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
+				int[] yCoords) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 
@@ -126,5 +155,15 @@ public abstract class Drawable implements Resource {
 			final int bw, 
 			final int bh){
 		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
+	}
+	
+
+	public void polyRect(GraphicsContext graphicsContext, int x, int y,
+			int width, int height, boolean fill) {
+		getDrawableListener().polyRect(graphicsContext, x, y, width, height, fill);
+	}
+
+	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
+		getDrawableListener().polyLine(graphicsContext, x, y);
 	}
 }

@@ -35,11 +35,11 @@ import com.liaquay.tinyx.model.GraphicsContext;
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	final Drawable _drawable;
-	
+
 	BufferedImage _image;
 
 	protected abstract Graphics2D getGraphics();
-	
+
 	public XawtDrawableListener(Drawable drawable) {
 		_drawable = drawable;
 		createImage(drawable);
@@ -55,7 +55,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void copyArea(Drawable destDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
-		
+
 		BufferedImage srcImage = getImage();
 		BufferedImage destImage = destDrawable.getDrawableListener().getImage();
 
@@ -66,7 +66,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void copyPlane(Drawable destDrawable, int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
-		
+
 		BufferedImage srcImage = getImage();
 		BufferedImage destImage = destDrawable.getDrawableListener().getImage();
 
@@ -86,30 +86,27 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 			BufferedImage image = new BufferedImage(colorModel, raster, false, null);
-//			setImage(image);
 
 			Graphics sg = _image.getGraphics();
 			sg.drawImage(image, destinationX, destinationY, width, height, null);			
-			
+
 		} else {
 			System.out.println("Unsupported depth");
 		}
 	}
 
-//	@Override
-//	public Image getImage() {
-//		Image i = new Image();
-//		if (_drawable.getImage() instanceof XawtImageListener) {
-//			BufferedImage image = ((XawtImageListener) _drawable.getImage()).getXawtImage();
-//			Graphics g = ((XawtImageListener) _drawable.getImage()).getXawtGraphics();
-//			
-//			i.setListener(new XawtImageListener(image, g));
-//		} else {
-//			System.out.println("Unable to get image");
-//		}
-//		
-//		return i;
-//	}
+
+
+	@Override
+	public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
+			int[] yCoords) {
+		final Graphics2D graphics = getGraphics();
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		graphics.drawPolyline(xCoords, yCoords, xCoords.length);
+	}
 
 	@Override
 	public void drawString(
@@ -121,7 +118,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int by, 
 			final int bw,
 			final int bh) {
-		
+
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 		final Graphics2D graphics = getGraphics();
@@ -135,20 +132,38 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	@Override
+	public void polyRect(GraphicsContext graphicsContext, int x, int y,
+			int width, int height, boolean fill) {
+		final Graphics2D graphics = getGraphics();
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		if (fill) {
+			graphics.fillRect(x, y, width, height);
+		} else {
+			graphics.drawRect(x, y, width, height);
+		}
+
+	}
+
+	@Override
+	public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
+			int[] yCoords) {
+
+		final Graphics2D graphics = getGraphics();
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		for (int i=0; i < xCoords.length; i++) {
+			int x = xCoords[i];
+			int y = yCoords[i];
+			
+			graphics.drawLine(x, y, x, y);
+		}
+	}
+
+	@Override
 	public BufferedImage getImage() {
 		return _image;
 	}
-//		Image i = new Image();
-//		if (getDrawable().getImage() instanceof XawtImageListener) {
-//			BufferedImage image = ((XawtImageListener) getDrawable().getImage()).getXawtImage();
-//			Graphics g = ((XawtImageListener) getDrawable().getImage()).getXawtGraphics();
-//			
-//			i.setListener(new XawtImageListener(image, g));
-//		} else {
-//			System.out.println("Unable to get image");
-//		}
-//		
-//		return i;
-//	}
-
 }

@@ -163,15 +163,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int height,
 			final boolean fill) {
 
-		final Graphics2D graphics = getGraphics();
-		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		if (fill) {
-			graphics.fillRect(x, y, width, height);
-		} else {
-			graphics.drawRect(x, y, width, height);
-		}
+		super.polyRect(graphicsContext, x, y, width, height, fill);
+		
 		updateCanvas();
 	}
 
@@ -196,12 +189,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int x[], 
 			final int y[]) {
 
-		final Graphics2D graphics = getGraphics();
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		graphics.drawPolyline(x, y, x.length);
+		super.polyLine(graphicsContext, x, y);
+		
 		updateCanvas();
 	}
 
@@ -321,6 +310,13 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 		super.copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
+		updateCanvas();
+	}
+	
+	@Override
+	public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
+			int[] yCoords) {
+		super.polyPoint(graphicsContext, xCoords, yCoords);
 		updateCanvas();
 	}
 

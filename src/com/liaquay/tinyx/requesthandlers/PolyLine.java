@@ -75,10 +75,6 @@ public class PolyLine implements RequestHandler {
 			}
 		}
 
-		if (drawable instanceof Window) {
-			((Window) drawable).polyLine(graphicsContext, xCoords, yCoords);
-		} else {
-			((Screen) drawable).polyLine(graphicsContext, xCoords, yCoords);
-		}
+		drawable.getDrawableListener().polyLine(graphicsContext, xCoords, yCoords);
 	}
 }

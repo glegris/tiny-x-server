@@ -23,7 +23,10 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 
 public class PolyPoint implements RequestHandler {
@@ -33,11 +36,36 @@ public class PolyPoint implements RequestHandler {
 			                   final Client client, 
 			                   final Request request, 
 			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+
+
+		final CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
+
+		final XInputStream inputStream = request.getInputStream();
+		final int drawableResourceId = inputStream.readInt();
+		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
+		if(drawable == null) {
+			response.error(Response.ErrorCode.Drawable, drawableResourceId);
+			return;
+		}
+		final int graphicsContextResourceId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
+			return;
+		}
+
+		final int len = request.getLength();
+
+		final int numCoords = ((len-12)/4);
+		
+		final int xCoords[] = new int[numCoords];
+		final int yCoords[] = new int[numCoords];
+
+		for (int i=0; i < numCoords; i++) {
+			xCoords[i] = inputStream.readSignedShort();
+			yCoords[i] = inputStream.readSignedShort();
+		}
+		
+		drawable.getDrawableListener().polyPoint(graphicsContext, xCoords, yCoords);
 	}
 }
