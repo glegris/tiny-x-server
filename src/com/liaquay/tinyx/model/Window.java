@@ -710,6 +710,7 @@ public class Window extends Drawable {
 		return _overrideRedirect;
 	}
 
+	@Override
 	public ColorMap getColorMap() {
 		return _colorMap;
 	}

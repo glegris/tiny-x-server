@@ -104,6 +104,7 @@ public abstract class Drawable implements Resource {
 
 	public abstract int getBorderWidth();
 
+	public abstract ColorMap getColorMap();
 //	abstract Graphics getGraphics();
 	//	  abstract void restoreClip();
 
@@ -124,4 +125,5 @@ public abstract class Drawable implements Resource {
 			final int bh){
 		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
 	}
+
 }

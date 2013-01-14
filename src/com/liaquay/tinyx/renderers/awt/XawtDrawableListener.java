@@ -33,10 +33,12 @@ import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image;
 
-public class XawtDrawableListener implements Drawable.Listener {
+public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	final Drawable _drawable;
 
+	protected abstract Graphics2D getGraphics();
+	
 	public XawtDrawableListener(Drawable drawable) {
 		_drawable = drawable;
 		createImage(drawable);
@@ -120,23 +122,17 @@ public class XawtDrawableListener implements Drawable.Listener {
 			final int by, 
 			final int bw,
 			final int bh) {
-//
-//		Nathan ...
-//		1) We need some generic method to get hold to the awt graphics.
-//		2) I don't know how we deal with windows having a colormap and pixmaps not ?!?
-//		3) Sorry if I have made a mess trying to add this method :-(
-//		HELP!		
 		
-//		final Font font = graphicsContext.getFont();
-//		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
-//
-//		final Graphics2D graphics = translateAndClipToWindow();
-//		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-//		graphics.setColor(new Color(rgb));
-//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		final java.awt.Font awtFont = fontListener.getAwtFont();
-//		graphics.setFont(awtFont);
-//		graphics.drawString(str, x, y);		
+		final Font font = graphicsContext.getFont();
+		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+		final Graphics2D graphics = getGraphics();
+		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
+		graphics.fillRect(bx, by, bw, bh);
+		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getForegroundColour())));
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final java.awt.Font awtFont = fontListener.getAwtFont();
+		graphics.setFont(awtFont);
+		graphics.drawString(str, x, y);		
 	}
 
 

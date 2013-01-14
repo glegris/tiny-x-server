@@ -20,7 +20,6 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -35,8 +34,6 @@ import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 
 /**
- * 
- * TODO use colour map to look up colours.
  *
  */
 public class XawtWindow extends XawtDrawableListener implements Window.Listener {
@@ -125,39 +122,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 
-		final Graphics graphics = translateAndClipToWindow();
+		final Graphics2D graphics = translateAndClipToWindow();
 		final int rgb = _window.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		//		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final java.awt.Font awtFont = fontListener.getAwtFont();
 		graphics.setFont(awtFont);
 		graphics.drawString(str, x, y);
 	}
 
-	@Override
-	public void drawString(
-			final GraphicsContext graphicsContext, 
-			final String str, 
-			final int x,
-			final int y, 
-			final int bx,
-			final int by, 
-			final int bw,
-			final int bh) {
-
-		final Font font = graphicsContext.getFont();
-		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
-		final Graphics2D graphics = translateAndClipToWindow();
-		graphics.setColor(new Color(_window.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
-		graphics.fillRect(bx, by, bw, bh);
-		graphics.setColor(new Color(_window.getColorMap().getRGB(graphicsContext.getForegroundColour())));
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final java.awt.Font awtFont = fontListener.getAwtFont();
-		graphics.setFont(awtFont);
-		graphics.drawString(str, x, y);		
-	}	
-	
 	@Override
 	public void polyArc(
 			final GraphicsContext graphicsContext, 
@@ -244,6 +218,11 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		graphics.drawLine(x1, y1, x2, y2);
 	}
 
+	@Override
+	protected Graphics2D getGraphics() {
+		return translateAndClipToWindow();
+	}
+	
 	private Graphics2D translateAndClipToWindow() {
 		final Graphics2D graphics = (Graphics2D)_canvas.getGraphics();
 		graphics.translate(_window.getAbsX(), _window.getAbsY());

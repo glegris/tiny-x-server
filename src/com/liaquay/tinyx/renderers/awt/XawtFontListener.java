@@ -40,7 +40,7 @@ public class XawtFontListener implements Font.Listener {
 				(int) bounds.getWidth(),
 				(int) bounds.getHeight(),
 				(int) lm.getLeading(),
-				0 ); // Trailing 
+				(int) bounds.getWidth()); // Trailing 
 	}
 
 	@Override
@@ -55,6 +55,6 @@ public class XawtFontListener implements Font.Listener {
 				(int) bounds.getWidth(),
 				(int) bounds.getHeight(),
 				(int) lm.getLeading(),
-				0 ); // Trailing 
+				(int) bounds.getWidth()); // Trailing 
 	}
 }
