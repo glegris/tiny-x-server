@@ -135,6 +135,29 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	@Override
+	public void drawString(
+			final GraphicsContext graphicsContext, 
+			final String str, 
+			final int x,
+			final int y, 
+			final int bx,
+			final int by, 
+			final int bw,
+			final int bh) {
+
+		final Font font = graphicsContext.getFont();
+		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+		final Graphics2D graphics = translateAndClipToWindow();
+		graphics.setColor(new Color(_window.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
+		graphics.fillRect(bx, by, bw, bh);
+		graphics.setColor(new Color(_window.getColorMap().getRGB(graphicsContext.getForegroundColour())));
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final java.awt.Font awtFont = fontListener.getAwtFont();
+		graphics.setFont(awtFont);
+		graphics.drawString(str, x, y);		
+	}	
+	
+	@Override
 	public void polyArc(
 			final GraphicsContext graphicsContext, 
 			final int x, 

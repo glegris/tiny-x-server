@@ -87,7 +87,7 @@ public class PutImage implements RequestHandler {
 		}
 
 			// The drawable is the thing we are writing into. The image data we are writing is present in this request!
-		destDrawable.getListener().putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
+		destDrawable.getDrawableListener().putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
 
 			//			Pixmap p = new Pixmap(1, null, depth, width, height);
 			//			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);

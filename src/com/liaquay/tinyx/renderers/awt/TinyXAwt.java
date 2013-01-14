@@ -68,14 +68,14 @@ public class TinyXAwt {
 			}
 
 			@Override
+
 			public void windowCreated(final Window window) {
 //				window.setListener(new XawtWindow(window));
 			}
 			
 			public void pixmapCreated(final Pixmap pixmap) {
-				pixmap.setListener(new XawtPixmapListener(pixmap));
+				pixmap.setListener(new XawtPixmap(pixmap));
 			}
-			
 		});
 	}
 	

@@ -28,6 +28,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.Window;
 
 public class ImageText8 implements RequestHandler {
@@ -47,6 +48,9 @@ public class ImageText8 implements RequestHandler {
 			response.error(Response.ErrorCode.Drawable, drawableResourceId);
 			return;
 		}
+		
+		// TODO Check drawable is not input only
+		
 		final int graphicsContextResourceId = inputStream.readInt();
 		final GraphicsContext graphicsContext = server.getResources().get(graphicsContextResourceId, GraphicsContext.class);
 		if(graphicsContext == null) {
@@ -60,7 +64,16 @@ public class ImageText8 implements RequestHandler {
 		final int length = request.getData();
 		final String text = inputStream.readString(length);
 		
-		// TODO this should be image text
-		((Window) drawable).drawString(graphicsContext, text, x , y);
+		final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+		
+		drawable.drawString(
+				graphicsContext, 
+				text, 
+				x , 
+				y, 
+				x - textExtents.getLeft(),
+				y - textExtents.getAscent(),
+				textExtents.getWidth(), // TODO do we need to add 'left' and 'right'?
+				textExtents.getHeight());
 	}
 }

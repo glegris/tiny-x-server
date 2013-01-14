@@ -80,7 +80,9 @@ public class Server extends Client {
 
 	public interface Listener {
 		public void fontOpened(final Font font);
+
 		public void windowCreated(final Window window);
+
 		public void pixmapCreated(final Pixmap pixmap);
 	}
 	
@@ -91,15 +93,15 @@ public class Server extends Client {
 	private static final class NullListener implements Listener {
 		@Override
 		public void fontOpened(final Font font) {}
-
 		@Override
-		public void windowCreated(Window window) {
+
+		public void windowCreated(final Window window) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void pixmapCreated(Pixmap pixmap) {
+		public void pixmapCreated(final Pixmap pixmap) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -132,12 +134,12 @@ public class Server extends Client {
 		_listener.fontOpened(font);
 	}
 
-	public void pixmapCreated(Pixmap pixmap) {
+	public void pixmapCreated(final Pixmap pixmap) {
 		getResources().add(pixmap);
 		_listener.pixmapCreated(pixmap);
 	}
 	
-	public void windowCreated(Window window) {
+	public void windowCreated(final Window window) {
 		getResources().add(window);
 		_listener.windowCreated(window);
 	}

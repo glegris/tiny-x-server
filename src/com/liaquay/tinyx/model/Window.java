@@ -36,15 +36,6 @@ public class Window extends Drawable {
 		public void childCreated(Window child);
 		public void mapped(boolean mapped);
 		public void visible(boolean visible);
-//		public void renderDrawable(
-//				final BufferedImage image,
-//				final GraphicsContext graphicsContext, 
-//				final int srcX,
-//				final int srcY,
-//				final int width,
-//				final int height, 
-//				final int dstX,
-//				final int dstY);
 		public void setCursor(Cursor cursor);
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
@@ -53,42 +44,16 @@ public class Window extends Drawable {
 		public void polyLine(GraphicsContext graphicsContext, int x[], int y[]);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
-		public void clearArea(boolean exposures, int x, int y, int width,
-				int height);
+		public void clearArea(boolean exposures, int x, int y, int width, int height);
 	}
 
 	/**
 	 * Empty implementation of the listener so that we don't have null checks 
 	 * throughout the code. 
 	 */
-	private static final class NullListener implements Listener {
-		@Override
-		public void childCreated(Window child) {}
-		
-		@Override
-		public void mapped(boolean mapped) {}
-		@Override
-		public void visible(boolean visible) {}
 
-		@Override
-		public void setCursor(Cursor cursor) {}
-		@Override
-		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {}
-		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
-		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill) {}
-		@Override
-		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {}
-		@Override
-		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {}
-		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2) {}
-		@Override
-		public int getPixel(int x, int y) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
+	private static final class NullListener extends Drawable.NullListener implements Listener {
+
 		@Override
 		public void copyArea(Drawable d, GraphicsContext graphicsContext,
 				int srcX, int srcY, int width, int height, int dstX, int dstY) {
@@ -106,30 +71,76 @@ public class Window extends Drawable {
 		public void createImage() {
 			// TODO Auto-generated method stub
 		}
-//		@Override
-//		public Image getImage() {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str,
+				int x, int y, int bx, int by, int bw, int bh) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void childCreated(Window child) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void mapped(boolean mapped) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void visible(boolean visible) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void setCursor(Cursor cursor) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str,
+				int x, int y) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, int angle1, int angle2, boolean fill) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,
+				int width, int height, boolean fill) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+				int x2, int y2) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public int getPixel(int x, int y) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
 		public void clearArea(boolean exposures, int x, int y, int width,
 				int height) {
 			// TODO Auto-generated method stub
 			
-		}
-//		@Override
-//		public void renderDrawable(BufferedImage image,
-//				GraphicsContext graphicsContext, int srcX, int srcY, int width,
-//				int height, int dstX, int dstY) {
-//			// TODO Auto-generated method stub
-//			
-//		}
-//	
-
-		@Override
-		public com.liaquay.tinyx.model.Image.Listener getImage() {
-			// TODO Auto-generated method stub
-			return null;
 		}
 	}
 
@@ -949,5 +960,10 @@ public class Window extends Drawable {
 		updateLocation();
 		
 		// TODO Events eyc.
+	}
+
+	@Override
+	public Drawable.Listener getDrawableListener() {
+		return _listener;
 	}
 }
