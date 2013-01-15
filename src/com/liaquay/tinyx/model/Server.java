@@ -22,7 +22,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -42,7 +44,6 @@ public class Server extends Client {
 	private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
 
 	private static final byte[] VENDOR = "Liaquay".getBytes();
-	private static final String DEFAULT_FONT_NAME = "-*-Arial-*-*-*-*-12-*-*-*-*-*-ISO8859-*-*";
 
 	private static Format[] FORMATS = new Format[] {
 		new Format (32, 24, 8)
@@ -72,7 +73,22 @@ public class Server extends Client {
 	private final FontFactory _fontFactory;
 	private final Pointer _pointer = new Pointer();
 	private final ScreenSaver _screenSaver = new ScreenSaver();
+	
+	
+	private static final String FIXED_FONT_NAME = "-*-Courier New-*-*-*-*-12-*-*-*-*-*-ISO8859-*-*";
+	
+	// TODO make configurable
+	private static final Map<String, FontInfo> _fontAliases = new TreeMap<String, FontInfo>();
 
+	static {
+		_fontAliases.put("fixed", new FontInfo(FIXED_FONT_NAME));
+		_fontAliases.put("cursor", new FontInfo(FIXED_FONT_NAME)); // TODO load the cursor font
+	}
+	
+	public FontInfo getFontInfoFromAlias(final String fontAlias) {
+		return _fontAliases.get(fontAlias);
+	}
+	
 	/**
 	 * A lock used to protect the server from concurrent updates
 	 */
@@ -80,9 +96,7 @@ public class Server extends Client {
 
 	public interface Listener {
 		public void fontOpened(final Font font);
-
 		public void windowCreated(final Window window);
-
 		public void pixmapCreated(final Pixmap pixmap);
 	}
 	
@@ -115,18 +129,18 @@ public class Server extends Client {
 		_listener = listener;
 	}
 	
-	private Font _defaultFont = null;
+	private Font _fixedFont = null;
 
-	public Font getDefaultFont() {
-		if(_defaultFont == null) {
-			final FontInfo pattern = new FontInfo(DEFAULT_FONT_NAME);
+	public Font getFixedFont() {
+		if(_fixedFont == null) {
+			final FontInfo pattern = new FontInfo(FIXED_FONT_NAME);
 			final FontInfo fontInfo = getFontFactory().getFirstMatchingFont(pattern);
 			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
-			final FontDetail fontDetail = getFontFactory().getFontDetail(mergedFontInfo.getFamilyName(), mergedFontInfo.getPixelSize());
-			_defaultFont = new Font(allocateResourceId(), mergedFontInfo, fontDetail);
-			openFont(_defaultFont);
+			final FontDetail fontDetail = getFontFactory().getFontDetail(mergedFontInfo);
+			_fixedFont = new Font(allocateResourceId(), mergedFontInfo, fontDetail);
+			openFont(_fixedFont);
 		}
-		return _defaultFont;
+		return _fixedFont;
 	}
 	
 	public void openFont(final Font font) {

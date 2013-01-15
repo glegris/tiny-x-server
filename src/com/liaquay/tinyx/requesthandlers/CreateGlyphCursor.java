@@ -28,6 +28,8 @@ public class CreateGlyphCursor implements RequestHandler {
 
 		final int maskFont = inputStream.readInt();
 
+		// TODO 
+		// For 2-byte matrix fonts, the 16-bit value should be formed with the byte1 member in the most-significant byte and the byte2 member in the least-significant byte.
 		final int sourceChar = inputStream.readUnsignedShort();
 		final int maskChar = inputStream.readUnsignedShort();
 

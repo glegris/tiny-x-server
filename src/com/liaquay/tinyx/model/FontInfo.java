@@ -224,6 +224,6 @@ public class FontInfo {
 		final Integer value = (Integer)_parameters[6]._value;
 		
 		// TODO What should we do when no size value has been specified!!!
-		return value == null ? 8 : value;
+		return value == null ? 12 : value;
 	}
 }

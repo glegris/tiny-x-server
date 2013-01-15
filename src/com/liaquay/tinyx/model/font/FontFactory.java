@@ -23,11 +23,8 @@ import java.util.List;
 import com.liaquay.tinyx.model.FontInfo;
 
 public interface FontFactory {
-	List<FontInfo> getFontNames();
-
-	FontInfo getFirstMatchingFont(FontInfo requestedFontName);
-
-	List<FontInfo> getMatchingFonts(FontInfo pattern);
-
-	FontDetail getFontDetail(String name, int size);
+	public List<FontInfo> getFontNames();
+	public FontInfo getFirstMatchingFont(final FontInfo requestedFontName);
+	public List<FontInfo> getMatchingFonts(final FontInfo pattern);
+	public FontDetail getFontDetail(final FontInfo fontInfo);
 }

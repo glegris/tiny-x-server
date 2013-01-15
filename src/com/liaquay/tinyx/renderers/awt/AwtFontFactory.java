@@ -21,11 +21,7 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.liaquay.tinyx.model.FontInfo;
@@ -77,8 +73,7 @@ public class AwtFontFactory implements FontFactory {
 			}
 		}
 		
-		// TODO This should return the default font.
-		return _fontNames.get(0);
+		return null;
 	}
 	
 	@Override
@@ -94,15 +89,18 @@ public class AwtFontFactory implements FontFactory {
 	}
 
 	@Override
-	public FontDetail getFontDetail(final String name, final int size) {
+	public FontDetail getFontDetail(final FontInfo fontInfo) {
 		
-		final Font f = new Font(name, Font.PLAIN, size == 0 ? 12: size);
+		final String name = fontInfo.getFamilyName();
+		final Font f = new Font(name, Font.PLAIN, fontInfo.getPixelSize());
 		final FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(f);
 
 		//TODO: Try and get the first and last character for this font from somewhere more meaningful
 		final int firstChar = 32;
 		final int lastChar = 255;
 		
+//		final Rectangle2D maxBounds = f.getMaxCharBounds(new FontRenderContext(null, true, false));
+
 		final FontDetail fd = new FontDetail(
 				fm.getMaxAscent(),
 				fm.getMaxDescent(),

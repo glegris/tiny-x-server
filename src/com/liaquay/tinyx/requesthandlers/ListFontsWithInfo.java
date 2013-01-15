@@ -56,7 +56,7 @@ public class ListFontsWithInfo implements RequestHandler {
 		int counter = 0;
 		for (final FontInfo fontInfo : fonts) {
 			
-			final FontDetail fontDetail = server.getFontFactory().getFontDetail(fontInfo.getFamilyName(), fontInfo.getPixelSize());
+			final FontDetail fontDetail = server.getFontFactory().getFontDetail(fontInfo);
 			
 			writeFontInfo(server, fontInfo, fontDetail, response, --countDown);
 			counter++;

@@ -10,7 +10,7 @@ import com.liaquay.tinyx.model.TextExtents;
 public class XawtFontListener implements Font.Listener {
 	
 	final java.awt.Font _awtFont;
-	final FontRenderContext _awtFontRenderContext = new FontRenderContext(null, true, true);
+	final FontRenderContext _awtFontRenderContext = new FontRenderContext(null, true, false);
 
 	@Override
 	public void fontClosed(final Font font) {

@@ -42,16 +42,36 @@ public class OpenFont implements RequestHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
 		final String requestedFontName = inputStream.readString();
-		final FontInfo pattern = new FontInfo(requestedFontName);
-		final FontInfo fontInfo = server.getFontFactory().getFirstMatchingFont(pattern);
+
+		final FontInfo pattern;
+		final FontInfo fixedFontInfo = server.getFontInfoFromAlias("fixed");
+		if(requestedFontName.startsWith("-")) {
+			pattern = new FontInfo(requestedFontName);
+		}
+		else {
+			final FontInfo aliasFontInfo = server.getFontInfoFromAlias(requestedFontName);
+			pattern = aliasFontInfo == null ? fixedFontInfo : aliasFontInfo;
+		}
+		final Font font;
+		final FontInfo fontInfo;
+		final FontInfo matchingFontInfo = server.getFontFactory().getFirstMatchingFont(pattern);
+		if(matchingFontInfo == null) {
+			fontInfo = server.getFontFactory().getFirstMatchingFont(fixedFontInfo);
+		}
+		else {
+			fontInfo = matchingFontInfo;
+		}
+		
 		if(fontInfo == null) {
-			// TODO no matching font
+			// TODO Log error
+			throw new RuntimeException("Could not find fixed font.");
 		}
 		else {
 			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
-			final FontDetail fontDetail = server.getFontFactory().getFontDetail(mergedFontInfo.getFamilyName(), mergedFontInfo.getPixelSize());
-			final Font font = new Font(fid, mergedFontInfo, fontDetail);
-			server.openFont(font);
+			final FontDetail fontDetail = server.getFontFactory().getFontDetail(mergedFontInfo);
+			font = new Font(fid, mergedFontInfo, fontDetail);			
 		}
+
+		server.openFont(font);
 	}
 }
