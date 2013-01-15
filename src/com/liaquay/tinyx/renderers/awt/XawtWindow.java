@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
 /**
@@ -38,10 +39,11 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	private final Window _window;
 	private final Canvas _canvas;
+	private final Server _server;
 
 	@Override
 	public void childCreated(final Window child) {
-		final XawtWindow listener = new XawtWindow(child, _canvas);
+		final XawtWindow listener = new XawtWindow(_server, child, _canvas);
 		child.setListener(listener);
 	}
 
@@ -292,9 +294,10 @@ int bitplane, int srcX, int srcY,
 		updateCanvas();
 	}
 
-	public XawtWindow(final Window window, final Canvas canvas) {
-		super(window);
+	public XawtWindow(final Server server, final Window window, final Canvas canvas) {
+		super(server, window);
 
+		_server = server;
 		_window = window;
 		_canvas = canvas;
 
@@ -311,11 +314,12 @@ int bitplane, int srcX, int srcY,
 
 	@Override
 	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		setImage(image);
 	}
 
 	private void updateCanvas() {
+		_canvas.getGraphics().setClip(0, 0, 800, 600);
 		_canvas.getGraphics().drawImage(getImage(), _window.getAbsX(), _window.getAbsY(), _window.getWidth(), _window.getHeight(), null);
 	}
 }

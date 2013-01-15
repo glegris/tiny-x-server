@@ -63,7 +63,7 @@ public class XawtScreen {
 
 
 		
-		_frame.setResizable(false);
+		_frame.setResizable(true);
 
 		_frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -87,7 +87,7 @@ public class XawtScreen {
 		_frame.pack();
 		_frame.setVisible(true);
 
-		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
+		_rootWindowListener = new XawtWindow(server.getServer(), rootWindow, _canvas);
 		rootWindow.setListener(_rootWindowListener);
 
 //		_pixmapListener = new XawtPixmap(pixmap);

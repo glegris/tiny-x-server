@@ -46,8 +46,15 @@ public class ClearArea implements RequestHandler {
 		final boolean exposures = request.getData() == 1;
 		final int x = inputStream.readSignedShort();
 		final int y = inputStream.readSignedShort();
-		final int width = inputStream.readUnsignedShort();
-		final int height = inputStream.readUnsignedShort();
+		int width = inputStream.readUnsignedShort();
+		int height = inputStream.readUnsignedShort();
+		
+		if (width == 0) {
+			width = window.getWidth();
+		}
+		if (height == 0) {
+			height = window.getHeight();
+		}
 		window.clearArea(exposures,x,y,width,height);
 	}
 }

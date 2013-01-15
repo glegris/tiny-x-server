@@ -73,10 +73,10 @@ public class Server extends Client {
 	private final FontFactory _fontFactory;
 	private final Pointer _pointer = new Pointer();
 	private final ScreenSaver _screenSaver = new ScreenSaver();
-	
-	
-	private static final String FIXED_FONT_NAME = "-*-Courier New-*-*-*-*-12-*-*-*-*-*-ISO8859-*-*";
-	
+
+
+	private static final String FIXED_FONT_NAME = "-*-Waree-*-*-*-*-12-*-*-*-*-*-ISO8859-*-*";
+
 	// TODO make configurable
 	private static final Map<String, FontInfo> _fontAliases = new TreeMap<String, FontInfo>();
 
@@ -84,11 +84,11 @@ public class Server extends Client {
 		_fontAliases.put("fixed", new FontInfo(FIXED_FONT_NAME));
 		_fontAliases.put("cursor", new FontInfo(FIXED_FONT_NAME)); // TODO load the cursor font
 	}
-	
+
 	public FontInfo getFontInfoFromAlias(final String fontAlias) {
 		return _fontAliases.get(fontAlias);
 	}
-	
+
 	/**
 	 * A lock used to protect the server from concurrent updates
 	 */
@@ -99,7 +99,7 @@ public class Server extends Client {
 		public void windowCreated(final Window window);
 		public void pixmapCreated(final Pixmap pixmap);
 	}
-	
+
 	/**
 	 * Empty implementation of the listener so that we don't have null checks 
 	 * throughout the code. 
@@ -111,16 +111,16 @@ public class Server extends Client {
 
 		public void windowCreated(final Window window) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void pixmapCreated(final Pixmap pixmap) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
-	
+
 	private static final Listener NULL_LISTENER = new NullListener();
 
 	private Listener _listener = NULL_LISTENER;
@@ -128,21 +128,23 @@ public class Server extends Client {
 	public void setListener(final Listener listener) {
 		_listener = listener;
 	}
-	
+
 	private Font _fixedFont = null;
 
 	public Font getFixedFont() {
 		if(_fixedFont == null) {
 			final FontInfo pattern = new FontInfo(FIXED_FONT_NAME);
 			final FontInfo fontInfo = getFontFactory().getFirstMatchingFont(pattern);
-			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
-			final FontDetail fontDetail = getFontFactory().getFontDetail(mergedFontInfo);
-			_fixedFont = new Font(allocateResourceId(), mergedFontInfo, fontDetail);
-			openFont(_fixedFont);
+			if (fontInfo != null) {
+				final FontInfo mergedFontInfo = fontInfo.merge(pattern);
+				final FontDetail fontDetail = getFontFactory().getFontDetail(mergedFontInfo);
+				_fixedFont = new Font(allocateResourceId(), mergedFontInfo, fontDetail);
+				openFont(_fixedFont);
+			}
 		}
 		return _fixedFont;
 	}
-	
+
 	public void openFont(final Font font) {
 		getResources().add(font);
 		_listener.fontOpened(font);
@@ -152,17 +154,17 @@ public class Server extends Client {
 		getResources().add(pixmap);
 		_listener.pixmapCreated(pixmap);
 	}
-	
+
 	public void windowCreated(final Window window) {
 		getResources().add(window);
 		_listener.windowCreated(window);
 	}
-	
+
 	public void closeFont(final Font font) {
 		getResources().remove(font.getId());
 		font.free();
 	}
-	
+
 	/**
 	 * Lock the server for read/update
 	 */
@@ -180,7 +182,7 @@ public class Server extends Client {
 	public int getTimestamp() {
 		return (int)(System.currentTimeMillis() & 0xffffffff);
 	}
-	
+
 	/**
 	 * A Lock used to grab the server during client requests 
 	 */
@@ -236,12 +238,12 @@ public class Server extends Client {
 		// Create the server as a client with ID of 0
 		super(	0, 
 				new PostBox() {
-					@Override
-					public void send(final Event event, final Window window) {
-						// Do nothing. No messages should be sent to the server anyhow.
-					}
-				}, 
-				null // There is not host for the server client.
+			@Override
+			public void send(final Event event, final Window window) {
+				// Do nothing. No messages should be sent to the server anyhow.
+			}
+		}, 
+		null // There is not host for the server client.
 				);
 
 		_eventFactories = eventFactories;
@@ -278,7 +280,7 @@ public class Server extends Client {
 	public AccessControls getAccessControls() {
 		return _accessControl;
 	}
-	
+
 	public Pointer getPointer() {
 		return _pointer;
 	}
@@ -298,7 +300,7 @@ public class Server extends Client {
 	public FontFactory getFontFactory() {
 		return _fontFactory;
 	}
-	
+
 	private int allocateResourceId(){
 		final int id =_serverResourceId++;
 		if (id !=_endServerResourceId){
@@ -452,12 +454,12 @@ public class Server extends Client {
 			public void deliver() {
 				// Update the pressed buttons
 				_pointer.buttonPressed(buttonNumber-1);
-				
+
 				// Update pointer position
 				_pointer.set(_screens.get(screenIndex), x, y);
-				
+
 				PointerGrab grab = _pointer.getPointerGrab();
-				
+
 				if(grab == null) {
 					// There is no current grab on the pointer so consider activating a passive grab...
 					final ButtonGrab buttonGrab = _pointer.findButtonGrab(buttonNumber, _keyboard.getModifierMask());
@@ -465,23 +467,23 @@ public class Server extends Client {
 					if(buttonGrab != null) {
 						// Remove the passive grab...
 						buttonGrab.getGrabWindow().removeButtonGrab(buttonGrab);
-						
+
 						// Activate the button grab...
 						final PointerGrab pointerGrab = buttonGrab.getPointerGrab(getTimestamp());
 
 						// Set the grab on the server
 						setPointerGrab(pointerGrab);
-						
+
 						grab = pointerGrab;
 					}
 				}
-				
+
 				final Window child = _pointer.childWindowAt();
-				
+
 				// There are no grabs so create an active grab!
 				if(grab == null) {
 					// Start an active grab. See X Window System page 253.
-					
+
 					final ClientWindowAssociation clientWindowAssociation = child.getDeliverToAssociation(Event.ButtonPressMask);
 
 					// Find a client interested in the event
@@ -500,7 +502,7 @@ public class Server extends Client {
 								null,
 								null,
 								getTimestamp());
-						
+
 						buttonDownPointerGrab.setExitWhenAllReleased();
 
 						// Set the grab on the server
@@ -520,13 +522,13 @@ public class Server extends Client {
 							child,
 							getKeyButtonMask(), 
 							when);
-					
+
 					grab.getClient().getPostBox().send(event, null);
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * Called by implementation to deliver a key release to the server
 	 * 
@@ -555,12 +557,12 @@ public class Server extends Client {
 				_pointer.set(_screens.get(screenIndex), x, y);
 
 				final PointerGrab grab = _pointer.getPointerGrab();
-				
+
 				// All buttons are delivered in the context of a grab
 				if(grab != null) {
-					
+
 					final Window child = _pointer.childWindowAt();
-					
+
 					final Event event = _eventFactories.getButtonReleaseFactory().create(
 							buttonNumber, 
 							grab, 
@@ -568,9 +570,9 @@ public class Server extends Client {
 							child,
 							getKeyButtonMask(), 
 							when);
-					
+
 					grab.getClient().getPostBox().send(event, null);
-					
+
 					if(grab.getExitWhenAllReleased()) {
 						if(_pointer.getButtonMask() == 0) {
 							releasePointerGrab();
@@ -580,14 +582,14 @@ public class Server extends Client {
 			}
 		});
 	}
-	
+
 	public void setPointerGrab(final PointerGrab pointerGrab) {
-		
+
 		// Set the grab on the pointer
 		_pointer.setPointerGrab(pointerGrab);
-		
+
 		// TODO set the cursor
-		
+
 		// Freeze/thaw input queues
 		setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
 	}
@@ -595,11 +597,11 @@ public class Server extends Client {
 	public void releasePointerGrab() {
 		// Set the grab on the pointer
 		_pointer.setPointerGrab(null);
-		
+
 		// Thaw input queues
 		// TODO what state do we set these to if there is a keyboard grab?
 		setFreezeState(false, false);
-		
+
 		// TODO  It also generates EnterNotify and LeaveNotify events.
 	}
 
@@ -613,15 +615,15 @@ public class Server extends Client {
 			unlock();
 		}
 	}	
-	
+
 	private Window getKeyFocusWindow(final int eventMask) {
-		
+
 		final KeyboardGrab grab = _keyboard.getKeyboardGrab();
-		
+
 		Window focusWindow = null;
 
 		if(grab == null || grab.isOwnerEvents()) {
-			
+
 			switch(_focus.getMode()) {
 			case None:
 				// Do not deliver an event for a focus of none.
@@ -636,7 +638,7 @@ public class Server extends Client {
 				break;
 			}
 		}
-		
+
 		if(grab != null) {
 			if(focusWindow != null) {
 				// If we wouldn't have reported the event then deliver it from the grab window
@@ -651,7 +653,7 @@ public class Server extends Client {
 
 		return focusWindow;
 	}
-	
+
 	/**
 	 * Called by implementation to deliver a key press to the server
 	 * 
@@ -659,23 +661,23 @@ public class Server extends Client {
 	 * @param when time in milliseconds
 	 */
 	public void keyPressed(final int keycode, final int when) {
-		
+
 		if(keycode < 0 || keycode > 255) {
 			final String message = "Keycode " + keycode + " out of range";
 			LOGGER.log(Level.SEVERE, message);
 			throw new RuntimeException(message);
 		}
-		
+
 		enqueueKey(new InputEvent() {
 			@Override
 			public long getWhen() {
 				return when;
 			}
-			
+
 			@Override
 			public void deliver() {
 				_keyboard.keyPressed(keycode, when);
-				
+
 				final Window focusWindow = getKeyFocusWindow(Event.KeyPressMask);
 				final Window child = _pointer.childWindowAt();
 				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
@@ -686,9 +688,9 @@ public class Server extends Client {
 						_pointer, 
 						keycode,
 						when);
-				
+
 				final KeyboardGrab grab = _keyboard.getKeyboardGrab();
-				
+
 				if(grab == null) {
 					w.deliver(event, Event.KeyPressMask);
 				}
@@ -707,36 +709,36 @@ public class Server extends Client {
 	 * @param when time in milliseconds
 	 */
 	public void keyReleased(final int keycode, final int when){
-		
+
 		if(keycode < 0 || keycode > 255) {
 			final String message = "Keycode " + keycode + " out of range";
 			LOGGER.log(Level.SEVERE, message);
 			throw new RuntimeException(message);
 		}
-		
+
 		enqueueKey(new InputEvent() {
 			@Override
 			public long getWhen() {
 				return when;
 			}
-			
+
 			@Override
 			public void deliver() {
 				_keyboard.keyReleased(keycode, when);
-				
+
 				final Window focusWindow = getKeyFocusWindow(Event.KeyReleaseMask);
 				final Window child = _pointer.childWindowAt();
 				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
-				
+
 				final Event event = _eventFactories.getKeyReleaseFactory().create(
 						focusWindow,
 						child,
 						_pointer, 
 						keycode,
 						when);
-				
+
 				final KeyboardGrab grab = _keyboard.getKeyboardGrab();
-				
+
 				if(grab == null) {
 					w.deliver(event, Event.KeyReleaseMask);
 				}
@@ -747,12 +749,12 @@ public class Server extends Client {
 			}
 		});
 	}	
-	
+
 	public void setKeyboardGrab(final KeyboardGrab keyboardGrab) {
-		
+
 		// Set the grab on the keyboard
 		_keyboard.setKeyboardGrab(keyboardGrab);
-		
+
 		// Freeze/thaw input queues
 		setFreezeState(keyboardGrab.isKeyboardSynchronous(), keyboardGrab.isPointerSynchronous());
 	}
@@ -760,14 +762,14 @@ public class Server extends Client {
 	public void releaseKeyboardGrab() {
 		// Set the grab on the keyboard
 		_keyboard.setKeyboardGrab(null);
-		
+
 		// Thaw input queues
 		// TODO what state do we set these to if there is a pointer grab?
 		setFreezeState(false, false);
-		
+
 		// TODO  It also generates EnterNotify and LeaveNotify events.
 	}
-	
+
 	private void enqueueKey(final InputEvent e) {
 		try {
 			lock();

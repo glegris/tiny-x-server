@@ -71,11 +71,7 @@ public class PolySegment implements RequestHandler {
 		}
 
 		for (int i=0; i < numSegments; i++) {
-			if (drawable instanceof Window) {
-				((Window) drawable).drawLine(graphicsContext, xCoords1[i], yCoords1[i], xCoords2[i], yCoords2[i]);
-			} else {
-				((Screen) drawable).drawLine(graphicsContext, xCoords1[i], yCoords1[i], xCoords2[i], yCoords2[i]);
-			}
+			drawable.getDrawableListener().drawLine(graphicsContext, xCoords1[i], yCoords1[i], xCoords2[i], yCoords2[i]);
 		}
 	}
 }

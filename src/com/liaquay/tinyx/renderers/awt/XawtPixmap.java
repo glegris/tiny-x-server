@@ -23,11 +23,12 @@ import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.model.Server;
 
 public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener {
 
-	public XawtPixmap(final Pixmap pixmap) {
-		super(pixmap);
+	public XawtPixmap(final Server server, final Pixmap pixmap) {
+		super(server, pixmap);
 	}
 
 	@Override

@@ -45,9 +45,17 @@ public abstract class Drawable implements Resource {
 
 		public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
 				int[] yCoords);
+		
+		public void drawLine(GraphicsContext graphicsContext, int[] xCoords1, int[] yCoords1, int[] xCoords2, int[] yCoords2);
 
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
+		
 		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
 				int[] yCoords);
+
+		public byte[] getImageData(int x, int y, int width, int height,
+				int planeMask);
+
 	}
 	
 	protected static class NullListener implements Listener {
@@ -111,6 +119,27 @@ public abstract class Drawable implements Resource {
 		@Override
 		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
 				int[] yCoords) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public byte[] getImageData(int x, int y, int width, int height,
+				int planeMask) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void drawLine(GraphicsContext graphicsContext, int[] xCoords1,
+				int[] yCoords1, int[] xCoords2, int[] yCoords2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+				int x2, int y2) {
 			// TODO Auto-generated method stub
 			
 		}

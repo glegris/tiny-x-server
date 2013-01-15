@@ -21,7 +21,14 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.TexturePaint;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -32,17 +39,22 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	final Drawable _drawable;
 
+	final Server _server;
+
 	BufferedImage _image;
 
 	protected abstract Graphics2D getGraphics();
 
-	public XawtDrawableListener(Drawable drawable) {
+	public XawtDrawableListener(Server server, Drawable drawable) {
+		_server = server;
 		_drawable = drawable;
 		createImage(drawable);
 	}
@@ -97,17 +109,71 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		}
 	}
 
+	@Override
+	public byte[] getImageData(int x, int y, int width, int height,
+			int planeMask) {
 
+		if (planeMask == 0xffffffff) {
+			int size = (width * height * _drawable.getDepth())/8;
+
+			byte[] byteArr = new byte[size];
+
+			byte[] data = (byte[]) _image.getRaster().getDataElements(x, y, width, height, byteArr);
+			return data;
+		}
+
+
+		return null;
+	}
 
 	@Override
 	public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
 		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		XAwtGraphicsContext.tile(_server, graphics, graphicsContext);
+
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		graphics.drawPolyline(xCoords, yCoords, xCoords.length);
+		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
+		Stroke stroke = XAwtGraphicsContext.lineSetup(_server, graphics, graphicsContext);
+		graphics.draw(stroke.createStrokedShape(s));
+	}
+
+	@Override
+	public void drawLine(GraphicsContext graphicsContext, int[] x1, int[] y1,
+			int[] x2, int[] y2) {
+
+		final Graphics2D graphics = getGraphics();
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+		
+		XAwtGraphicsContext.tile(_server, graphics, graphicsContext);
+
+		Stroke stroke = XAwtGraphicsContext.lineSetup(_server, graphics, graphicsContext);
+
+		for (int i = 0; i < x1.length; i++) {
+			Shape l = new Line2D.Float(x1[i], y1[i], x2[i], y2[i]);
+			graphics.draw(stroke.createStrokedShape(l));
+		}
+
+	}
+	
+	@Override
+	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
+			int x2, int y2) {
+		final Graphics2D graphics = getGraphics();
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		Stroke stroke = XAwtGraphicsContext.lineSetup(_server, graphics, graphicsContext);
+		Shape l = new Line2D.Float(x1, y1, x2, y2);
+		graphics.draw(stroke.createStrokedShape(l));
 	}
 
 	@Override
@@ -152,15 +218,17 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void polyRect(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, boolean fill) {
 		final Graphics2D graphics = getGraphics();
+
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		graphics.setColor(Color.RED);//new Color(rgb));
+
+		XAwtGraphicsContext.tile(_server, graphics, graphicsContext);
 
 		if (fill) {
 			graphics.fillRect(x, y, width, height);
 		} else {
 			graphics.drawRect(x, y, width, height);
 		}
-
 	}
 
 	@Override
@@ -174,7 +242,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		for (int i=0; i < xCoords.length; i++) {
 			int x = xCoords[i];
 			int y = yCoords[i];
-			
+
 			graphics.drawLine(x, y, x, y);
 		}
 	}
@@ -206,16 +274,6 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		graphics.fillPolygon(x, y, x.length);
 	}
 
-	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-			int x2, int y2) {
-		final Graphics2D graphics = getGraphics();
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		graphics.drawLine(x1, y1, x2, y2);
-	}
-
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
 		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
 
@@ -223,10 +281,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		graphics.setBackground(new Color(rgb));
 
 		graphics.clearRect(x, y, width, height);
-		
+
 		if (exposures && _drawable instanceof Window) {
 			Window w = (Window) _drawable;
-			
+
 			final Event exposeEvent = w.getEventFactories().getExposureFactory().create(w.getId(), w.getX(), w.getY(), w.getClipWidth(), w.getClipHeight(), 0);
 			w.deliver(exposeEvent, Event.ExposureMask);
 		}

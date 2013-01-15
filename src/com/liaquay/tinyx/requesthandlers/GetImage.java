@@ -74,25 +74,11 @@ public class GetImage implements RequestHandler {
 			if (x+width > p.getWidth() || y+height > p.getHeight()) {
 				response.error(ErrorCode.Match, p.getId());
 			}
-			
-			// Null image
-//			if (p.getData() != null) {
-//				PixmapUtils.writeZPixmap(p, planeMask, x, y, width, height);
-//			} else {
-//				PixmapUtils.writeNullZPixmap(outputStream, p, planeMask, x, y, width, height);
-//			}
-		} else if (drawableRes instanceof Window) {
-			Window w = (Window) drawableRes;
-
-			int size = (width * height * drawableRes.getDepth()) / 8;
-
-			for (int i = 0; i < size; i++)
-				outputStream.writeByte(0);
-			
 		}
 
-		//TODO: Output the data!!!!!
-//	     n     LISTofBYTE                      data
-//	     p                                     unused, p=pad(n)
+		byte[] data = drawableRes.getDrawableListener().getImageData(x, y, width, height, planeMask);
+		
+		for (int i = 0; i < data.length; i++)
+			outputStream.writeByte(data[i]);
 	}
 }
