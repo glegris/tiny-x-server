@@ -22,15 +22,17 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
 public class Stipple implements AttributeHandler<GraphicsContext> {
-	
+
 	@Override
 	public void read(
 			final Server server, 
@@ -38,16 +40,23 @@ public class Stipple implements AttributeHandler<GraphicsContext> {
 			final Request request,
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-	
+
 		int stipplePixmap = inputStream.readInt();
-		//TODO: Quick validation that tilePixmap references a known pixmap?
-		graphicsContext.setStipple(stipplePixmap);
+
+		Pixmap p = server.getResources().get(stipplePixmap, Pixmap.class);
+		if (p != null) {
+			graphicsContext.setStipple(p);
+		} else {
+			response.error(ErrorCode.Pixmap, stipplePixmap);
+		}
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeInt(graphicsContext.getStipple());
+		if (graphicsContext.getStipple() != null) {
+			outputStream.writeInt(graphicsContext.getStipple().getId());
+		}
 	}
 }

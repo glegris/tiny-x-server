@@ -74,7 +74,7 @@ public class TinyXAwt {
 			}
 			
 			public void pixmapCreated(final Pixmap pixmap) {
-				pixmap.setListener(new XawtPixmap(server, pixmap));
+				pixmap.setListener(new XawtPixmap(pixmap));
 			}
 		});
 	}
