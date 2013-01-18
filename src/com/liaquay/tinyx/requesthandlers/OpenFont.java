@@ -19,6 +19,10 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -26,11 +30,14 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
+import com.liaquay.tinyx.model.FontAlias;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.font.FontDetail;
 
 public class OpenFont implements RequestHandler {
+	
+	private final static Logger LOGGER = Logger.getLogger(OpenFont.class.getName());
 
 	@Override
 	public void handleRequest(
@@ -42,36 +49,24 @@ public class OpenFont implements RequestHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
 		final String requestedFontName = inputStream.readString();
-
-		final FontInfo pattern;
-		final FontInfo fixedFontInfo = server.getFontInfoFromAlias("fixed");
-		if(requestedFontName.startsWith("-")) {
-			pattern = new FontInfo(requestedFontName);
+		final List<String> patterns = new ArrayList<String>();
+		patterns.add(requestedFontName);
+		for(final FontAlias alias : server.getFontAliases(requestedFontName)) {
+			patterns.add(alias.getPattern());
 		}
-		else {
-			final FontInfo aliasFontInfo = server.getFontInfoFromAlias(requestedFontName);
-			pattern = aliasFontInfo == null ? fixedFontInfo : aliasFontInfo;
+		FontInfo fontInfo = null;
+		for(final String pattern : patterns) {
+			fontInfo = server.getFontFactory().getFirstMatchingFont(pattern);
+			if(fontInfo != null) break;
 		}
-		final Font font;
-		final FontInfo fontInfo;
-		final FontInfo matchingFontInfo = server.getFontFactory().getFirstMatchingFont(pattern);
-		if(matchingFontInfo == null) {
-			fontInfo = server.getFontFactory().getFirstMatchingFont(fixedFontInfo);
-		}
-		else {
-			fontInfo = matchingFontInfo;
-		}
-		
+		if(fontInfo == null) fontInfo = server.getFixedFontInfo();
 		if(fontInfo == null) {
-			// TODO Log error
-			throw new RuntimeException("Could not find fixed font.");
+			final String message = "Could not open fixed font";
+			LOGGER.log(Level.SEVERE, message);
+			throw new RuntimeException(message);
 		}
-		else {
-			final FontInfo mergedFontInfo = fontInfo.merge(pattern);
-			final FontDetail fontDetail = server.getFontFactory().getFontDetail(mergedFontInfo);
-			font = new Font(fid, mergedFontInfo, fontDetail);			
-		}
-
+		final FontDetail fontDetail = server.getFontFactory().getFontDetail(fontInfo);
+		final Font font = new Font(fid, fontInfo, fontDetail);			
 		server.openFont(font);
 	}
 }
