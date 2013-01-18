@@ -50,10 +50,10 @@ public class OpenFont implements RequestHandler {
 		final int fid = inputStream.readInt();
 		final String requestedFontName = inputStream.readString();
 		final List<String> patterns = new ArrayList<String>();
-		patterns.add(requestedFontName);
 		for(final FontAlias alias : server.getFontAliases(requestedFontName)) {
 			patterns.add(alias.getPattern());
 		}
+		patterns.add(requestedFontName);
 		FontInfo fontInfo = null;
 		for(final String pattern : patterns) {
 			fontInfo = server.getFontFactory().getFirstMatchingFont(pattern);

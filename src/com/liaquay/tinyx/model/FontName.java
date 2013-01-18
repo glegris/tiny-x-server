@@ -50,7 +50,7 @@ public class FontName extends FontString {
 		}
 	}
 
-	public FontInfo parse(final String name) {
+	private FontInfo parse(final String name) {
 
 		final String[] split = name.split("-");
 		final String[] snn = new  String[Math.max(14, split.length-1)];

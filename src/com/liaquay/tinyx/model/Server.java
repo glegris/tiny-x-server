@@ -73,7 +73,7 @@ public class Server extends Client {
 	private final ScreenSaver _screenSaver = new ScreenSaver();
 
 
-	private static final String FIXED_FONT_NAME = "--Courier New-medium-r-normal--0-0-0-0-c-0-ISO8859-1";
+	private static final String FIXED_FONT_NAME = "--Arial-medium-r-normal--12-0-0-0-c-0-ISO8859-1";
 	private static final FontInfo FIXED_FONT_INFO = new FontName(FIXED_FONT_NAME).getFontInfo("*");
 
 	// TODO make configurable
@@ -82,18 +82,8 @@ public class Server extends Client {
 	static {
 		_fontAliases.add(new FontAlias("fixed", FIXED_FONT_NAME));
 		_fontAliases.add(new FontAlias("cursor", FIXED_FONT_NAME)); // TODO load the cursor font
-		_fontAliases.add(new FontAlias("6x10", "-misc-Arial-medium-r-normal--10-100-75-75-c-60-iso8859-1"));
+		_fontAliases.add(new FontAlias("6x10", "--Arial-medium-r-normal--6-0-0-0-c-0-ISO8859-1"));
 	}
-
-//	public FontInfo getFirstFontAlias(final String pattern) {
-//		final StringBuilder sb = new StringBuilder();
-//		for(final FontAlias alias : _fontAliases) {
-//			if(alias.matchAndMergeFielded(pattern, sb)) {
-//				return e.getValue();
-//			}
-//		}
-//		return null;
-//	}
 	
 	public List<FontAlias> getFontAliases(final String pattern) {
 		final List<FontAlias> aliases = new ArrayList<FontAlias>();

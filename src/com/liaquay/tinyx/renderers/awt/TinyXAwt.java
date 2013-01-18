@@ -62,7 +62,7 @@ public class TinyXAwt {
 						((fontWeight != null && fontWeight.equalsIgnoreCase("bold")) ? java.awt.Font.BOLD : 0) |
 						((fontSlant != null && fontSlant.equalsIgnoreCase("i")) ? java.awt.Font.ITALIC : 0);
 				
-				final java.awt.Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize);
+				final java.awt.Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize == 0 ? 12 : fontSize);
 
 				font.setListener(new XawtFontListener(awtFont));
 			}
