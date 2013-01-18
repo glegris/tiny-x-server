@@ -29,7 +29,6 @@ import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
 /**
@@ -39,11 +38,28 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	private final Window _window;
 	private final Canvas _canvas;
-	private final Server _server;
+	private BufferedImage _image = null;
+
+
+	public XawtWindow(final Window window, Canvas canvas) {
+		super(window);
+
+		_window = window;
+		_canvas = canvas;
+
+		//TODO: Map the depth
+		//	window.getDepth();
+		if (window.getRootWindow().equals(window)) {
+			BufferedImage image = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			_image = image;
+		}
+
+		paintWindow();
+	}
 
 	@Override
 	public void childCreated(final Window child) {
-		final XawtWindow listener = new XawtWindow(_server, child, _canvas);
+		final XawtWindow listener = new XawtWindow(child, _canvas);
 		child.setListener(listener);
 	}
 
@@ -119,7 +135,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int y) {
 
 		super.drawString(graphicsContext, str, x, y);
-		
+
 		updateCanvas();
 	}
 
@@ -136,7 +152,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		super.polyArc(graphicsContext, x, y, width, height, angle1, angle2, fill);
 
-		updateCanvas();
+		updateCanvas(x, y, width, height);
 	}
 
 	@Override
@@ -149,30 +165,30 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final boolean fill) {
 
 		super.polyRect(graphicsContext, x, y, width, height, fill);
-		
-		updateCanvas();
+
+		updateCanvas(x, y, width, height);
 	}
 
 	@Override
 	public void polyFill(
 			final GraphicsContext graphicsContext, 
-			final int x[], 
-			final int y[]) {
+			final int xCoords[], 
+			final int yCoords[]) {
 
-		super.polyFill(graphicsContext, x, y);
-		
-		updateCanvas();
+		super.polyFill(graphicsContext, xCoords, yCoords);
+
+		updateCanvas(xCoords, yCoords);
 	}
 
 	@Override
 	public void polyLine(
 			final GraphicsContext graphicsContext, 
-			final int x[], 
-			final int y[]) {
+			final int xCoords[], 
+			final int yCoords[]) {
 
-		super.polyLine(graphicsContext, x, y);
-		
-		updateCanvas();
+		super.polyLine(graphicsContext, xCoords, yCoords);
+
+		updateCanvas(xCoords, yCoords);
 	}
 
 	@Override
@@ -184,24 +200,28 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int y2) {
 
 		super.drawLine(graphicsContext, x1, y1, x2, y2);
-		
-		updateCanvas();
+
+		int topLeftX = Math.min(x1, x2);
+		int topLeftY = Math.min(y1, y2);
+
+		int botRightX = Math.max(x1,  x2);
+		int botRightY = Math.max(y1,  y2);
+		updateCanvas(topLeftX, topLeftY, topLeftX - botRightX, topLeftY - botRightY);
 	}
 
 	@Override
 	protected Graphics2D getGraphics() {
-		return (Graphics2D) _image.getGraphics();
-//		return translateAndClipToWindow();
+		return translateAndClipToWindow();
 	}
-	
-//	private Graphics2D translateAndClipToWindow() {
-//		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
-//		graphics.translate(_window.getAbsX(), _window.getAbsY());
-//		return graphics;
-//	}
+
+	private Graphics2D translateAndClipToWindow() {
+		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
+		graphics.translate(_window.getAbsX(), _window.getAbsY());
+		return graphics;
+	}
 
 	private void paintWindow() {
-		final Graphics2D graphics = (Graphics2D) _image.getGraphics();
+		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
 
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -253,8 +273,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	@Override
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
 		super.clearArea(exposures, x, y, width, height);
-		
-		updateCanvas();
+
+		updateCanvas(x,y, width, height);
 	}
 
 	@Override
@@ -264,7 +284,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		super.copyArea(destDrawable, graphicsContext, srcX, srcY, width, height, dstX,
 				dstY);
-		updateCanvas();
+		
+		updateCanvas(dstX, dstY, width, height);
 	}
 
 
@@ -275,35 +296,27 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		super.putImage(graphicsContext, buffer, width, height, destinationX,
 				destinationY, leftPad, depth);
-		updateCanvas();
+		
+		updateCanvas(destinationX, destinationY, width, height);
 	}
 
 
 	@Override
 	public void copyPlane(Drawable s, 		
-int bitplane, int srcX, int srcY,
+			int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 		super.copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
-		updateCanvas();
+		
+		updateCanvas(dstX, dstY, width, height);
 	}
-	
+
 	@Override
 	public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
 		super.polyPoint(graphicsContext, xCoords, yCoords);
-		updateCanvas();
+		
+		updateCanvas(xCoords, yCoords);
 	}
-
-	public XawtWindow(final Server server, final Window window, final Canvas canvas) {
-		super(server, window);
-
-		_server = server;
-		_window = window;
-		_canvas = canvas;
-
-		paintWindow();
-	}
-
 
 	@Override
 	public int getPixel(int x, int y) {
@@ -314,12 +327,53 @@ int bitplane, int srcX, int srcY,
 
 	@Override
 	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-		setImage(image);
+		//		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		//		setImage(image);
 	}
 
 	private void updateCanvas() {
-		_canvas.getGraphics().setClip(0, 0, 800, 600);
-		_canvas.getGraphics().drawImage(getImage(), _window.getAbsX(), _window.getAbsY(), _window.getWidth(), _window.getHeight(), null);
+		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
+		_canvas.getGraphics().drawImage(getImage(), _window.getRootWindow().getAbsX(), _window.getRootWindow().getAbsY(), _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
+	}
+
+	private void updateCanvas(int x, int y, int width, int height) {
+		// Get the windows image and translate the 
+//		BufferedImage windowImage = getImage();
+//		windowImage.getGraphics().translate(_window.getAbsX(), _window.getAbsY());
+		
+		int destWidth = _window.getAbsX() + width;
+		int destHeight = _window.getAbsY() + height;
+		
+		int srcX = _window.getAbsX() + x;
+		int srcY = _window.getAbsY() + y;
+		
+		int srcWidth =  _window.getAbsX() + width;
+		int srcHeight =  _window.getAbsY() + height;
+		
+		
+		_canvas.getGraphics().drawImage(getImage(), _window.getAbsX() + x, _window.getAbsY() + y, destWidth, destHeight, srcX, srcY, srcWidth, srcHeight, null);
+	}
+	
+	private void updateCanvas(int xCoords[], int yCoords[]) {
+		int tlx=_window.getWidth(),tly=_window.getHeight();
+		int blx=0,bly=0;
+		
+		for (int i = 0; i < xCoords.length; i++) {
+			tlx = Math.min(tlx, xCoords[i]);
+			tly = Math.min(tly, yCoords[i]);
+
+			blx = Math.max(blx, xCoords[i]);
+			bly = Math.min(bly, yCoords[i]);
+		}
+		updateCanvas(tlx, tly, blx - tlx, bly - tly);
+	}
+
+	@Override
+	public BufferedImage getImage() {
+		if (_image != null) {
+			return _image;
+		} else {
+			return _window.getRootWindow().getDrawableListener().getImage();
+		}
 	}
 }

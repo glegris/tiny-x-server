@@ -148,23 +148,23 @@ public class GraphicsContext extends AbstractResource {
 		return _fillRule;
 	}
 	
-	private int _tilePixmap = 0;
+	private Pixmap _tilePixmap = null;
 
-	public void setTile(final int tilePixmap) {
+	public void setTile(final Pixmap tilePixmap) {
 		_tilePixmap = tilePixmap;
 	}
 	
-	public int getTile() {
+	public Pixmap getTile() {
 		return _tilePixmap;
 	}
 	
-	private int _stipple = 0;
+	private Pixmap _stipple = null;
 
-	public void setStipple(final int stipple) {
+	public void setStipple(final Pixmap stipple) {
 		_stipple = stipple;
 	}
 	
-	public int getStipple() {
+	public Pixmap getStipple() {
 		return _stipple;
 	}
 

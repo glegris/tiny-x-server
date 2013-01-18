@@ -22,16 +22,17 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.SubWindowMode.SubWindowModeType;
 
 public class Tile implements AttributeHandler<GraphicsContext> {
-	
+
 	@Override
 	public void read(
 			final Server server, 
@@ -39,16 +40,23 @@ public class Tile implements AttributeHandler<GraphicsContext> {
 			final Request request,
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-	
+
 		int tilePixmap = inputStream.readInt();
-		//TODO: Quick validation that tilePixmap references a known pixmap?
-		graphicsContext.setTile(tilePixmap);
+
+		Pixmap p = server.getResources().get(tilePixmap, Pixmap.class);
+		if (p != null) {
+			graphicsContext.setTile(p);
+		} else {
+			response.error(ErrorCode.Pixmap, tilePixmap);
+		}
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeInt(graphicsContext.getTile());
+		if (graphicsContext.getTile() != null) {
+			outputStream.writeInt(graphicsContext.getTile().getId());
+		}
 	}
 }

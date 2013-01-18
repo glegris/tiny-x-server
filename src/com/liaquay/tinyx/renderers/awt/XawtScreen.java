@@ -20,12 +20,19 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Canvas;
 import java.awt.Frame;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,8 +63,6 @@ public class XawtScreen {
 	private final Frame _frame= new Frame();
 	private final XawtWindow _rootWindowListener;
 	private final Canvas _canvas = new Canvas();
-	
-//	private final XawtPixmap _pixmapListener;
 
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
 
@@ -87,12 +92,9 @@ public class XawtScreen {
 		_frame.pack();
 		_frame.setVisible(true);
 
-		_rootWindowListener = new XawtWindow(server.getServer(), rootWindow, _canvas);
+		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
 		rootWindow.setListener(_rootWindowListener);
 
-//		_pixmapListener = new XawtPixmap(pixmap);
-		
-		
 		// WTF If I don't do this the background is rendered grey!?!
 		// TODO Nathan any ideas? I guess there is a delayed AWT event but my all attempts to prevent the redraw have failed?
 		try { Thread.sleep(1000); } catch(final Exception e){}

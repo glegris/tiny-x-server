@@ -23,12 +23,14 @@ import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Server;
 
 public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener {
 
-	public XawtPixmap(final Server server, final Pixmap pixmap) {
-		super(server, pixmap);
+	BufferedImage _image;
+
+	public XawtPixmap(final Pixmap pixmap) {
+		super(pixmap);
+		createImage(pixmap);
 	}
 
 	@Override
@@ -40,5 +42,14 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 	@Override
 	protected Graphics2D getGraphics() {
 		return (Graphics2D) getImage().getGraphics();
+	}
+	
+	public void setImage(BufferedImage image) {
+		this._image =  image;
+	}
+	
+	@Override
+	public BufferedImage getImage() {
+		return _image;
 	}
 }

@@ -26,6 +26,8 @@ public abstract class Drawable implements Resource {
 	public interface Listener {
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y, int bx, int by, int bw, int bh);
 
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
+
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
 				int srcY, int width, int height, int dstX, int dstY);
 		
@@ -140,6 +142,13 @@ public abstract class Drawable implements Resource {
 		@Override
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
 				int x2, int y2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void drawString(GraphicsContext graphicsContext, String str,
+				int x, int y) {
 			// TODO Auto-generated method stub
 			
 		}
