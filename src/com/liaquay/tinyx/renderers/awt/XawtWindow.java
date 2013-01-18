@@ -223,8 +223,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	private void paintWindow() {
 		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
 
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
 		graphics.setClip(
 				_window.getClipX(), 
 				_window.getClipY(),

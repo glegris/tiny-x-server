@@ -174,6 +174,9 @@ public abstract class Drawable implements Resource {
 	public abstract int getBorderWidth();
 
 	public abstract ColorMap getColorMap();
+	
+	public abstract int getBackgroundPixel();
+
 //	abstract Graphics getGraphics();
 	//	  abstract void restoreClip();
 
@@ -204,4 +207,5 @@ public abstract class Drawable implements Resource {
 	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
 		getDrawableListener().polyLine(graphicsContext, x, y);
 	}
+
 }

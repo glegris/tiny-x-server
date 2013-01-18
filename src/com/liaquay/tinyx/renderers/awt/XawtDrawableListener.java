@@ -260,7 +260,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
 		final Graphics2D graphics = getGraphics();
 
-		final int rgb = _drawable.getColorMap().getRGB(_drawable.getScreen().getBackgroundPixel());
+		final int rgb = _drawable.getColorMap().getRGB(_drawable.getBackgroundPixel());
 		graphics.setBackground(new Color(rgb));
 
 		graphics.clearRect(x, y, width, height);

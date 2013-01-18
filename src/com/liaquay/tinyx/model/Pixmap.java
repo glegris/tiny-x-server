@@ -108,4 +108,10 @@ public class Pixmap extends Drawable {
 	public ColorMap getColorMap() {
 		return _drawable.getColorMap();
 	}
+
+	@Override
+	public int getBackgroundPixel() {
+		// TODO No idea if this is correct!
+		return _drawable.getBackgroundPixel();
+	}
 }

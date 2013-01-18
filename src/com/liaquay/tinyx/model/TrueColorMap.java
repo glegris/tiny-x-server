@@ -100,6 +100,6 @@ public class TrueColorMap extends ColorMap {
 
 	@Override
 	public int getRGB(final int pixel) {
-		return pixel;
+		return pixel | 0xff000000;
 	}
 }
