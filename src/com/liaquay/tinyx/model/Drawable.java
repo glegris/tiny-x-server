@@ -20,6 +20,8 @@ package com.liaquay.tinyx.model;
 
 import java.awt.image.BufferedImage;
 
+import com.liaquay.tinyx.model.Image.ImageType;
+
 
 public abstract class Drawable implements Resource {
 
@@ -31,7 +33,7 @@ public abstract class Drawable implements Resource {
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
 				int srcY, int width, int height, int dstX, int dstY);
 		
-		public void putImage(GraphicsContext graphicsContext,
+		public void putImage(GraphicsContext graphicsContext, ImageType imageType,
 				byte[] buffer, int width, int height,
 				int destinationX, int destinationY, int leftPad, int depth);
 
@@ -56,7 +58,7 @@ public abstract class Drawable implements Resource {
 				int[] yCoords);
 
 		public byte[] getImageData(int x, int y, int width, int height,
-				int planeMask);
+				 ImageType imageType, int planeMask);
 
 	}
 	
@@ -70,7 +72,7 @@ public abstract class Drawable implements Resource {
 		}
 
 		@Override
-		public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer,
 				int width, int height, int destinationX, int destinationY,
 				int leftPad, int depth) {
 			// TODO Auto-generated method stub
@@ -127,7 +129,7 @@ public abstract class Drawable implements Resource {
 
 		@Override
 		public byte[] getImageData(int x, int y, int width, int height,
-				int planeMask) {
+				 ImageType imageType, int planeMask) {
 			// TODO Auto-generated method stub
 			return null;
 		}

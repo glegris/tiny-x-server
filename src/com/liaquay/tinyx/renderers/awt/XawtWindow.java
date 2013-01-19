@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 
@@ -290,11 +291,11 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 
 	@Override
-	public void putImage(GraphicsContext graphicsContext, byte[] buffer,
+	public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer,
 			int width, int height, int destinationX, int destinationY,
 			int leftPad, int depth) {
 
-		super.putImage(graphicsContext, buffer, width, height, destinationX,
+		super.putImage(graphicsContext, imageType, buffer, width, height, destinationX,
 				destinationY, leftPad, depth);
 		
 		updateCanvas(destinationX, destinationY, width, height);

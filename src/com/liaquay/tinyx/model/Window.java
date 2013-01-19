@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.liaquay.tinyx.model.ButtonGrab.Trigger;
+import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 
 public class Window extends Drawable {
@@ -60,7 +61,7 @@ public class Window extends Drawable {
 
 		}
 		@Override
-		public void putImage(GraphicsContext graphicsContext, byte[] data,
+		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data,
 				int width, int height, int destinationX, int destinationY,
 				int leftPad, int depth) {
 			// TODO Auto-generated method stub
@@ -924,11 +925,11 @@ public class Window extends Drawable {
 		return _listener;
 	}
 
-	public void putImage(GraphicsContext graphicsContext, byte[] data,
+	public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data,
 			int width, int height, int destinationX, int destinationY,
 			int leftPad, int depth) {
 
-		_listener.putImage(graphicsContext, data, width, height, destinationX, destinationY, leftPad, depth);
+		_listener.putImage(graphicsContext, imageType, data, width, height, destinationX, destinationY, leftPad, depth);
 	}
 	
 	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth) {

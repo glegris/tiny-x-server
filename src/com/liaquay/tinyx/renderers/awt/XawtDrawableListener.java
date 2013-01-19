@@ -21,6 +21,7 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -28,9 +29,15 @@ import java.awt.Stroke;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Event;
@@ -38,6 +45,7 @@ import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.Image.ImageType;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
@@ -55,53 +63,83 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public abstract void createImage(Drawable drawable);
 
 	@Override
-	public void copyArea(Drawable destDrawable, GraphicsContext graphicsContext, int srcX,
+	public void copyArea(Drawable srcDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 
-		BufferedImage srcImage = getImage();
-		BufferedImage destImage = destDrawable.getDrawableListener().getImage();
+		BufferedImage destImage = getImage();
+		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
-		srcImage.getGraphics().translate(dstX,  dstY);
-		srcImage.getGraphics().drawImage(destImage, srcX, srcY, width, height, null);
+		//		destImage.getGraphics().translate(dstX,  dstY);
+		destImage.getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
-	public void copyPlane(Drawable destDrawable, int bitplane, int srcX, int srcY,
+	public void copyPlane(Drawable srcDrawable, int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 
-		BufferedImage srcImage = getImage();
-		BufferedImage destImage = destDrawable.getDrawableListener().getImage();
+		BufferedImage destImage = getImage();
+		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
-		srcImage.getGraphics().translate(dstX,  dstY);
-		srcImage.getGraphics().drawImage(destImage, srcX, srcY, width, height, null);
+		//		srcImage.getGraphics().translate(dstX,  dstY);
+		destImage.getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
-	public void putImage(GraphicsContext graphicsContext,
+	public void putImage(GraphicsContext graphicsContext, ImageType imageType, 
 			byte[] buffer, int width, int height,
 			int destinationX, int destinationY, int leftPad, int depth) { 
 
+		BufferedImage image = null;
+
+		System.out.println("Put image with type: " + imageType.name() + " and depth " + depth);
 		if (depth == 1) {
+
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
 			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
-			BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+			image = new BufferedImage(colorModel, raster, false, null);
+		} else if (depth == 32) {
+			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
+
+			int []bankIndices = new int[1];
+			bankIndices[0]=0;
+			
+			int[] bandOffsets = new int[1];
+			bandOffsets[0]=0;
+			WritableRaster raster = Raster.createBandedRaster(db, width, height, width, bankIndices, bandOffsets, new Point(0,0));
+
+			DirectColorModel colorModel = new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+			image = new BufferedImage(colorModel, raster, false, null);
+
+		}
+
+		//		if (false) {
+		if (image != null) {
+			try {
+				// create a file to write the image to (make sure it exists), then use the ImageIO class
+				// to write the RenderedImage to disk as a PNG file.
+				File file = new File("/home/ncludki/tinyx/" + System.currentTimeMillis() + ".png");
+				file.createNewFile();
+				ImageIO.write(image, "png", file);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			Graphics sg = getGraphics();
-			sg.drawImage(image, destinationX, destinationY, width, height, null);			
-
-		} else {
-			System.out.println("Unsupported depth");
+			sg.drawImage(image, destinationX, destinationY, width, height, null);		
 		}
+		//		}
 	}
 
 	@Override
 	public byte[] getImageData(int x, int y, int width, int height,
-			int planeMask) {
+			ImageType imageType, int planeMask) {
 
 		if (planeMask == 0xffffffff) {
+			System.out.println("GetImageData: " + imageType.name());
 			int size = (width * height * _drawable.getDepth())/8;
 
 			byte[] byteArr = new byte[size];
@@ -119,7 +157,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			int[] yCoords) {
 		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		
+
 		XAwtGraphicsContext.tile(graphics, graphicsContext);
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
@@ -139,7 +177,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
-		
+
 		XAwtGraphicsContext.tile(graphics, graphicsContext);
 
 		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
@@ -150,7 +188,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		}
 
 	}
-	
+
 	@Override
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
 			int x2, int y2) {

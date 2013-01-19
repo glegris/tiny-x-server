@@ -76,7 +76,7 @@ public class GetImage implements RequestHandler {
 			}
 		}
 
-		byte[] data = drawableRes.getDrawableListener().getImageData(x, y, width, height, planeMask);
+		byte[] data = drawableRes.getDrawableListener().getImageData(x, y, width, height, type, planeMask);
 		
 		for (int i = 0; i < data.length; i++)
 			outputStream.writeByte(data[i]);
