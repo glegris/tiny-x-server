@@ -25,72 +25,103 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.liaquay.tinyx.model.FontInfo;
+import com.liaquay.tinyx.model.FontName;
 import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.model.font.FontFactory;
 
 public class AwtFontFactory implements FontFactory {
 
-	private final List<FontInfo> _fontNames;
-	
+	private final List<FontName> _fontNames;
+
 	public AwtFontFactory() {
 		_fontNames = initFontNames();
 	}
-	
-	private List<FontInfo> initFontNames() {
-		final List<FontInfo> fontList = new ArrayList<FontInfo>();
-		
+
+	private enum Slant {
+		r,i
+	}
+
+	private enum Weight {
+		medium, bold
+	}
+
+	private List<FontName> initFontNames() {
+		final List<FontName> fontList = new ArrayList<FontName>();
+
 		final GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		final Font[] fonts = e.getAllFonts(); // Get the fonts
 		for (final Font f : fonts) {
-			final String familyName = f.getFamily();
-			
-			String foundryName = "*";
-			String charSet = "ISO8859";
-			String pointSize = "*";
-			String weightName = "*";
-			
-			// TODO PS - Add new constructor
-			final FontInfo fontString = new FontInfo("-" + foundryName + "-" + familyName + "-"+ weightName + "-" + "*" + "-*-*-*-" + pointSize + "-*-*-*-*-" + charSet + "-*");
-			fontList.add(fontString);
-			
-			System.out.println(fontString);
+			for(final Slant slant : Slant.values()) {
+				for(final Weight weight : Weight.values()) {
+					final String foundry = "";
+					final String familyName = f.getFamily();
+					final String setWidthName ="normal";
+					final String addStyleName = "";
+					final int pixelSize = 0;
+					final int pointSize = 0;
+					final int resolutionX = 0;
+					final int resolutionY = 0;
+					final String spacing = "c";
+					final int averageWidth = 0;
+					final String charsetRegistry = "ISO8859";
+					final String charsetEncoding ="1";
+
+					final FontInfo fontInfo = new FontInfo(
+							foundry,
+							familyName, 
+							weight.name(),
+							slant.name(), 
+							setWidthName, 
+							addStyleName,
+							pixelSize, 
+							pointSize, 
+							resolutionX, 
+							resolutionY,
+							spacing, 
+							averageWidth, 
+							charsetRegistry,
+							charsetEncoding);
+
+					final FontName fontString = new FontName(fontInfo.toString());
+					fontList.add(fontString);
+
+					System.out.println(fontString);
+				}
+			}
 		}
 		return fontList;
 	}
-	
-	@Override
-	public List<FontInfo> getFontNames() {
-		return _fontNames;
-	}
 
 	@Override
-	public FontInfo getFirstMatchingFont(final FontInfo requestedFont) {
-		
-		// TODO is there a more efficient way to do this?
+	public FontInfo getFirstMatchingFont(final String pattern) {
+		final StringBuilder scratch = new StringBuilder();
 		for (int i = 0; i < _fontNames.size(); i++) {
-			if (_fontNames.get(i).matches(requestedFont)) {
-				return _fontNames.get(i);
-			}
+			final FontInfo fontInfo = _fontNames.get(i).getFontInfo(pattern, scratch);
+			if(fontInfo != null) return fontInfo;
 		}
-		
+
 		return null;
 	}
-	
-	@Override
-	public List<FontInfo> getMatchingFonts(final FontInfo requestedFont) {
 
+	@Override
+	public List<FontInfo> getMatchingFonts(final String pattern) {
+		try {
 		final List<FontInfo> matchingFonts = new ArrayList<FontInfo>();
-		
+		final StringBuilder scratch = new StringBuilder();
 		for (int i = 0; i < _fontNames.size(); i++) {
-			matchingFonts.add(_fontNames.get(i));
+			final FontInfo fontInfo = _fontNames.get(i).getFontInfo(pattern, scratch);
+			if(fontInfo != null) matchingFonts.add(fontInfo);
 		}
-		
 		return matchingFonts;
+		}catch(final Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public FontDetail getFontDetail(final FontInfo fontInfo) {
-		
+
 		final String name = fontInfo.getFamilyName();
 		final Font f = new Font(name, Font.PLAIN, fontInfo.getPixelSize());
 		final FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(f);
@@ -98,8 +129,8 @@ public class AwtFontFactory implements FontFactory {
 		//TODO: Try and get the first and last character for this font from somewhere more meaningful
 		final int firstChar = 32;
 		final int lastChar = 255;
-		
-//		final Rectangle2D maxBounds = f.getMaxCharBounds(new FontRenderContext(null, true, false));
+
+		//		final Rectangle2D maxBounds = f.getMaxCharBounds(new FontRenderContext(null, true, false));
 
 		final FontDetail fd = new FontDetail(
 				fm.getMaxAscent(),
@@ -107,11 +138,11 @@ public class AwtFontFactory implements FontFactory {
 				0, // Minimum width
 				fm.getMaxAdvance(), // Maximum width
 				f.getMissingGlyphCode(),
-				32, // First char
-				255, // Last char
+				firstChar, // First char
+				lastChar, // Last char
 				fm.getHeight(),
 				fm.getLeading());
-		
+
 		return fd;
 	}
 }

@@ -22,9 +22,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -75,20 +73,29 @@ public class Server extends Client {
 	private final ScreenSaver _screenSaver = new ScreenSaver();
 
 
-	private static final String FIXED_FONT_NAME = "-*-Waree-*-*-*-*-12-*-*-*-*-*-ISO8859-*-*";
+	private static final String FIXED_FONT_NAME = "--Arial-medium-r-normal--12-0-0-0-c-0-ISO8859-1";
+	private static final FontInfo FIXED_FONT_INFO = new FontName(FIXED_FONT_NAME).getFontInfo("*");
 
 	// TODO make configurable
-	private static final Map<String, FontInfo> _fontAliases = new TreeMap<String, FontInfo>();
+	private static final List<FontAlias> _fontAliases = new ArrayList<FontAlias>();
 
 	static {
-		_fontAliases.put("fixed", new FontInfo(FIXED_FONT_NAME));
-		_fontAliases.put("cursor", new FontInfo(FIXED_FONT_NAME)); // TODO load the cursor font
+		_fontAliases.add(new FontAlias("fixed", FIXED_FONT_NAME));
+		_fontAliases.add(new FontAlias("cursor", FIXED_FONT_NAME)); // TODO load the cursor font
+		_fontAliases.add(new FontAlias("6x10", "--Arial-medium-r-normal--6-0-0-0-c-0-ISO8859-1"));
 	}
-
-	public FontInfo getFontInfoFromAlias(final String fontAlias) {
-		return _fontAliases.get(fontAlias);
+	
+	public List<FontAlias> getFontAliases(final String pattern) {
+		final List<FontAlias> aliases = new ArrayList<FontAlias>();
+		final StringBuilder sb = new StringBuilder();
+		for(final FontAlias alias : _fontAliases) {
+			if(alias.matchAndMergeFielded(pattern, sb)) {
+				aliases.add(alias);
+			}
+		}
+		return aliases;
 	}
-
+	
 	/**
 	 * A lock used to protect the server from concurrent updates
 	 */
@@ -109,16 +116,10 @@ public class Server extends Client {
 		public void fontOpened(final Font font) {}
 		@Override
 
-		public void windowCreated(final Window window) {
-			// TODO Auto-generated method stub
-
-		}
+		public void windowCreated(final Window window) {}
 
 		@Override
-		public void pixmapCreated(final Pixmap pixmap) {
-			// TODO Auto-generated method stub
-
-		}
+		public void pixmapCreated(final Pixmap pixmap) {}
 	}
 
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -133,12 +134,10 @@ public class Server extends Client {
 
 	public Font getFixedFont() {
 		if(_fixedFont == null) {
-			final FontInfo pattern = new FontInfo(FIXED_FONT_NAME);
-			final FontInfo fontInfo = getFontFactory().getFirstMatchingFont(pattern);
+			final FontInfo fontInfo = getFontFactory().getFirstMatchingFont(FIXED_FONT_NAME);
 			if (fontInfo != null) {
-				final FontInfo mergedFontInfo = fontInfo.merge(pattern);
-				final FontDetail fontDetail = getFontFactory().getFontDetail(mergedFontInfo);
-				_fixedFont = new Font(allocateResourceId(), mergedFontInfo, fontDetail);
+				final FontDetail fontDetail = getFontFactory().getFontDetail(fontInfo);
+				_fixedFont = new Font(allocateResourceId(), fontInfo, fontDetail);
 				openFont(_fixedFont);
 			}
 		}
@@ -827,6 +826,10 @@ public class Server extends Client {
 		_keyFrozen = keyboard;
 		_prtFrozen = pointer;
 		dequeueAll();
+	}
+
+	public FontInfo getFixedFontInfo() {
+		return FIXED_FONT_INFO;
 	}
 
 }

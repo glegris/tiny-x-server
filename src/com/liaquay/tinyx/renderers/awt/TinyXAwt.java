@@ -56,13 +56,13 @@ public class TinyXAwt {
 				
 				final String fontFamily = fontInfo.getFamilyName();
 				final int fontSize = fontInfo.getPixelSize();
-				final String fontWeight = fontInfo.getWeight();
+				final String fontWeight = fontInfo.getWeightName();
 				final String fontSlant = fontInfo.getSlant();
 				final int fontStyle = 
 						((fontWeight != null && fontWeight.equalsIgnoreCase("bold")) ? java.awt.Font.BOLD : 0) |
 						((fontSlant != null && fontSlant.equalsIgnoreCase("i")) ? java.awt.Font.ITALIC : 0);
 				
-				final java.awt.Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize);
+				final java.awt.Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize == 0 ? 12 : fontSize);
 
 				font.setListener(new XawtFontListener(awtFont));
 			}
@@ -140,10 +140,10 @@ public class TinyXAwt {
 						defaultColorMap,
 						visual,
 						32,
+						1024,
 						800,
-						600,
+						1024,
 						800,
-						600,
 						depths,
 						eventFactories);
 			}

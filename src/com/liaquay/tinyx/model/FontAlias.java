@@ -16,14 +16,18 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.model;
 
-import java.util.List;
+public class FontAlias extends FontString {
 
-import com.liaquay.tinyx.model.FontInfo;
+	private String _pattern;
+	
+	public FontAlias(final String name, final String pattern) {
+		super(name);
+		_pattern = pattern;
+	}
 
-public interface FontFactory {
-	public FontInfo getFirstMatchingFont(final String pattern);
-	public List<FontInfo> getMatchingFonts(final String pattern);
-	public FontDetail getFontDetail(final FontInfo fontInfo);
+	public String getPattern() {
+		return _pattern;
+	}
 }

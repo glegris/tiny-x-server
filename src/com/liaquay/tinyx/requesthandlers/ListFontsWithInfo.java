@@ -19,6 +19,7 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.FontAlias;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.font.FontDetail;
@@ -46,15 +48,23 @@ public class ListFontsWithInfo implements RequestHandler {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int maxNames = inputStream.readUnsignedShort();
-		final String pattern = inputStream.readString();
+		final String requestedFontName = inputStream.readString();
 
-		LOGGER.log(Level.INFO, "ListFontsWithInfo max names: " + maxNames + "  Pattern: " + pattern);
+		final List<String> patterns = new ArrayList<String>();
+		patterns.add(requestedFontName);
+		for(final FontAlias alias : server.getFontAliases(requestedFontName)) {
+			patterns.add(alias.getPattern());
+		}
+		
+		final List<FontInfo> matches = new ArrayList<FontInfo>();
 
-		final List<FontInfo> fonts = server.getFontFactory().getMatchingFonts(new FontInfo(pattern));
-
+		for(final String pattern : patterns) {
+			matches.addAll(server.getFontFactory().getMatchingFonts(pattern));
+		}
+		
 		int countDown = maxNames;//fonts.size();
 		int counter = 0;
-		for (final FontInfo fontInfo : fonts) {
+		for (final FontInfo fontInfo : matches) {
 			
 			final FontDetail fontDetail = server.getFontFactory().getFontDetail(fontInfo);
 			
