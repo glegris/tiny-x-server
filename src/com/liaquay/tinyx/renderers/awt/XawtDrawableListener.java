@@ -21,31 +21,26 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.Transparency;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
-import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Image.ImageType;
+import com.liaquay.tinyx.model.Window;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
@@ -56,8 +51,6 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public XawtDrawableListener(Drawable drawable) {
 		_drawable = drawable;
 	}
-
-
 
 	@Override
 	public abstract void createImage(Drawable drawable);
@@ -74,7 +67,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	@Override
-	public void copyPlane(Drawable srcDrawable, int bitplane, int srcX, int srcY,
+	public void copyPlane(Drawable srcDrawable, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 
 		BufferedImage destImage = getImage();
@@ -99,39 +92,73 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
+			//            ColorModel colorModel = new DirectColorModel(24, 0xff0000, 0x00ff00, 0x0000ff);
 			image = new BufferedImage(colorModel, raster, false, null);
 		} else if (depth == 32) {
+			// Only 3 bytes per pixel appear to be sent..
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
 
-			int []bankIndices = new int[1];
-			bankIndices[0]=0;
-			
-			int[] bandOffsets = new int[1];
-			bandOffsets[0]=0;
-			WritableRaster raster = Raster.createBandedRaster(db, width, height, width, bankIndices, bandOffsets, new Point(0,0));
+			WritableRaster raster = Raster.createInterleavedRaster(db, // dataBuffer
+					width, // width
+					height, // height
+					width * 3, // scanlineStride
+					3, // pixelStride
+					new int[]{0, 1, 2}, // bandOffsets
+					null); // location
 
-			DirectColorModel colorModel = new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-			image = new BufferedImage(colorModel, raster, false, null);
+			//            ColorModel colorModel = new DirectColorModel(24, 0xff0000, 0x00ff00, 0x0000ff);
 
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			image.setData(raster);
+
+			//    ColorModel colorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), // ColorSpace
+			//                    new int[]{8, 8, 8}, // bits
+			//                    false, // hasAlpha
+			//                    false, // isPreMultiplied
+			//                    ComponentColorModel.OPAQUE, DataBuffer.TYPE_BYTE);
+
+			//    BufferedImage loadImage = new BufferedImage(colorModel, raster, false, null);
+			//
+			//    // Convert it into a buffered image that's compatible with the current screen.
+			//    // Not ideal creating this image twice....
+			BufferedImage image2 = createCompatibleImage(image);
+			image = image2;
 		}
 
-		//		if (false) {
-		if (image != null) {
-			try {
-				// create a file to write the image to (make sure it exists), then use the ImageIO class
-				// to write the RenderedImage to disk as a PNG file.
-				File file = new File("/home/ncludki/tinyx/" + System.currentTimeMillis() + ".png");
-				file.createNewFile();
-				ImageIO.write(image, "png", file);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+//		if (image != null) {
+//			try {
+//				// create a file to write the image to (make sure it exists), then use the ImageIO class
+//				// to write the RenderedImage to disk as a PNG file.
+//				File file = new File("/home/ncludki/tinyx/" + System.currentTimeMillis() + ".png");
+//				file.createNewFile();
+//				ImageIO.write(image, "png", file);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
 			Graphics sg = getGraphics();
-			sg.drawImage(image, destinationX, destinationY, width, height, null);		
-		}
-		//		}
+			sg.drawImage(image, destinationX, destinationY, width, height, null);
+//		}
+	}
+	
+	BufferedImage createCompatibleImage(BufferedImage image)
+	{
+	    GraphicsConfiguration gc = GraphicsEnvironment.
+	        getLocalGraphicsEnvironment().
+	        getDefaultScreenDevice().
+	        getDefaultConfiguration();
+
+	    BufferedImage newImage = gc.createCompatibleImage(
+	        image.getWidth(), 
+	        image.getHeight(), 
+	        Transparency.TRANSLUCENT);
+
+	    Graphics2D g = newImage.createGraphics();
+	    g.drawImage(image, 0, 0, null);
+	    g.dispose();
+
+	    return newImage;
 	}
 
 	@Override

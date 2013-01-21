@@ -60,7 +60,7 @@ public class XawtScreen {
 		return _listeners;
 	}
 
-	private final Frame _frame= new Frame();
+	private final Frame _frame = new Frame();
 	private final XawtWindow _rootWindowListener;
 	private final Canvas _canvas = new Canvas();
 

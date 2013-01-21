@@ -301,10 +301,10 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 
 	@Override
-	public void copyPlane(Drawable s, 		
+	public void copyPlane(Drawable s, GraphicsContext graphicsContext,		
 			int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
-		super.copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
+		super.copyPlane(s, graphicsContext, bitplane, srcX, srcY, width, height, dstX, dstY);
 		
 		updateCanvas(dstX, dstY, width, height);
 	}

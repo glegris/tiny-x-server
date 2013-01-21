@@ -70,7 +70,7 @@ public class TinyXAwt {
 			@Override
 
 			public void windowCreated(final Window window) {
-//				window.setListener(new XawtWindow(window));
+//				window.setListener( new XawtWindow(window));
 			}
 			
 			public void pixmapCreated(final Pixmap pixmap) {

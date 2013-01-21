@@ -26,6 +26,7 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 
 public class CopyPlane implements RequestHandler {
@@ -38,10 +39,26 @@ public class CopyPlane implements RequestHandler {
 		
 		final XInputStream inputStream = request.getInputStream();		
 
-		int srcDrawable = inputStream.readInt();
-		int dstDrawable = inputStream.readInt();
+		final int srcDrawable = inputStream.readInt();
+		final Drawable s = server.getResources().get(srcDrawable, Drawable.class);
+		if(s == null) {
+			response.error(Response.ErrorCode.Drawable, srcDrawable);	
+			return;			
+		}
 
-		int gc = inputStream.readInt();
+		final int dstDrawable = inputStream.readInt();
+		final Drawable d = server.getResources().get(dstDrawable, Drawable.class);
+		if(d == null) {
+			response.error(Response.ErrorCode.Drawable, dstDrawable);	
+			return;			
+		}
+
+		final int gcId = inputStream.readInt();
+		final GraphicsContext graphicsContext = server.getResources().get(gcId, GraphicsContext.class);
+		if(graphicsContext == null) {
+			response.error(Response.ErrorCode.GContext, gcId);
+			return;
+		}
 
 		int srcX = inputStream.readUnsignedByte();
 		int srcY = inputStream.readUnsignedByte();
@@ -54,9 +71,6 @@ public class CopyPlane implements RequestHandler {
 
 		int bitplane = inputStream.readInt();
 
-		Drawable s = server.getResources().get(srcDrawable, Drawable.class);
-		Drawable d = server.getResources().get(dstDrawable, Drawable.class);
-		
-		d.getDrawableListener().copyPlane(s, bitplane, srcX, srcY, width, height, dstX, dstY);
+		d.getDrawableListener().copyPlane(s, graphicsContext, bitplane, srcX, srcY, width, height, dstX, dstY);
 	}
 }

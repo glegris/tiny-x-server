@@ -41,7 +41,7 @@ public abstract class Drawable implements Resource {
 
 		BufferedImage getImage();
 
-		public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
+		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
 				int width, int height, int dstX, int dstY);
 
 		public void polyRect(GraphicsContext graphicsContext, int x, int y,
@@ -65,7 +65,7 @@ public abstract class Drawable implements Resource {
 	protected static class NullListener implements Listener {
 
 		@Override
-		public void copyArea(Drawable d, GraphicsContext graphicsContext,
+		public void copyArea(Drawable s, GraphicsContext graphicsContext,
 				int srcX, int srcY, int width, int height, int dstX, int dstY) {
 			// TODO Auto-generated method stub
 			
@@ -100,7 +100,7 @@ public abstract class Drawable implements Resource {
 		}
 
 		@Override
-		public void copyPlane(Drawable s, int bitplane, int srcX, int srcY,
+		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
 				int width, int height, int dstX, int dstY) {
 			// TODO Auto-generated method stub
 			
