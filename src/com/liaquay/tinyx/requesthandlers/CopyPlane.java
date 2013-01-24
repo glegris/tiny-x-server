@@ -60,14 +60,14 @@ public class CopyPlane implements RequestHandler {
 			return;
 		}
 
-		int srcX = inputStream.readUnsignedByte();
-		int srcY = inputStream.readUnsignedByte();
+		int srcX = inputStream.readSignedShort();
+		int srcY = inputStream.readSignedShort();
 
-		int dstX = inputStream.readUnsignedByte();
-		int dstY = inputStream.readUnsignedByte();
+		int dstX = inputStream.readSignedShort();
+		int dstY = inputStream.readSignedShort();
 
-		int width = inputStream.readUnsignedByte();
-		int height = inputStream.readUnsignedByte();
+		int width = inputStream.readUnsignedShort();
+		int height = inputStream.readUnsignedShort();
 
 		int bitplane = inputStream.readInt();
 

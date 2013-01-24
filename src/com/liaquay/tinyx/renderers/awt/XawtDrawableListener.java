@@ -34,6 +34,10 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Event;
@@ -70,10 +74,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void copyPlane(Drawable srcDrawable, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 
-		BufferedImage destImage = getImage();
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
+		BufferedImage destImage = getImage();
 
-		//		srcImage.getGraphics().translate(dstX,  dstY);
 		destImage.getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
 	}
 
@@ -84,16 +87,15 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		BufferedImage image = null;
 
-		System.out.println("Put image with type: " + imageType.name() + " and depth " + depth);
+		System.out.println("Put image with type: " + imageType.name() + " and depth " + depth + " leftpad: " + leftPad);
 		if (depth == 1) {
-
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
 			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
-			//            ColorModel colorModel = new DirectColorModel(24, 0xff0000, 0x00ff00, 0x0000ff);
 			image = new BufferedImage(colorModel, raster, false, null);
+			
 		} else if (depth == 32) {
 			// Only 3 bytes per pixel appear to be sent..
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
@@ -111,18 +113,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			image.setData(raster);
 
-			//    ColorModel colorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), // ColorSpace
-			//                    new int[]{8, 8, 8}, // bits
-			//                    false, // hasAlpha
-			//                    false, // isPreMultiplied
-			//                    ComponentColorModel.OPAQUE, DataBuffer.TYPE_BYTE);
-
-			//    BufferedImage loadImage = new BufferedImage(colorModel, raster, false, null);
-			//
 			//    // Convert it into a buffered image that's compatible with the current screen.
 			//    // Not ideal creating this image twice....
-			BufferedImage image2 = createCompatibleImage(image);
-			image = image2;
+//			BufferedImage image2 = createCompatibleImage(image);
+//			image = image2;
 		}
 
 //		if (image != null) {
@@ -136,9 +130,22 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
-//
+
 			Graphics sg = getGraphics();
 			sg.drawImage(image, destinationX, destinationY, width, height, null);
+			
+//			if (getImage() != null) {
+//				try {
+//					// create a file to write the image to (make sure it exists), then use the ImageIO class
+//					// to write the RenderedImage to disk as a PNG file.
+//					File file = new File("/home/ncludki/tinyx/putimage-screen-" + System.currentTimeMillis() + ".png");
+//					file.createNewFile();
+//					ImageIO.write(getImage(), "png", file);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
 //		}
 	}
 	
@@ -165,14 +172,24 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public byte[] getImageData(int x, int y, int width, int height,
 			ImageType imageType, int planeMask) {
 
+		System.out.println("GetImageData: " + imageType.name() + " Depth: " + _drawable.getDepth());
 		if (planeMask == 0xffffffff) {
-			System.out.println("GetImageData: " + imageType.name());
+			
 			int size = (width * height * _drawable.getDepth())/8;
 
 			byte[] byteArr = new byte[size];
 
-			byte[] data = (byte[]) getImage().getRaster().getDataElements(x, y, width, height, byteArr);
-			return data;
+			getImage().getRaster().getDataElements(x, y, width, height, byteArr);
+			
+//			byte data[] = new byte[intData.length * 4];
+//			
+//			for (int i = 0; i < intData.length; i++) {
+//				data[i*4+0] = (byte) ((0xff000000 & intData[i]) >> 48);
+//			    data[i*4+1] = (byte) ((0x00ff0000 & intData[i]) >> 32);
+//				data[i*4+2] = (byte) ((0x0000ff00 & intData[i]) >> 16);
+//				data[i*4+3] = (byte) ((0x000000ff & intData[i]) >> 0);
+//			}
+			return byteArr;
 		}
 
 
@@ -276,6 +293,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		graphics.setColor(new Color(rgb));
 
 		XAwtGraphicsContext.tile(graphics, graphicsContext);
+
+		XAwtGraphicsContext.stipple(graphics, graphicsContext);
+		
 
 		if (fill) {
 			graphics.fillRect(x, y, width, height);

@@ -51,7 +51,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//TODO: Map the depth
 		//	window.getDepth();
 		if (window.getRootWindow().equals(window)) {
-			BufferedImage image = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			BufferedImage image = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			_image = image;
 		}
 

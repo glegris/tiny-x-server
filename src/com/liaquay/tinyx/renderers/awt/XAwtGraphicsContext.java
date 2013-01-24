@@ -24,6 +24,11 @@ public class XAwtGraphicsContext {
 
 	public static void stipple(Graphics2D graphics, GraphicsContext graphicsContext) {
 		Pixmap s = graphicsContext.getStipple();
+
+		if (s != null) {
+			TexturePaint tp = new TexturePaint(s.getDrawableListener().getImage(), new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), s.getWidth(), s.getHeight()));
+			graphics.setPaint(tp);
+		}
 	}
 
 	public static Stroke lineSetup(Graphics2D graphics, GraphicsContext graphicsContext) {
