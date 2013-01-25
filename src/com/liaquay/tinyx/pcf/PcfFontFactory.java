@@ -19,6 +19,8 @@ package com.liaquay.tinyx.pcf;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.liaquay.tinyx.util.IntMap;
+
 public class PcfFontFactory {
 	
 	private final static int MAGIC = 1885562369;
@@ -225,31 +227,13 @@ public class PcfFontFactory {
 		final int lastRow = formattedStream.readUnsignedShort();
 		final int defaultCharacter = formattedStream.readUnsignedShort();
 
-		final int maxChararcter;
-		if (lastRow>0) {
-			maxChararcter = 65536;
-		} else {
-			maxChararcter = 256;
-		}
-		
-		final int[] characterMap = new int[maxChararcter];
-		for (int i=0; i<maxChararcter; i++) {
-			characterMap[i] = 0xffff;
-		}
-		
+		final IntMap<Integer> characterMap = new IntMap<Integer>();
 		for (int r=firstRow; r<=lastRow; r++) {
 			for (int c=firstCol; c<=lastCol; c++) {
-				int map = formattedStream.readUnsignedShort();
+				final int map = formattedStream.readUnsignedShort();
 				if (map != 0xffff) {
-					characterMap[(r<<8)|c] = map;
+					characterMap.put((r<<8)|c, map);
 				}
-			}
-		}
-		final int defaultBitmap = characterMap[defaultCharacter] == 0xffff ? 0 : characterMap[defaultCharacter];
-		
-		for (int i=0;i<maxChararcter;i++) {
-			if (characterMap[i] == 0xffff) {
-				characterMap[i] = defaultBitmap;
 			}
 		}
 		

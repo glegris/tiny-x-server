@@ -16,57 +16,60 @@
  */
 package com.liaquay.tinyx.pcf;
 
+import com.liaquay.tinyx.util.IntMap;
+
 public class PcfEncodings {
-	private final int firstCol;
-	private final int lastCol;
-	private final int firstRow;
-	private final int lastRow;
-	private final int defaultCharacter;
-	private final int[] characterMap;
+	private final int _firstCol;
+	private final int _lastCol;
+	private final int _firstRow;
+	private final int _lastRow;
+	private final int _defaultCharacter;
+	private final IntMap<Integer> _characterMap;
 
 	public PcfEncodings(
-			int firstCol,
-			int lastCol, 
-			int firstRow, 
-			int lastRow,
-			int defaultCharacter, 
-			int[] characterMap) {
+			final int firstCol,
+			final int lastCol, 
+			final int firstRow, 
+			final int lastRow,
+			final int defaultCharacter, 
+			final IntMap<Integer> characterMap) {
 
-		this.firstCol = firstCol;
-		this.lastCol = lastCol;
-		this.firstRow = firstRow;
-		this.lastRow = lastRow;
-		this.defaultCharacter = defaultCharacter;
-		this.characterMap = characterMap;
+		_firstCol = firstCol;
+		_lastCol = lastCol;
+		_firstRow = firstRow;
+		_lastRow = lastRow;
+		_defaultCharacter = characterMap.get(defaultCharacter);
+		_characterMap = characterMap;
 	}
 
 	public int getFirstCol() {
-		return firstCol;
+		return _firstCol;
 	}
 
 	public int getLastCol() {
-		return lastCol;
+		return _lastCol;
 	}
 
 	public int getFirstRow() {
-		return firstRow;
+		return _firstRow;
 	}
 
 	public int getLastRow() {
-		return lastRow;
+		return _lastRow;
 	}
 
 	public int getDefaultCharacter() {
-		return defaultCharacter;
+		return _defaultCharacter;
 	}
 
-	public int[] getCharacterMap() {
-		return characterMap;
+	public IntMap<Integer> getCharacterMap() {
+		return _characterMap;
 	}
 	
 	public int getGlyphIndex(final char c) {
 		final int i = c & 0xffff;
-		if(i < 0 || i >=characterMap.length) return defaultCharacter;
-		return characterMap[i];
+		final Integer m = _characterMap.get(i);
+		if(m == null) return _defaultCharacter;
+		return m;
 	}
 }
