@@ -41,26 +41,57 @@ public class TextExtents {
 		_right = right;
 	}
 
+	/**
+	 * The ascent in pixels of the character.  This is the number of
+	 * pixels in the bitmap above the origin.  The height of the bitmap
+	 * is given by ascent+descent.
+	 */
 	public int getAscent() {
 		return _ascent;
 	}
 
+	/**
+	 * The distance in pixels of the character.  This is the number of
+	 * pixels in the bitmap below the origin.
+	 */
 	public int getDescent() {
 		return _descent;
 	}
 
+	/**
+	 * The distance in pixels between the character origin and the
+	 * origin of the next character.
+	 */
 	public int getWidth() {
 		return _width;
 	}
 
+	/**
+	 * Ascent + Descent
+	 */
 	public int getHeight() {
 		return _height;
 	}
 
+	/**
+	 * The distance between the character origin and the start of the
+	 * bitmap.  The leftSideBearing is zero if the character starts at
+	 * the origin, positive if there is padding before the bitmap
+	 * starts, or negative in the unusual case that the bitmap starts
+	 * before the specified origin.
+	 */
 	public int getLeft() {
 		return _left;
 	}
 
+	/**
+	 * The distance between the character origin and the end of the
+	 * bitmap.  The rightSideBearing is normally positive, specifying the
+	 * number of pixels to the right of the origin.  The width of the
+	 * bitmap is is given by rightSideBearing-leftSideBearing.
+	 * The width of the bitmap is, in general, different from the width
+	 * of the character.
+	 */
 	public int getRight() {
 		return _right;
 	}
