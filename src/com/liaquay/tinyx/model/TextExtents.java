@@ -22,23 +22,23 @@ public class TextExtents {
 	private final int _ascent;
 	private final int _descent;
 	private final int _width;
-	private final int _height;
 	private final int _left;
 	private final int _right;
+	private final int _attributes;
 
 	public TextExtents(
 			final int ascent,
 			final int descent,
 			final int width,
-			final int height,
 			final int left,
-			final int right) {
+			final int right,
+			final int attributes) {
 		_ascent = ascent;
 		_descent = descent;
 		_width = width;
-		_height = height;
 		_left = left;
 		_right = right;
+		_attributes = attributes;
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class TextExtents {
 	 * Ascent + Descent
 	 */
 	public int getHeight() {
-		return _height;
+		return _ascent + _descent;
 	}
 
 	/**
@@ -94,5 +94,12 @@ public class TextExtents {
 	 */
 	public int getRight() {
 		return _right;
+	}
+	
+	/**
+	 * TODO Need to find out what these are
+	 */
+	public int getAttributes() {
+		return _attributes;
 	}
 }

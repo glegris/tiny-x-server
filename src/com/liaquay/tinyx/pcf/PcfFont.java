@@ -134,6 +134,14 @@ public class PcfFont {
 			final PcfBitmaps.Renderer renderer, 
 			final String text, 
 			final int xs, 
+			final int ys) {
+		drawString(renderer, text, xs, ys, isDrawLeftToRight());
+	}
+
+	public void drawString(
+			final PcfBitmaps.Renderer renderer, 
+			final String text, 
+			final int xs, 
 			final int ys, 
 			final boolean leftToRight) {
 		
@@ -212,8 +220,8 @@ public class PcfFont {
 		return _accelerators.getInkMetrics();
 	}
 
-	public boolean getDrawDirection() {
-		return _accelerators.getDrawDirection();
+	public boolean isDrawLeftToRight() {
+		return !_accelerators.getDrawDirection();
 	}
 
 	public boolean getNaturalAlignment() {
@@ -246,5 +254,17 @@ public class PcfFont {
 
 	public PcfMetrics getMaxInkBounds() {
 		return _accelerators.getMaxInkBounds();
+	}
+
+	public int getDefaultCharacter() {
+		return _encodings.getDefaultCharacter();
 	}	
+	
+	public int getMinCharacter() {
+		return _encodings.getMinCharacter();
+	}
+	
+	public int getMaxCharacter() {
+		return _encodings.getMaxCharacter();
+	}
 }

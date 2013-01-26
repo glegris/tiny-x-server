@@ -18,7 +18,7 @@
  */
 package com.liaquay.tinyx.model;
 
-public class FontString {
+public class FontString implements Comparable<FontString> {
 	
 	private String _name;
 	
@@ -26,8 +26,20 @@ public class FontString {
 		_name = name;
 	}
 	
+	@Override
 	public String toString() {
 		return _name;
+	}
+	
+	@Override
+	public int hashCode() {
+		return _name.hashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object o) {
+		final FontString fontString = (FontString)o;
+		return _name.equals(fontString._name);
 	}
 	
 	public String getName() {
@@ -84,5 +96,10 @@ public class FontString {
 		final StringBuilder sb = new StringBuilder();
 		final boolean match = f1.matchAndMergeFielded(f2, sb);
 		System.out.println(match + " " +sb.toString());
+	}
+
+	@Override
+	public int compareTo(final FontString fontString) {
+		return _name.compareTo(fontString._name);
 	}
 }

@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class QueryTextExtents implements RequestHandler {
 
@@ -48,10 +49,11 @@ public class QueryTextExtents implements RequestHandler {
 		}
 		final boolean odd = request.getData() != 0;
 		final String text = inputStream.readString16((request.getLength()>>1) - (odd ? 5 : 4));
-		final TextExtents textExtents = font.getTextExtents(text);		
-		final XOutputStream outputStream = response.respond(font.isLeftToRight() ? 0 : 1);
-		outputStream.writeShort(font.getMaxAscent());
-		outputStream.writeShort(font.getMaxDescent());
+		final TextExtents textExtents = font.getTextExtents(text);
+		final FontDetail fontDetail = font.getFontDetail();
+		final XOutputStream outputStream = response.respond(fontDetail.isLeftToRight() ? 0 : 1);
+		outputStream.writeShort(fontDetail.getAscent());
+		outputStream.writeShort(fontDetail.getDescent());
 		outputStream.writeShort(textExtents.getAscent());
 		outputStream.writeShort(textExtents.getDescent());
 		outputStream.writeInt(textExtents.getWidth());

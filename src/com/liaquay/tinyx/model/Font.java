@@ -78,32 +78,8 @@ public class Font extends AbstractResource {
 		return _fontName;
 	}
 	
-	public int getMaxAscent() {
-		return _fontDetail.getMaxAscent();
-	}
-
-	public int getMaxWidth() {
-		return _fontDetail.getMaxWidth();
-}
-
-	public int getMaxDescent() {
-		return _fontDetail.getMaxDescent();
-	}
-
-	public int getMinWidth() {
-		return _fontDetail.getMinWidth();
-	}
-
-	public int getDefaultChar() {
-		return _fontDetail.getDefaultChar();
-	}
-
-	public int getFirstChar() {
-		return _fontDetail.getFirstChar();
-	}
-
-	public int getLastChar() {
-		return _fontDetail.getLastChar();
+	public FontDetail getFontDetail() {
+		return _fontDetail;
 	}
 
 	public TextExtents getTextExtents(final int character) {
@@ -112,9 +88,5 @@ public class Font extends AbstractResource {
 	
 	public TextExtents getTextExtents(final String text) {
 		return _listener.getTextExtents(text);
-	}
-	
-	public boolean isLeftToRight() {
-		return true; // TODO move to font detail.
 	}
 }

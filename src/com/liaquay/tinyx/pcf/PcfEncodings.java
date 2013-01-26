@@ -25,6 +25,8 @@ public class PcfEncodings {
 	private final int _lastRow;
 	private final int _defaultCharacter;
 	private final IntMap<Integer> _characterMap;
+	private final int _minChar;
+	private final int _maxChar;
 
 	public PcfEncodings(
 			final int firstCol,
@@ -32,7 +34,9 @@ public class PcfEncodings {
 			final int firstRow, 
 			final int lastRow,
 			final int defaultCharacter, 
-			final IntMap<Integer> characterMap) {
+			final IntMap<Integer> characterMap,
+			final int minChar,
+			final int maxChar) {
 
 		_firstCol = firstCol;
 		_lastCol = lastCol;
@@ -40,6 +44,8 @@ public class PcfEncodings {
 		_lastRow = lastRow;
 		_defaultCharacter = characterMap.get(defaultCharacter);
 		_characterMap = characterMap;
+		_minChar = minChar;
+		_maxChar = maxChar;
 	}
 
 	public int getFirstCol() {
@@ -71,5 +77,13 @@ public class PcfEncodings {
 		final Integer m = _characterMap.get(i);
 		if(m == null) return _defaultCharacter;
 		return m;
+	}
+	
+	public int getMinCharacter() {
+		return _minChar;
+	}
+	
+	public int getMaxCharacter() {
+		return _maxChar;
 	}
 }

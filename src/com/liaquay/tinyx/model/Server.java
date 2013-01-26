@@ -82,7 +82,7 @@ public class Server extends Client {
 	static {
 		_fontAliases.add(new FontAlias("fixed", FIXED_FONT_NAME));
 		_fontAliases.add(new FontAlias("cursor", FIXED_FONT_NAME)); // TODO load the cursor font
-		_fontAliases.add(new FontAlias("6x10", "--Arial-medium-r-normal--6-0-0-0-c-0-ISO8859-1"));
+		_fontAliases.add(new FontAlias("6x10", "-misc-fixed-medium-r-normal--10-100-75-75-c-60-iso10646-1"));
 	}
 	
 	public List<FontAlias> getFontAliases(final String pattern) {

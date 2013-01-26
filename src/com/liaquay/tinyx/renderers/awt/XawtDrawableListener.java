@@ -258,35 +258,36 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int bh) {
 
 		final Font font = graphicsContext.getFont();
-		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+		final XawtNativeFontListener fontListener = (XawtNativeFontListener)font.getListener();
 		final Graphics2D graphics = getGraphics();
 		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
 		graphics.fillRect(bx, by, bw, bh);
-		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getForegroundColour())));
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final java.awt.Font awtFont = fontListener.getAwtFont();
-		graphics.setFont(awtFont);
-		graphics.drawString(str, x, y);		
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		fontListener.drawString(graphics, str, x, y, rgb);
 	}
 
-	public void drawString(GraphicsContext graphicsContext, String str, int x,
-			int y) {
+	public void drawString(
+			final GraphicsContext graphicsContext, 
+			final String str, 
+			final int x,
+			final int y) {
+		
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
-
 		final Graphics2D graphics = getGraphics();
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		final java.awt.Font awtFont = fontListener.getAwtFont();
-		graphics.setFont(awtFont);
-		graphics.drawString(str, x, y);
+		fontListener.drawString(graphics, str, x, y, rgb);
 	}
 
 	@Override
-	public void polyRect(GraphicsContext graphicsContext, int x, int y,
-			int width, int height, boolean fill) {
+	public void polyRect(
+			final GraphicsContext graphicsContext,
+			final int x,
+			final int y,
+			final int width,
+			final int height, 
+			final boolean fill) {
+		
 		final Graphics2D graphics = getGraphics();
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());

@@ -21,7 +21,9 @@ package com.liaquay.tinyx.model;
 /**
  * Holds info about a font derived from a font string. 
  */
-public class FontInfo {
+public class FontInfo implements Comparable<FontInfo> {
+	
+	private final String _asText;
 
 	//    FOUNDRY: Type foundry - vendor or supplier of this font
 	private final String _foundry;
@@ -95,6 +97,7 @@ public class FontInfo {
 		_averageWidth = averageWidth;
 		_charsetRegistry = charsetRegistry;
 		_charsetEncoding = charsetEncoding;
+		_asText =  "-" + _foundry + "-" + _familyName + "-" + _weightName + "-" + _slant + "-" + _setWidthName + "-" + _addStyleName + "-" + _pixelSize + "-" + _pointSize + "-" + _resolutionX + "-" + _resolutionY + "-" + _spacing + "-" + _averageWidth + "-" + _charsetRegistry + "-" + _charsetEncoding;
 	}
 
 	public String getFoundry() {
@@ -155,7 +158,24 @@ public class FontInfo {
 
 	
 	public String toString() {
-		return "-" + _foundry + "-" + _familyName + "-" + _weightName + "-" + _slant + "-" + _setWidthName + "-" + _addStyleName + "-" + _pixelSize + "-" + _pointSize + "-" + _resolutionX + "-" + _resolutionY + "-" + _spacing + "-" + _averageWidth + "-" + _charsetRegistry + "-" + _charsetEncoding;
+		return _asText;
+	}
+
+	@Override
+	public int compareTo(final FontInfo o) {
+		final FontInfo fontInfo = (FontInfo)o;
+		return _asText.compareTo(fontInfo._asText);
+	}
+	
+	@Override
+	public int hashCode() {
+		return _asText.hashCode();
+	}
+	
+	@Override
+	public boolean equals(final Object o) {
+		final FontInfo fontInfo = (FontInfo)o;
+		return _asText.equals(fontInfo._asText);
 	}
 }
 

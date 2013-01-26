@@ -21,7 +21,6 @@ package com.liaquay.tinyx.requesthandlers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
@@ -33,6 +32,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.FontAlias;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.font.FontDetail;
 
 public class ListFontsWithInfo implements RequestHandler {
@@ -62,7 +62,7 @@ public class ListFontsWithInfo implements RequestHandler {
 			matches.addAll(server.getFontFactory().getMatchingFonts(pattern));
 		}
 		
-		int countDown = maxNames;//fonts.size();
+		int countDown = maxNames;
 		int counter = 0;
 		for (final FontInfo fontInfo : matches) {
 			
@@ -98,41 +98,28 @@ public class ListFontsWithInfo implements RequestHandler {
 		prop[1] = server.getAtoms().getOrAllocate(fontName).getId();
 		
 		// Min-bounds
-		outputStream.writeShort(0);
-		outputStream.writeShort(0);
-		outputStream.writeShort(fontDetail.getMinWidth());
-		outputStream.writeShort(0);
-		outputStream.writeShort(0);
-		outputStream.writeShort(0);
+		write(outputStream, fontDetail.getMinBounds());
 
 		// Unused
 		outputStream.writePad(4);
 
 		// Max-bounds
-		outputStream.writeShort(0);						// left-side-bearing
-		outputStream.writeShort(fontDetail.getMaxWidth());		// right-side-bearing
-		outputStream.writeShort(fontDetail.getMaxWidth());       // character-width
-		outputStream.writeShort(fontDetail.getMaxAscent());		// ascent
-		outputStream.writeShort(fontDetail.getMaxDescent());		// descent
-		outputStream.writeShort(0);						// attribute
+		write(outputStream, fontDetail.getMaxBounds());
 
 		outputStream.writePad(4);
-
 
 		outputStream.writeShort(fontDetail.getFirstChar());		// min-char-or-byte2
 		outputStream.writeShort(fontDetail.getLastChar());		// max-char-or-byte2
 
 		outputStream.writeShort(fontDetail.getDefaultChar());	// default-char
 		outputStream.writeShort(prop!=null ? prop.length/2 : 0); // m
-		outputStream.writeByte(0);  // draw-direction
-		//	         0     LeftToRight
-		//	         1     RightToLeft
+		outputStream.writeByte(fontDetail.isLeftToRight() ? 0 : 1);  // draw-direction
 
-		outputStream.writeByte(0);						// min-byte1
-		outputStream.writeByte(0);						// max-byte1
-		outputStream.writeByte(0);						// all-char-exists
-		outputStream.writeShort(fontDetail.getMaxAscent());		// font-ascent
-		outputStream.writeShort(fontDetail.getMaxDescent());	// font-descent
+		outputStream.writeByte(0);						// min-byte1 TODO
+		outputStream.writeByte(0);						// max-byte1 TODO
+		outputStream.writeByte(0);						// all-char-exists TODO
+		outputStream.writeShort(fontDetail.getAscent());	// font-ascent
+		outputStream.writeShort(fontDetail.getDescent());	// font-descent
 
 		outputStream.writeInt(countDown); // replies hint 
 
@@ -145,5 +132,17 @@ public class ListFontsWithInfo implements RequestHandler {
 		final byte[] fontNameBytes = fontName.getBytes();
 		outputStream.write(fontNameBytes, 0, fontNameBytes.length);
 		response.send();
+	}
+	
+	private final static void write(
+			final XOutputStream outputStream,
+			final TextExtents textExtents) throws IOException {
+		
+		outputStream.writeShort(textExtents.getLeft()); // left-side-bearing
+		outputStream.writeShort(textExtents.getRight()); // right-side-bearing
+		outputStream.writeShort(textExtents.getWidth()); // character-width
+		outputStream.writeShort(textExtents.getAscent()); // ascent
+		outputStream.writeShort(textExtents.getDescent()); // descent
+		outputStream.writeShort(textExtents.getAttributes()); // attribute
 	}
 }

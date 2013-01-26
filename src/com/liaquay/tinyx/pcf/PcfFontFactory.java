@@ -228,16 +228,21 @@ public class PcfFontFactory {
 		final int defaultCharacter = formattedStream.readUnsignedShort();
 
 		final IntMap<Integer> characterMap = new IntMap<Integer>();
+		int minChar = 0xffff;
+		int maxChar = 0;
 		for (int r=firstRow; r<=lastRow; r++) {
 			for (int c=firstCol; c<=lastCol; c++) {
 				final int map = formattedStream.readUnsignedShort();
 				if (map != 0xffff) {
-					characterMap.put((r<<8)|c, map);
+					final int charIndex = (r<<8)|c;
+					characterMap.put(charIndex, map);
+					if(charIndex < minChar) minChar = charIndex;
+					if(charIndex > maxChar) maxChar = charIndex;
 				}
 			}
 		}
 		
-		return new PcfEncodings(firstCol, lastCol, firstRow, lastRow, defaultCharacter, characterMap);
+		return new PcfEncodings(firstCol, lastCol, firstRow, lastRow, defaultCharacter, characterMap, minChar, maxChar);
 	}
 	
 	private final static int GLYPHPADOPTIONS = 4;

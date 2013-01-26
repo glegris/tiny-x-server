@@ -18,55 +18,46 @@
  */
 package com.liaquay.tinyx.model.font;
 
+import com.liaquay.tinyx.model.TextExtents;
+
 
 public class FontDetail {
 
-	private final int _maxAscent;
-	private final int _maxDescent;
-	private final int _minWidth;
-	private final int _maxWidth;
+	private final TextExtents _minBounds;
+	private final TextExtents _maxBounds;
 	private final int _defaultChar;
 	private final int _firstChar;
 	private final int _lastChar;
-	private final int _height;
-	private final int _leading;
-	
+	private final boolean _leftToRight;
+	private final int _ascent;
+	private final int _descent;
+
 	public FontDetail(
-			final int maxAscent,
-			final int maxDescent,
-			final int minWidth,
-			final int maxWidth,
+			final TextExtents minBounds,
+			final TextExtents maxBounds,
 			final int defaultChar,
 			final int firstChar,
 			final int lastChar,
-			final int height,
-			final int leading) {
-
-		_maxAscent = maxAscent;
-		_maxDescent = maxDescent;
-		_minWidth = minWidth;
-		_maxWidth = maxWidth;
+			final boolean leftToRight, 
+			final int ascent, 
+			final int descent) {
+		
+		_minBounds = minBounds;
+		_maxBounds = maxBounds;
 		_defaultChar = defaultChar;
 		_firstChar = firstChar;
 		_lastChar = lastChar;
-		_height = height;
-		_leading = leading;
+		_leftToRight = leftToRight;
+		_ascent = ascent;
+		_descent = descent;
 	}
 
-	public int getMaxAscent() {
-		return _maxAscent;
+	public TextExtents getMinBounds() {
+		return _minBounds;
 	}
 
-	public int getMaxWidth() {
-		return _maxWidth;
-	}
-
-	public int getMaxDescent() {
-		return _maxDescent;
-	}
-
-	public int getMinWidth() {
-		return _minWidth;
+	public TextExtents getMaxBounds() {
+		return _maxBounds;
 	}
 
 	public int getDefaultChar() {
@@ -80,12 +71,16 @@ public class FontDetail {
 	public int getLastChar() {
 		return _lastChar;
 	}
-
-	public int getHeight() {
-		return _height;
-	}	
-
-	public int getLeading() {
-		return _leading;
+	
+	public boolean isLeftToRight() {
+		return _leftToRight;
 	}
+	
+	public int getAscent() {
+		return _ascent;
+	}
+
+	public int getDescent() {
+		return _descent;
+	}	
 }

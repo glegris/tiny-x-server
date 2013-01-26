@@ -25,7 +25,6 @@ import com.liaquay.tinyx.events.EventFactoriesImpl;
 import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Font;
-import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.KeyboardMapping;
 import com.liaquay.tinyx.model.Pixmap;
@@ -38,7 +37,6 @@ import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
-import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 
 public class TinyXAwt {
@@ -47,36 +45,6 @@ public class TinyXAwt {
 	
 	public TinyXAwt(final Server server) {
 		_server = server;
-		
-		server.setListener(new Server.Listener() {
-			@Override
-			public void fontOpened(final Font font) {
-				
-				final FontInfo fontInfo = font.getFontInfo();
-				
-				final String fontFamily = fontInfo.getFamilyName();
-				final int fontSize = fontInfo.getPixelSize();
-				final String fontWeight = fontInfo.getWeightName();
-				final String fontSlant = fontInfo.getSlant();
-				final int fontStyle = 
-						((fontWeight != null && fontWeight.equalsIgnoreCase("bold")) ? java.awt.Font.BOLD : 0) |
-						((fontSlant != null && fontSlant.equalsIgnoreCase("i")) ? java.awt.Font.ITALIC : 0);
-				
-				final java.awt.Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize == 0 ? 12 : fontSize);
-
-				font.setListener(new XawtFontListener(awtFont));
-			}
-
-			@Override
-
-			public void windowCreated(final Window window) {
-//				window.setListener( new XawtWindow(window));
-			}
-			
-			public void pixmapCreated(final Pixmap pixmap) {
-				pixmap.setListener(new XawtPixmap(pixmap));
-			}
-		});
 	}
 	
 	public Server getServer() {
@@ -93,7 +61,7 @@ public class TinyXAwt {
 
 		final EventFactories eventFactories = new EventFactoriesImpl();
 		
-		final FontFactory fontFactory = new AwtFontFactory();
+		final AwtFontFactory fontFactory = new AwtFontFactory();
 
 		final KeyboardMapping keyboardMapping = XawtKeyboardMappingFactory.createKeyboardMapping();
 		
@@ -104,7 +72,23 @@ public class TinyXAwt {
 		final Server server = new Server(eventFactories, keyboard, fontFactory);
 
 		// Configure the new server
+		server.setListener(new Server.Listener() {
+			@Override
+			public void fontOpened(final Font font) {
+				font.setListener(fontFactory.fontOpened(font));
+			}
 
+			@Override
+			public void windowCreated(final Window window) {
+//				window.setListener( new XawtWindow(window));
+			}
+			
+			@Override
+			public void pixmapCreated(final Pixmap pixmap) {
+				pixmap.setListener(new XawtPixmap(pixmap));
+			}
+		});
+		
 		final Visual visual = server.createVisual(new ResourceFactory<Visual>() {
 			@Override
 			public Visual create(final int resourceId) {

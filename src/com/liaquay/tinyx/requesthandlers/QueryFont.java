@@ -31,6 +31,7 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class QueryFont implements RequestHandler {
 
@@ -61,44 +62,34 @@ public class QueryFont implements RequestHandler {
 		prop[0] = server.getAtoms().get("FONT").getId();
 		prop[1] = server.getAtoms().getOrAllocate(fontName).getId();
 		
+		final FontDetail fontDetail = font.getFontDetail();
+		
 		// Min-bounds
-		outputStream.writeShort(0);
-		outputStream.writeShort(0);
-		outputStream.writeShort(font.getMinWidth());
-		outputStream.writeShort(0);
-		outputStream.writeShort(0);
-		outputStream.writeShort(0);
+		write(outputStream, fontDetail.getMinBounds());
 
 		// Unused
 		outputStream.writePad(4);
 
 		// Max-bounds
-		outputStream.writeShort(0);						// left-side-bearing
-		outputStream.writeShort(font.getMaxWidth());		// right-side-bearing
-		outputStream.writeShort(font.getMaxWidth());       // character-width
-		outputStream.writeShort(font.getMaxAscent());		// ascent
-		outputStream.writeShort(font.getMaxDescent());		// descent
-		outputStream.writeShort(0);						// attribute
+		write(outputStream, fontDetail.getMaxBounds());
 
 		outputStream.writePad(4);
 
 
-		outputStream.writeShort(font.getFirstChar());		// min-char-or-byte2
-		outputStream.writeShort(font.getLastChar());		// max-char-or-byte2
+		outputStream.writeShort(fontDetail.getFirstChar());		// min-char-or-byte2
+		outputStream.writeShort(fontDetail.getLastChar());		// max-char-or-byte2
 
-		outputStream.writeShort(font.getDefaultChar());	// default-char
+		outputStream.writeShort(fontDetail.getDefaultChar());	// default-char
 		outputStream.writeShort(prop!=null ? prop.length/2 : 0); // m
-		outputStream.writeByte(0);  // draw-direction
-		//	         0     LeftToRight
-		//	         1     RightToLeft
+		outputStream.writeByte(fontDetail.isLeftToRight() ? 0 : 1);  // draw-direction
 
 		outputStream.writeByte(0);						// min-byte1
 		outputStream.writeByte(0);						// max-byte1
 		outputStream.writeByte(0);						// all-char-exists
-		outputStream.writeShort(font.getMaxAscent());		// font-ascent
-		outputStream.writeShort(font.getMaxDescent());		// font-descent
+		outputStream.writeShort(fontDetail.getAscent());	// font-ascent
+		outputStream.writeShort(fontDetail.getDescent());	// font-descent
 
-		outputStream.writeInt(font.getLastChar()-font.getFirstChar()+1); // m 
+		outputStream.writeInt(fontDetail.getLastChar()-fontDetail.getFirstChar()+1); // m 
 
 		if(prop!=null){
 			for(int j=0; j<prop.length; j++){
@@ -106,32 +97,27 @@ public class QueryFont implements RequestHandler {
 			}
 		}
 
-//		for(int i=font.getFirstChar(); i<=font.getLastChar(); i++){
-//			final GlyphDetail gd = font.getGlyphDetail(i);
-//			if (gd != null) {
-//				outputStream.writeShort(0);//gd.leftSideBearing());	// left-side-bearing
-//				outputStream.writeShort(0);//gd.rightSideBearing());	// right-side-bearing
-//				outputStream.writeShort(gd.getWidth());			// character-width
-//				outputStream.writeShort(gd.getAscent());		// ascent
-//				outputStream.writeShort(gd.getDescent());		// descent
-//				outputStream.writeShort(0);                    // attribute
-//			} else {
-//				LOGGER.log(Level.WARNING, "No Glyph details found for char: " + i);
-//			}
-//		}	
-
-		for(int i=font.getFirstChar(); i<=font.getLastChar(); i++){
+		for(int i=fontDetail.getFirstChar(); i<=fontDetail.getLastChar(); i++){
 			final TextExtents textExtents = font.getTextExtents(i);
 			if (textExtents != null) {
-				outputStream.writeShort(textExtents.getLeft());			// left-side-bearing
-				outputStream.writeShort(textExtents.getRight());			// right-side-bearing
-				outputStream.writeShort(textExtents.getWidth());			// character-width
-				outputStream.writeShort(textExtents.getAscent());		// ascent
-				outputStream.writeShort(textExtents.getDescent());		// descent
-				outputStream.writeShort(0);						// attribute
+				write(outputStream, textExtents);
 			} else {
-				LOGGER.log(Level.WARNING, "No Glyph details found for char: " + i);
+				final String message = "No Glyph details found for char: " + i;
+				LOGGER.log(Level.SEVERE, message);
+				throw new RuntimeException(message);
 			}
 		}			
+	}
+	
+	private final static void write(
+			final XOutputStream outputStream,
+			final TextExtents textExtents) throws IOException {
+		
+		outputStream.writeShort(textExtents.getLeft()); // left-side-bearing
+		outputStream.writeShort(textExtents.getRight()); // right-side-bearing
+		outputStream.writeShort(textExtents.getWidth()); // character-width
+		outputStream.writeShort(textExtents.getAscent()); // ascent
+		outputStream.writeShort(textExtents.getDescent()); // descent
+		outputStream.writeShort(textExtents.getAttributes()); // attribute
 	}
 }

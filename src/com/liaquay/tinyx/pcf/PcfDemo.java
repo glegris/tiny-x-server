@@ -30,6 +30,8 @@ public class PcfDemo {
 			
 			test2(font);
 			test3(font);
+			test4(font);
+			test5(font);
 		}
 		finally {
 			inputStream.close();
@@ -52,6 +54,24 @@ public class PcfDemo {
 		final PcfMetrics maxBounds =  font.getMaxBounds();
 		final PcfStringBitmapRenderer renderer = new PcfStringBitmapRenderer(stringMetrics.getWidth(), maxBounds.getHeight());
 		font.drawString(renderer, text, stringMetrics.getWidth(), maxBounds.getAscent(), false);
+		System.out.println(text + "\n" + renderer);
+	}
+	
+	public static void test4(final PcfFont font) {
+		final String text = "Hello World !\"£$%^&*()-=+_[]# #]['; ;',./ /.,\\|]";
+		final PcfMetrics stringMetrics = font.stringMetrics(text);
+		final PcfMetrics maxBounds =  font.getMaxBounds();
+		final PcfStringBitmapRenderer renderer = new PcfStringBitmapRenderer(stringMetrics.getWidth(), maxBounds.getHeight());
+		font.drawString(renderer, text, 0, maxBounds.getAscent());
+		System.out.println(text + "\n" + renderer);
+	}
+	
+	public static void test5(final PcfFont font) {
+		final String text = (char)font.getMinCharacter() + "<" + (char)2000 + "" + (char)font.getMaxCharacter();
+		final PcfMetrics stringMetrics = font.stringMetrics(text);
+		final PcfMetrics maxBounds =  font.getMaxBounds();
+		final PcfStringBitmapRenderer renderer = new PcfStringBitmapRenderer(stringMetrics.getWidth(), maxBounds.getHeight());
+		font.drawString(renderer, text, 0, maxBounds.getAscent());
 		System.out.println(text + "\n" + renderer);
 	}
 }
