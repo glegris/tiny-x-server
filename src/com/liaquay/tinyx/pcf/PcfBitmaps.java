@@ -64,8 +64,8 @@ public class PcfBitmaps {
 		final int ys = yoffset - metrics.getAscent();
 		for (int y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
-				int bit_pos = (x&7)^bitflip;
-				int byte_pos = x>>3;
+				final int bit_pos = (x&7)^bitflip;
+				final int byte_pos = x>>3;
 				if ((_data[offset+((byte_pos+y*stride)^byteflip)]&(1<<bit_pos)) != 0) {
 					renderer.render(xoffset+x + metrics.getLeftSideBearing(), ys+y);
 				}

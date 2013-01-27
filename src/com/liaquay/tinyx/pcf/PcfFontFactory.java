@@ -205,7 +205,7 @@ public class PcfFontFactory {
 		final int glyphPadIndex = PcfFormatType.GlyphPad.getValue(format);
 		final int glyphPadding = 1 << glyphPadIndex;
 		final int sizebitmaps = bitmapSizes[glyphPadIndex];
-		final byte[] data = new byte[sizebitmaps + scanUnit];
+		final byte[] data = new byte[sizebitmaps/* + scanUnit*/]; // TODO work out what the scanUnit is for!
 		pcfInputStream.read(data);
 		
 		return new PcfBitmaps(msbBitOrder, msbByteOrder, glyphPadding, scanUnit, offsets, data);

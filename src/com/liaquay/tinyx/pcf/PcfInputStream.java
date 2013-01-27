@@ -37,16 +37,26 @@ public class PcfInputStream extends InputStream {
 
 	@Override
 	public int read(byte[] b) throws IOException {
-		final int c = _delegate.read(b);
-		_counter += c >= 0 ? c : 0;
-		return c;
+		for(int p = 0; p < b.length ;) {
+			final int c = _delegate.read(b, p, b.length-p);
+			if(c < 0) throw new IOException("END OF STREAM!");
+			p += c;
+		}
+
+		_counter += b.length;
+		return b.length;
 	}
 	
 	@Override
 	 public int read(byte[] b, int off, int len) throws IOException {
-			final int c = _delegate.read(b, off, len);
-			_counter += c >= 0 ? c : 0;
-			return c;
+		for(int p = 0; p < len ;) {
+			final int c = _delegate.read(b, p+off, len-p);
+			if(c < 0) throw new IOException("END OF STREAM!");
+			p += c;
+		}
+
+		_counter += len;
+		return len;
 	 }
 	
 	public long getOffset() {
