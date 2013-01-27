@@ -21,11 +21,13 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
 
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontName;
@@ -201,18 +203,20 @@ public class AwtFontFactory implements FontFactory {
 				);
 	}
 	
+	// -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso10646-1
 	private List<FontName> initPcfFontNames() {
 		final List<FontName> fontList = new ArrayList<FontName>();
 		try {
-			final InputStream inputStream = PcfFontFactory.class.getClassLoader().getResourceAsStream("com/liaquay/tinyx/pcf/6x10.pcf");
+			final FileInputStream fileInputStream = new FileInputStream("/usr/share/fonts/X11/misc/fixed.pcf.gz");
+			final GZIPInputStream zipInputStream = new GZIPInputStream(fileInputStream);
 			try {
-				final PcfFont font = PcfFontFactory.read(inputStream);
+				final PcfFont font = PcfFontFactory.read(zipInputStream);
 				final FontName fontName = new FontName("-misc-fixed-medium-r-normal--10-100-75-75-c-60-iso10646-1");
 				fontList.add(fontName);
 				_pcfFonts.put(fontName.getFontInfo("*"), font);
 			}
 			finally {
-				inputStream.close();
+				fileInputStream.close();
 			}
 		}
 		catch(final Exception e) {

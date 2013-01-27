@@ -17,10 +17,10 @@
 package com.liaquay.tinyx.pcf;
 
 public class PcfFont {
-	final PcfAccelerators _accelerators;
-	final PcfMetrics[] _metrics;
-	final PcfBitmaps _bitmaps;
-	final PcfEncodings _encodings;
+	private final PcfAccelerators _accelerators;
+	private final PcfMetrics[] _metrics;
+	private final PcfBitmaps _bitmaps;
+	private final PcfEncodings _encodings;
 
 	public PcfFont(
 			final PcfAccelerators accelerators, 
