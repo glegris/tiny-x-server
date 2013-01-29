@@ -23,14 +23,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Polygon;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.FilteredImageSource;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -63,11 +65,11 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void copyArea(Drawable srcDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 
-		BufferedImage destImage = getImage();
+		//		BufferedImage destImage = getImage();
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
-		//		destImage.getGraphics().translate(dstX,  dstY);
-		destImage.getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
+		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
+		getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
@@ -75,9 +77,15 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			int width, int height, int dstX, int dstY) {
 
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
-		BufferedImage destImage = getImage();
 
-		destImage.getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
+
+		BitmapColourFilter filter = new BitmapColourFilter(graphicsContext.getForegroundColour());
+
+	    FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
+	    Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
+
+		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
+		getGraphics().drawImage(newImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
@@ -87,15 +95,19 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		BufferedImage image = null;
 
-		System.out.println("Put image with type: " + imageType.name() + " and depth " + depth + " leftpad: " + leftPad);
+		System.out.println("Put image with type: " + imageType.name() + " Width: " + width + " Height: " + height + " and depth " + depth + " leftpad: " + leftPad);
 		if (depth == 1) {
+			
+			System.out.println("Foreground color: " + new Color(graphicsContext.getForegroundColour()).toString());
+			
+			
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
 			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
 			byte[] arr = {(byte)0x00, (byte)0xff};
 			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 			image = new BufferedImage(colorModel, raster, false, null);
-			
+
 		} else if (depth == 32) {
 			// Only 3 bytes per pixel appear to be sent..
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
@@ -105,67 +117,69 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 					height, // height
 					width * 3, // scanlineStride
 					3, // pixelStride
-					new int[]{0, 1, 2}, // bandOffsets
+					new int[]{2, 1, 0}, // bandOffsets
 					null); // location
 
 			//            ColorModel colorModel = new DirectColorModel(24, 0xff0000, 0x00ff00, 0x0000ff);
 
-			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
 			image.setData(raster);
 
-			//    // Convert it into a buffered image that's compatible with the current screen.
-			//    // Not ideal creating this image twice....
-//			BufferedImage image2 = createCompatibleImage(image);
-//			image = image2;
-		}
-
-//		if (image != null) {
-//			try {
-//				// create a file to write the image to (make sure it exists), then use the ImageIO class
-//				// to write the RenderedImage to disk as a PNG file.
-//				File file = new File("/home/ncludki/tinyx/" + System.currentTimeMillis() + ".png");
-//				file.createNewFile();
-//				ImageIO.write(image, "png", file);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-
-			Graphics sg = getGraphics();
-			sg.drawImage(image, destinationX, destinationY, width, height, null);
-			
-//			if (getImage() != null) {
+//			if (image != null) {
 //				try {
 //					// create a file to write the image to (make sure it exists), then use the ImageIO class
 //					// to write the RenderedImage to disk as a PNG file.
-//					File file = new File("/home/ncludki/tinyx/putimage-screen-" + System.currentTimeMillis() + ".png");
+//					File file = new File("/home/ncludki/tinyx/" + System.currentTimeMillis() + ".png");
 //					file.createNewFile();
-//					ImageIO.write(getImage(), "png", file);
+//					ImageIO.write(image, "png", file);
 //				} catch (IOException e) {
 //					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
 //			}
-//		}
+			//    // Convert it into a buffered image that's compatible with the current screen.
+			//    // Not ideal creating this image twice....
+			//			BufferedImage image2 = createCompatibleImage(image);
+			//			image = image2;
+		}
+
+
+
+		Graphics sg = getGraphics();
+		sg.drawImage(image, destinationX, destinationY, width, height, null);
+
+		//			if (getImage() != null) {
+		//				try {
+		//					// create a file to write the image to (make sure it exists), then use the ImageIO class
+		//					// to write the RenderedImage to disk as a PNG file.
+		//					File file = new File("/home/ncludki/tinyx/putimage-screen-" + System.currentTimeMillis() + ".png");
+		//					file.createNewFile();
+		//					ImageIO.write(getImage(), "png", file);
+		//				} catch (IOException e) {
+		//					// TODO Auto-generated catch block
+		//					e.printStackTrace();
+		//				}
+		//			}
+		//		}
 	}
-	
+
 	BufferedImage createCompatibleImage(BufferedImage image)
 	{
-	    GraphicsConfiguration gc = GraphicsEnvironment.
-	        getLocalGraphicsEnvironment().
-	        getDefaultScreenDevice().
-	        getDefaultConfiguration();
+		GraphicsConfiguration gc = GraphicsEnvironment.
+				getLocalGraphicsEnvironment().
+				getDefaultScreenDevice().
+				getDefaultConfiguration();
 
-	    BufferedImage newImage = gc.createCompatibleImage(
-	        image.getWidth(), 
-	        image.getHeight(), 
-	        Transparency.TRANSLUCENT);
+		BufferedImage newImage = gc.createCompatibleImage(
+				image.getWidth(), 
+				image.getHeight(), 
+				Transparency.TRANSLUCENT);
 
-	    Graphics2D g = newImage.createGraphics();
-	    g.drawImage(image, 0, 0, null);
-	    g.dispose();
+		Graphics2D g = newImage.createGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
 
-	    return newImage;
+		return newImage;
 	}
 
 	@Override
@@ -174,21 +188,21 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		System.out.println("GetImageData: " + imageType.name() + " Depth: " + _drawable.getDepth());
 		if (planeMask == 0xffffffff) {
-			
+
 			int size = (width * height * _drawable.getDepth())/8;
 
 			byte[] byteArr = new byte[size];
 
 			getImage().getRaster().getDataElements(x, y, width, height, byteArr);
-			
-//			byte data[] = new byte[intData.length * 4];
-//			
-//			for (int i = 0; i < intData.length; i++) {
-//				data[i*4+0] = (byte) ((0xff000000 & intData[i]) >> 48);
-//			    data[i*4+1] = (byte) ((0x00ff0000 & intData[i]) >> 32);
-//				data[i*4+2] = (byte) ((0x0000ff00 & intData[i]) >> 16);
-//				data[i*4+3] = (byte) ((0x000000ff & intData[i]) >> 0);
-//			}
+
+			//			byte data[] = new byte[intData.length * 4];
+			//			
+			//			for (int i = 0; i < intData.length; i++) {
+			//				data[i*4+0] = (byte) ((0xff000000 & intData[i]) >> 48);
+			//			    data[i*4+1] = (byte) ((0x00ff0000 & intData[i]) >> 32);
+			//				data[i*4+2] = (byte) ((0x0000ff00 & intData[i]) >> 16);
+			//				data[i*4+3] = (byte) ((0x000000ff & intData[i]) >> 0);
+			//			}
 			return byteArr;
 		}
 
@@ -271,7 +285,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final String str, 
 			final int x,
 			final int y) {
-		
+
 		final Font font = graphicsContext.getFont();
 		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
 		final Graphics2D graphics = getGraphics();
@@ -287,7 +301,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int width,
 			final int height, 
 			final boolean fill) {
-		
+
 		final Graphics2D graphics = getGraphics();
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
@@ -296,7 +310,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		XAwtGraphicsContext.tile(graphics, graphicsContext);
 
 		XAwtGraphicsContext.stipple(graphics, graphicsContext);
-		
+
 
 		if (fill) {
 			graphics.fillRect(x, y, width, height);

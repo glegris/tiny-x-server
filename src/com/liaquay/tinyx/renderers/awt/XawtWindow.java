@@ -21,7 +21,6 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
@@ -51,7 +50,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//TODO: Map the depth
 		//	window.getDepth();
 		if (window.getRootWindow().equals(window)) {
-			BufferedImage image = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			BufferedImage image = new BufferedImage(window.getWidth() + (window.getBorderWidth() * 2), window.getHeight() + (window.getBorderWidth() * 2), BufferedImage.TYPE_INT_BGR);
 			_image = image;
 		}
 
@@ -217,7 +216,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	private Graphics2D translateAndClipToWindow() {
 		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
-		graphics.translate(_window.getAbsX(), _window.getAbsY());
+		graphics.translate(_window.getAbsX() + _window.getBorderWidth(), _window.getAbsY() + _window.getBorderWidth());
 		return graphics;
 	}
 
@@ -259,8 +258,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		graphics.fillRect(
 				0, 
 				0,
-				_window.getWidth() + _window.getBorderWidth()+ _window.getBorderWidth(), 
-				_window.getHeight() + _window.getBorderWidth()+ _window.getBorderWidth());
+				_window.getWidth() + (2*_window.getBorderWidth()), 
+				_window.getHeight() + (2*_window.getBorderWidth()));
 	}
 
 	private void paintContent(final Graphics2D graphics) {
@@ -283,7 +282,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		super.copyArea(destDrawable, graphicsContext, srcX, srcY, width, height, dstX,
 				dstY);
-		
+
 		updateCanvas(dstX, dstY, width, height);
 	}
 
@@ -295,7 +294,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		super.putImage(graphicsContext, imageType, buffer, width, height, destinationX,
 				destinationY, leftPad, depth);
-		
+
 		updateCanvas(destinationX, destinationY, width, height);
 	}
 
@@ -305,7 +304,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			int bitplane, int srcX, int srcY,
 			int width, int height, int dstX, int dstY) {
 		super.copyPlane(s, graphicsContext, bitplane, srcX, srcY, width, height, dstX, dstY);
-		
+
 		updateCanvas(dstX, dstY, width, height);
 	}
 
@@ -313,7 +312,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
 		super.polyPoint(graphicsContext, xCoords, yCoords);
-		
+
 		updateCanvas(xCoords, yCoords);
 	}
 
@@ -331,32 +330,18 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	private void updateCanvas() {
-		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
-		_canvas.getGraphics().drawImage(getImage(), _window.getRootWindow().getAbsX(), _window.getRootWindow().getAbsY(), _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
+		//		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
+		_canvas.getGraphics().drawImage(getImage(), 0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
 	}
 
 	private void updateCanvas(int x, int y, int width, int height) {
-		// Get the windows image and translate the 
-//		BufferedImage windowImage = getImage();
-//		windowImage.getGraphics().translate(_window.getAbsX(), _window.getAbsY());
-		
-		int destWidth = _window.getAbsX() + width;
-		int destHeight = _window.getAbsY() + height;
-		
-		int srcX = _window.getAbsX() + x;
-		int srcY = _window.getAbsY() + y;
-		
-		int srcWidth =  _window.getAbsX() + width;
-		int srcHeight =  _window.getAbsY() + height;
-		
-		
-		_canvas.getGraphics().drawImage(getImage(), _window.getAbsX() + x, _window.getAbsY() + y, destWidth, destHeight, srcX, srcY, srcWidth, srcHeight, null);
+		_canvas.getGraphics().drawImage(getImage(), x, y, x+width, y+height, x, y, x+width, y+height, null);
 	}
-	
+
 	private void updateCanvas(int xCoords[], int yCoords[]) {
 		int tlx=_window.getWidth(),tly=_window.getHeight();
 		int blx=0,bly=0;
-		
+
 		for (int i = 0; i < xCoords.length; i++) {
 			tlx = Math.min(tlx, xCoords[i]);
 			tly = Math.min(tly, yCoords[i]);

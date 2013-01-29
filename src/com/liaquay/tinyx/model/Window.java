@@ -292,7 +292,7 @@ public class Window extends Drawable {
 			_backgroundPixel = _parent._backgroundPixel;
 		}
 		else {
-			_backgroundPixel = colorMap.getWhitePixel();
+			_backgroundPixel = colorMap.getBlackPixel();
 		}
 
 		updateLocation();

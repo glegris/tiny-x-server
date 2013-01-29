@@ -59,8 +59,6 @@ public class XawtScreen {
 
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
 
-
-		
 		_frame.setResizable(true);
 
 		_frame.addWindowListener(new WindowAdapter() {
@@ -88,9 +86,6 @@ public class XawtScreen {
 		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
 		rootWindow.setListener(_rootWindowListener);
 
-		// WTF If I don't do this the background is rendered grey!?!
-		// TODO Nathan any ideas? I guess there is a delayed AWT event but my all attempts to prevent the redraw have failed?
-		try { Thread.sleep(1000); } catch(final Exception e){}
 		screen.map();
 
 		_canvas.addMouseListener(new MouseListener() {

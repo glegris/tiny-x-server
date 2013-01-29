@@ -35,7 +35,7 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 
 	@Override
 	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_BGR);
 		setImage(image);
 	}
 	

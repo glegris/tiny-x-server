@@ -2,9 +2,13 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
 import java.util.List;
 
 import com.liaquay.tinyx.model.GraphicsContext;
@@ -26,9 +30,25 @@ public class XAwtGraphicsContext {
 		Pixmap s = graphicsContext.getStipple();
 
 		if (s != null) {
-			TexturePaint tp = new TexturePaint(s.getDrawableListener().getImage(), new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), s.getWidth(), s.getHeight()));
+			BitmapColourFilter filter = new BitmapColourFilter(0xff000000 + graphicsContext.getForegroundColour());
+			BufferedImage srcImage = s.getDrawableListener().getImage();
+			FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
+			Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
+			BufferedImage bufImage = imageToBufferedImage(newImage,  s.getWidth(), s.getHeight());
+			
+			TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), s.getWidth(), s.getHeight()));
 			graphics.setPaint(tp);
 		}
+	}
+
+	private static BufferedImage imageToBufferedImage(Image image, int width, int height)
+	{
+		BufferedImage dest = new BufferedImage(
+				width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = dest.createGraphics();
+		g2.drawImage(image, 0, 0, null);
+		g2.dispose();
+		return dest;
 	}
 
 	public static Stroke lineSetup(Graphics2D graphics, GraphicsContext graphicsContext) {
