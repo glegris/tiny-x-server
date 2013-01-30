@@ -40,16 +40,18 @@ public class DiadicFileReader {
 		{
 			String line;
 			while((line = bufferedReader.readLine()) != null) {
-				int indexOfFirstSpace = -1;
-				for(int i = 0; i < line.length(); ++i) {
-					final char c = line.charAt(i);
-					if(c == ' ' || c=='\t') {
-						indexOfFirstSpace = i;
-						break;
+				if(!line.startsWith("!")) { // Skip comment lines
+					int indexOfFirstSpace = -1;
+					for(int i = 0; i < line.length(); ++i) {
+						final char c = line.charAt(i);
+						if(c == ' ' || c=='\t') {
+							indexOfFirstSpace = i;
+							break;
+						}
 					}
-				}
-				if(indexOfFirstSpace > -1) {
-					listener.parameter(line.substring(0, indexOfFirstSpace), line.substring(indexOfFirstSpace, line.length()).trim());
+					if(indexOfFirstSpace > -1) {
+						listener.parameter(line.substring(0, indexOfFirstSpace), line.substring(indexOfFirstSpace, line.length()).trim());
+					}
 				}
 			}
 		}

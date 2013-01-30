@@ -272,12 +272,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int bh) {
 
 		final Font font = graphicsContext.getFont();
-		final XawtNativeFontListener fontListener = (XawtNativeFontListener)font.getListener();
+		final XawtFontDetail fontDetail = (XawtFontDetail)font.getFontDetail();
 		final Graphics2D graphics = getGraphics();
 		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
 		graphics.fillRect(bx, by, bw, bh);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		fontListener.drawString(graphics, str, x, y, rgb);
+		fontDetail.drawString(graphics, str, x, y, rgb);
 	}
 
 	public void drawString(
@@ -287,10 +287,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int y) {
 
 		final Font font = graphicsContext.getFont();
-		final XawtFontListener fontListener = (XawtFontListener)font.getListener();
+		final XawtFontDetail fontDetail = (XawtFontDetail)font.getFontDetail();
 		final Graphics2D graphics = getGraphics();
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		fontListener.drawString(graphics, str, x, y, rgb);
+		fontDetail.drawString(graphics, str, x, y, rgb);
 	}
 
 	@Override

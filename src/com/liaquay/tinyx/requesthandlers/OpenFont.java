@@ -19,8 +19,6 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,10 +28,10 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Font;
-import com.liaquay.tinyx.model.FontAlias;
-import com.liaquay.tinyx.model.FontInfo;
+import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.font.FontDetail;
+import com.liaquay.tinyx.model.font.FontFactory;
 
 public class OpenFont implements RequestHandler {
 	
@@ -46,27 +44,24 @@ public class OpenFont implements RequestHandler {
 			final Request request,
 			final Response response) throws IOException {
 
+		final FontFactory fontFactory = server.getFontFactory();
 		final XInputStream inputStream = request.getInputStream();
 		final int fid = inputStream.readInt();
 		final String requestedFontName = inputStream.readString();
-		final List<String> patterns = new ArrayList<String>();
-		for(final FontAlias alias : server.getFontAliases(requestedFontName)) {
-			patterns.add(alias.getPattern());
+		FontMatch fontInfo = server.getFontFactory().getFirstMatchingFont(requestedFontName);
+
+		if(fontInfo == null) {
+			fontInfo = server.getFontFactory().getFirstMatchingFont("fixed");
 		}
-		patterns.add(requestedFontName);
-		FontInfo fontInfo = null;
-		for(final String pattern : patterns) {
-			fontInfo = server.getFontFactory().getFirstMatchingFont(pattern);
-			if(fontInfo != null) break;
-		}
-		if(fontInfo == null) fontInfo = server.getFixedFontInfo();
+		
 		if(fontInfo == null) {
 			final String message = "Could not open fixed font";
 			LOGGER.log(Level.SEVERE, message);
 			throw new RuntimeException(message);
 		}
-		final FontDetail fontDetail = server.getFontFactory().getFontDetail(fontInfo);
-		final Font font = new Font(fid, fontInfo, fontDetail);			
+		
+		final FontDetail fontDetail = fontFactory.open(fontInfo);
+		final Font font = new Font(fid, fontDetail, fontFactory);
 		server.openFont(font);
 	}
 }

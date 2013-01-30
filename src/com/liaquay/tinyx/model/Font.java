@@ -19,74 +19,28 @@
 package com.liaquay.tinyx.model;
 
 import com.liaquay.tinyx.model.font.FontDetail;
+import com.liaquay.tinyx.model.font.FontFactory;
 
 public class Font extends AbstractResource {
 
-	private final FontInfo _fontName;
 	private final FontDetail _fontDetail;
+	private final FontFactory _fontFactory;
 	
-	public interface Listener {
-		public void fontClosed(final Font font);
-		public TextExtents getTextExtents(final int character);
-		public TextExtents getTextExtents(final String text);
-	}
-	
-	/**
-	 * Empty implementation of the listener so that we don't have null checks 
-	 * throughout the code. 
-	 */
-	private static final class NullListener implements Listener {
-		@Override
-		public void fontClosed(final Font font) {}
-
-		@Override
-		public TextExtents getTextExtents(final int character) {
-			return new TextExtents(0,0,0,0,0,0);
-		}
-
-		@Override
-		public TextExtents getTextExtents(final String text) {
-			return new TextExtents(0,0,0,0,0,0);
-		}
-	}
-	
-	private static final Listener NULL_LISTENER = new NullListener();
-
-	private Listener _listener = NULL_LISTENER;
-
-	public void setListener(final Listener listener) {
-		_listener = listener;
-	}
-	
-	public Listener getListener() {
-		return _listener;
-	}
-	
-	public Font(final int id, final FontInfo fontName, final FontDetail fontDetail) {
+	public Font(
+			final int id, 
+			final FontDetail fontDetail,
+			final FontFactory fontFactory) {
 		super(id);
-
-		_fontName = fontName;
 		_fontDetail = fontDetail;
+		_fontFactory = fontFactory;
 	}
 
 	@Override
 	public void free() {
-		_listener.fontClosed(this);
-	}
-
-	public FontInfo getFontInfo() {
-		return _fontName;
+		_fontFactory.close(_fontDetail);
 	}
 	
 	public FontDetail getFontDetail() {
 		return _fontDetail;
-	}
-
-	public TextExtents getTextExtents(final int character) {
-		return _listener.getTextExtents(character);
-	}
-	
-	public TextExtents getTextExtents(final String text) {
-		return _listener.getTextExtents(text);
 	}
 }

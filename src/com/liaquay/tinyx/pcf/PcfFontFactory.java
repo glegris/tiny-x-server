@@ -16,14 +16,27 @@
  */
 package com.liaquay.tinyx.pcf;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 import com.liaquay.tinyx.util.IntMap;
 
 public class PcfFontFactory {
 	
 	private final static int MAGIC = 1885562369;
+	
+	public static PcfFont read(final String filename) throws IOException {
+		final FileInputStream fileInputStream = new FileInputStream(filename);
+		final InputStream inputStream = filename.toLowerCase().endsWith(".gz") ? new GZIPInputStream(fileInputStream) : fileInputStream;
+		try {
+			return PcfFontFactory.read(inputStream);
+		}
+		finally {
+			fileInputStream.close();
+		}
+	}
 	
 	public static PcfFont read(final InputStream inputStream) throws IOException {
 		

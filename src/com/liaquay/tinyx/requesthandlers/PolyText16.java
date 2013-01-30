@@ -31,6 +31,7 @@ import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class PolyText16 implements RequestHandler {
 
@@ -76,10 +77,10 @@ public class PolyText16 implements RequestHandler {
 				final int delta = inputStream.readUnsignedByte();
 				final String text = inputStream.readString16(len);
 				x += delta;
-				// TODO Do not upcast
-				((Window) drawable).drawString(graphicsContext, text, x, y);
-				
-				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+
+				drawable.getDrawableListener().drawString(graphicsContext, text, x, y);
+				final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();
+				final TextExtents textExtents = fontDetail.getTextExtents(text);
 				x += textExtents.getWidth();
 			}
 		}

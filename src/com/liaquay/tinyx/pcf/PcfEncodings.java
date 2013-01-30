@@ -42,7 +42,10 @@ public class PcfEncodings {
 		_lastCol = lastCol;
 		_firstRow = firstRow;
 		_lastRow = lastRow;
-		_defaultCharacter = characterMap.get(defaultCharacter);
+		if(characterMap == null) {
+			System.out.println("Oh dear");
+		}
+		_defaultCharacter = defaultCharacter;
 		_characterMap = characterMap;
 		_minChar = minChar;
 		_maxChar = maxChar;
@@ -75,7 +78,16 @@ public class PcfEncodings {
 	public int getGlyphIndex(final char c) {
 		final int i = c & 0xffff;
 		final Integer m = _characterMap.get(i);
-		if(m == null) return _defaultCharacter;
+		if(m == null) {
+			final Integer d = _characterMap.get(_defaultCharacter);
+			if(d ==  null) {
+				System.out.println("ooooo");
+				return 32;
+			}
+			else {
+				return d;
+			}
+		}
 		return m;
 	}
 	

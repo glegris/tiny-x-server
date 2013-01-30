@@ -29,7 +29,7 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class ImageText8 implements RequestHandler {
 
@@ -64,7 +64,8 @@ public class ImageText8 implements RequestHandler {
 		final int length = request.getData();
 		final String text = inputStream.readString(length);
 		
-		final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+		final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();
+		final TextExtents textExtents = fontDetail.getTextExtents(text);
 		
 		drawable.drawString(
 				graphicsContext, 
@@ -73,7 +74,7 @@ public class ImageText8 implements RequestHandler {
 				y, 
 				x - textExtents.getLeft(),
 				y - textExtents.getAscent(),
-				textExtents.getWidth(), // TODO do we need to add 'left' and 'right'?
+				textExtents.getWidth(),
 				textExtents.getHeight());
 	}
 }

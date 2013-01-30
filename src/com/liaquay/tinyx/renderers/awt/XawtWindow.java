@@ -216,7 +216,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	private Graphics2D translateAndClipToWindow() {
 		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
-		graphics.translate(_window.getAbsX() + _window.getBorderWidth(), _window.getAbsY() + _window.getBorderWidth());
+		graphics.translate(_window.getAbsX(), _window.getAbsY());
 		return graphics;
 	}
 

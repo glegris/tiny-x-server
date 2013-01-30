@@ -49,8 +49,8 @@ public class QueryTextExtents implements RequestHandler {
 		}
 		final boolean odd = request.getData() != 0;
 		final String text = inputStream.readString16((request.getLength()>>1) - (odd ? 5 : 4));
-		final TextExtents textExtents = font.getTextExtents(text);
 		final FontDetail fontDetail = font.getFontDetail();
+		final TextExtents textExtents = fontDetail.getTextExtents(text);
 		final XOutputStream outputStream = response.respond(fontDetail.isLeftToRight() ? 0 : 1);
 		outputStream.writeShort(fontDetail.getAscent());
 		outputStream.writeShort(fontDetail.getDescent());

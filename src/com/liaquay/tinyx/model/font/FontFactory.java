@@ -18,12 +18,14 @@
  */
 package com.liaquay.tinyx.model.font;
 
+import java.io.IOException;
 import java.util.List;
 
-import com.liaquay.tinyx.model.FontInfo;
+import com.liaquay.tinyx.model.FontMatch;
 
 public interface FontFactory {
-	public FontInfo getFirstMatchingFont(final String pattern);
-	public List<FontInfo> getMatchingFonts(final String pattern);
-	public FontDetail getFontDetail(final FontInfo fontInfo);
+	public FontMatch getFirstMatchingFont(final String pattern);
+	public List<FontMatch> getMatchingFonts(final String pattern);
+	public FontDetail open(final FontMatch fontMatch) throws IOException;
+	public void close(final FontDetail fontDetail);
 }

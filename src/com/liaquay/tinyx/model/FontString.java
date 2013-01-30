@@ -46,7 +46,18 @@ public class FontString implements Comparable<FontString> {
 		return _name;
 	}
 	
-	public boolean matchAndMergeFielded(final String pattern, final StringBuilder sb){
+	public FontMatch getFontMatch(final String pattern, final StringBuilder scratch) {
+		scratch.setLength(0);
+		final boolean match = matchAndMergeFielded(pattern, scratch);
+		if(!match) return null;
+		return new FontMatch(getName(), scratch.toString());
+	}
+	
+	public FontMatch getFontMatch(final String pattern) {
+		return getFontMatch(pattern, new StringBuilder());
+	}
+	
+	private boolean matchAndMergeFielded(final String pattern, final StringBuilder sb){
 
 		final int l1=_name.length();
 		final int l2=pattern.length();

@@ -19,8 +19,8 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
@@ -29,11 +29,11 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.FontAlias;
-import com.liaquay.tinyx.model.FontInfo;
+import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.font.FontDetail;
+import com.liaquay.tinyx.model.font.FontFactory;
 
 public class ListFontsWithInfo implements RequestHandler {
 
@@ -50,25 +50,26 @@ public class ListFontsWithInfo implements RequestHandler {
 		final int maxNames = inputStream.readUnsignedShort();
 		final String requestedFontName = inputStream.readString();
 
-		final List<String> patterns = new ArrayList<String>();
-		patterns.add(requestedFontName);
-		for(final FontAlias alias : server.getFontAliases(requestedFontName)) {
-			patterns.add(alias.getPattern());
-		}
-		
-		final List<FontInfo> matches = new ArrayList<FontInfo>();
-
-		for(final String pattern : patterns) {
-			matches.addAll(server.getFontFactory().getMatchingFonts(pattern));
-		}
-		
-		int countDown = maxNames;
+		final List<FontMatch> matches = server.getFontFactory().getMatchingFonts(requestedFontName);
+		final FontFactory fontFactory = server.getFontFactory();
+		int countDown = Math.min(maxNames, matches.size());
 		int counter = 0;
-		for (final FontInfo fontInfo : matches) {
+		for (final FontMatch fontInfo : matches) {
 			
-			final FontDetail fontDetail = server.getFontFactory().getFontDetail(fontInfo);
+			final FontDetail fontDetail = fontFactory.open(fontInfo);
 			
-			writeFontInfo(server, fontInfo, fontDetail, response, --countDown);
+			if(fontDetail == null) {
+				LOGGER.log(Level.SEVERE, "Attempt to open non-existant (but matching) font " + fontInfo.getMergedFontName());
+				writeFontInfo(server, server.getFixedFont().getFontDetail(), response, --countDown);
+			}
+			else {
+				try {
+					writeFontInfo(server, fontDetail, response, --countDown);
+				}
+				finally {
+					fontFactory.close(fontDetail);
+				}
+			}
 			counter++;
 			
 			if (counter >= maxNames) {
@@ -84,12 +85,11 @@ public class ListFontsWithInfo implements RequestHandler {
 	
 	public static void writeFontInfo(
 			final Server server, 
-			final FontInfo fontInfo, 
 			final FontDetail fontDetail,
 			final Response response,
 			final int countDown) throws IOException {
 		
-		final String fontName = fontInfo.toString();
+		final String fontName = fontDetail.getName();
 		final int fontNameLength = fontName.length();
 		final XOutputStream outputStream = response.respond(fontNameLength);
 		

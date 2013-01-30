@@ -30,7 +30,7 @@ import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class PolyText8 implements RequestHandler {
 
@@ -77,10 +77,10 @@ public class PolyText8 implements RequestHandler {
 				final String text = inputStream.readString(len);
 				x += delta;
 
-				// TODO Do not upcast
 				drawable.getDrawableListener().drawString(graphicsContext, text, x, y);
 				
-				final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+				final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();
+				final TextExtents textExtents = fontDetail.getTextExtents(text);
 				x += textExtents.getWidth();
 			}
 		}
