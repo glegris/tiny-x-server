@@ -47,6 +47,8 @@ public abstract class Drawable implements Resource {
 		public void polyRect(GraphicsContext graphicsContext, int x, int y,
 				int width, int height, boolean b);
 
+		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
+
 		public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
 				int[] yCoords);
 		
@@ -59,6 +61,8 @@ public abstract class Drawable implements Resource {
 
 		public byte[] getImageData(int x, int y, int width, int height,
 				 ImageType imageType, int planeMask);
+		
+		
 
 	}
 	
@@ -151,6 +155,12 @@ public abstract class Drawable implements Resource {
 		@Override
 		public void drawString(GraphicsContext graphicsContext, String str,
 				int x, int y) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
 			// TODO Auto-generated method stub
 			
 		}

@@ -50,7 +50,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//TODO: Map the depth
 		//	window.getDepth();
 		if (window.getRootWindow().equals(window)) {
-			BufferedImage image = new BufferedImage(window.getWidth() + (window.getBorderWidth() * 2), window.getHeight() + (window.getBorderWidth() * 2), BufferedImage.TYPE_INT_BGR);
+			BufferedImage image = new BufferedImage(window.getWidth() + (window.getBorderWidth() * 2), window.getHeight() + (window.getBorderWidth() * 2), BufferedImage.TYPE_INT_RGB);
 			_image = image;
 		}
 
@@ -347,7 +347,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			tly = Math.min(tly, yCoords[i]);
 
 			blx = Math.max(blx, xCoords[i]);
-			bly = Math.min(bly, yCoords[i]);
+			bly = Math.max(bly, yCoords[i]);
 		}
 		updateCanvas(tlx, tly, blx - tlx, bly - tly);
 	}

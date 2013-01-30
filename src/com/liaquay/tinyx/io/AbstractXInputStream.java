@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-import com.liaquay.tinyx.Connection;
-
 public abstract class AbstractXInputStream implements XInputStream {
 
 	private final static Logger LOGGER = Logger.getLogger(AbstractXInputStream.class.getName());

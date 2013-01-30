@@ -41,7 +41,6 @@ public class Window extends Drawable {
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
 		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill);
-		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
 		public void clearArea(boolean exposures, int x, int y, int width, int height);
@@ -909,11 +908,6 @@ public class Window extends Drawable {
 		_listener.polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
 
 	}
-
-	public void polyFill(GraphicsContext graphicsContext, int x[], int y[]) {
-		_listener.polyFill(graphicsContext, x, y);
-	}
-
 
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2,
 			int y2) {

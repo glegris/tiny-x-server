@@ -36,10 +36,7 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Event;
@@ -49,6 +46,8 @@ import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Window;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
+
+	private final static Logger LOGGER = Logger.getLogger(XawtDrawableListener.class.getName());
 
 	final Drawable _drawable;
 
@@ -68,8 +67,8 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		//		BufferedImage destImage = getImage();
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
-		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
-		getGraphics().drawImage(srcImage, srcX, srcY, width, height, null);
+//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
+		getGraphics().drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
 	}
 
 	@Override
@@ -79,12 +78,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
 
-		BitmapColourFilter filter = new BitmapColourFilter(graphicsContext.getForegroundColour());
+		BitmapColourFilter filter = new BitmapColourFilter(0xffffffff);
 
-	    FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
-	    Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
+		FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
+		Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
 
-		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
+//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
 		getGraphics().drawImage(newImage, srcX, srcY, width, height, null);
 	}
 
@@ -95,12 +94,8 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		BufferedImage image = null;
 
-		System.out.println("Put image with type: " + imageType.name() + " Width: " + width + " Height: " + height + " and depth " + depth + " leftpad: " + leftPad);
+		LOGGER.info("Put image with type: " + imageType.name() + " Width: " + width + " Height: " + height + " and depth " + depth + " leftpad: " + leftPad);
 		if (depth == 1) {
-			
-			System.out.println("Foreground color: " + new Color(graphicsContext.getForegroundColour()).toString());
-			
-			
 			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
 			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
@@ -120,27 +115,11 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 					new int[]{2, 1, 0}, // bandOffsets
 					null); // location
 
-			//            ColorModel colorModel = new DirectColorModel(24, 0xff0000, 0x00ff00, 0x0000ff);
-
-			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			image.setData(raster);
 
-//			if (image != null) {
-//				try {
-//					// create a file to write the image to (make sure it exists), then use the ImageIO class
-//					// to write the RenderedImage to disk as a PNG file.
-//					File file = new File("/home/ncludki/tinyx/" + System.currentTimeMillis() + ".png");
-//					file.createNewFile();
-//					ImageIO.write(image, "png", file);
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-			//    // Convert it into a buffered image that's compatible with the current screen.
-			//    // Not ideal creating this image twice....
-			//			BufferedImage image2 = createCompatibleImage(image);
-			//			image = image2;
+		} else {
+			LOGGER.severe("PutImage doesn't currently support a depth of " + depth);
 		}
 
 
@@ -187,7 +166,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			ImageType imageType, int planeMask) {
 
 		System.out.println("GetImageData: " + imageType.name() + " Depth: " + _drawable.getDepth());
-		if (planeMask == 0xffffffff) {
+		if (planeMask == 0xffffffff && imageType.equals(ImageType.ZPixmap)) {
 
 			int size = (width * height * _drawable.getDepth())/8;
 
@@ -204,6 +183,8 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			//				data[i*4+3] = (byte) ((0x000000ff & intData[i]) >> 0);
 			//			}
 			return byteArr;
+		} else {
+			LOGGER.severe("GetImageData with a planemask of " + Integer.toBinaryString(planeMask) + " and imageType of " + imageType.name() + " is not currently supported");
 		}
 
 

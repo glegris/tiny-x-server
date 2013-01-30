@@ -19,11 +19,13 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.Response.ErrorCode;
+import com.liaquay.tinyx.io.AbstractXInputStream;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
@@ -33,6 +35,7 @@ import com.liaquay.tinyx.model.Window.WindowClass;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
 public class CreateWindow implements RequestHandler {
+	private final static Logger LOGGER = Logger.getLogger(CreateWindow.class.getName());
 
 	private final WindowAttributeHandlers _attributeHandlers;
 
@@ -97,6 +100,7 @@ public class CreateWindow implements RequestHandler {
 			return;
 		}
 
+		LOGGER.info("Window created with dimensions: X: " + x + " Y: " + y + " Width: " + width + " Height: " + height);
 		server.windowCreated(window);
 	}
 }

@@ -90,8 +90,6 @@ public class FillPoly implements RequestHandler {
 			}
 		}
 		
-		if (drawable instanceof Window) {
-			((Window) drawable).polyFill(graphicsContext, xCoords, yCoords);
-		}
+		drawable.getDrawableListener().polyFill(graphicsContext, xCoords, yCoords);
 	}
 }
