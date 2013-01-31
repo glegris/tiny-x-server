@@ -30,7 +30,6 @@ import com.liaquay.tinyx.model.Extension;
 import com.liaquay.tinyx.model.Extensions;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.extensions.BigRequestHandler;
-import com.liaquay.tinyx.requesthandlers.extensions.RenderHandler;
 import com.liaquay.tinyx.requesthandlers.extensions.shape.ShapeExtensionHandler;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
