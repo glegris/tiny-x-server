@@ -3,6 +3,8 @@ package com.liaquay.tinyx.renderers.awt;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
@@ -13,6 +15,8 @@ import com.liaquay.tinyx.pcf.PcfFontFactory;
 import com.liaquay.tinyx.x11font.FontDirReader;
 
 public class XawtPcfFontFactory  extends FontFactoryAdaptor {
+	
+	private final static Logger LOGGER = Logger.getLogger(XawtPcfFontFactory.class.getName());
 
 	private final Map<String, String> _fontNameToFileName = new TreeMap<String, String>();
 	
@@ -36,7 +40,9 @@ public class XawtPcfFontFactory  extends FontFactoryAdaptor {
 	public FontDetail deAliasedOpen(final FontMatch fontMatch) throws IOException {
 		
 		final String fileName = _fontNameToFileName.get(fontMatch.getMergedFontName());
-		if(fileName == null) return null;
+		if(fileName == null) {
+			return null;
+		}
 		final PcfFont font = PcfFontFactory.read(fileName);
 		final FontInfo fontInfo;
 		if(fontMatch.isFielded()) {

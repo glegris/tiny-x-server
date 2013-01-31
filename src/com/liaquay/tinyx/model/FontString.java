@@ -79,7 +79,7 @@ public class FontString implements Comparable<FontString> {
 					if(i2+1<l2 && pattern.charAt(i2+1)==_name.charAt(i1)) i2+=2;
 					++i1;
 				}
-				else if(_name.charAt(i1)=='0' &&	(i==7 || i==8 || i==9 || i==10 || i==11 || i==12)){
+				else if(_name.charAt(i1)=='0' && (i==7 || i==8 || i==9 || i==10 || i==11 || i==12) && _name.charAt(i1-1)=='-'){
 					if(pattern.charAt(i2)=='-') {
 						++i1;
 					}
@@ -98,7 +98,8 @@ public class FontString implements Comparable<FontString> {
 		}
 		return true;
 	}
-	public static void main(String[] a){
+	
+	public static void t1() {
 		final FontString f1 = new FontString("-urw-urw gothic l-book-o-normal--0-0-0-0-p-0-iso8859-1");
 		System.out.println(f1);
 		final String f2 = "-urw-urw go*thic l-book-??norm*--0-60-0-0-p-0-is?8859-?";
@@ -108,7 +109,21 @@ public class FontString implements Comparable<FontString> {
 		final boolean match = f1.matchAndMergeFielded(f2, sb);
 		System.out.println(match + " " +sb.toString());
 	}
+	
+	public static void main(String[] a){
+		final FontString f1 = new FontString("hanzigb16st");
+		System.out.println(f1);
+		final String f2 = "hanzigb16st";
+		System.out.println(f2);
+		
+		final StringBuilder sb = new StringBuilder();
+		final boolean match = f1.matchAndMergeFielded(f2, sb);
+		System.out.println(match + " " +sb.toString());
+	}
 
+	//a14 -misc-fixed-medium-r-normal--14-*-*-*-*-*-iso8859-1
+	//-misc-fixed-medium-r-normal--14-130-75-75-c-70-iso8859-1
+	
 	@Override
 	public int compareTo(final FontString fontString) {
 		return _name.compareTo(fontString._name);
