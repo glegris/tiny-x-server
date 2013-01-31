@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 public class ImageText16 implements RequestHandler {
 
@@ -60,7 +61,8 @@ public class ImageText16 implements RequestHandler {
 		final int length = request.getData();
 		final String text = inputStream.readString16(length);
 		
-		final TextExtents textExtents = graphicsContext.getFont().getTextExtents(text);
+		final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();
+		final TextExtents textExtents = fontDetail.getTextExtents(text);
 
 		drawable.drawString(
 				graphicsContext, 

@@ -39,17 +39,19 @@ public class DiadicFileReader {
 		final BufferedReader bufferedReader = new BufferedReader(reader);
 		{
 			String line;
-			while((line = bufferedReader.readLine()) != null) {
-				int indexOfFirstSpace = -1;
-				for(int i = 0; i < line.length(); ++i) {
-					final char c = line.charAt(i);
-					if(c == ' ' || c=='\t') {
-						indexOfFirstSpace = i;
-						break;
-					}
+			final String[] tokens = new String[2];
+			final Tokenizer.Listener tl = new Tokenizer.Listener() {
+				@Override
+				public boolean token(final int index, final String text) {
+					tokens[index] = text;
+					return index < 1;
 				}
-				if(indexOfFirstSpace > -1) {
-					listener.parameter(line.substring(0, indexOfFirstSpace), line.substring(indexOfFirstSpace, line.length()).trim());
+			};
+			
+			while((line = bufferedReader.readLine()) != null) {
+				final int tokenCount = Tokenizer.tokenize(line, tl);
+				if(tokenCount == 2) {
+					listener.parameter(tokens[0], tokens[1]);
 				}
 			}
 		}

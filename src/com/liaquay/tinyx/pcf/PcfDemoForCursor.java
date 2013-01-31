@@ -16,25 +16,14 @@
  */
 package com.liaquay.tinyx.pcf;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.zip.GZIPInputStream;
 
 public class PcfDemoForCursor {
 	
 	public static void main (String[] ar) throws IOException {
-		final FileInputStream fileInputStream = new FileInputStream("/usr/share/fonts/X11/misc/cursor.pcf.gz");
-		final GZIPInputStream zipInputStream = new GZIPInputStream(fileInputStream);
-		try {
-			final PcfFont font = PcfFontFactory.read(zipInputStream);
-			
-			System.out.println("read font");
-			
-			test2(font);
-		}
-		finally {
-			fileInputStream.close();
-		}
+		final PcfFont font = PcfFontFactory.read("/usr/share/fonts/X11/misc/cursor.pcf.gz");
+		System.out.println("read font");
+		test2(font);
 	}
 	
 	public static void test2(final PcfFont font) {

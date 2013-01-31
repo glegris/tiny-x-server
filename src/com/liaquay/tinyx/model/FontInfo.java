@@ -25,46 +25,46 @@ public class FontInfo implements Comparable<FontInfo> {
 	
 	private final String _asText;
 
-	//    FOUNDRY: Type foundry - vendor or supplier of this font
+	// Type foundry - vendor or supplier of this font
 	private final String _foundry;
 
-	//    FAMILY_NAME: Typeface family
+	// Typeface family
 	private final String _familyName;
 
-	//    WEIGHT_NAME: Weight of type
+	// Weight of type
 	private final String _weightName;
 
-	//    SLANT: Slant (upright, italic, oblique, reverse italic, reverse oblique, or "other")
+	// Slant (upright, italic, oblique, reverse italic, reverse oblique, or "other")
 	private final String _slant;
 
-	//    SETWIDTH_NAME: Proportionate width (e.g. normal, condensed, narrow, expanded/double-wide)
+	// Proportionate width (e.g. normal, condensed, narrow, expanded/double-wide)
 	private final String _setWidthName;
 
-	//    ADD_STYLE_NAME: Additional style (e.g. (Sans) Serif, Informal, Decorated)
+	// Additional style (e.g. (Sans) Serif, Informal, Decorated)
 	private final String _addStyleName;
 
-	//    PIXEL_SIZE: Size of characters, in pixels; 0 (Zero) means a scalable font
+	// Size of characters, in pixels; 0 (Zero) means a scalable font
 	private final int _pixelSize;
 
-	//    POINT_SIZE: Size of characters, in tenths of points
+	// Size of characters, in tenths of points
 	private final int _pointSize;
 
-	//    RESOLUTION_X: Horizontal resolution in dots per inch (DPI), for which the font was designed
+	// Horizontal resolution in dots per inch (DPI), for which the font was designed
 	private final int _resolutionX;
 
-	//    RESOLUTION_Y: Vertical resolution, in DPI
+	// Vertical resolution, in DPI
 	private final int _resolutionY;
 
-	//    SPACING: monospaced, proportional, or "character cell"
+	// monospaced, proportional, or "character cell"
 	private final String _spacing;
 
-	//    AVERAGE_WIDTH: Average width of characters of this font; 0 means scalable font
+	// Average width of characters of this font; 0 means scalable font
 	private final int _averageWidth;
 
-	//    CHARSET_REGISTRY: Registry defining this character set
+	//  Registry defining this character set
 	private final String _charsetRegistry;
 
-	//    CHARSET_ENCODING: Registry's character encoding scheme for this set
+	// Registry's character encoding scheme for this set
 	private final String _charsetEncoding;
 
 	public FontInfo(

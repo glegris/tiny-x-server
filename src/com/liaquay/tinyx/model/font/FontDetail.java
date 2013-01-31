@@ -20,67 +20,40 @@ package com.liaquay.tinyx.model.font;
 
 import com.liaquay.tinyx.model.TextExtents;
 
-
-public class FontDetail {
-
-	private final TextExtents _minBounds;
-	private final TextExtents _maxBounds;
-	private final int _defaultChar;
-	private final int _firstChar;
-	private final int _lastChar;
-	private final boolean _leftToRight;
-	private final int _ascent;
-	private final int _descent;
-
-	public FontDetail(
-			final TextExtents minBounds,
-			final TextExtents maxBounds,
-			final int defaultChar,
-			final int firstChar,
-			final int lastChar,
-			final boolean leftToRight, 
-			final int ascent, 
-			final int descent) {
-		
-		_minBounds = minBounds;
-		_maxBounds = maxBounds;
-		_defaultChar = defaultChar;
-		_firstChar = firstChar;
-		_lastChar = lastChar;
-		_leftToRight = leftToRight;
-		_ascent = ascent;
-		_descent = descent;
+public interface FontDetail {
+	
+	public enum Slant {
+		r,i
 	}
 
-	public TextExtents getMinBounds() {
-		return _minBounds;
-	}
-
-	public TextExtents getMaxBounds() {
-		return _maxBounds;
-	}
-
-	public int getDefaultChar() {
-		return _defaultChar;
-	}
-
-	public int getFirstChar() {
-		return _firstChar;
-	}
-
-	public int getLastChar() {
-		return _lastChar;
+	public enum Weight {
+		medium, bold
 	}
 	
-	public boolean isLeftToRight() {
-		return _leftToRight;
-	}
-	
-	public int getAscent() {
-		return _ascent;
-	}
+	public String getName();
+	public String getFoundry();
+	public String getFamilyName();
+	public String getWeightName();
+	public String getSlant();
+	public String getWidthName();
+	public String getAddStyleName();
+	public int getPixelSize();
+	public int getPointSize();
+	public int getResolutionX();
+	public int getResolutionY();
+	public String getSpacing();
+	public int getAverageWidth();
+	public String getCharsetRegistry();
+	public String getCharsetEncoding();
+	public TextExtents getMinBounds();
+	public TextExtents getMaxBounds();
+	public int getDefaultChar();
+	public int getFirstChar();
+	public int getLastChar();
+	public boolean isLeftToRight();
+	public int getAscent();
+	public int getDescent();
+	public TextExtents getTextExtents(final int character);
+	public TextExtents getTextExtents(final String text);
 
-	public int getDescent() {
-		return _descent;
-	}	
 }

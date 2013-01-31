@@ -52,7 +52,7 @@ public class QueryFont implements RequestHandler {
 			return;
 		}
 		
-		final String fontName = font.getFontInfo().toString();
+		final String fontName = font.getFontDetail().getName();
 		
 		LOGGER.log(Level.INFO, "QueryFont for name: " + fontName);
 		
@@ -98,7 +98,7 @@ public class QueryFont implements RequestHandler {
 		}
 
 		for(int i=fontDetail.getFirstChar(); i<=fontDetail.getLastChar(); i++){
-			final TextExtents textExtents = font.getTextExtents(i);
+			final TextExtents textExtents = fontDetail.getTextExtents(i);
 			if (textExtents != null) {
 				write(outputStream, textExtents);
 			} else {

@@ -19,7 +19,6 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.liaquay.tinyx.Request;
@@ -28,9 +27,9 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.FontAlias;
-import com.liaquay.tinyx.model.FontInfo;
+import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.font.FontFactory;
 
 public class ListFonts implements RequestHandler {
 
@@ -49,15 +48,11 @@ public class ListFonts implements RequestHandler {
 		// The pattern to search for fonts based on
 		final String pattern = inputStream.readString();
 
-		final List<FontAlias> aliases = server.getFontAliases(pattern);
-
-		// Query our fonts registry
-		final List<FontInfo> fontInfos = server.getFontFactory().getMatchingFonts(pattern);
+		final FontFactory fontFactory = server.getFontFactory();
 		
-		final List<String> matches = new ArrayList<String>();
-		for(final FontInfo fontInfo : fontInfos) matches.add(fontInfo.toString());
-		for(final FontAlias alias : aliases) matches.add(alias.getName());
-
+		// Query our fonts registry
+		final List<FontMatch> matches = fontFactory.getMatchingFonts(pattern);
+		
 		// Response
 		final XOutputStream outputStream = response.respond(1);
 
@@ -67,8 +62,8 @@ public class ListFonts implements RequestHandler {
 		response.padHeader();
 
 		int counter = 1;
-		for (final String currentFont : matches) {
-			outputStream.writeString(currentFont.toString());
+		for (final FontMatch currentFont : matches) {
+			outputStream.writeString(currentFont.getMergedFontName());
 
 			if (counter >= maxNames)
 				break;

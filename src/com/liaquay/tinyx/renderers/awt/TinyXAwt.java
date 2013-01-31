@@ -61,7 +61,7 @@ public class TinyXAwt {
 
 		final EventFactories eventFactories = new EventFactoriesImpl();
 		
-		final AwtFontFactory fontFactory = new AwtFontFactory();
+		final XawtFontFactory fontFactory = new XawtFontFactory();
 
 		final KeyboardMapping keyboardMapping = XawtKeyboardMappingFactory.createKeyboardMapping();
 		
@@ -73,11 +73,6 @@ public class TinyXAwt {
 
 		// Configure the new server
 		server.setListener(new Server.Listener() {
-			@Override
-			public void fontOpened(final Font font) {
-				font.setListener(fontFactory.fontOpened(font));
-			}
-
 			@Override
 			public void windowCreated(final Window window) {
 //				window.setListener( new XawtWindow(window));

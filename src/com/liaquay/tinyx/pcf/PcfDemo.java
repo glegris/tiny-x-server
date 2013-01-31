@@ -16,30 +16,21 @@
  */
 package com.liaquay.tinyx.pcf;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.zip.GZIPInputStream;
 
 public class PcfDemo {
 	public static void main (String[] ar) throws IOException {
-		final FileInputStream fileInputStream = new FileInputStream("/usr/share/fonts/X11/misc/6x10.pcf.gz");
-		final GZIPInputStream zipInputStream = new GZIPInputStream(fileInputStream);
-		try {
-			final PcfFont font = PcfFontFactory.read(zipInputStream);
-			
-			System.out.println("read font");
-			
-			test2(font);
-			test3(font);
-			test4(font);
-			test5(font);
-		}
-		finally {
-			fileInputStream.close();
-		}
+		final PcfFont font = PcfFontFactory.read("/usr/share/fonts/X11/misc/6x10.pcf.gz");
+
+		System.out.println("read font");
+
+		test2(font);
+		test3(font);
+		test4(font);
+		test5(font);
 	}
-	
-	
+
+
 	public static void test2(final PcfFont font) {
 		final String text = "Hello World !\"£$%^&*()-=+_[]# #]['; ;',./ /.,\\|]";
 		final PcfMetrics stringMetrics = font.stringMetrics(text);
@@ -48,7 +39,7 @@ public class PcfDemo {
 		font.drawString(renderer, text, 0, maxBounds.getAscent(), true);
 		System.out.println(text + "\n" + renderer);
 	}
-	
+
 	public static void test3(final PcfFont font) {
 		final String text = "Hello World !\"£$%^&*()-=+_[]# #]['; ;',./ /.,\\|]";
 		final PcfMetrics stringMetrics = font.stringMetrics(text);
@@ -57,7 +48,7 @@ public class PcfDemo {
 		font.drawString(renderer, text, stringMetrics.getWidth(), maxBounds.getAscent(), false);
 		System.out.println(text + "\n" + renderer);
 	}
-	
+
 	public static void test4(final PcfFont font) {
 		final String text = "Hello World !\"£$%^&*()-=+_[]# #]['; ;',./ /.,\\|]";
 		final PcfMetrics stringMetrics = font.stringMetrics(text);
@@ -66,7 +57,7 @@ public class PcfDemo {
 		font.drawString(renderer, text, 0, maxBounds.getAscent());
 		System.out.println(text + "\n" + renderer);
 	}
-	
+
 	public static void test5(final PcfFont font) {
 		final String text = (char)font.getMinCharacter() + "<" + (char)2000 + "" + (char)font.getMaxCharacter();
 		final PcfMetrics stringMetrics = font.stringMetrics(text);

@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -72,29 +73,6 @@ public class Server extends Client {
 	private final Pointer _pointer = new Pointer();
 	private final ScreenSaver _screenSaver = new ScreenSaver();
 
-
-	private static final String FIXED_FONT_NAME = "--Arial-medium-r-normal--12-0-0-0-c-0-ISO8859-1";
-	private static final FontInfo FIXED_FONT_INFO = new FontName(FIXED_FONT_NAME).getFontInfo("*");
-
-	// TODO make configurable
-	private static final List<FontAlias> _fontAliases = new ArrayList<FontAlias>();
-
-	static {
-		_fontAliases.add(new FontAlias("fixed", FIXED_FONT_NAME));
-		_fontAliases.add(new FontAlias("cursor", FIXED_FONT_NAME)); // TODO load the cursor font
-		_fontAliases.add(new FontAlias("6x10", "-misc-fixed-medium-r-normal--10-100-75-75-c-60-iso10646-1"));
-	}
-	
-	public List<FontAlias> getFontAliases(final String pattern) {
-		final List<FontAlias> aliases = new ArrayList<FontAlias>();
-		final StringBuilder sb = new StringBuilder();
-		for(final FontAlias alias : _fontAliases) {
-			if(alias.matchAndMergeFielded(pattern, sb)) {
-				aliases.add(alias);
-			}
-		}
-		return aliases;
-	}
 	
 	/**
 	 * A lock used to protect the server from concurrent updates
@@ -102,8 +80,7 @@ public class Server extends Client {
 	private final Lock _syncLock = new ReentrantLock();
 
 	public interface Listener {
-		public void fontOpened(final Font font);
-		public void windowCreated(final Window window);
+		public void windowCreated(final Window window); // TODO delete ?
 		public void pixmapCreated(final Pixmap pixmap);
 	}
 
@@ -113,9 +90,6 @@ public class Server extends Client {
 	 */
 	private static final class NullListener implements Listener {
 		@Override
-		public void fontOpened(final Font font) {}
-		@Override
-
 		public void windowCreated(final Window window) {}
 
 		@Override
@@ -132,12 +106,12 @@ public class Server extends Client {
 
 	private Font _fixedFont = null;
 
-	public Font getFixedFont() {
+	public Font getFixedFont() throws IOException { 
 		if(_fixedFont == null) {
-			final FontInfo fontInfo = getFontFactory().getFirstMatchingFont(FIXED_FONT_NAME);
-			if (fontInfo != null) {
-				final FontDetail fontDetail = getFontFactory().getFontDetail(fontInfo);
-				_fixedFont = new Font(allocateResourceId(), fontInfo, fontDetail);
+			final FontMatch fontMatch = getFontFactory().getFirstMatchingFont("fixed");
+			if (fontMatch != null) {
+				final FontDetail fontDetail = getFontFactory().open(fontMatch);
+				_fixedFont = new Font(allocateResourceId(), fontDetail, getFontFactory());
 				openFont(_fixedFont);
 			}
 		}
@@ -146,7 +120,6 @@ public class Server extends Client {
 
 	public void openFont(final Font font) {
 		getResources().add(font);
-		_listener.fontOpened(font);
 	}
 
 	public void pixmapCreated(final Pixmap pixmap) {
@@ -827,9 +800,4 @@ public class Server extends Client {
 		_prtFrozen = pointer;
 		dequeueAll();
 	}
-
-	public FontInfo getFixedFontInfo() {
-		return FIXED_FONT_INFO;
-	}
-
 }
