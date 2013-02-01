@@ -15,6 +15,7 @@ import com.liaquay.tinyx.model.TextExtents;
 public class XawtNativeFontDetail extends XawtFontDetail {
 
 	private final Font _font;
+	private final CharSetEncoder _encoder;
 	private final TextExtents _minBounds = new TextExtents( // TODO get these from the font
 			0, // Ascent
 			0, // Descent
@@ -27,10 +28,14 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 	private final int _ascent;
 	private final int _descent;
 	
-	public XawtNativeFontDetail(final FontInfo fontInfo, final Font font) {
+	public XawtNativeFontDetail(
+			final FontInfo fontInfo, 
+			final Font font,
+			final CharSetEncoder encoder) {
 		super(fontInfo.toString(), fontInfo);
 		
 		_font = font;
+		_encoder = encoder;
 		
 		final FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(font);
 
@@ -92,7 +97,7 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 
 	@Override
 	public TextExtents getTextExtents(final int character) {
-		_buffer[0] = (char)character;
+		_buffer[0] = _encoder.translate((char)character);
 		
 		final Rectangle2D bounds = _font.getStringBounds(_buffer, 0, 1, _awtFontRenderContext);
 		final LineMetrics lm = _font.getLineMetrics(_buffer, 0, 1, _awtFontRenderContext);
@@ -108,8 +113,10 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 
 	@Override
 	public TextExtents getTextExtents(final String text) {
-		final Rectangle2D bounds = _font.getStringBounds(text, 0, text.length(), _awtFontRenderContext);
-		final LineMetrics lm = _font.getLineMetrics(text, 0, text.length(), _awtFontRenderContext);
+		
+		final String t = _encoder.translate(text);
+		final Rectangle2D bounds = _font.getStringBounds(t, 0, t.length(), _awtFontRenderContext);
+		final LineMetrics lm = _font.getLineMetrics(t, 0, t.length(), _awtFontRenderContext);
 
 		return new TextExtents(
 				(int) lm.getAscent(),
@@ -128,11 +135,10 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 			final int ys,
 			final int color) {
 		
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		// TODO Add LCD antialias hint
-		
+		final String t = _encoder.translate(text);
+		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 		graphics.setColor(new Color(color)); // TODO slow
 		graphics.setFont(_font);
-		graphics.drawString(text, xs, ys);
+		graphics.drawString(t, xs, ys);
 	}
 }

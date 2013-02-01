@@ -295,6 +295,9 @@ public class Window extends Drawable {
 		}
 
 		updateLocation();
+		if(_parent != null){
+			_parent._listener.childCreated(this);
+		}
 	}
 
 	public ButtonGrab getButtonGrab(final ButtonGrab.Trigger trigger) {
@@ -430,7 +433,6 @@ public class Window extends Drawable {
 
 	private void addChild(final Window child) {
 		_children.add(child);
-		_listener.childCreated(child);
 	}
 
 	public boolean hasAncestor(final Window ancestor) {

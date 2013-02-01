@@ -110,10 +110,21 @@ public class FontString implements Comparable<FontString> {
 		System.out.println(match + " " +sb.toString());
 	}
 	
-	public static void main(String[] a){
+	public static void t2() {
 		final FontString f1 = new FontString("hanzigb16st");
 		System.out.println(f1);
 		final String f2 = "hanzigb16st";
+		System.out.println(f2);
+		
+		final StringBuilder sb = new StringBuilder();
+		final boolean match = f1.matchAndMergeFielded(f2, sb);
+		System.out.println(match + " " +sb.toString());	
+	}
+	
+	public static void main(String[] a){
+		final FontString f1 = new FontString("-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso8859-16");
+		System.out.println(f1);
+		final String f2 = "-*-*-*-R-*-*-*-120-*-*-*-*-ISO8859-*";
 		System.out.println(f2);
 		
 		final StringBuilder sb = new StringBuilder();
