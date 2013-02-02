@@ -47,7 +47,7 @@ public interface FontDetail {
 	public String getCharsetEncoding();
 	public TextExtents getMinBounds();
 	public TextExtents getMaxBounds();
-	public int getDefaultChar();
+	public int getDefaultChar(); // TODO should this be a char
 	public int getFirstChar();
 	public int getLastChar();
 	public boolean isLeftToRight();

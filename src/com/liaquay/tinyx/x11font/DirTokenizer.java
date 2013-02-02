@@ -1,6 +1,6 @@
 package com.liaquay.tinyx.x11font;
 
-public class Tokenizer {
+public class DirTokenizer {
 	public interface Listener {
 		public boolean token(final int index, final String text);
 	}
@@ -12,7 +12,6 @@ public class Tokenizer {
 	}
 	
 	public static final int tokenize(final String s, final Listener listener) {
-		System.out.println(s);
 		int tokens = 0;
 		State state = State.Separator;
 		final StringBuilder sb = new StringBuilder();
