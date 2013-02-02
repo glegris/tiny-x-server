@@ -210,7 +210,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	@Override
-	protected Graphics2D getGraphics() {
+	public Graphics2D getGraphics() {
 		return translateAndClipToWindow();
 	}
 
@@ -336,7 +336,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//		setImage(image);
 	}
 
-	private void updateCanvas() {
+	public void updateCanvas() {
 		//		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
 		_canvas.getGraphics().drawImage(getImage(), 0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
 	}

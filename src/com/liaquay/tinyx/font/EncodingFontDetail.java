@@ -1,9 +1,11 @@
-package com.liaquay.tinyx.x11font;
+package com.liaquay.tinyx.font;
 
+import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.model.font.FontDetail;
+import com.liaquay.tinyx.x11font.FontEncoding;
 
-public class MappingFontDetail implements FontDetail {
+public class EncodingFontDetail implements FontDetail {
 
 	private final FontDetail _delegate;
 	private final FontEncoding _mapping;
@@ -11,7 +13,7 @@ public class MappingFontDetail implements FontDetail {
 	private final char _firstChar;
 	private final char _lastChar;
 	
-	public MappingFontDetail(
+	public EncodingFontDetail(
 			final FontDetail delegate,
 			final FontEncoding mapping) {
 		
@@ -120,5 +122,30 @@ public class MappingFontDetail implements FontDetail {
 
 	public TextExtents getTextExtents(final String text) {
 		return _delegate.getTextExtents(text);
+	}
+
+	@Override
+	public void drawString(
+			final Drawable drawable, 
+			final String text, 
+			final int xs, 
+			final int ys, 
+			final int color) {
+		_delegate.drawString(drawable, _mapping.encode(text), xs, ys, color);
+	}
+
+	@Override
+	public void drawString(
+			final Drawable drawable, 
+			final String text, 
+			final int xs, 
+			final int ys, 
+			final int color, 
+			final int bx, 
+			final int by,
+			final int bw, 
+			final int bh, 
+			final int bgColor) {
+		_delegate.drawString(drawable, _mapping.encode(text), xs, ys, color, bx, by, bw, bh, bgColor);
 	}
 }

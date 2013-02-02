@@ -21,6 +21,7 @@ package com.liaquay.tinyx.model;
 import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Image.ImageType;
+import com.liaquay.tinyx.model.font.FontDetail;
 
 
 public abstract class Drawable implements Resource {
@@ -207,10 +208,25 @@ public abstract class Drawable implements Resource {
 			final int by, 
 			final int bw, 
 			final int bh){
-		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
+		
+		final Font font = graphicsContext.getFont();
+		final FontDetail fontDetail = font.getFontDetail();
+		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour(), bx, by, bw, bh, graphicsContext.getBackgroundColour());
+
+//		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
 	}
 	
 
+	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
+
+		final Font font = graphicsContext.getFont();
+		final FontDetail fontDetail = font.getFontDetail();
+		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour());
+
+//		getDrawableListener().drawString(graphicsContext, str, x, y);
+
+	}
+	
 	public void polyRect(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, boolean fill) {
 		getDrawableListener().polyRect(graphicsContext, x, y, width, height, fill);

@@ -22,9 +22,10 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.TinyXServer;
 import com.liaquay.tinyx.events.EventFactoriesImpl;
+import com.liaquay.tinyx.font.EncodingFontFactory;
+import com.liaquay.tinyx.font.FontManager;
 import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Depths;
-import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Keyboard;
 import com.liaquay.tinyx.model.KeyboardMapping;
 import com.liaquay.tinyx.model.Pixmap;
@@ -37,7 +38,10 @@ import com.liaquay.tinyx.model.Visual.BackingStoreSupport;
 import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.model.font.CompoundFontFactory;
+import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
+import com.liaquay.tinyx.x11font.FileFontEncodingFactory;
 
 public class TinyXAwt {
 
@@ -61,8 +65,19 @@ public class TinyXAwt {
 
 		final EventFactories eventFactories = new EventFactoriesImpl();
 		
-		final XawtFontFactory fontFactory = new XawtFontFactory();
-
+		final FileFontEncodingFactory fontEncodingFactory = new FileFontEncodingFactory();
+		fontEncodingFactory.load("/usr/share/fonts/X11/misc/");
+		final FontFactory fontFactory = new CompoundFontFactory(
+				new FontFactory[]{
+					new EncodingFontFactory(
+							new FontManager(
+									new XawtPcfFontFactory("/usr/share/fonts/X11/misc/"), 
+									50), 
+									fontEncodingFactory),
+					new EncodingFontFactory(
+							new XawtNativeFontFactory(),
+							fontEncodingFactory)});
+		
 		final KeyboardMapping keyboardMapping = XawtKeyboardMappingFactory.createKeyboardMapping();
 		
 		final Keyboard keyboard = new Keyboard(keyboardMapping);

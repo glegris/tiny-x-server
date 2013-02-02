@@ -900,10 +900,6 @@ public class Window extends Drawable {
 		_buttonGrabs.remove(buttonGrab.getTrigger());
 	}	
 
-	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
-		_listener.drawString(graphicsContext, str, x, y);
-
-	}
 
 	public void polyArc(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, int angle1, int angle2, boolean fill) {

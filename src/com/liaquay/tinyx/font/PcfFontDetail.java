@@ -1,23 +1,18 @@
-package com.liaquay.tinyx.renderers.awt;
+package com.liaquay.tinyx.font;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-
-import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.pcf.PcfBitmaps;
+import com.liaquay.tinyx.model.font.FontDetailAdaptor;
 import com.liaquay.tinyx.pcf.PcfFont;
 import com.liaquay.tinyx.pcf.PcfMetrics;
 
-public class XawtPcfFontDetail extends XawtFontDetail {
+public abstract class PcfFontDetail extends FontDetailAdaptor {
 
 	private final PcfFont _font;
 	private final TextExtents _minBounds;
 	private final TextExtents _maxBounds;
 	
-	public XawtPcfFontDetail(
+	public PcfFontDetail(
 			final String name,
 			final PcfFont font,
 			final FontInfo fontInfo) {
@@ -90,21 +85,7 @@ public class XawtPcfFontDetail extends XawtFontDetail {
 				);
 	}
 	
-	@Override
-	public void drawString(
-			final Graphics2D graphics, 
-			final String text, 
-			final int xs, 
-			final int ys,
-			final int color) {
-		
-		graphics.setColor(new Color(color)); // TODO slow
-		_font.drawString(new PcfBitmaps.Renderer(){ // TODO only make one of these
-			@Override
-			public void render(int x, int y) {
-				graphics.drawRect(x, y, 0, 0); // TODO slow
-			}
-			
-		}, text, xs, ys);
+	public PcfFont getPcfFont() {
+		return _font;
 	}
 }

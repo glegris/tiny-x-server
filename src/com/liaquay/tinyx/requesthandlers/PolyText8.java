@@ -77,7 +77,7 @@ public class PolyText8 implements RequestHandler {
 				final String text = inputStream.readString(len);
 				x += delta;
 
-				drawable.getDrawableListener().drawString(graphicsContext, text, x, y);
+				drawable.drawString(graphicsContext, text, x, y);
 				
 				final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();
 				final TextExtents textExtents = fontDetail.getTextExtents(text);

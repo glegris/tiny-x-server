@@ -30,7 +30,7 @@ public class FileFontEncodingFactory implements FontEncodingFactory {
 		if(fileName == null) {
 			// TODO Log error
 			
-			return null;
+			return NullFontEncoding.INSTANCE;
 		}
 		
 		final FontEncoding readEncoding = FontEncodingState2Reader.read(fileName);
