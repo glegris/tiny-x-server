@@ -85,9 +85,9 @@ public class XAwtGraphicsContext {
 
 		Stroke s = null;
 		if (graphicsContext.getDashes() != null && graphicsContext.getDashes().size() > 0) {
-			s = new BasicStroke(graphicsContext.getLineWidth(), awtCapStyle, awtJoinStyle, 1.0f, toFloat(graphicsContext.getDashes()), graphicsContext.getDashOffset());
+			s = new BasicStroke();//graphicsContext.getLineWidth(), awtCapStyle, awtJoinStyle, 1.0f, toFloat(graphicsContext.getDashes()), graphicsContext.getDashOffset());
 		} else {
-			s = new BasicStroke(graphicsContext.getLineWidth(), awtCapStyle, awtJoinStyle, 1.0f);
+			s = new BasicStroke();//, awtCapStyle, awtJoinStyle, 1.0f);
 		}
 
 		return s;

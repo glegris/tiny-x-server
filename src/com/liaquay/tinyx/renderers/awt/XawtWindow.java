@@ -166,6 +166,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		super.polyRect(graphicsContext, x, y, width, height, fill);
 
+		
 		updateCanvas(x, y, width, height);
 	}
 
@@ -191,6 +192,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		updateCanvas(xCoords, yCoords);
 	}
 
+	/** Seems ok */
 	@Override
 	public void drawLine(
 			final GraphicsContext graphicsContext, 
@@ -206,7 +208,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 		int botRightX = Math.max(x1,  x2);
 		int botRightY = Math.max(y1,  y2);
-		updateCanvas(topLeftX, topLeftY, topLeftX - botRightX, topLeftY - botRightY);
+
+		updateCanvas(topLeftX, topLeftY, Math.max(1, botRightX - topLeftX) , Math.max(1, botRightY - topLeftY));
 	}
 
 	@Override
@@ -337,7 +340,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	private void updateCanvas() {
-		//		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
 		_canvas.getGraphics().drawImage(getImage(), 0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
 	}
 
@@ -356,7 +358,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			blx = Math.max(blx, xCoords[i]);
 			bly = Math.max(bly, yCoords[i]);
 		}
-		updateCanvas(tlx, tly, blx - tlx, bly - tly);
+
+		updateCanvas();//tlx, tly, (blx - tlx), (bly - tly));
 	}
 
 	@Override

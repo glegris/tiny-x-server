@@ -209,15 +209,5 @@ public abstract class Drawable implements Resource {
 			final int bh){
 		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
 	}
-	
-
-	public void polyRect(GraphicsContext graphicsContext, int x, int y,
-			int width, int height, boolean fill) {
-		getDrawableListener().polyRect(graphicsContext, x, y, width, height, fill);
-	}
-
-	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
-		getDrawableListener().polyLine(graphicsContext, x, y);
-	}
 
 }

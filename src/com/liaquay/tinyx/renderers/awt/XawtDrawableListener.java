@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -36,7 +37,11 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Event;
@@ -57,6 +62,35 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		_drawable = drawable;
 	}
 
+
+	public static void writeImage(BufferedImage image, String filename) {
+		if (image != null) {
+			try {
+				// create a file to write the image to (make sure it exists), then use the ImageIO class
+				// to write the RenderedImage to disk as a PNG file.
+				File file = new File("/home/ncludki/tinyx/" + filename + System.currentTimeMillis() + ".png");
+				file.createNewFile();
+				ImageIO.write(image, "png", file);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public static  BufferedImage canvasToImage(Canvas cnvs) {
+        int w = cnvs.getWidth();
+        int h = cnvs.getHeight();
+        int type = BufferedImage.TYPE_INT_RGB;
+        BufferedImage image = new BufferedImage(w,h,type);
+        Graphics2D g2 = image.createGraphics();
+        cnvs.paint(g2);
+        g2.dispose();
+        return image;
+    }
+ 
+
 	@Override
 	public abstract void createImage(Drawable drawable);
 
@@ -67,7 +101,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		//		BufferedImage destImage = getImage();
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
-//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
+		//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
 		getGraphics().drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
 	}
 
@@ -83,7 +117,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
 		Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
 
-//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
+		//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
 		getGraphics().drawImage(newImage, srcX, srcY, width, height, null);
 	}
 
@@ -126,20 +160,6 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		Graphics sg = getGraphics();
 		sg.drawImage(image, destinationX, destinationY, width, height, null);
-
-		//			if (getImage() != null) {
-		//				try {
-		//					// create a file to write the image to (make sure it exists), then use the ImageIO class
-		//					// to write the RenderedImage to disk as a PNG file.
-		//					File file = new File("/home/ncludki/tinyx/putimage-screen-" + System.currentTimeMillis() + ".png");
-		//					file.createNewFile();
-		//					ImageIO.write(getImage(), "png", file);
-		//				} catch (IOException e) {
-		//					// TODO Auto-generated catch block
-		//					e.printStackTrace();
-		//				}
-		//			}
-		//		}
 	}
 
 	BufferedImage createCompatibleImage(BufferedImage image)
@@ -197,14 +217,15 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		XAwtGraphicsContext.tile(graphics, graphicsContext);
+				XAwtGraphicsContext.tile(graphics, graphicsContext);
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
-		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
-		graphics.draw(stroke.createStrokedShape(s));
+		//		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
+		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+		//		graphics.draw(stroke.createStrokedShape(s));
+		graphics.drawPolygon(xCoords, yCoords, xCoords.length);
 	}
 
 	@Override
@@ -217,13 +238,14 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		XAwtGraphicsContext.tile(graphics, graphicsContext);
+				XAwtGraphicsContext.tile(graphics, graphicsContext);
 
-		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
 
 		for (int i = 0; i < x1.length; i++) {
-			Shape l = new Line2D.Float(x1[i], y1[i], x2[i], y2[i]);
-			graphics.draw(stroke.createStrokedShape(l));
+			//			Shape l = new Line2D.Float(x1[i], y1[i], x2[i], y2[i]);
+			//			graphics.draw(stroke.createStrokedShape(l));
+			graphics.drawLine(x1[i], y1[i], x2[i], y2[i]);
 		}
 
 	}
@@ -236,9 +258,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
-		Shape l = new Line2D.Float(x1, y1, x2, y2);
-		graphics.draw(stroke.createStrokedShape(l));
+		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+		//		Shape l = new Line2D.Float(x1, y1, x2, y2);
+		//		graphics.draw(stroke.createStrokedShape(l));
+		graphics.drawLine(x1, y1, x2, y2);
 	}
 
 	@Override
