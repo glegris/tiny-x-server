@@ -8,35 +8,27 @@ import java.util.logging.Logger;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactoryAdaptor;
+import com.liaquay.tinyx.model.font.FontFactoryAdaptor2;
 import com.liaquay.tinyx.pcf.PcfFont;
 import com.liaquay.tinyx.pcf.PcfFontFactory;
-import com.liaquay.tinyx.x11font.FontDirReader;
 
-public class XawtPcfFontFactory  extends FontFactoryAdaptor {
+public class XawtPcfFontFactory  extends FontFactoryAdaptor2 {
 	
 	private final static Logger LOGGER = Logger.getLogger(XawtPcfFontFactory.class.getName());
 
 	private final Map<String, String> _fontNameToFileName = new TreeMap<String, String>();
 	
-	public XawtPcfFontFactory(final String fontDir) throws IOException {
-		FontDirReader.read(fontDir, new FontDirReader.Listener() {
-			
-			@Override
-			public void font(final String fileName, final String fontName) {
-				_fontNameToFileName.put(fontName, fileName);
-				addFontName(fontName);
-			}
-			
-			@Override
-			public void alias(final String alias, final String pattern) {
-				addFontAlias(alias, pattern);
-			}
-		});
+	public XawtPcfFontFactory() throws IOException {
+		
 	}
 
+	public void addFont(final String fileName, final String fontName) {
+		_fontNameToFileName.put(fontName, fileName);
+		addFontName(fontName);
+	}
+	
 	@Override
-	public FontDetail deAliasedOpen(final FontMatch fontMatch) throws IOException {
+	public FontDetail open(final FontMatch fontMatch) throws IOException {
 		
 		final String fileName = _fontNameToFileName.get(fontMatch.getMergedFontName());
 		if(fileName == null) {

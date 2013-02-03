@@ -19,6 +19,17 @@ public class FontEncodingStage1Reader {
 		public void firstIndex(final int index);
 	}
 	
+	public static void readFromResource(final String resourceName, final Listener listener) throws IOException {
+		final InputStream fileInputStream = FontEncodingStage1Reader.class.getClassLoader().getResourceAsStream(resourceName);
+		final InputStream inputStream = resourceName.toLowerCase().endsWith(".gz") ? new GZIPInputStream(fileInputStream) : fileInputStream;
+		try {
+			read(inputStream, listener);
+		}
+		finally {
+			fileInputStream.close();
+		}
+	}
+	
 	public static void read(final String filename, final Listener listener) throws IOException {
 		final FileInputStream fileInputStream = new FileInputStream(filename);
 		final InputStream inputStream = filename.toLowerCase().endsWith(".gz") ? new GZIPInputStream(fileInputStream) : fileInputStream;
@@ -158,7 +169,7 @@ public class FontEncodingStage1Reader {
 	}
 	
 	public static void main(final String[] args) throws IOException {
-		read("/usr/share/fonts/X11/encodings/large/big5hkscs-0.enc.gz",  new FontEncodingStage1Reader.Listener() {
+		readFromResource("com/liaquay/tinyx/x11font/iso8859-10.enc",  new FontEncodingStage1Reader.Listener() {
 			
 			@Override
 			public void mapping(final char from, final char to) {

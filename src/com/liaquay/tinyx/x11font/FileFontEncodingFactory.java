@@ -11,6 +11,25 @@ public class FileFontEncodingFactory implements FontEncodingFactory {
 	
 	public FileFontEncodingFactory() {}
 	
+	public void loadBuiltIns() throws IOException {
+		loadBuiltIn("iso8859-1");
+		loadBuiltIn("iso8859-2");
+		loadBuiltIn("iso8859-3");
+		loadBuiltIn("iso8859-4");
+		loadBuiltIn("iso8859-5");
+		loadBuiltIn("iso8859-6");
+		loadBuiltIn("iso8859-7");
+		loadBuiltIn("iso8859-8");
+		loadBuiltIn("iso8859-9");
+		loadBuiltIn("iso8859-10");
+		loadBuiltIn("iso8859-15");
+	}
+	
+	private void loadBuiltIn(final String encoding) throws IOException {
+		final FontEncoding mapping = FontEncodingState2Reader.readFromResource("com/liaquay/tinyx/x11font/"+ encoding + ".enc");
+		_fontEncodingMap.put(encoding, mapping);
+	}
+	
 	public void load(final String folderName) throws IOException {
 		FontEncodingsReader.read(folderName, new FontEncodingsReader.Listener() {
 			@Override

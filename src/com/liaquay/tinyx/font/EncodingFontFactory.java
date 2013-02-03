@@ -32,7 +32,6 @@ public class EncodingFontFactory implements FontFactory {
 	}
 
 	public FontDetail open(final FontMatch fontMatch) throws IOException {
-		
 		final FontDetail fontDetail = _delegate.open(fontMatch);
 		if(fontDetail == null) return null;
 		final FontEncoding encoding = getEncoding(fontMatch);
@@ -47,10 +46,10 @@ public class EncodingFontFactory implements FontFactory {
 		final String encoding;
 		if(fontMatch.isFielded()) {
 			final FontInfo fontInfo = fontMatch.getFontInfo();
-			encoding = fontInfo.getCharsetRegistry() + "-" + fontInfo.getCharsetEncoding();
+			encoding = fontInfo.getCharsetRegistry().toLowerCase() + "-" + fontInfo.getCharsetEncoding().toLowerCase();
 		}
 		else {
-			encoding = "iso8859-0";
+			encoding = "iso8859-1";
 		}
 				
 		return _encodingFactory.open(encoding);

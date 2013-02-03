@@ -20,7 +20,7 @@ public class FontEncodingState2Reader {
 
 		@Override
 		public void startMappingUnicode() {
-			_map = new char[_size-_first];
+			_map = new char[_size-_first+1];
 		}
 
 		@Override
@@ -57,9 +57,15 @@ public class FontEncodingState2Reader {
 		FontEncodingStage1Reader.read(file,  listener);
 		return listener.getMapping();
 	}
-
+	
+	public static FontEncoding readFromResource(final String file) throws IOException {
+		final MapFontEncodingListener listener = new MapFontEncodingListener();
+		FontEncodingStage1Reader.readFromResource(file,  listener);
+		return listener.getMapping();
+	}
+	
 	public static void main(final String[] args) throws IOException {
-		final FontEncoding mapping = read("/usr/share/fonts/X11/encodings/adobe-symbol.enc.gz");
+		final FontEncoding mapping = readFromResource("com/liaquay/tinyx/x11font/iso8859-10.enc");
 		System.out.println(mapping);
 	}
 }

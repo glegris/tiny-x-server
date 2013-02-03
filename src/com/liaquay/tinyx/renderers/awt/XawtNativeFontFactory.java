@@ -9,13 +9,13 @@ import java.util.TreeMap;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactoryAdaptor;
+import com.liaquay.tinyx.model.font.FontFactoryAdaptor2;
 
-public class XawtNativeFontFactory extends FontFactoryAdaptor {
+public class XawtNativeFontFactory extends FontFactoryAdaptor2 {
 	
 	public XawtNativeFontFactory() {
 		
-		addFontAlias("variable", "-*-Arial-medium-r-normal-*-*-120-*-*-*-*-iso8859-1");
+//		addFontAlias("variable", "-*-Arial-medium-r-normal-*-*-120-*-*-*-*-iso8859-1");
 		
 		final GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		final Font[] fonts = e.getAllFonts(); // Get the fonts
@@ -92,7 +92,7 @@ public class XawtNativeFontFactory extends FontFactoryAdaptor {
 	}
 	
 	@Override
-	public FontDetail deAliasedOpen(final FontMatch fontMatch) throws IOException {
+	public FontDetail open(final FontMatch fontMatch) throws IOException {
 		if(!fontMatch.isFielded()) return null; // Only cope with TTF with nice long names for now.
 		final FontInfo fontInfo = fontMatch.getFontInfo();
 		final String fontFamily = translateFamilyName(fontInfo.getFamilyName());

@@ -39,9 +39,11 @@ import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.font.CompoundFontFactory;
+import com.liaquay.tinyx.model.font.DealiasingFontFactory;
 import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 import com.liaquay.tinyx.x11font.FileFontEncodingFactory;
+import com.liaquay.tinyx.x11font.FontDirReader;
 
 public class TinyXAwt {
 
@@ -55,6 +57,50 @@ public class TinyXAwt {
 		return _server;
 	}
 	
+	private static FontFactory buildPcfFontFactory() throws IOException {
+		final String folder = "/usr/share/fonts/X11/misc/";
+		final FileFontEncodingFactory fontEncodingFactory = new FileFontEncodingFactory();
+		fontEncodingFactory.load(folder);
+		fontEncodingFactory.loadBuiltIns();
+		
+		final XawtPcfFontFactory xawtPcfFontFactory = new XawtPcfFontFactory();
+		final FontManager fontManager = new FontManager(xawtPcfFontFactory, 50);
+		final EncodingFontFactory encodingFontFactory = new EncodingFontFactory(fontManager, fontEncodingFactory);
+		final DealiasingFontFactory dealiasingFontFactory = new DealiasingFontFactory(encodingFontFactory);
+		
+		FontDirReader.read(folder, new FontDirReader.Listener() {
+			
+			@Override
+			public void font(final String fileName, final String fontName) {
+				xawtPcfFontFactory.addFont(fileName, fontName);
+			}
+			
+			@Override
+			public void alias(final String alias, final String pattern) {
+				dealiasingFontFactory.addFontAlias(alias, pattern);
+			}
+		});		
+		
+		return dealiasingFontFactory;
+	}
+	
+	private static FontFactory buildNativeFontFactory() throws IOException {
+		final String folder = "/usr/share/fonts/X11/misc/";
+		final FileFontEncodingFactory fontEncodingFactory = new FileFontEncodingFactory();
+		fontEncodingFactory.load(folder);
+		fontEncodingFactory.loadBuiltIns();
+		
+		final XawtNativeFontFactory xawtPcfFontFactory = new XawtNativeFontFactory();
+		final FontManager fontManager = new FontManager(xawtPcfFontFactory, 50);
+		final EncodingFontFactory encodingFontFactory = new EncodingFontFactory(fontManager, fontEncodingFactory);
+		final DealiasingFontFactory dealiasingFontFactory = new DealiasingFontFactory(encodingFontFactory);
+		
+		dealiasingFontFactory.addFontAlias("variable", "-*-Arial-medium-r-normal-*-*-120-*-*-*-*-iso8859-1");
+		
+		return dealiasingFontFactory;
+	}
+	
+	
 	/**
 	 * Just an example of how to configure a server.
 	 * 
@@ -67,16 +113,12 @@ public class TinyXAwt {
 		
 		final FileFontEncodingFactory fontEncodingFactory = new FileFontEncodingFactory();
 		fontEncodingFactory.load("/usr/share/fonts/X11/misc/");
+		fontEncodingFactory.loadBuiltIns();
+		
 		final FontFactory fontFactory = new CompoundFontFactory(
 				new FontFactory[]{
-					new EncodingFontFactory(
-							new FontManager(
-									new XawtPcfFontFactory("/usr/share/fonts/X11/misc/"), 
-									50), 
-									fontEncodingFactory),
-					new EncodingFontFactory(
-							new XawtNativeFontFactory(),
-							fontEncodingFactory)});
+					buildPcfFontFactory(),
+					buildNativeFontFactory()});
 		
 		final KeyboardMapping keyboardMapping = XawtKeyboardMappingFactory.createKeyboardMapping();
 		
