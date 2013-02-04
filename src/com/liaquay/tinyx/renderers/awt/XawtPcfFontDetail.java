@@ -3,8 +3,6 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.TextExtents;
 import com.liaquay.tinyx.pcf.PcfBitmaps;

@@ -34,81 +34,6 @@ public class PcfFont {
 		_bitmaps = bitmaps;
 		_encodings = encodings;
 	}
-
-	/**
-	 * Test if the font is a 2-byte font.
-	 * @return      True if the font is 2-byte (e.g. JISX0208).
-	 */
-	private boolean is2Byte() {
-		return _encodings.getFirstRow() > 0;
-	}
-
-	private static String toJISX(final String s) {
-		final StringBuilder sb = new StringBuilder(s.length());
-		int mode = 0;
-		for (int i=0; i<s.length(); i++) {
-			int c = (int)s.charAt(i);
-			if (c == 0x1b && i<s.length()-2) {
-				if (s.charAt(i+1) == '(' &&
-						(s.charAt(i+2)=='B' ||
-						s.charAt(i+2)=='J')) {
-					mode = 0;
-					i += 2;
-					continue;
-				} else if (s.charAt(i+1) == '$' &&
-						(s.charAt(i+2)=='@' ||
-						s.charAt(i+2)=='B')) {
-					mode = 1;
-					i += 2;
-					continue;
-				}
-			}
-			if (mode == 1 && i<s.length()-1) {
-				int c2 = (int)(s.charAt(i+1));
-				c = (char)((c<<8)|c2);
-				i++;
-			} else if (c > 0x80 && i<s.length()-1) {
-				c -= 0x80;
-				int c2 = (int)(s.charAt(i+1))-0x80;
-				c = (char)((c<<8)|c2);
-				i++;
-			}
-			int cj = c-JISX_OFFSET;
-			if (cj >= 0 && cj < JISX.length && JISX[cj]>0) {
-				c = JISX[cj];
-			}
-			sb.append((char)c);
-		}
-		return sb.toString();
-	}
-
-	private final static int JISX_OFFSET = 32; // Offset of first character
-
-	// Mapping from ASCII to JISX-0208
-	final static char JISX[] = {
-		'\u2121', '\u212a', '\u216d', '\u2174', '\u2170', '\u2173', '\u2175',
-		'\u216c', '\u214a', '\u214b', '\u2176', '\u215c', '\u2124', '\u215d',
-		'\u2125', '\u213f', '\u2330', '\u2331', '\u2332', '\u2333', '\u2334',
-		'\u2335', '\u2336', '\u2337', '\u2338', '\u2339', '\u2127', '\u2128',
-		'\u2163', '\u2161', '\u2164', '\u2129', '\u2177', '\u2341', '\u2342',
-		'\u2343', '\u2344', '\u2345', '\u2346', '\u2347', '\u2348', '\u2349',
-		'\u234a', '\u234b', '\u234c', '\u234d', '\u234e', '\u234f', '\u2350',
-		'\u2351', '\u2352', '\u2353', '\u2354', '\u2355', '\u2356', '\u2357',
-		'\u2358', '\u2359', '\u235a', '\u214e', '\u2140', '\u214f', '\u2130',
-		'\u2132', '\u2129', '\u2361', '\u2362', '\u2363', '\u2364', '\u2365',
-		'\u2366', '\u2367', '\u2368', '\u2369', '\u236a', '\u236b', '\u236c',
-		'\u236d', '\u236e', '\u236f', '\u2370', '\u2371', '\u2372', '\u2373',
-		'\u2374', '\u2375', '\u2376', '\u2377', '\u2378', '\u2379', '\u237a',
-		'\u2150', '\u2143', '\u2151', '\u2141', '\u2121'};
-
-	private String encodeString(final String text) {
-		if (is2Byte()) {
-			return toJISX(text);
-		}
-		else {
-			return text;
-		}
-	}
 	
 	public void drawString(
 			final PcfBitmaps.Renderer renderer, 
@@ -125,10 +50,9 @@ public class PcfFont {
 			final int ys, 
 			final boolean leftToRight) {
 		
-		final String encodedText = encodeString(text);
 		int x = xs;
-		for(int i = 0; i < encodedText.length(); ++i) {
-			final char c = encodedText.charAt(i);
+		for(int i = 0; i < text.length(); ++i) {
+			final char c = text.charAt(i);
 			final int glyphIndex = _encodings.getGlyphIndex(c);
 			final PcfMetrics metrics = _metrics[glyphIndex];
 			if(!leftToRight) x-= metrics.getWidth();
@@ -137,12 +61,7 @@ public class PcfFont {
 		}	
 	}
 	
-	public PcfMetrics stringMetrics(final String text) {
-		return stringMetricsForEncodedText(encodeString(text));
-	}
-	
-	private PcfMetrics stringMetricsForEncodedText(final String encodedText) {
-		final String s = encodedText;
+	public PcfMetrics stringMetrics(final String s) {
 		
 		int ascent = 0;
 		int descent = 0;

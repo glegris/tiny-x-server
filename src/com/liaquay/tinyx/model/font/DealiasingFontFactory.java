@@ -26,7 +26,9 @@ public class DealiasingFontFactory implements FontFactory {
 		
 		for(final FontAlias alias : _fontAliases) {
 			final FontMatch match = alias.getFontMatch(pattern, scratch);
-			if(match != null) return match;
+			if(match != null){
+				return match;
+			}
 		}
 
 		return _delegate.getFirstMatchingFont(pattern);
