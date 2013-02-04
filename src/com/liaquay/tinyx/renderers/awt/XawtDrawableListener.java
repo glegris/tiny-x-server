@@ -56,7 +56,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	final Drawable _drawable;
 
-	protected abstract Graphics2D getGraphics();
+	public abstract Graphics2D getGraphics();
 
 	public XawtDrawableListener(Drawable drawable) {
 		_drawable = drawable;

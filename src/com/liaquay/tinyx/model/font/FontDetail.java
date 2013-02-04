@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.model.font;
 
+import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.TextExtents;
 
 public interface FontDetail {
@@ -47,7 +48,7 @@ public interface FontDetail {
 	public String getCharsetEncoding();
 	public TextExtents getMinBounds();
 	public TextExtents getMaxBounds();
-	public int getDefaultChar();
+	public int getDefaultChar(); // TODO should this be a char
 	public int getFirstChar();
 	public int getLastChar();
 	public boolean isLeftToRight();
@@ -55,5 +56,23 @@ public interface FontDetail {
 	public int getDescent();
 	public TextExtents getTextExtents(final int character);
 	public TextExtents getTextExtents(final String text);
-
+	
+	public void drawString(
+			final Drawable drawable, 
+			final String text, 
+			final int xs, 
+			final int ys, 
+			final int color);
+	
+	public void drawString(
+			final Drawable drawable,
+			final String text,
+			final int xs,
+			final int ys,
+			final int color,
+			final int bx,
+			final int by, 
+			final int bw,
+			final int bh,
+			final int bgColor);
 }

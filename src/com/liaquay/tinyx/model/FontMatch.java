@@ -1,8 +1,10 @@
 package com.liaquay.tinyx.model;
 
 public class FontMatch {
+	
 	private final String _fontName;
 	private final String _mergedFontName;
+	private FontInfo _fontInfo = null;
 	
 	public FontMatch(final String fontName, final String mergedFontName){
 		_fontName = fontName;
@@ -22,6 +24,7 @@ public class FontMatch {
 	}
 	
 	public FontInfo getFontInfo() {
+		if(_fontInfo != null)return _fontInfo;
 		if(!isFielded()) return null;
 		final String[] split = _mergedFontName.split("-");
 		final String[] snn = new  String[Math.max(14, split.length-1)];
@@ -42,7 +45,7 @@ public class FontMatch {
 		final String charsetRegistry = parseString(snn[12]);
 		final String charsetEncoding = parseString(snn[13]);
 
-		return new FontInfo(
+		_fontInfo = new FontInfo(
 				foundry,
 				familyName, 
 				weightName,
@@ -56,8 +59,9 @@ public class FontMatch {
 				spacing, 
 				averageWidth, 
 				charsetRegistry,
-				charsetEncoding);		
+				charsetEncoding);
 		
+		return _fontInfo;
 	}
 	
 	private static String parseString(final String s) {

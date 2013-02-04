@@ -3,17 +3,19 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactoryAdaptor;
+import com.liaquay.tinyx.model.font.FontFactoryAdaptor2;
 
-public class XawtNativeFontFactory extends FontFactoryAdaptor {
+public class XawtNativeFontFactory extends FontFactoryAdaptor2 {
 	
 	public XawtNativeFontFactory() {
 		
-		addFontAlias("variable", "-*-Arial-medium-r-normal-*-*-120-*-*-*-*-iso8859-1");
+//		addFontAlias("variable", "-*-Arial-medium-r-normal-*-*-120-*-*-*-*-iso8859-1");
 		
 		final GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		final Font[] fonts = e.getAllFonts(); // Get the fonts
@@ -55,13 +57,45 @@ public class XawtNativeFontFactory extends FontFactoryAdaptor {
 				}
 			}
 		}
+		
+		for(final FontDetail.Slant slant : FontDetail.Slant.values()) {
+			for(final FontDetail.Weight weight :FontDetail. Weight.values()) {
+				addFontName("-adobe-symbol-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-adobe-fontspecific");
+				addFontName("-adobe-helvetica-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
+				addFontName("-adobe-times new roman-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
+				addFontName("-adobe-times-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
+				addFontName("-adobe-courier-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
+				addFontName("-adobe-helvetic-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
+				addFontName("-adobe-new century schoolbook-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
+			}
+		}
 	}
 
+	private static final Map<String, String> FAMILY_MAP = new TreeMap<String, String>();
+	
+	static {
+		FAMILY_MAP.put("symbol", "Monospaced");
+		FAMILY_MAP.put("times", "Serif");
+		FAMILY_MAP.put("times new roman", "Serif");
+		FAMILY_MAP.put("new century schoolbook", "Serif");
+		FAMILY_MAP.put("helvetica", "SansSerif");
+		FAMILY_MAP.put("helvetic", "SansSerif");
+		FAMILY_MAP.put("courier", "SansSerif");
+	}
+	
+	private static final String translateFamilyName(final String name) {
+		final String translation = FAMILY_MAP.get(name);
+		if(translation != null) {
+			return translation;
+		}
+		return name;
+	}
+	
 	@Override
-	public FontDetail deAliasedOpen(final FontMatch fontMatch) throws IOException {
+	public FontDetail open(final FontMatch fontMatch) throws IOException {
 		if(!fontMatch.isFielded()) return null; // Only cope with TTF with nice long names for now.
 		final FontInfo fontInfo = fontMatch.getFontInfo();
-		final String fontFamily = fontInfo.getFamilyName();
+		final String fontFamily = translateFamilyName(fontInfo.getFamilyName());
 		final int fontSize = 
 				fontInfo.getPixelSize() > 0 ? fontInfo.getPixelSize() :
 					fontInfo.getPointSize() > 0 ? fontInfo.getPointSize()/10 :
@@ -74,9 +108,16 @@ public class XawtNativeFontFactory extends FontFactoryAdaptor {
 		
 		final Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize == 0 ? 12 : fontSize);
 
-		return new XawtNativeFontDetail(fontInfo, awtFont);
+		final CharSetEncoder encoder;
+		if(fontInfo.getCharsetEncoding().equals("fontspecific")) {
+			encoder = FontSpecificCharSetEncoder.ENCODER;
+		}
+		else {
+			encoder = NullCharSetEncoder.ENCODER;
+		}
+		
+		return new XawtNativeFontDetail(fontInfo, awtFont, encoder);
 	}
-	
 
 	@Override
 	public void close(final FontDetail fontDetail) {

@@ -1,4 +1,4 @@
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.font;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.liaquay.tinyx.model.FontMatch;
+import com.liaquay.tinyx.model.font.FontDetail;
+import com.liaquay.tinyx.model.font.FontFactory;
 
 public class FontManager implements FontFactory {
 
@@ -24,7 +26,9 @@ public class FontManager implements FontFactory {
 	private final Map<String, FontDetailHolder> _openFonts = new TreeMap<String, FontDetailHolder>();
 	private final Map<String, FontDetailHolder> _closedFonts = new TreeMap<String, FontDetailHolder>();
 	
-	public FontManager(final FontFactory delegate, final int openFontCapacity) {
+	public FontManager(
+			final FontFactory delegate,
+			final int openFontCapacity) {
 		_delegate = delegate;
 		_openFontCapacity = openFontCapacity;
 	}
@@ -48,18 +52,18 @@ public class FontManager implements FontFactory {
 			return fdh1._fontDetail;
 		}
 		final FontDetail fontDetail = _delegate.open(fontMatch);
-		if(fontDetail != null){
-			final FontDetailHolder fdh2 = new FontDetailHolder(fontDetail);
-			_openFonts.put(fontMatch.getMergedFontName(), fdh2);
-			int overCapacity = _openFonts.size() - _openFontCapacity;
-			while(overCapacity > 0 && _closedFonts.size() > 0) {
-				final FontDetailHolder fdh3 = _closedFonts.values().iterator().next();
-				remove(fdh3);
-			}
+		if(fontDetail == null) return null;
+
+		final FontDetailHolder fdh2 = new FontDetailHolder(fontDetail);
+		_openFonts.put(fontMatch.getMergedFontName(), fdh2);
+		int overCapacity = _openFonts.size() - _openFontCapacity;
+		while(overCapacity > 0 && _closedFonts.size() > 0) {
+			final FontDetailHolder fdh3 = _closedFonts.values().iterator().next();
+			remove(fdh3);
 		}
 		return fontDetail;
 	}
-
+	
 	private final void remove(final FontDetailHolder fdh) {
 		final String fontName= fdh._fontDetail.getName();
 		_delegate.close(fdh._fontDetail);

@@ -16,6 +16,7 @@
  */
 package com.liaquay.tinyx.pcf;
 
+
 public class PcfFont {
 	private final PcfAccelerators _accelerators;
 	private final PcfMetrics[] _metrics;
@@ -40,27 +41,6 @@ public class PcfFont {
 	 */
 	private boolean is2Byte() {
 		return _encodings.getFirstRow() > 0;
-	}
-
-	/**
-	 * Convert a string to Unicode.
-	 * That is, "\ u x x x x" substrings are made into Unicode characters.
-	 * @param	s	The string
-	 * @return      The converted string.
-	 */
-	private static String toUnicode(String s) {
-		final StringBuilder outstr = new StringBuilder(s.length());
-		for (int i=0; i<s.length(); i++) {
-			char c = s.charAt(i);
-			if (c == '\\' && s.length()-i >= 6 &&
-					s.charAt(i+1) == 'u') {
-				c = (char)Integer.parseInt(
-						s.substring(i+2,i+6),16);
-				i += 5;
-			}
-			outstr.append(c);
-		}
-		return outstr.toString();
 	}
 
 	private static String toJISX(final String s) {
@@ -266,5 +246,24 @@ public class PcfFont {
 	
 	public int getMaxCharacter() {
 		return _encodings.getMaxCharacter();
+	}
+	
+	public String toString(final String text) {
+		final PcfMetrics stringMetrics = stringMetrics(text);
+		final PcfMetrics maxBounds =  getMaxBounds();
+		final PcfStringBitmapRenderer renderer = new PcfStringBitmapRenderer(stringMetrics.getWidth(), maxBounds.getHeight());
+		drawString(renderer, text, 0, maxBounds.getAscent(), true);
+		return renderer.toString();
+	}
+	
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		for(int i = _encodings.getMinCharacter(); i< _encodings.getMaxCharacter(); ++i) {
+			sb.append(i + "\n");
+			sb.append(toString("" + (char)i));
+			sb.append("\n");
+		}
+		
+		return sb.toString();
 	}
 }

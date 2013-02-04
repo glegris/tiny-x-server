@@ -27,6 +27,12 @@ public class DiadicFileReader {
 				System.out.println(fontFileName + " " + fontName);
 			}
 		});
+		read("/usr/share/fonts/X11/misc/encodings.dir", new Listener(){
+			@Override
+			public void parameter(final String fontFileName, final String fontName) {
+				System.out.println(fontFileName + " " + fontName);
+			}
+		});
 	}
 	
 	public static void read(final String fileName, final Listener listener)  throws IOException {
@@ -40,7 +46,7 @@ public class DiadicFileReader {
 		{
 			String line;
 			final String[] tokens = new String[2];
-			final Tokenizer.Listener tl = new Tokenizer.Listener() {
+			final DirTokenizer.Listener tl = new DirTokenizer.Listener() {
 				@Override
 				public boolean token(final int index, final String text) {
 					tokens[index] = text;
@@ -49,7 +55,7 @@ public class DiadicFileReader {
 			};
 			
 			while((line = bufferedReader.readLine()) != null) {
-				final int tokenCount = Tokenizer.tokenize(line, tl);
+				final int tokenCount = DirTokenizer.tokenize(line, tl);
 				if(tokenCount == 2) {
 					listener.parameter(tokens[0], tokens[1]);
 				}

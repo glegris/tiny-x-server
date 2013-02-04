@@ -40,7 +40,7 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 	}
 	
 	@Override
-	protected Graphics2D getGraphics() {
+	public Graphics2D getGraphics() {
 		return (Graphics2D) getImage().getGraphics();
 	}
 	

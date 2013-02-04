@@ -81,7 +81,6 @@ public class PcfEncodings {
 		if(m == null) {
 			final Integer d = _characterMap.get(_defaultCharacter);
 			if(d ==  null) {
-				System.out.println("ooooo");
 				return 32;
 			}
 			else {
