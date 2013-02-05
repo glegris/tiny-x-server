@@ -40,6 +40,7 @@ import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.font.CompoundFontFactory;
 import com.liaquay.tinyx.model.font.DealiasingFontFactory;
+import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
 import com.liaquay.tinyx.x11font.FileFontEncodingFactory;
@@ -57,11 +58,8 @@ public class TinyXAwt {
 		return _server;
 	}
 	
-	private static FontFactory buildPcfFontFactory() throws IOException {
+	private static FontFactory buildPcfFontFactory(final FileFontEncodingFactory fontEncodingFactory) throws IOException {
 		final String folder = "/usr/share/fonts/X11/misc/";
-		final FileFontEncodingFactory fontEncodingFactory = new FileFontEncodingFactory();
-		fontEncodingFactory.load(folder);
-		fontEncodingFactory.loadBuiltIns();
 		
 		final XawtPcfFontFactory xawtPcfFontFactory = new XawtPcfFontFactory();
 		final FontManager fontManager = new FontManager(xawtPcfFontFactory, 50);
@@ -84,11 +82,7 @@ public class TinyXAwt {
 		return dealiasingFontFactory;
 	}
 	
-	private static FontFactory buildNativeFontFactory() throws IOException {
-		final String folder = "/usr/share/fonts/X11/misc/";
-		final FileFontEncodingFactory fontEncodingFactory = new FileFontEncodingFactory();
-		fontEncodingFactory.load(folder);
-		fontEncodingFactory.loadBuiltIns();
+	private static FontFactory buildNativeFontFactory(final FileFontEncodingFactory fontEncodingFactory) throws IOException {
 		
 		final XawtNativeFontFactory xawtPcfFontFactory = new XawtNativeFontFactory();
 		final FontManager fontManager = new FontManager(xawtPcfFontFactory, 50);
@@ -97,6 +91,13 @@ public class TinyXAwt {
 		
 		dealiasingFontFactory.addFontAlias("variable", "-*-Arial-medium-r-normal-*-*-120-*-*-*-*-iso8859-1");
 		
+		for(final FontDetail.Slant slant : FontDetail.Slant.values()) {
+			for(final FontDetail.Weight weight :FontDetail. Weight.values()) {
+				dealiasingFontFactory.addFontAlias(
+						"-adobe-symbol-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-adobe-fontspecific", 
+						"-adobe-symbol-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-adobe-symbol");
+			}
+		}
 		return dealiasingFontFactory;
 	}
 	
@@ -117,8 +118,8 @@ public class TinyXAwt {
 		
 		final FontFactory fontFactory = new CompoundFontFactory(
 				new FontFactory[]{
-					buildPcfFontFactory(),
-					buildNativeFontFactory()});
+					buildPcfFontFactory(fontEncodingFactory),
+					buildNativeFontFactory(fontEncodingFactory)});
 		
 		final KeyboardMapping keyboardMapping = XawtKeyboardMappingFactory.createKeyboardMapping();
 		

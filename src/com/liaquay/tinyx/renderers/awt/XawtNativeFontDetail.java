@@ -15,7 +15,6 @@ import com.liaquay.tinyx.model.TextExtents;
 public class XawtNativeFontDetail extends XawtFontDetail {
 
 	private final Font _font;
-	private final CharSetEncoder _encoder;
 	private final TextExtents _minBounds = new TextExtents( // TODO get these from the font
 			0, // Ascent
 			0, // Descent
@@ -30,12 +29,10 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 	
 	public XawtNativeFontDetail(
 			final FontInfo fontInfo, 
-			final Font font,
-			final CharSetEncoder encoder) {
+			final Font font) {
 		super(fontInfo.toString(), fontInfo);
 		
 		_font = font;
-		_encoder = encoder;
 		
 		final FontMetrics fm = java.awt.Toolkit.getDefaultToolkit().getFontMetrics(font);
 
@@ -97,7 +94,7 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 
 	@Override
 	public TextExtents getTextExtents(final int character) {
-		_buffer[0] = _encoder.translate((char)character);
+		_buffer[0] = (char)character;
 		
 		final Rectangle2D bounds = _font.getStringBounds(_buffer, 0, 1, _awtFontRenderContext);
 		final LineMetrics lm = _font.getLineMetrics(_buffer, 0, 1, _awtFontRenderContext);
@@ -112,9 +109,8 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 		}
 
 	@Override
-	public TextExtents getTextExtents(final String text) {
+	public TextExtents getTextExtents(final String t) {
 		
-		final String t = _encoder.translate(text);
 		final Rectangle2D bounds = _font.getStringBounds(t, 0, t.length(), _awtFontRenderContext);
 		final LineMetrics lm = _font.getLineMetrics(t, 0, t.length(), _awtFontRenderContext);
 
@@ -130,12 +126,11 @@ public class XawtNativeFontDetail extends XawtFontDetail {
 	@Override
 	public void drawString(
 			final Graphics2D graphics, 
-			final String text, 
+			final String t, 
 			final int xs, 
 			final int ys,
 			final int color) {
 		
-		final String t = _encoder.translate(text);
 		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 		graphics.setColor(new Color(color)); // TODO slow
 		graphics.setFont(_font);

@@ -60,7 +60,7 @@ public class XawtNativeFontFactory extends FontFactoryAdaptor2 {
 		
 		for(final FontDetail.Slant slant : FontDetail.Slant.values()) {
 			for(final FontDetail.Weight weight :FontDetail. Weight.values()) {
-				addFontName("-adobe-symbol-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-adobe-fontspecific");
+				addFontName("-adobe-symbol-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-adobe-symbol");
 				addFontName("-adobe-helvetica-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
 				addFontName("-adobe-times new roman-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
 				addFontName("-adobe-times-"+weight.name()+"-"+slant.name()+"-normal--0-0-0-0-p-0-iso8859-1");
@@ -107,16 +107,8 @@ public class XawtNativeFontFactory extends FontFactoryAdaptor2 {
 				((fontSlant != null && fontSlant.equalsIgnoreCase("i")) ? java.awt.Font.ITALIC : 0);
 		
 		final Font awtFont = new java.awt.Font(fontFamily, fontStyle, fontSize == 0 ? 12 : fontSize);
-
-		final CharSetEncoder encoder;
-		if(fontInfo.getCharsetEncoding().equals("fontspecific")) {
-			encoder = FontSpecificCharSetEncoder.ENCODER;
-		}
-		else {
-			encoder = NullCharSetEncoder.ENCODER;
-		}
 		
-		return new XawtNativeFontDetail(fontInfo, awtFont, encoder);
+		return new XawtNativeFontDetail(fontInfo, awtFont);
 	}
 
 	@Override

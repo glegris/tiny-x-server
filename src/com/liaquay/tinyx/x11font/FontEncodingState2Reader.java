@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class FontEncodingState2Reader {
 
-	private static class MapFontEncodingListener implements FontEncodingStage1Reader.Listener {
+	private static class FontEncodingListener implements FontEncodingStage1Reader.Listener {
 
 		private int _size = 255;
 		private int _first = 0;
@@ -21,6 +21,7 @@ public class FontEncodingState2Reader {
 		@Override
 		public void startMappingUnicode() {
 			_map = new char[_size-_first+1];
+			for(int i = 0; i < _map.length; ++i) _map[i] = (char)(i+_first);
 		}
 
 		@Override
@@ -53,13 +54,13 @@ public class FontEncodingState2Reader {
 	}
 
 	public static FontEncoding read(final String file) throws IOException {
-		final MapFontEncodingListener listener = new MapFontEncodingListener();
+		final FontEncodingListener listener = new FontEncodingListener();
 		FontEncodingStage1Reader.read(file,  listener);
 		return listener.getMapping();
 	}
 	
 	public static FontEncoding readFromResource(final String file) throws IOException {
-		final MapFontEncodingListener listener = new MapFontEncodingListener();
+		final FontEncodingListener listener = new FontEncodingListener();
 		FontEncodingStage1Reader.readFromResource(file,  listener);
 		return listener.getMapping();
 	}

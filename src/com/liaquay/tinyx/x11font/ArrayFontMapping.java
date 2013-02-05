@@ -17,14 +17,13 @@ public class ArrayFontMapping extends FontEncodingAdaptor {
 		_last = last;
 		_start = mapStart;
 		_map = map;
-		for(int i = 0; i < _map.length; ++i) _map[i] = (char)(i+_start);
 	}
 	 
 	@Override
 	public char encode(final char c) {
-		final int index = c & 0xffff;
-		if(c < _start || c >= _start +_map.length) return c;
-		return _map[index-_start];
+		final int index = (c & 0xffff) - _start;
+		if(index < 0 || index >= _map.length) return c;
+		return _map[index];
 	}
 
 	@Override
