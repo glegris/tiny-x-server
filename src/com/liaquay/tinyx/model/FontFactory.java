@@ -16,12 +16,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.model;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.liaquay.tinyx.model.FontMatch;
 
 public interface FontFactory {
 	public FontMatch getFirstMatchingFont(final String pattern);

@@ -3,10 +3,10 @@ package com.liaquay.tinyx.font;
 import java.io.IOException;
 import java.util.List;
 
+import com.liaquay.tinyx.model.FontDetail;
+import com.liaquay.tinyx.model.FontFactory;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
-import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactory;
 import com.liaquay.tinyx.x11font.FontEncoding;
 import com.liaquay.tinyx.x11font.FontEncodingFactory;
 

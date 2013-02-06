@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.liaquay.tinyx.font.FontFactoryAdaptor;
+import com.liaquay.tinyx.model.FontDetail;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
-import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactoryAdaptor;
 
 public class XawtNativeFontFactory extends FontFactoryAdaptor {
 	

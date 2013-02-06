@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.liaquay.tinyx.model.FontDetail;
+import com.liaquay.tinyx.model.FontFactory;
 import com.liaquay.tinyx.model.FontMatch;
-import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactory;
 
 public class FontManager implements FontFactory {
 

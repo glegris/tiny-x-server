@@ -26,10 +26,10 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.FontDetail;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.model.font.FontDetail;
 
 public class ImageText16 implements RequestHandler {
 

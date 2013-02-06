@@ -3,9 +3,9 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import com.liaquay.tinyx.font.FontDetailAdaptor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.FontInfo;
-import com.liaquay.tinyx.model.font.FontDetailAdaptor;
 
 public abstract class XawtFontDetail extends FontDetailAdaptor {
 	

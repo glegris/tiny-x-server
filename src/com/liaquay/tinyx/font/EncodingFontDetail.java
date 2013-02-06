@@ -1,8 +1,8 @@
 package com.liaquay.tinyx.font;
 
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.FontDetail;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.model.font.FontDetail;
 import com.liaquay.tinyx.x11font.FontEncoding;
 
 public class EncodingFontDetail implements FontDetail {

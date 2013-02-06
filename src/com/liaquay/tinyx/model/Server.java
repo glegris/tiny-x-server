@@ -32,8 +32,6 @@ import java.util.logging.Logger;
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
-import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactory;
 
 /**
  * 

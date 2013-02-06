@@ -16,10 +16,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.model;
 
-import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.TextExtents;
 
 public interface FontDetail {
 	

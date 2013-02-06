@@ -1,4 +1,4 @@
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.font;
 
 public abstract class FontEncodingAdaptor implements FontEncoding {
 

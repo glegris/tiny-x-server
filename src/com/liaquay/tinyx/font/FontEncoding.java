@@ -1,4 +1,4 @@
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.font;
 
 public interface FontEncoding {
 	public char translate(final char c);
