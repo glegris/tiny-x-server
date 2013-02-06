@@ -9,9 +9,9 @@ import java.util.TreeMap;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactoryAdaptor2;
+import com.liaquay.tinyx.model.font.FontFactoryAdaptor;
 
-public class XawtNativeFontFactory extends FontFactoryAdaptor2 {
+public class XawtNativeFontFactory extends FontFactoryAdaptor {
 	
 	public XawtNativeFontFactory() {
 		
