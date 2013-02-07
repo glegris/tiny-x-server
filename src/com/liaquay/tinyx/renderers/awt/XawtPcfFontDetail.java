@@ -96,7 +96,7 @@ public class XawtPcfFontDetail extends XawtFontDetail {
 			final int ys,
 			final int color) {
 		
-		graphics.setColor(new Color(color)); // TODO slow
+		graphics.setColor(new Color(color)); // TODO slow //graphics.setColor(new Color(color)); // TODO slow
 		_font.drawString(new PcfBitmaps.Renderer(){ // TODO only make one of these
 			@Override
 			public void render(int x, int y) {

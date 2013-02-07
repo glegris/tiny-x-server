@@ -75,8 +75,8 @@ public class QueryFont implements RequestHandler {
 
 		outputStream.writePad(4);
 
-
-		outputStream.writeShort(fontDetail.getFirstChar());		// min-char-or-byte2
+		final int firstChar = fontDetail.getFirstChar();
+		outputStream.writeShort(firstChar);		// min-char-or-byte2
 		outputStream.writeShort(fontDetail.getLastChar());		// max-char-or-byte2
 
 		outputStream.writeShort(fontDetail.getDefaultChar());	// default-char
@@ -89,7 +89,7 @@ public class QueryFont implements RequestHandler {
 		outputStream.writeShort(fontDetail.getAscent());	// font-ascent
 		outputStream.writeShort(fontDetail.getDescent());	// font-descent
 
-		outputStream.writeInt(fontDetail.getLastChar()-fontDetail.getFirstChar()+1); // m 
+		outputStream.writeInt(fontDetail.getLastChar()-firstChar+1); // m 
 
 		if(prop!=null){
 			for(int j=0; j<prop.length; j++){
@@ -97,7 +97,7 @@ public class QueryFont implements RequestHandler {
 			}
 		}
 
-		for(int i=fontDetail.getFirstChar(); i<=fontDetail.getLastChar(); i++){
+		for(int i=firstChar; i<=fontDetail.getLastChar(); i++){
 			final TextExtents textExtents = fontDetail.getTextExtents(i);
 			if (textExtents != null) {
 				write(outputStream, textExtents);

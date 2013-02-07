@@ -53,7 +53,7 @@ public class RequestHandlerMap implements RequestHandler {
 
 	public RequestHandlerMap(final Extensions extensions) {
 		addExtension(extensions, "BIG-REQUESTS", 0,0, new BigRequestHandler());
-		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
+//		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
 		
 //		addExtension(extensions, "RENDER", 0,0, new RenderHandler());
 

@@ -47,6 +47,8 @@ public abstract class XawtFontDetail extends FontDetailAdaptor {
 			final int bh, 
 			final int bgColor) {
 		
+		System.out.println("Text: '" + text + "'");
+		
 		final XawtDrawableListener drawableListener = (XawtDrawableListener)drawable.getDrawableListener();
 		final Graphics2D graphics = drawableListener.getGraphics();
 		graphics.setColor(new Color(drawable.getColorMap().getRGB(bgColor)));

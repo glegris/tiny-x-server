@@ -1,10 +1,32 @@
+/*
+ *  Tiny X server - A Java X server
+ *
+ *   Copyright (C) 2012  Phil Scull
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.liaquay.tinyx.x11font;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileFontEncodingFactory implements FontEncodingFactory {
+	
+	private final static Logger LOGGER = Logger.getLogger(FileFontEncodingFactory.class.getName());
 
 	private Map<String, String> _fileNameMap = new TreeMap<String, String>();
 	private Map<String, FontEncoding> _fontEncodingMap = new TreeMap<String, FontEncoding>();
@@ -23,6 +45,7 @@ public class FileFontEncodingFactory implements FontEncodingFactory {
 		loadBuiltIn("iso8859-9");
 		loadBuiltIn("iso8859-10");
 		loadBuiltIn("iso8859-15");
+		loadBuiltIn("iso10646-1");
 	}
 	
 	private void loadBuiltIn(final String encoding) throws IOException {
@@ -47,7 +70,7 @@ public class FileFontEncodingFactory implements FontEncodingFactory {
 		
 		final String fileName = _fileNameMap.get(encoding);
 		if(fileName == null) {
-			// TODO Log error
+			LOGGER.log(Level.SEVERE, "Failed to load font encoding " + encoding + " as no file is associated with this name");
 			
 			return NullFontEncoding.INSTANCE;
 		}
@@ -63,6 +86,7 @@ public class FileFontEncodingFactory implements FontEncodingFactory {
 	
 	public static void main(final String[] args) throws IOException {
 		final FileFontEncodingFactory f = new FileFontEncodingFactory();
+		f.loadBuiltIns();
 		f.load("/usr/share/fonts/X11/misc");
 		final FontEncoding encoding1 = f.open("iso8859-11");
 		System.out.println(encoding1);

@@ -23,7 +23,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -246,7 +248,34 @@ public class Server extends Client {
 		// TODO How accessible should the server client be?
 		//_clients.add(this);
 	}
+	
+	// TODO these need to be cleared down when windows are destroyed.
+	private final Map<String, Selection> _selections = new TreeMap<String, Selection>();
 
+	public Window getSelectionOwner(final String name) {
+		final Selection selection = _selections.get(name);
+		if(selection == null) return null;
+		return selection.getWindow();
+	}
+	
+	public void setSelectionOwner(final Window window, final String name, final int timestamp) {
+		final Selection selection = _selections.get(name);
+		if(selection != null) {
+			if(timestamp >= selection.getTimestamp()) {
+				if(window == null) {
+					_selections.remove(name);
+				}
+				else {
+					selection.update(window, timestamp);
+				}
+			}
+			else {
+				final Selection newSelection = new Selection(window, timestamp);
+				_selections.put(name, newSelection);
+			}
+		}
+	}
+	
 	public AccessControls getAccessControls() {
 		return _accessControl;
 	}
