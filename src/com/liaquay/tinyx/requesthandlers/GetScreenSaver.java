@@ -31,10 +31,11 @@ import com.liaquay.tinyx.model.Server;
 public class GetScreenSaver implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XOutputStream outputStream = response.respond(1);
 
