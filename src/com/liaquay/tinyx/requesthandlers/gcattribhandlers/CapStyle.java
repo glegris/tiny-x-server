@@ -27,24 +27,22 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class CapStyle implements AttributeHandler<GraphicsContext> {
-	
+public class CapStyle implements GraphicsAttributeHandler {
+
 	public enum CapStyleType {
-        NotLast,
-        Butt,
-        Round,
-        Projecting;
-		
+		NotLast,
+		Butt,
+		Round,
+		Projecting;
+
 		public static CapStyleType getFromIndex(final int index) {
 			final CapStyleType[] capStyles = values();
 			if(index >= 0 && index < capStyles.length) return capStyles[index];
 			return null;
 		}
 	}
-	
-	
+
 	@Override
 	public void read(
 			final Server server, 
@@ -52,15 +50,19 @@ public class CapStyle implements AttributeHandler<GraphicsContext> {
 			final Request request,
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-	
-		int capStyle = inputStream.readUnsignedByte();
+		final int capStyle = inputStream.readUnsignedByte();
 		graphicsContext.setCapStyle(capStyle);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getCapStyle());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setCapStyle(source.getCapStyle());
 	}
 }

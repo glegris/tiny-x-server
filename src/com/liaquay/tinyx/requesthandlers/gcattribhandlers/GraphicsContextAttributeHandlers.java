@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
+import java.io.IOException;
+
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 import com.liaquay.tinyx.requesthandlers.AttributeHandlers;
@@ -51,5 +53,16 @@ public class GraphicsContextAttributeHandlers extends AttributeHandlers<Graphics
 				new DashList(),
 				new ArcMode()
 		});
+	}
+	
+	public final void copy(
+			final GraphicsContext source, 
+			final GraphicsContext destination, 
+			final int attributeMask) throws IOException {
+		
+		for(int i = 0; i < 32; ++i) {
+			final GraphicsAttributeHandler gah = (GraphicsAttributeHandler)getHandler(i, attributeMask);
+			if(gah != null) gah.copy(source, destination);
+		}
 	}
 }

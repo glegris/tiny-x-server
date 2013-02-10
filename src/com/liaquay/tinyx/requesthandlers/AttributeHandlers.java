@@ -34,7 +34,7 @@ public class AttributeHandlers<T> {
 		_handlers = handlers;
 	}
 	
-	public void read(
+	public final void read(
 			final Server server,
 			final Client client,
 			final Request request, 
@@ -56,11 +56,18 @@ public class AttributeHandlers<T> {
 		}
 	}
 	
-	public void write(final XOutputStream outputStream, final T t, final int attributeMask) throws IOException {
+	public final void write(final XOutputStream outputStream, final T t, final int attributeMask) throws IOException {
 		for(int i = 0; i < _handlers.length; ++i) {
 			if(((1<<i) & attributeMask) != 0) {
 				_handlers[i].write(outputStream, t);
 			}
 		}
+	}
+	
+	protected final AttributeHandler<T> getHandler(final int index, final int attributeMask) {
+		if(((1<<index) & attributeMask) != 0) {
+			return _handlers[index];
+		}
+		return null;
 	}
 }

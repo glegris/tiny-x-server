@@ -27,22 +27,20 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class SubWindowMode implements AttributeHandler<GraphicsContext> {
-	
+public class SubWindowMode implements GraphicsAttributeHandler {
+
 	public enum SubWindowModeType {
-	    ClipByChildren,
-	    IncludeInferiors;
-		
+		ClipByChildren,
+		IncludeInferiors;
+
 		public static SubWindowModeType getFromIndex(final int index) {
 			final SubWindowModeType[] types = values();
 			if(index >= 0 && index < types.length) return types[index];
 			return null;
 		}
 	}
-	
-	
+
 	@Override
 	public void read(
 			final Server server, 
@@ -50,10 +48,9 @@ public class SubWindowMode implements AttributeHandler<GraphicsContext> {
 			final Request request,
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-	
-		int subWindowMode = inputStream.readUnsignedByte();
+		final int subWindowMode = inputStream.readUnsignedByte();
 		graphicsContext.setSubWindowMode(subWindowMode);
 	}
 
@@ -62,4 +59,8 @@ public class SubWindowMode implements AttributeHandler<GraphicsContext> {
 		outputStream.writeByte(graphicsContext.getSubWindowMode());
 	}
 
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setSubWindowMode(source.getSubWindowMode());
+	}
 }

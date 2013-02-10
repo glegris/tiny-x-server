@@ -29,9 +29,8 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Stipple implements AttributeHandler<GraphicsContext> {
+public class Stipple implements GraphicsAttributeHandler {
 
 	@Override
 	public void read(
@@ -42,10 +41,8 @@ public class Stipple implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-
-		int stipplePixmap = inputStream.readInt();
-
-		Pixmap p = server.getResources().get(stipplePixmap, Pixmap.class);
+		final int stipplePixmap = inputStream.readInt();
+		final Pixmap p = server.getResources().get(stipplePixmap, Pixmap.class);
 		if (p != null) {
 			graphicsContext.setStipple(p);
 		} else {
@@ -58,5 +55,10 @@ public class Stipple implements AttributeHandler<GraphicsContext> {
 		if (graphicsContext.getStipple() != null) {
 			outputStream.writeInt(graphicsContext.getStipple().getId());
 		}
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setStipple(source.getStipple());
 	}
 }

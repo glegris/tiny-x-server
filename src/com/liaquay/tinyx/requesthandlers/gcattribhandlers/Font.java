@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Font implements AttributeHandler<GraphicsContext> {
+public class Font implements GraphicsAttributeHandler {
 
 	@Override
 	public void read(
@@ -41,7 +40,7 @@ public class Font implements AttributeHandler<GraphicsContext> {
 
 		final XInputStream inputStream = request.getInputStream();
 
-		int fontId = inputStream.readInt();
+		final int fontId = inputStream.readInt();
 		com.liaquay.tinyx.model.Font font = server.getResources().get(fontId, com.liaquay.tinyx.model.Font.class);
 		if (font != null) {
 			//TODO Check that the window references a known font!
@@ -52,5 +51,10 @@ public class Font implements AttributeHandler<GraphicsContext> {
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeInt(graphicsContext.getFont().getId());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setFont(source.getFont());
 	}
 }

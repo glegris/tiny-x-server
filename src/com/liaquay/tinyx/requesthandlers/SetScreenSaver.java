@@ -53,8 +53,8 @@ public class SetScreenSaver implements RequestHandler {
 
 		final ScreenSaver ss = server.getScreenSaver();
 
-		XInputStream inputStream = request.getInputStream();
-		int timeout = inputStream.readSignedShort();
+		final XInputStream inputStream = request.getInputStream();
+		final int timeout = inputStream.readSignedShort();
 		if (timeout == -1) {
 			ss.setDefaultTimeout();
 		} else if (timeout < -1) {
@@ -68,17 +68,17 @@ public class SetScreenSaver implements RequestHandler {
 			ss.setEnabled(true);
 			
 		}
-		int interval = inputStream.readSignedShort();
+		final int interval = inputStream.readSignedShort();
 		if (interval == -1) {
 			ss.setDefaultInterval();
 		} else if (interval < -1) {
 			response.error(ErrorCode.Value, 0);
 		}
 
-		int blanking = inputStream.readUnsignedByte();
+		final int blanking = inputStream.readUnsignedByte();
 		ss.setBlanking(blanking);
 		
-		int allowExposures = inputStream.readUnsignedByte();
+		final int allowExposures = inputStream.readUnsignedByte();
 		ss.setAllowExposures(allowExposures);
 	}
 }

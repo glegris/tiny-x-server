@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class LineWidth implements AttributeHandler<GraphicsContext> {
+public class LineWidth implements GraphicsAttributeHandler {
 	
 	@Override
 	public void read(
@@ -40,13 +39,17 @@ public class LineWidth implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int lineWidth = inputStream.readUnsignedShort();
+		final int lineWidth = inputStream.readUnsignedShort();
 		graphicsContext.setLineWidth(lineWidth);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeInt(graphicsContext.getLineWidth());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setLineWidth(source.getLineWidth());
 	}
 }

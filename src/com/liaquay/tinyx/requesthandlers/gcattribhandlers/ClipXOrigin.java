@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class ClipXOrigin implements AttributeHandler<GraphicsContext> {
+public class ClipXOrigin implements GraphicsAttributeHandler {
 	
 	@Override
 	public void read(
@@ -40,13 +39,17 @@ public class ClipXOrigin implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int clipXOrigin = inputStream.readSignedShort();
+		final int clipXOrigin = inputStream.readSignedShort();
 		graphicsContext.setClipXOrigin(clipXOrigin);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeShort(graphicsContext.getClipXOrigin());
+	}
+	
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setClipXOrigin(source.getClipXOrigin());
 	}
 }

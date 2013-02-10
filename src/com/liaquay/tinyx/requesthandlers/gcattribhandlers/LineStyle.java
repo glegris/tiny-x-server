@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class LineStyle implements AttributeHandler<GraphicsContext> {
+public class LineStyle implements GraphicsAttributeHandler {
 	
 	public enum LineStyleType {
 		Solid, 
@@ -53,13 +52,17 @@ public class LineStyle implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int lineStyle = inputStream.readUnsignedByte();
+		final int lineStyle = inputStream.readUnsignedByte();
 		graphicsContext.setLineStyle(lineStyle);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getLineStyle());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setLineStyle(source.getLineStyle());
 	}
 }

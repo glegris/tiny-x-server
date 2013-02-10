@@ -50,7 +50,7 @@ public class SetClipRectangles implements RequestHandler {
 		if(graphicsContext == null) {
 			response.error(Response.ErrorCode.GContext, graphicsContextResourceId);
 			return;
-		}	       
+		}
 
 		final int clipXOrigin = inputStream.readSignedShort();
 		final int clipYOrigin = inputStream.readSignedShort();

@@ -29,9 +29,8 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Tile implements AttributeHandler<GraphicsContext> {
+public class Tile implements GraphicsAttributeHandler {
 
 	@Override
 	public void read(
@@ -42,10 +41,8 @@ public class Tile implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-
-		int tilePixmap = inputStream.readInt();
-
-		Pixmap p = server.getResources().get(tilePixmap, Pixmap.class);
+		final int tilePixmap = inputStream.readInt();
+		final Pixmap p = server.getResources().get(tilePixmap, Pixmap.class);
 		if (p != null) {
 			graphicsContext.setTile(p);
 		} else {
@@ -58,5 +55,10 @@ public class Tile implements AttributeHandler<GraphicsContext> {
 		if (graphicsContext.getTile() != null) {
 			outputStream.writeInt(graphicsContext.getTile().getId());
 		}
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setTile(source.getTile());
 	}
 }

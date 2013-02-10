@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.liaquay.tinyx.model.Client.CloseDownMode;
 import com.liaquay.tinyx.util.IntMap;
 import com.liaquay.tinyx.util.IntMap.Key;
 
@@ -80,16 +81,19 @@ public class Resources {
 	}
 
 	public void free(final Client client) {
-		final int maskedClientId = client.getClientId() << Resource.CLIENTOFFSET; 
-		final List<Key> keysToRemove = new ArrayList<Key>();
-		for(final Map.Entry<Key, Resource> entry : _idToResourceMap.entrySet()) {
-			if((entry.getKey().getValue() & Resource.CLIENT_ID_MASK) == maskedClientId) {
-				keysToRemove.add(entry.getKey());
-				entry.getValue().free();
+		// TODO implement retain temporary
+		if(client.getCloseDownMode().equals(CloseDownMode.DestroyAll)) {
+			final int maskedClientId = client.getClientId() << Resource.CLIENTOFFSET; 
+			final List<Key> keysToRemove = new ArrayList<Key>();
+			for(final Map.Entry<Key, Resource> entry : _idToResourceMap.entrySet()) {
+				if((entry.getKey().getValue() & Resource.CLIENT_ID_MASK) == maskedClientId) {
+					keysToRemove.add(entry.getKey());
+					entry.getValue().free();
+				}
 			}
-		}
-		for(final Key resourceKey : keysToRemove) {
-			_idToResourceMap.remove(resourceKey);
+			for(final Key resourceKey : keysToRemove) {
+				_idToResourceMap.remove(resourceKey);
+			}
 		}
 	}
 }

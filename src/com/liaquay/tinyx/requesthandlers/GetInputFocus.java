@@ -43,8 +43,8 @@ public class GetInputFocus implements RequestHandler {
 		final Window focusWindow = focus.getWindow();
 		final int windowId;
 		switch(focus.getMode()) {
-		case None : 
-		case PointerRoot: windowId = 0; break;
+		case None : windowId = 0; break;
+		case PointerRoot: windowId = 1; break;
 		default: windowId = focusWindow.getId(); break;
 		}
 		outputStream.writeInt(windowId);

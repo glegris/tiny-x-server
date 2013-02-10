@@ -27,10 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
 
-public class FillRule implements AttributeHandler<GraphicsContext> {
+public class FillRule implements GraphicsAttributeHandler {
 	
 	public enum FillRuleType {
 		EvenOdd,
@@ -53,14 +51,18 @@ public class FillRule implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int fillRule = inputStream.readUnsignedByte();
+		final int fillRule = inputStream.readUnsignedByte();
 		graphicsContext.setFillRule(fillRule);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getFillRule());
+	}
+	
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setFillRule(source.getFillRule());
 	}
 }
 

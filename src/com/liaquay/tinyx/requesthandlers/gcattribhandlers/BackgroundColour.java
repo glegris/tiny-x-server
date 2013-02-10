@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class BackgroundColour implements AttributeHandler<GraphicsContext> {
+public class BackgroundColour implements GraphicsAttributeHandler {
 
 	@Override
 	public void read(
@@ -46,5 +45,11 @@ public class BackgroundColour implements AttributeHandler<GraphicsContext> {
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeInt(graphicsContext.getBackgroundColour());
+	}
+	
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setBackgroundColour(source.getBackgroundColour());
 	}
 }
