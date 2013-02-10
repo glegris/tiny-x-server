@@ -102,4 +102,13 @@ public class TextExtents {
 	public int getAttributes() {
 		return _attributes;
 	}
+	
+	public String toString() {
+		return 
+				"Ascent " + _ascent + 
+				",Descent " + _descent +
+				", Left " + _left + 
+				", Right " + _right + 
+				", Width " + _width;
+	}
 }

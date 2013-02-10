@@ -112,7 +112,7 @@ public class QueryFont implements RequestHandler {
 	private final static void write(
 			final XOutputStream outputStream,
 			final TextExtents textExtents) throws IOException {
-		
+
 		outputStream.writeShort(textExtents.getLeft()); // left-side-bearing
 		outputStream.writeShort(textExtents.getRight()); // right-side-bearing
 		outputStream.writeShort(textExtents.getWidth()); // character-width

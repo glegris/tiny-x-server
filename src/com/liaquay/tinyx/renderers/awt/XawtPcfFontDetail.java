@@ -69,7 +69,7 @@ public class XawtPcfFontDetail extends XawtFontDetail {
 
 	@Override
 	public TextExtents getTextExtents(final int character) {
-		return getTextExtents("" + character);		
+		return getTextExtents("" + (char)character);		
 	}
 
 	@Override
