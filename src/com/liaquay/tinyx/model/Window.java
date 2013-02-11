@@ -641,16 +641,29 @@ public class Window extends Drawable {
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
 
-			exposed();
-
-			// TODO check for visibility changes 
-			// TODO Send visibility events 
-
 			if(isMappedToRoot()) {
+				
+				
+				// TODO check for visibility changes 
+				// TODO Send visibility events 
+				
 				_listener.mapped(true);
+				exposed();
+				tellListenerAboutMappedChildren();
 			}
 
 			updateVisibility();
+		}
+	}
+	
+	private void tellListenerAboutMappedChildren() {
+		for(int i = 0; i < getChildCount(); i++) {
+			final Window child = getChild(i);
+			if(child._mapped) {
+				child._listener.mapped(true);
+				child.exposed();
+				child.tellListenerAboutMappedChildren();
+			}
 		}
 	}
 	
@@ -746,15 +759,13 @@ public class Window extends Drawable {
 	public void unmap() {
 		if(_mapped) {
 			_mapped = false;
-			// TODO issue some unmapped event
+			
 			_listener.mapped(false);
 			
 			if(_parent != null && _parent.isViewable()) {
-				exposed();
+				_parent.exposed();
 			}
 		}
-		
-		
 	}
 
 	/**

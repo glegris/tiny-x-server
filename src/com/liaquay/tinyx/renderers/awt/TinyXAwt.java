@@ -148,7 +148,7 @@ public class TinyXAwt {
 				return new Visual(
 						resourceId, 
 						32,
-						BackingStoreSupport.BackingStoreAlways,
+						BackingStoreSupport.BackingStoreNever,
 						VisualClass.TrueColor, 
 						8,  // Bits Per RGB
 						256, // TODO How do colour maps relate to visuals

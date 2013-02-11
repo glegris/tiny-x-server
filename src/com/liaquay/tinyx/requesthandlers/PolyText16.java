@@ -31,7 +31,6 @@ import com.liaquay.tinyx.model.FontDetail;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.model.Window;
 
 public class PolyText16 implements RequestHandler {
 
