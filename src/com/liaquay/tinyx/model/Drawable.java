@@ -62,9 +62,6 @@ public abstract class Drawable implements Resource {
 
 		public byte[] getImageData(int x, int y, int width, int height,
 				 ImageType imageType, int planeMask);
-		
-		
-
 	}
 	
 	protected static class NullListener implements Listener {
@@ -189,15 +186,6 @@ public abstract class Drawable implements Resource {
 	public abstract ColorMap getColorMap();
 	
 	public abstract int getBackgroundPixel();
-
-//	abstract Graphics getGraphics();
-	//	  abstract void restoreClip();
-
-	//	  abstract Graphics getGraphics(GC gc, int mask);   
-	//	  abstract Colormap getColormap();
-//	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
-
-	
 	
 	public void drawString(
 			final GraphicsContext graphicsContext, 

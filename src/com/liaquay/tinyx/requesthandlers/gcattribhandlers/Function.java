@@ -56,12 +56,12 @@ public class Function implements AttributeHandler<GraphicsContext> {
 		final XInputStream inputStream = request.getInputStream();
 	
 		int function = inputStream.readUnsignedByte();
-		graphicsContext.setFunction(function);
+		graphicsContext.setFunction(FunctionType.getFromIndex(function));
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeByte(graphicsContext.getFunction());
+		outputStream.writeByte(graphicsContext.getFunction().ordinal());
 	}
 
 }

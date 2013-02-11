@@ -194,7 +194,7 @@ public class Window extends Drawable {
 		}
 	}
 
-	private Gravity _bitGravity = 	Gravity.NorthWestGravity;
+	private Gravity _bitGravity = 	Gravity.ForgetGravity;
 	private Gravity _winGravity  = Gravity.	NorthWestGravity;
 
 	public enum WindowClass {
@@ -214,36 +214,50 @@ public class Window extends Drawable {
 	private final Properties _properties = new Properties();
 	private final List<ClientWindowAssociation> _clientWindowAssociations = new ArrayList<ClientWindowAssociation>(2);
 
-	private final int _depth;		/* depth of window */
-	private int _x, _y;			/* relative location of window */
-	private int _absX, _absY;      /* absolute location of window */
+	private final int _depth;				/* depth of window */
+	private int _x, _y;						/* relative location of window */
+	private int _absX, _absY;				/* absolute location of window */
 
-	private Cursor _cursor;			/* The cursor to use when the mouse is within this window */
-	private int _clipX, _clipY;    /* clip location of window */
-	private int _clipW, _clipH;    /* clip size of window */
+	private Cursor _cursor = null;			/* The cursor to use when the mouse is within this window */
+	private int _clipX, _clipY;				/* clip location of window */
+	private int _clipW, _clipH;				/* clip size of window */
 
 	private int _widthPixels, _heightPixels;	/* width and height of window in pixels */
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
 
-	private int _backgroundPixel = 0; // TODO Default value
-	private int _borderPixel = 0; // TODO Default value
-	private Pixmap _borderPixmap = null;
+	private int _backgroundPixel = 0; 			// TODO Default value
+	private int _borderPixel = 0; 				// TODO Default value
+	private Pixmap _borderPixmap = null;		// Default: Copy-from-parent
+	private Pixmap _backgroundPixmap = null;
+	private boolean _parentRelativeBackgroundPixmap = false;
 
 	private boolean _mapped = false;
 	private boolean _viewable = false;
-	// TODO values are rubbish
-	private int _backingPlanes = 0;
-	private int _backingPixel = 0;
-	private boolean _saveUnder= false;
-	private boolean _overrideRedirect = false;
-	private ColorMap _colorMap = null;
-	private int _doNotPropagateMask = 0;
-	private Pixmap _backgroundPixmap = null;
-	private boolean _parentRelativeBackgroundPixmap = false;
+
+	private int _backingPlanes = -1;			// Default: All ones
+	private int _backingPixel = 0;				// Default: Zero
+	private boolean _saveUnder = false;			// Default: false
+	private boolean _overrideRedirect = false;	// Default: false
+	private ColorMap _colorMap = null;			// Default: Copy-from-parent
+	private int _doNotPropagateMask = 0; 		// Default: Empty set
 	private final EventFactories _eventFactories;
 	private final Map<ButtonGrab.Trigger, ButtonGrab> _buttonGrabs = new HashMap<ButtonGrab.Trigger, ButtonGrab>(4);
 
+	
+	public enum StackMode {
+		Above,
+		Below,
+		TopIf,
+		BottomIf,
+		Opposite;
+
+		public static StackMode getFromIndex(final int index) {
+			final StackMode[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+	}
 
 	//  Window root;                /* root of screen containing window */
 	//    int backing_store;          /* NotUseful, WhenMapped, Always */
@@ -660,7 +674,19 @@ public class Window extends Drawable {
 
 	public MappedState getMappedState() {
 		if(_mapped) {
-			return isViewable() ? MappedState.IsViewable : MappedState.IsUnviewable;
+			MappedState state = isViewable() ? MappedState.IsViewable : MappedState.IsUnviewable;
+			
+			Window w = this;
+			while (w.getId() != w.getRootWindow().getId()) {
+				if (!w.isMapped()) {
+					// A window is Unviewable if it is mapped but some ancestor is unmapped (GetWindowAttributes docs)
+					state = MappedState.IsUnviewable;
+				}
+				
+				w = w.getParent();
+			}
+			
+			return state;
 		}
 		else {
 			return MappedState.IsUnmapped;
@@ -924,12 +950,15 @@ public class Window extends Drawable {
 		_listener.putImage(graphicsContext, imageType, data, width, height, destinationX, destinationY, leftPad, depth);
 	}
 	
-	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth) {
+	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth, final int stackMode) {
 		_x = x;
 		_y = y;
 		_widthPixels = width;
 		_heightPixels = height;
 		_borderWidth = borderWidth;
+		
+		//TODO: Determine the stacking code.
+		StackMode stackingMode = StackMode.getFromIndex(stackMode);
 		
 		updateLocation();
 		

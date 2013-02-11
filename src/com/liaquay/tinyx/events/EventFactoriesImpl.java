@@ -19,6 +19,7 @@
 package com.liaquay.tinyx.events;
 
 import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
+import com.liaquay.tinyx.model.eventfactories.DestroyNotifyFactory;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.ExposureFactory;
 import com.liaquay.tinyx.model.eventfactories.KeyFactory;
@@ -66,5 +67,10 @@ public final class EventFactoriesImpl implements EventFactories {
 	@Override
 	public KeyFactory getKeyReleaseFactory() {
 		return KeyReleaseFactoryImpl.FACTORY;
+	}
+
+	@Override
+	public DestroyNotifyFactory getDestroyNotifyFactory() {
+		return DestroyNotifyFactoryImpl.FACTORY;
 	}
 }

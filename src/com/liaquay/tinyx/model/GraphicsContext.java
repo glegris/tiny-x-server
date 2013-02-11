@@ -3,6 +3,15 @@ package com.liaquay.tinyx.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.ArcMode.ArcModeType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.CapStyle.CapStyleType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillRule.FillRuleType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.Function.FunctionType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.JoinStyle.JoinStyleType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.LineStyle.LineStyleType;
+import com.liaquay.tinyx.requesthandlers.gcattribhandlers.SubWindowMode.SubWindowModeType;
+
 public class GraphicsContext extends AbstractResource {
 
 	private final Drawable _drawable;
@@ -16,10 +25,47 @@ public class GraphicsContext extends AbstractResource {
 		
 		_drawable = drawable;
 		_font = font;
+		
+		// Default (4,4)
+		_dashes.add(4);
+		_dashes.add(4);
 	}
-	
-	private int _foregroundColour = 0x00000000;
 
+	private FunctionType _function = FunctionType.Copy;			// Default: Copy
+	private int _planeMask = 0xffffffff;						// Default: All ones
+	private int _foregroundColour = 0x00000000;					// Default: Zeros
+	private int _backgroundColour = 0xffffffff;					// Default: All ones
+	private int _lineWidth = 0;									// Default: Zeros
+	private int _lineStyle = LineStyleType.Solid.ordinal();		// Default: Solid
+	private int _capStyle = CapStyleType.Butt.ordinal();		// Default: Butt
+	private int _joinStyle = JoinStyleType.Miter.ordinal();		// Default: Miter
+	private int _fillStyle = FillStyleType.Solid.ordinal();		// Default: Solid
+	private int _fillRule = FillRuleType.EvenOdd.ordinal();		// Default: EvenOdd
+	private int _arcMode = ArcModeType.PieSlice.ordinal();		// Default: PieSlice
+	
+	private int _subWindowMode = SubWindowModeType.ClipByChildren.ordinal(); // Default: ClipByChildren
+	private boolean _graphicsExposures = true;					// Default: true
+
+	private Pixmap _tilePixmap = null;	//TODO: Pixmap of unspecified size filled with foreground pixel
+	private Pixmap _stipple = null;		//TODO: Pixmap of unspecified size filled with ones
+
+	private int _tileStippleXOrigin = 0;		// Default: Zero
+	private int _tileStippleYOrigin = 0;		// Default: Zero
+	
+	/** Weird X seems to imply that this can either be a pixmap or a bunch of rectanges.. */
+	private int _clipMask = 0;				// Default: None
+
+	private int _clipXOrigin = 0;				// Default: Zero
+	private int _clipYOrigin = 0;				// Default: Zero
+	
+	private int _dashOffset = 0;				// Default: Zero
+	
+	private Font _font;	// TODO: Server dependent font
+	
+	private List<Integer> _dashes = new ArrayList<Integer>();		// Default (4,4) Added in constructor
+			
+
+	
 	public void setForegroundColour(final int value) {
 		_foregroundColour = value;
 	}
@@ -28,8 +74,6 @@ public class GraphicsContext extends AbstractResource {
 		return _foregroundColour;
 	}
 
-	private int _backgroundColour = 0xffffffff;
-	
 	public void setBackgroundColour(final int value) {
 		_backgroundColour = value;
 	}
@@ -37,8 +81,6 @@ public class GraphicsContext extends AbstractResource {
 	public int getBackgroundColour() {
 		return _backgroundColour;
 	}
-
-	private int _planeMask = 0xffffffff;
 	
 	public void setPlaneMask(final int planeMask) {
 		_planeMask = planeMask;
@@ -48,8 +90,6 @@ public class GraphicsContext extends AbstractResource {
 		return _planeMask;
 	}
 
-	private int _subWindowMode = 0;
-	
 	public void setSubWindowMode(final int subWindowMode) {
 		_subWindowMode = subWindowMode;
 	}
@@ -58,18 +98,14 @@ public class GraphicsContext extends AbstractResource {
 		return _subWindowMode;
 	}
 
-	private int _function = 0;
-	
-	public void setFunction(final int function) {
+	public void setFunction(final FunctionType function) {
 		_function = function;
 	}
 
-	public int getFunction() {
+	public FunctionType getFunction() {
 		return _function;
 	}
 
-	private int _lineWidth = 0;
-	
 	public void setLineWidth(final int lineWidth) {
 		_lineWidth = lineWidth;
 	}
@@ -78,8 +114,6 @@ public class GraphicsContext extends AbstractResource {
 		return _lineWidth;
 	}
 
-	private int _lineStyle = 0;
-	
 	public int getLineStyle() {
 		return _lineStyle;
 	}
@@ -88,9 +122,6 @@ public class GraphicsContext extends AbstractResource {
 		_lineStyle = lineStyle;
 	}
 
-	private int _capStyle = 0;
-
-	
 	public int getCapStyle() {
 		return _capStyle;
 	}
@@ -99,16 +130,12 @@ public class GraphicsContext extends AbstractResource {
 		_capStyle = capStyle;
 	}
 
-	private boolean _graphicsExposures = false;
-	
 	public boolean getGraphicsExposures() {
 		return _graphicsExposures;
 	}
 	public void setGraphicsExposures(final boolean graphicsExposures) {
 		_graphicsExposures = graphicsExposures;
 	}
-
-	private int _arcMode = 0;
 	
 	public void setArcMode(final int arcMode) {
 		_arcMode = arcMode;
@@ -118,8 +145,6 @@ public class GraphicsContext extends AbstractResource {
 		return _arcMode;
 	}
 
-	private int _joinStyle = 0;
-	
 	public void setJoinStyle(final int joinStyle) {
 		_joinStyle = joinStyle;
 	}
@@ -128,8 +153,6 @@ public class GraphicsContext extends AbstractResource {
 		return _joinStyle;
 	}
 	
-	private int _fillStyle = 0;
-
 	public void setFillStyle(final int fillStyle) {
 		_fillStyle = fillStyle;
 	}
@@ -138,8 +161,6 @@ public class GraphicsContext extends AbstractResource {
 		return _fillStyle;
 	}
 
-	private int _fillRule = 0;
-	
 	public void setFillRule(final int fillRule) {
 		_fillRule = fillRule;
 	}
@@ -148,8 +169,6 @@ public class GraphicsContext extends AbstractResource {
 		return _fillRule;
 	}
 	
-	private Pixmap _tilePixmap = null;
-
 	public void setTile(final Pixmap tilePixmap) {
 		_tilePixmap = tilePixmap;
 	}
@@ -158,8 +177,6 @@ public class GraphicsContext extends AbstractResource {
 		return _tilePixmap;
 	}
 	
-	private Pixmap _stipple = null;
-
 	public void setStipple(final Pixmap stipple) {
 		_stipple = stipple;
 	}
@@ -167,8 +184,6 @@ public class GraphicsContext extends AbstractResource {
 	public Pixmap getStipple() {
 		return _stipple;
 	}
-
-	private int _tileStippleXOrigin = 0;
 	
 	public void setTileStippleXOrigin(final int tileStippleXOrigin) {
 		_tileStippleXOrigin = tileStippleXOrigin;
@@ -178,8 +193,6 @@ public class GraphicsContext extends AbstractResource {
 		return _tileStippleXOrigin;
 	}
 
-	private int _tileStippleYOrigin = 0;
-	
 	public void setTileStippleYOrigin(final int clipYOrigin) {
 		this._tileStippleYOrigin = clipYOrigin;
 	}	
@@ -188,8 +201,6 @@ public class GraphicsContext extends AbstractResource {
 		return _tileStippleYOrigin;
 	}
 
-	private int _clipXOrigin = 0;
-	
 	public void setClipXOrigin(final int clipXOrigin) {
 		_clipXOrigin = clipXOrigin;
 	}
@@ -198,8 +209,6 @@ public class GraphicsContext extends AbstractResource {
 		return this._clipXOrigin;
 	}
 
-	private int _clipYOrigin = 0;
-	
 	public void setClipYOrigin(final int clipYOrigin) {
 		_clipYOrigin = clipYOrigin;
 	}
@@ -208,9 +217,6 @@ public class GraphicsContext extends AbstractResource {
 		return this._clipYOrigin;
 	}
 
-	/** Weird X seems to imply that this can either be a pixmap or a bunch of rectanges.. */
-	private int _clipMask = 0;
-	
 	public void setClipMask(final int clipMask) {
 		_clipMask = clipMask;
 	}
@@ -219,8 +225,6 @@ public class GraphicsContext extends AbstractResource {
 		return this._clipMask;
 	}
 
-	private int _dashOffset = 0;
-	
 	public void setDashOffset(final int dashOffset) {
 		_dashOffset = dashOffset;
 	}
@@ -229,8 +233,6 @@ public class GraphicsContext extends AbstractResource {
 		return _dashOffset;
 	}
 	
-	private Font _font;
-	
 	public void setFont(final Font font) {
 		_font = font;
 	}
@@ -238,8 +240,6 @@ public class GraphicsContext extends AbstractResource {
 	public Font getFont() {
 		return _font;
 	}
-
-	private List<Integer> _dashes = new ArrayList<Integer>();
 
 	public void setDashes(List<Integer> dashes) {
 		_dashes = dashes;

@@ -23,22 +23,40 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class DestroyWindow implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();
+
+		final int windowResourceId = inputStream.readInt();
+		final Window window = server.getResources().get(windowResourceId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowResourceId);	
+			return;
+		}
+
+		// Only perform activities on non-root window
+		if (window.getRootWindow().getId() != window.getId()) {
+			if (window.isMapped()) {
+				window.unmap();
+
+				//TODO: Destroy own window last, notify all inferiors first.
+				final Event mapDestroyEvent = window.getEventFactories().getDestroyNotifyFactory().create(window, window);
+				window.deliver(mapDestroyEvent, Event.NoEventMask);
+			}
+		}			
+
 	}
 
 }
