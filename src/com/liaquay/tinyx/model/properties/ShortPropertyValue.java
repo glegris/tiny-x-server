@@ -51,7 +51,6 @@ public class ShortPropertyValue extends PropertyValue {
 	}	
 	
 	public void prepend(final short[] data) {
-		if((data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");
 		final short[] n = new short[_data.length + data.length];
 		System.arraycopy(data, 0, n, 0, data.length);
 		System.arraycopy(_data, 0, n, data.length, _data.length);
@@ -59,7 +58,6 @@ public class ShortPropertyValue extends PropertyValue {
 	}	
 	
 	public void append(final short[] data) {
-		if((data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");
 		final short[] n = new short[_data.length + data.length];
 		System.arraycopy(_data, 0, n, 0, _data.length);
 		System.arraycopy(data, 0, n, _data.length, data.length);

@@ -3,9 +3,9 @@ package com.liaquay.tinyx.renderers.awt;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import com.liaquay.tinyx.font.FontDetailAdaptor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.FontInfo;
-import com.liaquay.tinyx.model.font.FontDetailAdaptor;
 
 public abstract class XawtFontDetail extends FontDetailAdaptor {
 	
@@ -22,7 +22,7 @@ public abstract class XawtFontDetail extends FontDetailAdaptor {
 			final int color) {
 
 		final XawtDrawableListener drawableListener = (XawtDrawableListener)drawable.getDrawableListener();
-		final Graphics2D graphics = drawableListener.getGraphics();
+		final Graphics2D graphics = drawableListener.getGraphics(null);
 		final int rgb = drawable.getColorMap().getRGB(color);
 		drawString(graphics, text, xs, ys, rgb);
 		
@@ -47,8 +47,10 @@ public abstract class XawtFontDetail extends FontDetailAdaptor {
 			final int bh, 
 			final int bgColor) {
 		
+		System.out.println("Text: '" + text + "'");
+		
 		final XawtDrawableListener drawableListener = (XawtDrawableListener)drawable.getDrawableListener();
-		final Graphics2D graphics = drawableListener.getGraphics();
+		final Graphics2D graphics = drawableListener.getGraphics(null);
 		graphics.setColor(new Color(drawable.getColorMap().getRGB(bgColor)));
 		graphics.fillRect(bx, by, bw, bh);
 		final int rgb = drawable.getColorMap().getRGB(color);

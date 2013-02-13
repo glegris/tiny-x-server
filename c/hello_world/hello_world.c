@@ -78,7 +78,7 @@ static void set_up_gc ()
 
 static void set_up_font ()
 {
-    const char * fontname = "-*-Arial-bold-i-*-*-14-*-*-*-*-*-*-*";
+    const char * fontname = "fixed"; //"-*-Arial-bold-i-*-*-14-*-*-*-*-*-*-*";
     text_box.font = XLoadQueryFont (text_box.display, fontname);
     /* If the font could not be loaded, revert to the "fixed" font. */
     if (! text_box.font) {
@@ -103,12 +103,12 @@ static void draw_screen ()
     XTextExtents (text_box.font, text_box.text, text_box.text_len,
                   & direction, & ascent, & descent, & overall);
 
-    printf("ascent %d, descent %d, overall %d\n" , ascent, descent, overall.width);
+    printf("XTextExtents... ascent %d, descent %d, overall %d\n" , ascent, descent, overall.width);
     
     XQueryTextExtents (text_box.display, text_box.font->fid, text_box.text, text_box.text_len,
                   & direction, & ascent, & descent, & overall);
                  
-    printf("ascent %d, descent %d, overall %d\n" , ascent, descent, overall.width);
+    printf("XQueryTextExtents... ascent %d, descent %d, overall %d\n" , ascent, descent, overall.width);
                   
     x = (text_box.width - overall.width) / 2;
     y = text_box.height / 2 + (ascent - descent) / 2;

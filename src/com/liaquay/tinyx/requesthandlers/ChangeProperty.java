@@ -41,10 +41,11 @@ public class ChangeProperty implements RequestHandler {
 	private final static Logger LOGGER = Logger.getLogger(ChangeProperty.class.getName());
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();		
 		final int modeIndex = request.getData();
@@ -80,7 +81,7 @@ public class ChangeProperty implements RequestHandler {
 		inputStream.skip(3);
 		Property property = window.getProperties().get(propertyId);
 		final int n = inputStream.readInt();
-		
+
 		if(!mode.equals(Mode.PropModeReplace)) {
 			if(property == null) {
 				response.error(Response.ErrorCode.Match, propertyId); //TODO This is probably not the correct error code
@@ -95,12 +96,12 @@ public class ChangeProperty implements RequestHandler {
 				return;
 			}
 		}
-		
+
 		if(property == null) {
 			property = new Property(propertyAtom);
 			window.getProperties().add(property);
 		}
-		
+
 		switch(format) {
 		case ByteFormat: changeBytes(inputStream, property, typeAtom, mode, n); break;
 		case ShortFormat: changeShorts(inputStream, property, typeAtom, mode, n); break;
@@ -117,28 +118,28 @@ public class ChangeProperty implements RequestHandler {
 
 		final byte[] data = new  byte[n];
 		inputStream.read(data, 0, n);
-		
+
 		LOGGER.log(Level.INFO, "Change property received for " +property.getPropertyAtom().getText() + " value " + new String(data));
-		
+
 		switch(mode) {
 		case PropModeReplace: {
-			final BytePropertyValue bytePropertyValue = new BytePropertyValue(typeAtom, data);
-			property.setValue(bytePropertyValue);
+			final BytePropertyValue propertyValue = new BytePropertyValue(typeAtom, data);
+			property.setValue(propertyValue);
 			break;
 		}
 		case PropModeAppend: {
-			final BytePropertyValue bytePropertyValue = (BytePropertyValue)property.getValue();
-			bytePropertyValue.append(data);
+			final BytePropertyValue propertyValue = (BytePropertyValue)property.getValue();
+			propertyValue.append(data);
 			break;
 		}
 		case PropModePrepend: {
-			final BytePropertyValue bytePropertyValue = (BytePropertyValue)property.getValue();
-			bytePropertyValue.append(data);
+			final BytePropertyValue propertyValue = (BytePropertyValue)property.getValue();
+			propertyValue.append(data);
 			break;
 		}
 		}
 	}
-	
+
 	private void changeShorts(
 			final XInputStream inputStream,
 			final Property property,
@@ -146,29 +147,29 @@ public class ChangeProperty implements RequestHandler {
 			final Property.Mode mode,
 			final int n) throws IOException {
 
-		final short[] data = new  short[n];
+		final short[] data = new short[n];
 		for(int i = 0; i < n; ++i) {
 			data[i] = (short)inputStream.readSignedShort();
 		}
 		switch(mode) {
 		case PropModeReplace: {
-			final ShortPropertyValue bytePropertyValue = new ShortPropertyValue(typeAtom, data);
-			property.setValue(bytePropertyValue);
+			final ShortPropertyValue propertyValue = new ShortPropertyValue(typeAtom, data);
+			property.setValue(propertyValue);
 			break;
 		}
 		case PropModeAppend: {
-			final ShortPropertyValue bytePropertyValue = (ShortPropertyValue)property.getValue();
-			bytePropertyValue.append(data);
+			final ShortPropertyValue propertyValue = (ShortPropertyValue)property.getValue();
+			propertyValue.append(data);
 			break;
 		}
 		case PropModePrepend: {
-			final ShortPropertyValue bytePropertyValue = (ShortPropertyValue)property.getValue();
-			bytePropertyValue.append(data);
+			final ShortPropertyValue propertyValue = (ShortPropertyValue)property.getValue();
+			propertyValue.append(data);
 			break;
 		}
 		}
 	}
-	
+
 	private void changeInts(
 			final XInputStream inputStream,
 			final Property property,
@@ -178,22 +179,22 @@ public class ChangeProperty implements RequestHandler {
 
 		final int[] data = new  int[n];
 		for(int i = 0; i < n; ++i) {
-			data[i] = (short)inputStream.readInt();
+			data[i] = inputStream.readInt();
 		}
 		switch(mode) {
 		case PropModeReplace: {
-			final IntPropertyValue bytePropertyValue = new IntPropertyValue(typeAtom, data);
-			property.setValue(bytePropertyValue);
+			final IntPropertyValue propertyValue = new IntPropertyValue(typeAtom, data);
+			property.setValue(propertyValue);
 			break;
 		}
 		case PropModeAppend: {
-			final IntPropertyValue bytePropertyValue = (IntPropertyValue)property.getValue();
-			bytePropertyValue.append(data);
+			final IntPropertyValue propertyValue = (IntPropertyValue)property.getValue();
+			propertyValue.append(data);
 			break;
 		}
 		case PropModePrepend: {
-			final IntPropertyValue bytePropertyValue = (IntPropertyValue)property.getValue();
-			bytePropertyValue.append(data);
+			final IntPropertyValue propertyValue = (IntPropertyValue)property.getValue();
+			propertyValue.append(data);
 			break;
 		}
 		}

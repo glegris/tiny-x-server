@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class TileStippleXOrigin implements AttributeHandler<GraphicsContext> {
+public class TileStippleXOrigin implements GraphicsAttributeHandler {
 	
 	@Override
 	public void read(
@@ -40,13 +39,17 @@ public class TileStippleXOrigin implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int tileStippleXOrigin = inputStream.readSignedShort();
+		final int tileStippleXOrigin = inputStream.readSignedShort();
 		graphicsContext.setTileStippleXOrigin(tileStippleXOrigin);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeShort(graphicsContext.getTileStippleXOrigin());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setTileStippleXOrigin(source.getTileStippleXOrigin());
 	}
 }

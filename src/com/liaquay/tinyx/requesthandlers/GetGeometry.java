@@ -32,11 +32,12 @@ import com.liaquay.tinyx.model.Server;
 public class GetGeometry implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();
 		final int drawableResourceId = inputStream.readInt();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);

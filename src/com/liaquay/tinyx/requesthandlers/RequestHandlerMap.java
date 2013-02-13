@@ -30,7 +30,6 @@ import com.liaquay.tinyx.model.Extension;
 import com.liaquay.tinyx.model.Extensions;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.extensions.BigRequestHandler;
-import com.liaquay.tinyx.requesthandlers.extensions.shape.ShapeExtensionHandler;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttributeHandlers;
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
@@ -53,7 +52,7 @@ public class RequestHandlerMap implements RequestHandler {
 
 	public RequestHandlerMap(final Extensions extensions) {
 		addExtension(extensions, "BIG-REQUESTS", 0,0, new BigRequestHandler());
-		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
+//		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
 		
 //		addExtension(extensions, "RENDER", 0,0, new RenderHandler());
 
@@ -115,7 +114,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[54] = new FreePixmap();
 		_handlers[55] = new CreateGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[56] = new ChangeGraphicsContext(graphicsContextAttributeHandlers);
-		_handlers[57] = new CopyGraphicsContext();
+		_handlers[57] = new CopyGraphicsContext(graphicsContextAttributeHandlers);
 		_handlers[58] = new SetDashes();
 		_handlers[59] = new SetClipRectangles();
 		_handlers[60] = new FreeGraphicsContext();

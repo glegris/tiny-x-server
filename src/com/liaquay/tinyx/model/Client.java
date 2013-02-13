@@ -42,6 +42,29 @@ public class Client {
 		_listener = listener;
 	}
 	
+	public enum CloseDownMode {
+		DestroyAll,
+		RetainPermanent,
+		RetainTemporary;
+		
+		public static CloseDownMode getFromIndex(final int index) {
+			final CloseDownMode[] values = values();
+			if (index<values.length && index>=0)
+				return values[index];
+			return null;
+		}		
+	}
+	
+	private CloseDownMode _closeDownMode = CloseDownMode.DestroyAll;
+	
+	public void setCloseDownMode(final CloseDownMode closeDownMode) {
+		_closeDownMode = closeDownMode;
+	}
+	
+	public CloseDownMode getCloseDownMode() {
+		return _closeDownMode;
+	}
+	
 	private final int _clientId;
 	// TODO this is probably not needed
 	// Currently only used to remove a clients resources.
@@ -56,6 +79,8 @@ public class Client {
 		_postBox = postBox;
 		_host = host;
 	}
+	
+	
 	
 	public int getClientId() {
 		return _clientId;

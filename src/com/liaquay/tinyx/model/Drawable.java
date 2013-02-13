@@ -21,7 +21,6 @@ package com.liaquay.tinyx.model;
 import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Image.ImageType;
-import com.liaquay.tinyx.model.font.FontDetail;
 
 
 public abstract class Drawable implements Resource {

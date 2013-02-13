@@ -31,11 +31,12 @@ import com.liaquay.tinyx.model.Window;
 public class ClearArea implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();		
 		final int windowId = inputStream.readInt(); 		
 		final Window window = server.getResources().get(windowId, Window.class);
@@ -48,7 +49,7 @@ public class ClearArea implements RequestHandler {
 		final int y = inputStream.readSignedShort();
 		int width = inputStream.readUnsignedShort();
 		int height = inputStream.readUnsignedShort();
-		
+
 		if (width == 0) {
 			width = window.getWidth();
 		}

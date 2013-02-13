@@ -27,10 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.CapStyle.CapStyleType;
 
-public class JoinStyle implements AttributeHandler<GraphicsContext> {
+public class JoinStyle implements GraphicsAttributeHandler {
 	
 	public enum JoinStyleType {
 		Miter,
@@ -54,14 +52,18 @@ public class JoinStyle implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int joinStyle = inputStream.readUnsignedByte();
+		final int joinStyle = inputStream.readUnsignedByte();
 		graphicsContext.setJoinStyle(joinStyle);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getJoinStyle());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setJoinStyle(source.getJoinStyle());
 	}
 }
 

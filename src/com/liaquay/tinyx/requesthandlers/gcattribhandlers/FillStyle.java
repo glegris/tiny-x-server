@@ -27,10 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.JoinStyle.JoinStyleType;
 
-public class FillStyle implements AttributeHandler<GraphicsContext> {
+public class FillStyle implements GraphicsAttributeHandler {
 	
 	public enum FillStyleType {
 		Solid,
@@ -55,13 +53,17 @@ public class FillStyle implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int fillStyle = inputStream.readUnsignedByte();
+		final int fillStyle = inputStream.readUnsignedByte();
 		graphicsContext.setFillStyle(fillStyle);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getFillStyle());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setFillStyle(source.getFillStyle());
 	}
 }

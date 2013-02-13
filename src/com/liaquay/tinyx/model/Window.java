@@ -174,28 +174,156 @@ public class Window extends Drawable {
 
 	private BackingStoreHint _backingStoreHint = BackingStoreHint.BackingStoreAlways; // TODO Check default value
 
-	public enum Gravity {
-		ForgetGravity,
-		NorthWestGravity,
-		NorthGravity,
-		NorthEastGravity,
-		WestGravity,
-		CenterGravity,
-		EastGravity,
-		SouthWestGravity,
-		SouthGravity,
-		SouthEastGravity,
-		StaticGravity;
+	public enum WinGravity {
+		/*
+		 * The win_gravity attribute controls the repositioning of subwindows
+		 * when a parent window is resized. The attribute is set on the
+		 * children. Normally, each child has a fixed position measured from the
+		 * origin of the parent window. Window gravity can be used to tell the
+		 * server to unmap the child or to move the child an amount depending on
+		 * the change in size of the parent. The constants used to set
+		 * win_gravity are similar to those for bit gravity, but their effect is
+		 * quite different.
+		 * 
+		 * NorthGravity specifies that the child window should be moved
+		 * horizontally by an amount one-half as great as the amount the window
+		 * was resized in the horizontal direction. The child is not moved
+		 * vertically. That means that if the window was originally centered
+		 * along the top edge of the window, it will also be centered along the
+		 * top edge of the window after resizing. If it was not originally
+		 * centered, its relative distance from the center may be accentuated or
+		 * reduced depending on whether the parent is resized larger or smaller.
+		 * 
+		 * Window gravity is only useful for children placed against or very
+		 * near the outside edges of the parent or directly in its center.
+		 * Furthermore, the child must be centered along one of the outside
+		 * edges or in a corner. Figure 4-2 shows the nine child positions where
+		 * window gravity can be useful and the setting to be used for each
+		 * position.
+		 */
+		Unmap {
+			@Override
+			public int getOriginX(int x, int width) { return x; }
+			@Override
+			public int getOriginY(int y, int height) { return y; }
+		},
+		NorthWest {
+			@Override
+			public int getOriginX(int x, int width) { return x; }
+			@Override
+			public int getOriginY(int y, int height) { return y; }
+		},
+		North {
+			@Override
+			public int getOriginX(int x, int width) { return x + (width>>1); }
+			@Override
+			public int getOriginY(int y, int height) { return y; }
+		},
+		NorthEast {
+			@Override
+			public int getOriginX(int x, int width) { return x + width; }
+			@Override
+			public int getOriginY(int y, int height) { return y; }
+		},
+		West {
+			@Override
+			public int getOriginX(int x, int width) { return x; }
+			@Override
+			public int getOriginY(int y, int height) { return y + (height>>1); }
+		},
+		Center {
+			@Override
+			public int getOriginX(int x, int width) { return x + (width>>1); }
+			@Override
+			public int getOriginY(int y, int height) { return y + (height>>1); }
+		},
+		East {
+			@Override
+			public int getOriginX(int x, int width) { return x + width; }
+			@Override
+			public int getOriginY(int y, int height) { return y + (height>>1); }
+		},
+		SouthWest {
+			@Override
+			public int getOriginX(int x, int width) { return x; }
+			@Override
+			public int getOriginY(int y, int height) { return y + height; }
+		},
+		South {
+			@Override
+			public int getOriginX(int x, int width) { return x + (width>>1); }
+			@Override
+			public int getOriginY(int y, int height) { return y + height; }
+		},
+		SouthEast {
+			@Override
+			public int getOriginX(int x, int width) { return x + width; }
+			@Override
+			public int getOriginY(int y, int height) { return y + height; }
+		},
+		Static { // TODO Not sure what to do here!
+			@Override
+			public int getOriginX(int x, int width) { return x; }
+			@Override
+			public int getOriginY(int y, int height) { return y; }
+		};
 
-		public static Gravity getFromIndex(final int index) {
-			final Gravity[] values = values();
+		public static WinGravity getFromIndex(final int index) {
+			final WinGravity[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+		
+		public abstract int getOriginX(final int x, final int width);
+		public abstract int getOriginY(final int y, final int height);
+	}
+	
+	public enum BitGravity {
+		/*
+		 * When an unobscured window is moved, its contents are moved with it,
+		 * since none of the pixel values need to be changed. But when a window
+		 * is enlarged or shrunk, the server has no idea where in the resulting
+		 * window the old contents should be placed, so it normally throws them
+		 * out. The bit_gravity attribute tells the server where to put the
+		 * existing bits in the larger or smaller window. By instructing the
+		 * server where to place the old contents, bit gravity allows some
+		 * clients (not all can take advantage of it) to avoid redrawing parts
+		 * of their windows.
+		 * 
+		 * Bit gravity is never necessary in programs. It does not affect the
+		 * appearance or functionality of the client. It is used to improve
+		 * performance in certain cases. Some X servers may not implement bit
+		 * gravity and may throw out the window contents on resizing regardless
+		 * of the setting of this attribute. This response is the default for
+		 * all servers. That is, the default bit gravity is ForgetGravity, which
+		 * means that the contents of a window are always lost when the window
+		 * is resized, even if they are maintained in backing store or because
+		 * of a save_under (to be described in Sections 4.3.5 and 4.3.6).
+		 * 
+		 * The window is tiled with its background in the areas that are not
+		 * preserved by the bit gravity, unless no background is defined, in
+		 * which case the existing screen is not altered.
+		 */
+		Forget,
+		NorthWest,
+		North,
+		NorthEast,
+		West,
+		Center,
+		East,
+		SouthWest,
+		South,
+		SouthEast,
+		Static;
+
+		public static BitGravity getFromIndex(final int index) {
+			final BitGravity[] values = values();
 			if (index<values.length && index>=0) return values[index];
 			return null;
 		}
 	}
-
-	private Gravity _bitGravity = 	Gravity.ForgetGravity;
-	private Gravity _winGravity  = Gravity.	NorthWestGravity;
+	private BitGravity _bitGravity = BitGravity.Forget;
+	private WinGravity _winGravity  = WinGravity.NorthWest;
 
 	public enum WindowClass {
 		CopyFromParent,
@@ -527,16 +655,29 @@ public class Window extends Drawable {
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
 
-			exposed();
-
-			// TODO check for visibility changes 
-			// TODO Send visibility events 
-
 			if(isMappedToRoot()) {
+				
+				
+				// TODO check for visibility changes 
+				// TODO Send visibility events 
+				
 				_listener.mapped(true);
+				exposed();
+				tellListenerAboutMappedChildren();
 			}
 
 			updateVisibility();
+		}
+	}
+	
+	private void tellListenerAboutMappedChildren() {
+		for(int i = 0; i < getChildCount(); i++) {
+			final Window child = getChild(i);
+			if(child._mapped) {
+				child._listener.mapped(true);
+				child.exposed();
+				child.tellListenerAboutMappedChildren();
+			}
 		}
 	}
 	
@@ -632,15 +773,13 @@ public class Window extends Drawable {
 	public void unmap() {
 		if(_mapped) {
 			_mapped = false;
-			// TODO issue some unmapped event
+			
 			_listener.mapped(false);
 			
 			if(_parent != null && _parent.isViewable()) {
-				exposed();
+				_parent.exposed();
 			}
 		}
-		
-		
 	}
 
 	/**
@@ -664,11 +803,11 @@ public class Window extends Drawable {
 		return _backingStoreHint;
 	}
 
-	public Gravity getBitGravity() {
+	public BitGravity getBitGravity() {
 		return _bitGravity;
 	}
 
-	public Gravity getWinGravity() { 
+	public WinGravity getWinGravity() { 
 		return _winGravity;
 	}
 
@@ -809,11 +948,11 @@ public class Window extends Drawable {
 		_borderPixel = borderPixel;
 	}
 
-	public void setBitGravity(final Gravity gravity) {
+	public void setBitGravity(final BitGravity gravity) {
 		_bitGravity = gravity;
 	}
 
-	public void setWinGravity(Gravity gravity) {
+	public void setWinGravity(WinGravity gravity) {
 		_winGravity = gravity;
 	}
 

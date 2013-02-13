@@ -18,31 +18,9 @@
  */
 package com.liaquay.tinyx.requesthandlers.gcattribhandlers;
 
-import java.io.IOException;
-
-import com.liaquay.tinyx.Request;
-import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.XOutputStream;
-import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
-import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Unimplemented implements AttributeHandler<GraphicsContext> {
-
-	@Override
-	public void read(
-			final Server server, 
-			final Client client, 
-			final Request request,
-			final Response response, 
-			final GraphicsContext graphicsContext) throws IOException {
-		
-		throw new RuntimeException("Unimplemented Method: " + this.getClass());
-	}
-
-	@Override
-	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		throw new RuntimeException("Unimplemented");
-	}
+public interface GraphicsAttributeHandler extends AttributeHandler<GraphicsContext>{
+	public void copy(final GraphicsContext source, final GraphicsContext destination);
 }

@@ -31,11 +31,12 @@ import com.liaquay.tinyx.model.Window;
 public class MapWindow implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();		
 		final int windowId = inputStream.readInt(); 		
 		final Window window = server.getResources().get(windowId, Window.class);

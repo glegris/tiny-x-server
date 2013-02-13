@@ -33,11 +33,12 @@ import com.liaquay.tinyx.model.Server;
 public class InternAtom implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();
 		final boolean onlyIfExists = request.getData() == 1;
 		final String atomName = inputStream.readString();

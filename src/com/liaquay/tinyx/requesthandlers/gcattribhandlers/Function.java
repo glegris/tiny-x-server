@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class Function implements AttributeHandler<GraphicsContext> {
+public class Function implements GraphicsAttributeHandler {
 	
 	public enum FunctionType {
 		Clear, 
@@ -44,7 +43,6 @@ public class Function implements AttributeHandler<GraphicsContext> {
 		}
 	}
 	
-	
 	@Override
 	public void read(
 			final Server server, 
@@ -54,8 +52,7 @@ public class Function implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int function = inputStream.readUnsignedByte();
+		final int function = inputStream.readUnsignedByte();
 		graphicsContext.setFunction(FunctionType.getFromIndex(function));
 	}
 
@@ -64,4 +61,8 @@ public class Function implements AttributeHandler<GraphicsContext> {
 		outputStream.writeByte(graphicsContext.getFunction().ordinal());
 	}
 
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setFunction(source.getFunction());
+	}
 }

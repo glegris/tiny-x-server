@@ -29,9 +29,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class DashList implements AttributeHandler<GraphicsContext> {
+public class DashList implements GraphicsAttributeHandler {
 
 	@Override
 	public void read(
@@ -42,9 +41,8 @@ public class DashList implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-
-		int dashes = inputStream.readSignedByte();
-		List<Integer> dashList = new ArrayList<Integer>();
+		final int dashes = inputStream.readSignedByte();
+		final List<Integer> dashList = new ArrayList<Integer>();
 		dashList.add(dashes);
 		dashList.add(dashes);
 		graphicsContext.setDashes(dashList);
@@ -52,10 +50,15 @@ public class DashList implements AttributeHandler<GraphicsContext> {
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		List<Integer> dashList = graphicsContext.getDashes();
+		final List<Integer> dashList = graphicsContext.getDashes();
 
 		for (int i=0; i < dashList.size(); i++) {
 			outputStream.writeByte(dashList.get(i));
 		}
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setDashes(source.getDashes());
 	}
 }

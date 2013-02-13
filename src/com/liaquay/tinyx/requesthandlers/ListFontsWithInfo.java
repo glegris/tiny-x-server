@@ -29,11 +29,11 @@ import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.FontDetail;
+import com.liaquay.tinyx.model.FontFactory;
 import com.liaquay.tinyx.model.FontMatch;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.model.font.FontDetail;
-import com.liaquay.tinyx.model.font.FontFactory;
 
 public class ListFontsWithInfo implements RequestHandler {
 

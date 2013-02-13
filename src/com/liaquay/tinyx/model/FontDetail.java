@@ -16,10 +16,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.model.font;
+package com.liaquay.tinyx.model;
 
-import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.TextExtents;
 
 public interface FontDetail {
 	
@@ -48,7 +46,7 @@ public interface FontDetail {
 	public String getCharsetEncoding();
 	public TextExtents getMinBounds();
 	public TextExtents getMaxBounds();
-	public int getDefaultChar(); // TODO should this be a char
+	public int getDefaultChar();
 	public int getFirstChar();
 	public int getLastChar();
 	public boolean isLeftToRight();

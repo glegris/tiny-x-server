@@ -22,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Drawable;
+import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Pixmap;
 
 public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener {
@@ -38,16 +39,20 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_BGR);
 		setImage(image);
 	}
-	
+
 	@Override
-	public Graphics2D getGraphics() {
-		return (Graphics2D) getImage().getGraphics();
+	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
+		Graphics2D g = (Graphics2D) getImage().getGraphics();
+		if (graphicsContext != null) {
+			g.setComposite(new GraphicsContextComposite(graphicsContext));
+		}
+		return g;
 	}
-	
+
 	public void setImage(BufferedImage image) {
 		this._image =  image;
 	}
-	
+
 	@Override
 	public BufferedImage getImage() {
 		return _image;

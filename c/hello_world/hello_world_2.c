@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
         int blackColor = BlackPixel(dpy, DefaultScreen(dpy));
         int whiteColor = WhitePixel(dpy, DefaultScreen(dpy));
  
-		XFontStruct * font1 = XLoadQueryFont (dpy, "-adobe-symbol-medium-r-normal--0-0-0-0-p-0-adobe-fontspecific");
+		XFontStruct * font1 = XLoadQueryFont (dpy, "-adobe-symbol-medium-r-normal--28-0-0-0-p-0-adobe-fontspecific");
 		if(!font1) 
 		{
                 printf("Failed to open font1.\n");

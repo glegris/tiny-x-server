@@ -27,9 +27,8 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
 
-public class GraphicsExposures implements AttributeHandler<GraphicsContext> {
+public class GraphicsExposures implements GraphicsAttributeHandler {
 	
 	@Override
 	public void read(
@@ -40,17 +39,18 @@ public class GraphicsExposures implements AttributeHandler<GraphicsContext> {
 			final GraphicsContext graphicsContext) throws IOException {
 		
 		final XInputStream inputStream = request.getInputStream();
-	
-		int value = inputStream.readSignedByte();
-		boolean graphicsExposures = false;
-		if (value != 0) {
-			graphicsExposures = true;
-		}
+		final int value = inputStream.readSignedByte();
+		final boolean graphicsExposures = value != 0;
 		graphicsContext.setGraphicsExposures(graphicsExposures);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getFunction().ordinal());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setGraphicsExposures(source.getGraphicsExposures());
 	}
 }

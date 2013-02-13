@@ -23,21 +23,34 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.io.XOutputStream;
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class GetSelectionOwner implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		final XInputStream inputStream = request.getInputStream();		
+		final int atomId = inputStream.readInt();
+		final Atom atom = server.getAtoms().get(atomId);
+		if(atom == null) {
+			response.error(Response.ErrorCode.Atom, atomId);		
+			return;
+		}
+		
+		final Window selectionOwner = server.getSelectionOwner(atom.getText());
+		
+		final XOutputStream outputStream = response.respond(1, 0);
+		
+		outputStream.writeInt(selectionOwner == null ? 0 : selectionOwner.getId());
 	}
 }

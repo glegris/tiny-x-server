@@ -32,10 +32,11 @@ import com.liaquay.tinyx.model.Server;
 public class GetAtomName implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();		
 		final int atomId = inputStream.readInt();

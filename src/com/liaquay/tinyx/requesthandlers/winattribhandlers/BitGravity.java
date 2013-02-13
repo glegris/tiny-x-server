@@ -27,7 +27,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.model.Window.Gravity;
+import com.liaquay.tinyx.model.Window.WinGravity;
 
 public class BitGravity extends WindowAttributeHandler {
 
@@ -41,7 +41,7 @@ public class BitGravity extends WindowAttributeHandler {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int gravityIndex = inputStream.readUnsignedByte();
-		final Gravity gravity = Window.Gravity.getFromIndex(gravityIndex);
+		final Window.BitGravity gravity = Window.BitGravity.getFromIndex(gravityIndex);
 		if(gravity == null) {
 			response.error(ErrorCode.Value, gravityIndex); // TODO is this the correct type of error?
 			return;

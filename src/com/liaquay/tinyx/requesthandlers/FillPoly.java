@@ -28,7 +28,6 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 
 public class FillPoly implements RequestHandler {
 

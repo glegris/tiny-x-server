@@ -51,7 +51,6 @@ public class IntPropertyValue extends PropertyValue {
 	}	
 	
 	public void prepend(final int[] data) {
-		if((data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");
 		final int[] n = new int[_data.length + data.length];
 		System.arraycopy(data, 0, n, 0, data.length);
 		System.arraycopy(_data, 0, n, data.length, _data.length);
@@ -59,7 +58,6 @@ public class IntPropertyValue extends PropertyValue {
 	}	
 	
 	public void append(final int[] data) {
-		if((data.length &3) != 0) throw new RuntimeException("Multiples of 4 bytes please");
 		final int[] n = new int[_data.length + data.length];
 		System.arraycopy(_data, 0, n, 0, _data.length);
 		System.arraycopy(data, 0, n, _data.length, data.length);

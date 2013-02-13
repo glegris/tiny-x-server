@@ -57,7 +57,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	final Drawable _drawable;
 
-	public abstract Graphics2D getGraphics();
+	public abstract Graphics2D getGraphics(GraphicsContext gc);
 
 	public XawtDrawableListener(Drawable drawable) {
 		_drawable = drawable;
@@ -103,7 +103,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
 
 		//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
-		getGraphics().drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
+		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
 
 		//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
-		getGraphics().drawImage(newImage, srcX, srcY, width, height, null);
+		getGraphics(graphicsContext).drawImage(newImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 
 
-		Graphics sg = getGraphics();
+		Graphics sg = getGraphics(graphicsContext);
 		sg.drawImage(image, destinationX, destinationY, width, height, null);
 	}
 
@@ -223,7 +223,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		XAwtGraphicsContext.tile(graphics, graphicsContext);
@@ -241,7 +241,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void drawLine(GraphicsContext graphicsContext, int[] x1, int[] y1,
 			int[] x2, int[] y2) {
 
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
@@ -262,7 +262,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
 			int x2, int y2) {
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
@@ -286,7 +286,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		final Font font = graphicsContext.getFont();
 		final XawtFontDetail fontDetail = (XawtFontDetail)font.getFontDetail();
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		graphics.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour())));
 		graphics.fillRect(bx, by, bw, bh);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
@@ -301,7 +301,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		final Font font = graphicsContext.getFont();
 		final XawtFontDetail fontDetail = (XawtFontDetail)font.getFontDetail();
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		fontDetail.drawString(graphics, str, x, y, rgb);
 	}
@@ -322,7 +322,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 //		          fill-style: Stippled
 //		             stipple: PXM 0040000a
 		
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
@@ -388,7 +388,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
 
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
@@ -402,7 +402,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	public void polyArc(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, int angle1, int angle2, boolean fill) {
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
@@ -414,7 +414,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
@@ -423,7 +423,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
-		final Graphics2D graphics = getGraphics();
+		final Graphics2D graphics = getGraphics(null);
 
 		final int rgb = _drawable.getColorMap().getRGB(_drawable.getBackgroundPixel());
 		graphics.setBackground(new Color(rgb));

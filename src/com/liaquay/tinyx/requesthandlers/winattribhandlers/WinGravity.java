@@ -27,7 +27,6 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.model.Window.Gravity;
 
 public class WinGravity extends WindowAttributeHandler {
 
@@ -41,11 +40,11 @@ public class WinGravity extends WindowAttributeHandler {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int gravityIndex = inputStream.readUnsignedByte();
-		final Gravity gravity = Window.Gravity.getFromIndex(gravityIndex);
+		final Window.WinGravity gravity = Window.WinGravity.getFromIndex(gravityIndex);
 		if(gravity == null) {
 			response.error(ErrorCode.Value, gravityIndex); // TODO is this the correct type of error?
 			return;
-		}
+		} 
 		window.setWinGravity(gravity);
 	}
 }

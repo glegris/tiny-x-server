@@ -52,10 +52,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			BufferedImage image = new BufferedImage(window.getWidth() + (window.getBorderWidth() * 2), window.getHeight() + (window.getBorderWidth() * 2), BufferedImage.TYPE_INT_RGB);
 			_image = image;
 		}
-
-		paintWindow();
-		//		_canvas.repaint(window.getX(), window.getY(), window.getWidth()
-		//				, window.getHeight());
 	}
 
 	@Override
@@ -64,18 +60,9 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		child.setListener(listener);
 	}
 
-
 	@Override
 	public void mapped(final boolean mapped) {
-		paintWindow();
-		//		_canvas.repaint(_window.getX(), _window.getY(), _window.getWidth()
-		//				, _window.getHeight());
-
-		for(int i = 0; i < _window.getChildCount(); i++) {
-			final Window child = _window.getChild(i);
-			final XawtWindow awtChild = (XawtWindow)child.getListener();
-			awtChild.mapped(mapped);
-		}
+		if(mapped) paintWindow();
 	}
 
 	@Override
@@ -217,8 +204,12 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	@Override
-	public Graphics2D getGraphics() {
-		return translateAndClipToWindow();
+	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
+		Graphics2D g = translateAndClipToWindow();
+		if (graphicsContext != null) {
+			g.setComposite(new GraphicsContextComposite(graphicsContext));
+		}		
+		return g;
 	}
 
 	private Graphics2D translateAndClipToWindow() {
@@ -350,15 +341,12 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	public void updateCanvas() {
-		_canvas.repaint();
+		//		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
+		if(_window.isMapped()) _canvas.getGraphics().drawImage(getImage(), 0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
 	}
 
 	private void updateCanvas(int x, int y, int width, int height) {
-		_canvas.repaint(x, y, width, height);
-		//		_canvas.getGraphics().drawImage(getImage(), x, y, x+width, y+height, x, y, x+width, y+height, null);
-
-		//		_canvas.repaint(x, y, width, height);
-		//		_canvas.getGraphics().drawImage(getImage(), x, y, x+width, y+height, x, y, x+width, y+height, null);
+		if(_window.isMapped()) _canvas.getGraphics().drawImage(getImage(), x, y, x+width, y+height, x, y, x+width, y+height, null);
 	}
 
 	private void updateCanvas(int xCoords[], int yCoords[]) {

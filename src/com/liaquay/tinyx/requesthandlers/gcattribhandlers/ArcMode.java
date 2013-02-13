@@ -27,23 +27,21 @@ import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.requesthandlers.AttributeHandler;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillRule.FillRuleType;
 
-public class ArcMode  implements AttributeHandler<GraphicsContext> {
-	
+public class ArcMode implements GraphicsAttributeHandler {
+
 	public enum ArcModeType {
-	      Chord,
-          PieSlice;
-		
+		Chord,
+		PieSlice;
+
 		public static ArcModeType getFromIndex(final int index) {
 			final ArcModeType[] arcMode = values();
 			if(index >= 0 && index < arcMode.length) return arcMode[index];
 			return null;
 		}
 	}
-	
-	
+
+
 	@Override
 	public void read(
 			final Server server, 
@@ -51,15 +49,19 @@ public class ArcMode  implements AttributeHandler<GraphicsContext> {
 			final Request request,
 			final Response response, 
 			final GraphicsContext graphicsContext) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
-	
-		int arcMode = inputStream.readUnsignedByte();
+		final int arcMode = inputStream.readUnsignedByte();
 		graphicsContext.setArcMode(arcMode);
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
 		outputStream.writeByte(graphicsContext.getArcMode());
+	}
+
+	@Override
+	public void copy(final GraphicsContext source, final GraphicsContext destination) {
+		destination.setArcMode(source.getArcMode());
 	}
 }
