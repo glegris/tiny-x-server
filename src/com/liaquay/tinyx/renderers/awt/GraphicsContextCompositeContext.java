@@ -2,14 +2,10 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Composite;
 import java.awt.CompositeContext;
-import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
-import sun.awt.image.BufImgSurfaceData;
-import sun.java2d.SurfaceData;
-import sun.java2d.loops.Blit;
 import sun.java2d.loops.CompositeType;
 
 public class GraphicsContextCompositeContext implements CompositeContext {
@@ -18,7 +14,13 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 	ColorModel dstCM;
 	Composite composite;
 	CompositeType comptype;
-
+	GraphicsContextComposite gc;
+	
+    final static int PRECBITS = 22;
+    final static int WEIGHT_R = (int) ((1 << PRECBITS) * 0.299); 
+    final static int WEIGHT_G = (int) ((1 << PRECBITS) * 0.578);
+    final static int WEIGHT_B = (int) ((1 << PRECBITS) * 0.114);
+    final static int SRCALPHA = (int) ((1 << PRECBITS) * 0.667);
 
 	public GraphicsContextCompositeContext(GraphicsContextComposite gc,
 			ColorModel s, ColorModel d)
@@ -31,24 +33,7 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 		}
 		srcCM = s;
 		dstCM = d;
-		this.composite = gc;
-
-		switch (gc.getGC().getFunction()) {
-		case Clear:
-			this.comptype = CompositeType.Clear;
-			break;
-		case Copy:
-			this.comptype = CompositeType.Src;
-			break;
-		case NoOp:
-			this.comptype = CompositeType.Dst;
-			break;
-		case Xor:
-			this.comptype = CompositeType.Xor;
-			break;
-		default:
-			this.comptype = CompositeType.Src;
-		}
+		this.gc = gc;
 	}
 
 	@Override
@@ -66,43 +51,75 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 	 * @param src2 The second source tile for the compositing operation.
 	 * @param dst The tile where the result of the operation is stored.
 	 */
-	public void compose(Raster srcArg, Raster dstIn, WritableRaster dstOut) {
-		WritableRaster src;
-		int w;
-		int h;
+    public void compose(final Raster src, final Raster dstIn, final WritableRaster dstOut) {
+        final int w = Math.min(src.getWidth(), dstIn.getWidth());
+        final int h = Math.min(src.getHeight(), dstIn.getHeight());
+        
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+            	
+                int srcPixel = srcCM.getRGB(src.getDataElements(x, y, null));
+    			int destPixel = dstCM.getRGB(dstIn.getDataElements(x, y, null));
 
-		if (dstIn != dstOut) {
-			dstOut.setDataElements(0, 0, dstIn);
-		}
+    			int outPixel = 0;
+    			
+    			switch (gc.getGC().getFunction()) {
+    			case Clear:
+    				outPixel = 0;
+    				break;
+    			case And:
+    				outPixel = srcPixel & destPixel;
+    				break;
+    			case AndReverse:
+    				outPixel = srcPixel & ~destPixel;
+    				break;
+    			case Copy:
+    				outPixel = srcPixel;
+    				break;
+    			case AndInverted:
+    				outPixel = (~srcPixel) & destPixel;
+    				break;
+    			case NoOp:
+    				outPixel = destPixel;
+    				break;
+    			case Xor:
+    				outPixel = srcPixel ^ destPixel;
+    				break;
+    			case Or:
+    				outPixel = srcPixel | destPixel;
+    				break;
+    			case Nor:
+    				outPixel = ~srcPixel & ~destPixel;
+    				break;
+    			case Equiv:
+    				outPixel = ~srcPixel ^ destPixel;
+    				break;
+    			case Invert:
+    				outPixel = ~destPixel;
+    				break;
+    			case OrReverse:
+    				outPixel = srcPixel | ~destPixel;
+    				break;
+    			case CopyInverted:
+    				outPixel = ~srcPixel;
+    				break;
+    			case OrInverted:
+    				outPixel = ~srcPixel | destPixel;
+    				break;
+    			case Nand:
+    				outPixel = ~srcPixel | ~destPixel;
+    				break;
+    			case Set:
+    				outPixel = 0xffffffff;
+    				break;
+    			}
 
-		// REMIND: We should be able to create a SurfaceData from just
-		// a non-writable Raster and a ColorModel.  Since we need to
-		// create a SurfaceData from a BufferedImage then we need to
-		// make a WritableRaster since it is needed to construct a
-		// BufferedImage.
-		if (srcArg instanceof WritableRaster) {
-			src = (WritableRaster) srcArg;
-		} else {
-			src = srcArg.createCompatibleWritableRaster();
-			src.setDataElements(0, 0, srcArg);
-		}
-
-		w = Math.min(src.getWidth(), dstIn.getWidth());
-		h = Math.min(src.getHeight(), dstIn.getHeight());
-
-		BufferedImage srcImg = new BufferedImage(srcCM, src,
-				srcCM.isAlphaPremultiplied(),
-				null);
-		BufferedImage dstImg = new BufferedImage(dstCM, dstOut,
-				dstCM.isAlphaPremultiplied(),
-				null);
-
-		SurfaceData srcData = BufImgSurfaceData.createData(srcImg);
-		SurfaceData dstData = BufImgSurfaceData.createData(dstImg);
-		Blit blit = Blit.getFromCache(srcData.getSurfaceType(),
-				comptype,
-				dstData.getSurfaceType());
-		blit.Blit(srcData, dstData, composite, null, 0, 0, 0, 0, w, h);
-	}
+    			outPixel = (outPixel & gc.getGC().getPlaneMask()) | (destPixel & ~gc.getGC().getPlaneMask());
+    			
+                Object data = dstCM.getDataElements(outPixel, null);
+                dstOut.setDataElements(x, y, data);
+            }
+        }
+    }
 
 }

@@ -42,10 +42,16 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 
 	@Override
 	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
-		Graphics2D g = (Graphics2D) getImage().getGraphics();
+		Graphics2D g = getGraphics();
 		if (graphicsContext != null) {
 			g.setComposite(new GraphicsContextComposite(graphicsContext));
 		}
+		return g;
+	}
+	
+	@Override
+	public Graphics2D getGraphics() {
+		Graphics2D g = (Graphics2D) getImage().getGraphics();
 		return g;
 	}
 

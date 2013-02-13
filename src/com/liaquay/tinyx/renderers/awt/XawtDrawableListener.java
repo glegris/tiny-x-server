@@ -59,6 +59,8 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	public abstract Graphics2D getGraphics(GraphicsContext gc);
 
+	public abstract Graphics2D getGraphics();
+
 	public XawtDrawableListener(Drawable drawable) {
 		_drawable = drawable;
 	}
@@ -99,10 +101,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void copyArea(Drawable srcDrawable, GraphicsContext graphicsContext, int srcX,
 			int srcY, int width, int height, int dstX, int dstY) {
 
-		//		BufferedImage destImage = getImage();
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
-
-		//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
 		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
 	}
 
@@ -111,15 +110,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			int width, int height, int dstX, int dstY) {
 
 		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
-
-
-		BitmapColourFilter filter = new BitmapColourFilter(0xffffffff);
-
-		FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
-		Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
-
-		//		getGraphics().translate(_drawable.getX() + dstX,  _drawable.getY() + dstY);
-		getGraphics(graphicsContext).drawImage(newImage, srcX, srcY, width, height, null);
+		
+		Graphics2D g = getGraphics();
+		g.setComposite(new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
+		g.drawImage(srcImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
@@ -157,13 +151,13 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			LOGGER.severe("PutImage doesn't currently support a depth of " + depth);
 		}
 
-
+		BufferedImage newImage = createCompatibleImage(image, graphicsContext);
 
 		Graphics sg = getGraphics(graphicsContext);
-		sg.drawImage(image, destinationX, destinationY, width, height, null);
+		sg.drawImage(newImage, destinationX, destinationY, width, height, null);
 	}
 
-	BufferedImage createCompatibleImage(BufferedImage image)
+	BufferedImage createCompatibleImage(BufferedImage image, GraphicsContext graphicsContext)
 	{
 		GraphicsConfiguration gc = GraphicsEnvironment.
 				getLocalGraphicsEnvironment().
@@ -176,6 +170,11 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 				Transparency.TRANSLUCENT);
 
 		Graphics2D g = newImage.createGraphics();
+		
+		if (graphicsContext != null) {
+			g.setComposite(new GraphicsContextComposite(graphicsContext));
+		}		
+
 		g.drawImage(image, 0, 0, null);
 		g.dispose();
 
@@ -226,7 +225,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final Graphics2D graphics = getGraphics(graphicsContext);
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		XAwtGraphicsContext.tile(graphics, graphicsContext);
+//		XAwtGraphicsContext.tile(graphics, graphicsContext);
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
@@ -241,13 +240,13 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void drawLine(GraphicsContext graphicsContext, int[] x1, int[] y1,
 			int[] x2, int[] y2) {
 
-		final Graphics2D graphics = getGraphics(graphicsContext);
+		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		XAwtGraphicsContext.tile(graphics, graphicsContext);
+//		XAwtGraphicsContext.tile(graphics, graphicsContext);
 
 		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
 
@@ -262,7 +261,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
 			int x2, int y2) {
-		final Graphics2D graphics = getGraphics(graphicsContext);
+		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
@@ -349,18 +348,14 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		Pixmap stipplePixmap = graphicsContext.getStipple();
 
 		if (stipplePixmap != null && FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Stippled) {
-			AlphaFilter filter = new AlphaFilter(graphicsContext);
-			BufferedImage srcImage = createCompatibleImage(stipplePixmap.getDrawableListener().getImage());
-
-//			XawtDrawableListener.writeImage(srcImage, "test-src.png");
-
-			FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
-			Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
-
-			BufferedImage bufImage = imageToBufferedImage(newImage,  stipplePixmap.getWidth(), stipplePixmap.getHeight());
-//			XawtDrawableListener.writeImage(bufImage, "test-filter.png");
+			BufferedImage srcImage = stipplePixmap.getDrawableListener().getImage();
 			
-			TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
+			Graphics2D g2 = (Graphics2D) srcImage.getGraphics();
+			g2.setComposite(new GraphicsContextComposite(graphicsContext));
+			
+			BufferedImage output = createCompatibleImage(srcImage, graphicsContext);
+			
+			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
 			graphics.setPaint(tp);
 		}			
 
@@ -388,7 +383,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
 
-		final Graphics2D graphics = getGraphics(graphicsContext);
+		final Graphics2D graphics = getGraphics();
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
@@ -402,7 +397,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	public void polyArc(GraphicsContext graphicsContext, int x, int y,
 			int width, int height, int angle1, int angle2, boolean fill) {
-		final Graphics2D graphics = getGraphics(graphicsContext);
+		final Graphics2D graphics = getGraphics();
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
@@ -414,7 +409,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
-		final Graphics2D graphics = getGraphics(graphicsContext);
+		final Graphics2D graphics = getGraphics();
 		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
@@ -423,7 +418,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	public void clearArea(boolean exposures, int x, int y, int width, int height) {
-		final Graphics2D graphics = getGraphics(null);
+		final Graphics2D graphics = getGraphics();
 
 		final int rgb = _drawable.getColorMap().getRGB(_drawable.getBackgroundPixel());
 		graphics.setBackground(new Color(rgb));

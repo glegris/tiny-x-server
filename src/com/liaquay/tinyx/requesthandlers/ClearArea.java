@@ -56,6 +56,8 @@ public class ClearArea implements RequestHandler {
 		if (height == 0) {
 			height = window.getHeight();
 		}
+		
+		//TODO: If the window has a defined background tile the rectangle is tiled with a plane-mask of all ones and function of copy
 		window.clearArea(exposures,x,y,width,height);
 	}
 }

@@ -205,10 +205,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	@Override
 	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
-		Graphics2D g = translateAndClipToWindow();
+		Graphics2D g = getGraphics();
 		if (graphicsContext != null) {
 			g.setComposite(new GraphicsContextComposite(graphicsContext));
 		}		
+		return g;
+	}
+
+	@Override
+	public Graphics2D getGraphics() {
+		Graphics2D g = translateAndClipToWindow();
 		return g;
 	}
 
@@ -278,7 +284,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		super.clearArea(exposures, x, y, width, height);
 
 		if (exposures) {
-			updateCanvas(x,y, width, height);
+			updateCanvas(x, y, width, height);
 		}
 	}
 
@@ -290,9 +296,9 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		super.copyArea(destDrawable, graphicsContext, srcX, srcY, width, height, dstX,
 				dstY);
 
-		if (graphicsContext.getGraphicsExposures()) {
+//		if (graphicsContext.getGraphicsExposures()) {
 			updateCanvas(dstX, dstY, width, height);
-		}
+//		}
 	}
 
 
@@ -346,7 +352,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	private void updateCanvas(int x, int y, int width, int height) {
-		if(_window.isMapped()) _canvas.getGraphics().drawImage(getImage(), x, y, x+width, y+height, x, y, x+width, y+height, null);
+		if(_window.isMapped()) _canvas.getGraphics().drawImage(getImage(), _window.getAbsX() + x, _window.getAbsY() + y, _window.getAbsX() + x + width, _window.getAbsY() + y + height, 
+				_window.getAbsX() + x, _window.getAbsY() + y, _window.getAbsX() + x + width, _window.getAbsY() + y + height, null);
 	}
 
 	private void updateCanvas(int xCoords[], int yCoords[]) {
