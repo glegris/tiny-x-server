@@ -26,7 +26,7 @@ import com.liaquay.tinyx.model.Pixmap;
 
 public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener {
 
-	BufferedImage _image;
+	private BufferedImage _image;
 
 	public XawtPixmap(final Pixmap pixmap) {
 		super(pixmap);
@@ -34,8 +34,8 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 	}
 
 	@Override
-	public void createImage(Drawable drawable) {
-		BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_BGR);
+	public void createImage(final Drawable drawable) {
+		final BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_BGR);
 		setImage(image);
 	}
 	
@@ -44,12 +44,16 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 		return (Graphics2D) getImage().getGraphics();
 	}
 	
-	public void setImage(BufferedImage image) {
-		this._image =  image;
+	public void setImage(final BufferedImage image) {
+		_image =  image;
 	}
 	
 	@Override
 	public BufferedImage getImage() {
 		return _image;
+	}
+
+	@Override
+	public void free() {
 	}
 }

@@ -30,16 +30,23 @@ public class Pixmap extends Drawable {
 		_listener = listener;
 	}
 	
+	public Listener getListener() {
+		return _listener;
+	}
+	
 	private final int _resourceId;
 	private final Drawable _drawable;
 	private final int _depth;
 	private final int _width;
 	private final int _height;
-	public Pixmap(final int resourceId,
+	
+	public Pixmap(
+			final int resourceId,
 			final Drawable drawable,
 			final int depth,
 			final int width,
 			final int height) {
+		
 		_resourceId = resourceId;
 		_depth = depth;
 		_width = width;
@@ -54,8 +61,7 @@ public class Pixmap extends Drawable {
 
 	@Override
 	public void free() {
-		// TODO Auto-generated method stub
-
+		_listener.free();
 	}
 
 	@Override
@@ -107,11 +113,5 @@ public class Pixmap extends Drawable {
 	@Override
 	public ColorMap getColorMap() {
 		return _drawable.getColorMap();
-	}
-
-	@Override
-	public int getBackgroundPixel() {
-		// TODO No idea if this is correct!
-		return _drawable.getBackgroundPixel();
 	}
 }

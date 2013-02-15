@@ -268,8 +268,23 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	@Override
-	public void clearArea(boolean exposures, int x, int y, int width, int height) {
-		super.clearArea(exposures, x, y, width, height);
+	public void clearArea(
+			final int x, 
+			final int y, 
+			final int width, 
+			final int height) {
+
+		final Graphics2D graphics = getGraphics();
+		final Pixmap backgroundPixmap = _window.getBackgroundPixmap();
+		if(_window.isBackgroundPixelSet()) {
+			final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
+			graphics.setBackground(new Color(rgb));
+			graphics.clearRect(x, y, width, height);
+		}
+		else if(backgroundPixmap != null) {
+			final XawtPixmap awtBackgroundPixmap = (XawtPixmap)backgroundPixmap.getListener();
+			
+		}
 
 		updateCanvas(x,y, width, height);
 	}
@@ -358,5 +373,11 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		} else {
 			return _window.getRootWindow().getDrawableListener().getImage();
 		}
+	}
+
+	@Override
+	public void free() {
+		// TODO Auto-generated method stub
+		
 	}
 }

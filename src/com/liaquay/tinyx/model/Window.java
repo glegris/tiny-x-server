@@ -43,29 +43,19 @@ public class Window extends Drawable {
 		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
-		public void clearArea(boolean exposures, int x, int y, int width, int height);
+		public void clearArea(int x, int y, int width, int height);
 	}
 
 	/**
 	 * Empty implementation of the listener so that we don't have null checks 
 	 * throughout the code. 
 	 */
-
 	private static final class NullListener extends Drawable.NullListener implements Listener {
 
 		@Override
-		public void copyArea(Drawable d, GraphicsContext graphicsContext,
-				int srcX, int srcY, int width, int height, int dstX, int dstY) {
-			// TODO Auto-generated method stub
-
-		}
+		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY) {}
 		@Override
-		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data,
-				int width, int height, int destinationX, int destinationY,
-				int leftPad, int depth) {
-			// TODO Auto-generated method stub
-
-		}
+		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data, int width, int height, int destinationX, int destinationY, int leftPad, int depth) {}
 
 		@Override
 		public void drawString(GraphicsContext graphicsContext, String str,
@@ -133,8 +123,7 @@ public class Window extends Drawable {
 			return 0;
 		}
 		@Override
-		public void clearArea(boolean exposures, int x, int y, int width,
-				int height) {
+		public void clearArea(int x, int y, int width, int height) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -354,7 +343,9 @@ public class Window extends Drawable {
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
 
-	private int _backgroundPixel = 0; // TODO Default value
+	private int _backgroundPixel = 0;
+	private boolean _backgroundPixelSet = false;
+	
 	private int _borderPixel = 0; // TODO Default value
 	private Pixmap _borderPixmap = null;
 
@@ -371,22 +362,6 @@ public class Window extends Drawable {
 	private boolean _parentRelativeBackgroundPixmap = false;
 	private final EventFactories _eventFactories;
 	private final Map<ButtonGrab.Trigger, ButtonGrab> _buttonGrabs = new HashMap<ButtonGrab.Trigger, ButtonGrab>(4);
-
-
-	//  Window root;                /* root of screen containing window */
-	//    int backing_store;          /* NotUseful, WhenMapped, Always */
-	//    unsigned long backing_planes;/* planes to be preserved if possible */
-	//    unsigned long backing_pixel;/* value to be used when restoring planes */
-	//    Bool save_under;            /* boolean, should bits under be saved? */
-	//    Colormap colormap;          /* color map to be associated with window */
-	//    Bool map_installed;         /* boolean, is color map currently installed*/
-	//    int map_state;              /* IsUnmapped, IsUnviewable, IsViewable */
-	//    long all_event_masks;       /* set of events all people have interest in*/
-	//    long your_event_mask;       /* my event mask */
-	//    long do_not_propagate_mask; /* set of events that should not propagate */
-	//    Bool override_redirect;     /* boolean value for override-redirect */
-	//    Screen *screen;             /* back pointer to correct screen */
-
 
 	public Window(
 			final int resourceId, 
@@ -416,10 +391,6 @@ public class Window extends Drawable {
 		_colorMap = colorMap;
 		if(_parent != null) {
 			_parent.addChild(this);
-			_backgroundPixel = _parent._backgroundPixel;
-		}
-		else {
-			_backgroundPixel = colorMap.getBlackPixel();
 		}
 
 		updateLocation();
@@ -912,8 +883,13 @@ public class Window extends Drawable {
 
 	public void setBackgroundPixel(final int backGroundPixel) {
 		_backgroundPixel = backGroundPixel;
+		_backgroundPixelSet = true;
 	}
 
+	public boolean isBackgroundPixelSet() {
+		return _backgroundPixelSet;
+	}
+	
 	public int getBackgroundPixel() {
 		return _backgroundPixel;
 	}
@@ -937,6 +913,7 @@ public class Window extends Drawable {
 	public void setBackgroundPixmap(final Pixmap pixmap, boolean relative) {
 		_backgroundPixmap = pixmap;
 		_parentRelativeBackgroundPixmap = relative;
+		_backgroundPixelSet = false;
 	}
 
 	public Pixmap getBackgroundPixmap() {
@@ -979,8 +956,8 @@ public class Window extends Drawable {
 		_saveUnder = saveUnder;
 	}
 
-	public void clearArea(final boolean exposures, final int x, final int y, final int width, final int height) {
-		_listener.clearArea(exposures, x, y, width, height);
+	public void clearArea(final int x, final int y, final int width, final int height) {
+		_listener.clearArea(x, y, width, height);
 	}
 
 	public void add(final ClientWindowAssociation assoc) {

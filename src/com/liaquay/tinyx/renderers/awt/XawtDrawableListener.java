@@ -338,19 +338,5 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		graphics.fillPolygon(x, y, x.length);
 	}
 
-	public void clearArea(boolean exposures, int x, int y, int width, int height) {
-		final Graphics2D graphics = getGraphics();
 
-		final int rgb = _drawable.getColorMap().getRGB(_drawable.getBackgroundPixel());
-		graphics.setBackground(new Color(rgb));
-
-		graphics.clearRect(x, y, width, height);
-
-		if (exposures && _drawable instanceof Window) {
-			Window w = (Window) _drawable;
-
-			final Event exposeEvent = w.getEventFactories().getExposureFactory().create(w.getId(), w.getX(), w.getY(), w.getClipWidth(), w.getClipHeight(), 0);
-			w.deliver(exposeEvent, Event.ExposureMask);
-		}
-	}
 }

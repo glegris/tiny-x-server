@@ -62,7 +62,7 @@ public abstract class Drawable implements Resource {
 		public byte[] getImageData(int x, int y, int width, int height,
 				 ImageType imageType, int planeMask);
 		
-		
+		public void free();
 
 	}
 	
@@ -164,6 +164,12 @@ public abstract class Drawable implements Resource {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public void free() {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 
@@ -187,8 +193,6 @@ public abstract class Drawable implements Resource {
 
 	public abstract ColorMap getColorMap();
 	
-	public abstract int getBackgroundPixel();
-
 //	abstract Graphics getGraphics();
 	//	  abstract void restoreClip();
 
