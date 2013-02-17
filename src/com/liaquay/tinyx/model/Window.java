@@ -37,10 +37,6 @@ public class Window extends Drawable {
 		public void childCreated(Window child);
 		public void setCursor(Cursor cursor);
 		public void setBackgroundPixmap(final Pixmap pixmap);
-		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
-		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
-		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill);
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
 		public void clearArea(int x, int y, int width, int height);
 		public void drawBorder();
@@ -58,23 +54,9 @@ public class Window extends Drawable {
 		@Override
 		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data, int width, int height, int destinationX, int destinationY, int leftPad, int depth) {}
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str,int x, int y, int bx, int by, int bw, int bh) {}
-		@Override
 		public void childCreated(Window child) {}
 		@Override
 		public void setCursor(Cursor cursor) {}
-		@Override
-		public void drawString(GraphicsContext graphicsContext, String str,int x, int y) {}
-		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
-		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,int width, int height, boolean fill) {}
-		@Override
-		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {}
-		@Override
-		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {}
-		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,int x2, int y2) {}
 		@Override
 		public int getPixel(int x, int y) {return 0;}
 		@Override
@@ -93,6 +75,10 @@ public class Window extends Drawable {
 
 	public void setListener(final Listener listener) {
 		_listener = listener;
+	}
+	
+	public Listener getWindowListener() {
+		return _listener;
 	}
 
 	public enum MappedState {
@@ -1083,21 +1069,6 @@ public class Window extends Drawable {
 	public void removeButtonGrab(final ButtonGrab buttonGrab) {
 		_buttonGrabs.remove(buttonGrab.getTrigger());
 	}	
-
-	// TODO Move to Drawable?
-	public void polyArc(
-			final GraphicsContext graphicsContext, 
-			final int x, 
-			final int y,
-			final int width,
-			final int height, 
-			final int angle1, 
-			final int angle2, 
-			final boolean fill) {
-		
-		_listener.polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
-
-	}
 
 	// TODO Move to Drawable?
 	public void drawLine(

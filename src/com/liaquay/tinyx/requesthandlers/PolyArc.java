@@ -28,12 +28,12 @@ import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.model.Window;
 
 public class PolyArc implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
@@ -65,10 +65,7 @@ public class PolyArc implements RequestHandler {
 			int angle1 = inputStream.readSignedShort();
 			int angle2 = inputStream.readSignedShort();
 
-			if (drawable instanceof Window) {
-				((Window) drawable).polyArc(graphicsContext, x, y, width, height, angle1, angle2, false);
-			}
+			drawable.polyArc(graphicsContext, x, y, width, height, angle1, angle2, false);
 		}
-
 	}
 }

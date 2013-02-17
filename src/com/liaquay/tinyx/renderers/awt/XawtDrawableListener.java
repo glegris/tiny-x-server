@@ -27,11 +27,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
-import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.FilteredImageSource;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -43,12 +41,10 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import com.liaquay.tinyx.model.Drawable;
-import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
@@ -61,12 +57,14 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	public abstract Graphics2D getGraphics();
 
-	public XawtDrawableListener(Drawable drawable) {
+	public abstract BufferedImage getImage();
+
+	public XawtDrawableListener(final Drawable drawable) {
 		_drawable = drawable;
 	}
 
 
-	public static void writeImage(BufferedImage image, String filename) {
+	public static void writeImage(final BufferedImage image, final String filename) {
 		if (image != null) {
 			try {
 				// create a file to write the image to (make sure it exists), then use the ImageIO class
@@ -93,33 +91,55 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		return image;
 	}
 
-
 	@Override
 	public abstract void createImage(Drawable drawable);
 
 	@Override
-	public void copyArea(Drawable srcDrawable, GraphicsContext graphicsContext, int srcX,
-			int srcY, int width, int height, int dstX, int dstY) {
+	public void copyArea(
+			final Drawable srcDrawable, 
+			final GraphicsContext graphicsContext, 
+			final int srcX,
+			final int srcY,
+			final int width, 
+			final int height,
+			final int dstX, 
+			final int dstY) {
 
-		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
+		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
+		final BufferedImage srcImage = awtDrawable.getImage();
 		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
 	}
 
 	@Override
-	public void copyPlane(Drawable srcDrawable, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
-			int width, int height, int dstX, int dstY) {
+	public void copyPlane(
+			final Drawable srcDrawable,
+			final GraphicsContext graphicsContext, 
+			final int bitplane,
+			final int srcX,
+			final int srcY,
+			final int width,
+			final int height,
+			final int dstX, 
+			final int dstY) {
 
-		BufferedImage srcImage = srcDrawable.getDrawableListener().getImage();
-		
-		Graphics2D g = getGraphics();
+		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
+		final BufferedImage srcImage = awtDrawable.getImage();		
+		final Graphics2D g = getGraphics();
 		g.setComposite(new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
 		g.drawImage(srcImage, srcX, srcY, width, height, null);
 	}
 
 	@Override
-	public void putImage(GraphicsContext graphicsContext, ImageType imageType, 
-			byte[] buffer, int width, int height,
-			int destinationX, int destinationY, int leftPad, int depth) { 
+	public void putImage(
+			final GraphicsContext graphicsContext, 
+			final ImageType imageType, 
+			final byte[] buffer, 
+			final int width, 
+			final int height,
+			final int destinationX, 
+			final int destinationY, 
+			final int leftPad, 
+			final int depth) { 
 
 		BufferedImage image = null;
 
@@ -348,7 +368,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		Pixmap stipplePixmap = graphicsContext.getStipple();
 
 		if (stipplePixmap != null && FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Stippled) {
-			BufferedImage srcImage = stipplePixmap.getDrawableListener().getImage();
+			
+			final XawtDrawableListener awtDrawable = (XawtDrawableListener)stipplePixmap.getDrawableListener();
+			final BufferedImage srcImage = awtDrawable.getImage();
 			
 			Graphics2D g2 = (Graphics2D) srcImage.getGraphics();
 			g2.setComposite(new GraphicsContextComposite(graphicsContext));

@@ -371,7 +371,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		if (_image != null) {
 			return _image;
 		} else {
-			return _window.getRootWindow().getDrawableListener().getImage();
+			final XawtWindow awtRootWindow = (XawtWindow)_window.getRootWindow().getWindowListener();
+			return awtRootWindow._image;
 		}
 	}
 

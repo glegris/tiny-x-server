@@ -27,19 +27,10 @@ public abstract class Drawable implements Resource {
 
 	public interface Listener {
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y, int bx, int by, int bw, int bh);
-
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
-
-		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX,
-				int srcY, int width, int height, int dstX, int dstY);
-		
-		public void putImage(GraphicsContext graphicsContext, ImageType imageType,
-				byte[] buffer, int width, int height,
-				int destinationX, int destinationY, int leftPad, int depth);
-
-		void createImage(Drawable drawable);
-
-		BufferedImage getImage();
+		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY);
+		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer, int width, int height,int destinationX, int destinationY, int leftPad, int depth);
+		public void createImage(Drawable drawable);
 
 		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
 				int width, int height, int dstX, int dstY);
@@ -62,18 +53,15 @@ public abstract class Drawable implements Resource {
 		public byte[] getImageData(int x, int y, int width, int height,
 				 ImageType imageType, int planeMask);
 		
+		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
+		
 		public void free();
 	}
 	
 	protected static class NullListener implements Listener {
 
 		@Override
-		public void copyArea(Drawable s, GraphicsContext graphicsContext,
-				int srcX, int srcY, int width, int height, int dstX, int dstY) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void copyArea(Drawable s, GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY) {}
 		@Override
 		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer,
 				int width, int height, int destinationX, int destinationY,
@@ -94,12 +82,6 @@ public abstract class Drawable implements Resource {
 		public void createImage(Drawable drawable) {
 			// TODO Auto-generated method stub
 			
-		}
-
-		@Override
-		public BufferedImage getImage() {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 		@Override
@@ -169,6 +151,10 @@ public abstract class Drawable implements Resource {
 			// TODO Auto-generated method stub
 			
 		}
+		
+		@Override
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
+
 	}
 
 
@@ -214,7 +200,19 @@ public abstract class Drawable implements Resource {
 		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour(), bx, by, bw, bh, graphicsContext.getBackgroundColour());
 	}
 	
-
+	public void polyArc(
+			final GraphicsContext graphicsContext, 
+			final int x, 
+			final int y,
+			final int width,
+			final int height, 
+			final int angle1, 
+			final int angle2, 
+			final boolean fill) {
+		
+		getDrawableListener().polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
+	}
+	
 	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
 
 		final Font font = graphicsContext.getFont();

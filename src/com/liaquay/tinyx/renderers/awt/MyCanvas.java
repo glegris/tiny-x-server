@@ -10,24 +10,35 @@ public class MyCanvas extends Canvas {
 	Window rootWindow;
 
 	@Override
-	public void paint(Graphics graphics) {
-		graphics.drawImage(rootWindow.getListener().getImage(),  rootWindow.getAbsX(),  rootWindow.getAbsY(), rootWindow.getWidth(), rootWindow.getHeight(), null);
+	public void paint(final Graphics graphics) {
+		
+		final XawtWindow awtRootWindow = (XawtWindow)rootWindow.getWindowListener();
+		
+		graphics.drawImage(
+				awtRootWindow.getImage(), 
+				rootWindow.getAbsX(), 
+				rootWindow.getAbsY(),
+				rootWindow.getWidth(),
+				rootWindow.getHeight(), 
+				null);
 	}
 
-	public void setRootWindow(Window rootWindow) {
+	public void setRootWindow(final Window rootWindow) {
 		this.rootWindow = rootWindow;
 	}
 
 	@Override
-	public void repaint(int x, int y, int width, int height) {
+	public void repaint(final int x, final int y, final int width, final int height) {
 		//		getGraphics().setClip(x, y, width, height);
 
-		int topX = rootWindow.getX();
-		int topY = rootWindow.getY();
-		int bottomX = rootWindow.getX() + rootWindow.getWidth();
-		int bottomY = rootWindow.getY() + rootWindow.getHeight();
+		final int topX = rootWindow.getX();
+		final int topY = rootWindow.getY();
+		final int bottomX = rootWindow.getX() + rootWindow.getWidth();
+		final int bottomY = rootWindow.getY() + rootWindow.getHeight();
+		
+		final XawtWindow awtRootWindow = (XawtWindow)rootWindow.getWindowListener();
 
-		getGraphics().drawImage(rootWindow.getListener().getImage(),  topX, topY, bottomX, bottomY, topX, topY, bottomX, bottomY, this);
+		getGraphics().drawImage(awtRootWindow.getImage(),  topX, topY, bottomX, bottomY, topX, topY, bottomX, bottomY, this);
 
 		//		getGraphics().drawImage(rootWindow.getListener().getImage(),  
 		//				rootWindow.getAbsX()+ x, rootWindow.getAbsY() + y, rootWindow.getAbsX() + x+width, rootWindow.getAbsY() + y+height, 
@@ -38,7 +49,7 @@ public class MyCanvas extends Canvas {
 	}
 
 	@Override
-	public void update(Graphics g) {
+	public void update(final Graphics g) {
 		repaint();
 	}
 }

@@ -21,66 +21,67 @@ import com.liaquay.tinyx.requesthandlers.gcattribhandlers.JoinStyle.JoinStyleTyp
 
 public class XAwtGraphicsContext {
 
-	public static void tile(Graphics2D graphics, GraphicsContext graphicsContext) {
-		Pixmap p = graphicsContext.getTile();
+	public static void tile(final Graphics2D graphics, final GraphicsContext graphicsContext) {
+		final Pixmap p = graphicsContext.getTile();
 		if (p != null) {
-			TexturePaint tp = new TexturePaint(p.getDrawableListener().getImage(), new Rectangle(0, 0, p.getWidth(), p.getHeight()));
+			final XawtPixmap awtPixmap = (XawtPixmap)p.getListener();
+			TexturePaint tp = new TexturePaint(awtPixmap.getImage(), new Rectangle(0, 0, p.getWidth(), p.getHeight()));
 			graphics.setPaint(tp);
 		}
 	}
 
-	public static void stipple(Graphics2D graphics, GraphicsContext graphicsContext) {
-		Pixmap stipplePixmap = graphicsContext.getStipple();
+	public static void stipple(final Graphics2D graphics, final GraphicsContext graphicsContext) {
+		
+		final Pixmap stipplePixmap = graphicsContext.getStipple();
+		final XawtPixmap awtStipplePixmap = (XawtPixmap)stipplePixmap.getListener();
 
 		if (stipplePixmap != null) {
-			AlphaFilter filter = new AlphaFilter(graphicsContext);
-			BufferedImage srcImage = createCompatibleImage(stipplePixmap.getDrawableListener().getImage());
+			final AlphaFilter filter = new AlphaFilter(graphicsContext);
+			final BufferedImage srcImage = createCompatibleImage(awtStipplePixmap.getImage());
 
 			XawtDrawableListener.writeImage(srcImage, "test-src.png");
 
-			FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
-			Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
+			final FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
+			final Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
 
 			
-			BufferedImage bufImage = imageToBufferedImage(newImage,  stipplePixmap.getWidth(), stipplePixmap.getHeight());
+			final BufferedImage bufImage = imageToBufferedImage(newImage,  stipplePixmap.getWidth(), stipplePixmap.getHeight());
 			XawtDrawableListener.writeImage(bufImage, "test-filter.png");
 			
-			
-			TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
+			final TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
 			graphics.setPaint(tp);
 		}
 	}
 	
-	static BufferedImage createCompatibleImage(BufferedImage image)
+	static BufferedImage createCompatibleImage(final BufferedImage image)
 	{
-		GraphicsConfiguration gc = GraphicsEnvironment.
+		final GraphicsConfiguration gc = GraphicsEnvironment.
 				getLocalGraphicsEnvironment().
 				getDefaultScreenDevice().
 				getDefaultConfiguration();
 
-		BufferedImage newImage = gc.createCompatibleImage(
+		final BufferedImage newImage = gc.createCompatibleImage(
 				image.getWidth(), 
 				image.getHeight(), 
 				Transparency.TRANSLUCENT);
 
-		Graphics2D g = newImage.createGraphics();
+		final Graphics2D g = newImage.createGraphics();
 		g.drawImage(image, 0, 0, null);
 		g.dispose();
 
 		return newImage;
 	}
 
-	private static BufferedImage imageToBufferedImage(Image image, int width, int height)
+	private static BufferedImage imageToBufferedImage(final Image image, final int width, final int height)
 	{
-		BufferedImage dest = new BufferedImage(
-				width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2 = dest.createGraphics();
+		final BufferedImage dest = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g2 = dest.createGraphics();
 		g2.drawImage(image, 0, 0, null);
 		g2.dispose();
 		return dest;
 	}
 
-	public static Stroke lineSetup(Graphics2D graphics, GraphicsContext graphicsContext) {
+	public static Stroke lineSetup(final Graphics2D graphics, final GraphicsContext graphicsContext) {
 
 		int capStyle = graphicsContext.getCapStyle();
 		int awtCapStyle = -1;
@@ -122,7 +123,7 @@ public class XAwtGraphicsContext {
 		return s;
 	}
 
-	private static float[] toFloat(List<Integer> dashes) {
+	private static float[] toFloat(final List<Integer> dashes) {
 		float[] f = new float[dashes.size()];
 
 		for (int i = 0; i < dashes.size(); i++) {
