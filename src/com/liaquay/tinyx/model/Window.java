@@ -435,7 +435,7 @@ public class Window extends Drawable {
 
 		if(!_viewable && newVisibility) {
 			_viewable = newVisibility;
-			redraw();
+			redraw(true);
 		}
 
 		_viewable = newVisibility;
@@ -577,23 +577,23 @@ public class Window extends Drawable {
 		return _eventFactories;
 	}
 	
-	private void redraw() {
+	private void redraw(final boolean exposures) {
 		if(isViewable()){
 			_listener.drawBorder();
-			redrawContents();
+			redrawContents(exposures);
 		}
 	}
 	
-	private void redrawContents() {
+	private void redrawContents(final boolean exposures) {
 		if(isViewable()){
 			 _listener.clearArea(0, 0, _widthPixels, _heightPixels);
 			 
-			for(int i = 0; i < _children.size() ; ++i) {
+			for(int i = _children.size()-1; i >= 0 ; --i) {
 				final Window c = _children.get(i);
-				c.redraw();
+				c.redraw(exposures);
 			}
 				
-			if(wouldDeliver(Event.ExposureMask)) {
+			if(exposures && wouldDeliver(Event.ExposureMask)) {
 				final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
 				deliver(exposeEvent, Event.ExposureMask);
 			}
@@ -684,7 +684,7 @@ public class Window extends Drawable {
 			_viewable = false;
 			
 			if(_parent != null && _parent.isViewable()) {
-				_parent.redrawContents();
+				_parent.redrawContents(true);
 			}
 		}
 	}
@@ -882,7 +882,7 @@ public class Window extends Drawable {
 		_backgroundMode = BackgroundMode.Pixel;
 		
 		// Redraw the window
-		if(changed) redrawContents();
+		if(changed) redrawContents(true);
 	}
 	
 	public void setBackgroundPixmap(final Pixmap pixmap) {
@@ -890,14 +890,14 @@ public class Window extends Drawable {
 		
 		// Redraw the window
 		_listener.setBackgroundPixmap(pixmap);
-		redrawContents();
+		redrawContents(true);
 	}
 
 	public void setBackgroundParent() {
 		_backgroundMode = BackgroundMode.Parent;
 		
 		// Redraw the window
-		redrawContents();
+		redrawContents(true);
 	}
 	
 	public Window getBackgroundWindow() {
@@ -1002,6 +1002,24 @@ public class Window extends Drawable {
 		_saveUnder = saveUnder;
 	}
 
+	private boolean overlaps(
+			final int x,
+			final int y,
+			final int w,
+			final int h) {
+		
+		final int x1l = _x;
+		final int x1r = _x + _widthPixels;
+		final int y1t = _y;
+		final int y1b = _y + _heightPixels;
+		final int x2l = x;
+		final int x2r = x + w;
+		final int y2t = y;
+		final int y2b = y + h;
+		
+		return x1l < x2r && x1r > x2l &&  y1t < y2b && y1b > y2t;
+	}
+	
 	public void clearArea(
 			final int x, 
 			final int y, 
@@ -1011,15 +1029,11 @@ public class Window extends Drawable {
 		
 		_listener.clearArea(x, y, width, height);
 		
-		if (exposures) {
-			final Event exposeEvent = getEventFactories().getExposureFactory().create(
-					getId(), 
-					x, 
-					y,
-					width, 
-					height,
-					0);
-			deliver(exposeEvent, Event.ExposureMask);
+		for(int i = _children.size()-1; i >= 0 ; --i) {
+			final Window c = _children.get(i);
+			if(c.overlaps(x, y, width, height)) {
+				c.redraw(exposures);
+			}
 		}
 	}
 
@@ -1048,15 +1062,6 @@ public class Window extends Drawable {
 		return _clipH > 0 && _clipW > 0;
 	}
 
-	public void copyArea(Window window, GraphicsContext graphicsContext,
-			int srcX, int srcY, int width, int height, int dstX, int dstY) {
-	}
-
-	public void copyArea(Pixmap pixmap, GraphicsContext graphicsContext,
-			int srcX, int srcY, int width, int height, int dstX, int dstY) {
-
-	}
-
 	public ButtonGrab findFirstButtonGrab(final Trigger trigger) {
 		ButtonGrab grab = null;
 		if(_parent != null) {
@@ -1079,15 +1084,29 @@ public class Window extends Drawable {
 		_buttonGrabs.remove(buttonGrab.getTrigger());
 	}	
 
-
-	public void polyArc(GraphicsContext graphicsContext, int x, int y,
-			int width, int height, int angle1, int angle2, boolean fill) {
+	// TODO Move to Drawable?
+	public void polyArc(
+			final GraphicsContext graphicsContext, 
+			final int x, 
+			final int y,
+			final int width,
+			final int height, 
+			final int angle1, 
+			final int angle2, 
+			final boolean fill) {
+		
 		_listener.polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
 
 	}
 
-	public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2,
-			int y2) {
+	// TODO Move to Drawable?
+	public void drawLine(
+			final GraphicsContext graphicsContext, 
+			final int x1, 
+			final int y1,
+			final int x2,
+			final int y2) {
+		
 		_listener.drawLine(graphicsContext, x1, y1, x2, y2);
 	}
 
@@ -1096,14 +1115,29 @@ public class Window extends Drawable {
 		return _listener;
 	}
 
-	public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data,
-			int width, int height, int destinationX, int destinationY,
-			int leftPad, int depth) {
+	// TODO Move to Drawable?
+	public void putImage(
+			final GraphicsContext graphicsContext, 
+			final ImageType imageType,
+			final byte[] data,
+			final int width, 
+			final int height, 
+			final int destinationX, 
+			final int destinationY,
+			final int leftPad, 
+			final int depth) {
 
 		_listener.putImage(graphicsContext, imageType, data, width, height, destinationX, destinationY, leftPad, depth);
 	}
 	
-	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth, final int stackMode) {
+	public void setSize(
+			final int x, 
+			final int y, 
+			final int width, 
+			final int height, 
+			final int borderWidth, 
+			final int stackMode) {
+		
 		_x = x;
 		_y = y;
 		_widthPixels = width;
@@ -1111,11 +1145,12 @@ public class Window extends Drawable {
 		_borderWidth = borderWidth;
 		
 		//TODO: Determine the stacking code.
-		StackMode stackingMode = StackMode.getFromIndex(stackMode);
+		final StackMode stackingMode = StackMode.getFromIndex(stackMode);
 		
 		updateLocation();
 		
 		// TODO Events eyc.
+		_parent.redraw(true); // TODO somewhat over the top!
 	}
 
 	@Override

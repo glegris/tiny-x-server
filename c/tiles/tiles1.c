@@ -76,6 +76,13 @@ int main(int argc, char* argv[])
     XStoreName(dpy, w, "Tiles");
 	XSetWindowBorderPixmap(dpy, w, bitmap);
 
+    Window w2 = XCreateSimpleWindow(
+		dpy, 
+		w, 
+		100, 100, 100, 100, 50, whiteColor, blackColor);
+	XSetWindowBorderPixmap(dpy, w2, ParentRelative);
+// XSetWindowBorderPixmap(dpy, w2, bitmap);
+
      // Send the requests to the server
     XFlush(dpy);
 
@@ -84,13 +91,15 @@ int main(int argc, char* argv[])
 
     // "Map" the window  (make it appear on the screen)
     XMapWindow(dpy, w);
+    XMapWindow(dpy, w2);
 
     while(!XNextEvent(dpy,&event))
     {
+printf("+\n");
             if(event.type == Expose)
             {
                     XClearWindow(dpy, w);
-
+printf(".\n");
                     // Send the requests to the server
                     XFlush(dpy);
             }
