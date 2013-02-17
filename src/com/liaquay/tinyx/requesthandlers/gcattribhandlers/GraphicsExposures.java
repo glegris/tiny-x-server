@@ -46,7 +46,7 @@ public class GraphicsExposures implements GraphicsAttributeHandler {
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeByte(graphicsContext.getFunction());
+		outputStream.writeByte(graphicsContext.getFunction().ordinal());
 	}
 
 	@Override

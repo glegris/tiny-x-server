@@ -57,6 +57,7 @@ public class ClearArea implements RequestHandler {
 		if (height == 0) {
 			height = window.getHeight();
 		}
+		
 		window.clearArea(x,y,width,height);
 		
 		if (exposures) {

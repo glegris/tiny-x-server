@@ -63,7 +63,6 @@ public abstract class Drawable implements Resource {
 				 ImageType imageType, int planeMask);
 		
 		public void free();
-
 	}
 	
 	protected static class NullListener implements Listener {
@@ -199,8 +198,6 @@ public abstract class Drawable implements Resource {
 	//	  abstract Graphics getGraphics(GC gc, int mask);   
 	//	  abstract Colormap getColormap();
 //	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
-
-	
 	
 	public void drawString(
 			final GraphicsContext graphicsContext, 
@@ -215,8 +212,6 @@ public abstract class Drawable implements Resource {
 		final Font font = graphicsContext.getFont();
 		final FontDetail fontDetail = font.getFontDetail();
 		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour(), bx, by, bw, bh, graphicsContext.getBackgroundColour());
-
-//		getDrawableListener().drawString(graphicsContext, str, x, y, bx, by, bw, bh);
 	}
 	
 
@@ -225,9 +220,6 @@ public abstract class Drawable implements Resource {
 		final Font font = graphicsContext.getFont();
 		final FontDetail fontDetail = font.getFontDetail();
 		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour());
-
-//		getDrawableListener().drawString(graphicsContext, str, x, y);
-
 	}
 	
 	public void polyRect(GraphicsContext graphicsContext, int x, int y,

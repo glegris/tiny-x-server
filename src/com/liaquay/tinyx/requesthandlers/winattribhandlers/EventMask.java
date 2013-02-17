@@ -22,9 +22,11 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.events.ExposureFactoryImpl;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.ClientWindowAssociation;
+import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
@@ -37,7 +39,7 @@ public class EventMask extends WindowAttributeHandler {
 			final Request request,
 			final Response response, 
 			final Window window) throws IOException {
-		
+
 		final XInputStream inputStream = request.getInputStream();
 		final int eventMask = inputStream.readInt();
 		ClientWindowAssociation assoc = window.getClientWindowAssociations(client);
@@ -45,5 +47,11 @@ public class EventMask extends WindowAttributeHandler {
 			assoc = new ClientWindowAssociation(client, window);
 		}
 		assoc.setEventMask(eventMask);
+
+		if ((eventMask & Event.ExposureMask) > 0) {
+			window.map();
+		}
 	}
+
+	//TODO: Expose event comes through here!!
 }

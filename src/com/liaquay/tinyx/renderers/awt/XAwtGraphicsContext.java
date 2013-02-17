@@ -2,11 +2,14 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.util.List;
@@ -27,18 +30,44 @@ public class XAwtGraphicsContext {
 	}
 
 	public static void stipple(Graphics2D graphics, GraphicsContext graphicsContext) {
-		Pixmap s = graphicsContext.getStipple();
+		Pixmap stipplePixmap = graphicsContext.getStipple();
 
-		if (s != null) {
-			BitmapColourFilter filter = new BitmapColourFilter(0xff000000 + graphicsContext.getForegroundColour());
-			BufferedImage srcImage = s.getDrawableListener().getImage();
+		if (stipplePixmap != null) {
+			AlphaFilter filter = new AlphaFilter(graphicsContext);
+			BufferedImage srcImage = createCompatibleImage(stipplePixmap.getDrawableListener().getImage());
+
+			XawtDrawableListener.writeImage(srcImage, "test-src.png");
+
 			FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
 			Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
-			BufferedImage bufImage = imageToBufferedImage(newImage,  s.getWidth(), s.getHeight());
+
 			
-			TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), s.getWidth(), s.getHeight()));
+			BufferedImage bufImage = imageToBufferedImage(newImage,  stipplePixmap.getWidth(), stipplePixmap.getHeight());
+			XawtDrawableListener.writeImage(bufImage, "test-filter.png");
+			
+			
+			TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
 			graphics.setPaint(tp);
 		}
+	}
+	
+	static BufferedImage createCompatibleImage(BufferedImage image)
+	{
+		GraphicsConfiguration gc = GraphicsEnvironment.
+				getLocalGraphicsEnvironment().
+				getDefaultScreenDevice().
+				getDefaultConfiguration();
+
+		BufferedImage newImage = gc.createCompatibleImage(
+				image.getWidth(), 
+				image.getHeight(), 
+				Transparency.TRANSLUCENT);
+
+		Graphics2D g = newImage.createGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+
+		return newImage;
 	}
 
 	private static BufferedImage imageToBufferedImage(Image image, int width, int height)
@@ -85,9 +114,9 @@ public class XAwtGraphicsContext {
 
 		Stroke s = null;
 		if (graphicsContext.getDashes() != null && graphicsContext.getDashes().size() > 0) {
-			s = new BasicStroke(graphicsContext.getLineWidth(), awtCapStyle, awtJoinStyle, 1.0f, toFloat(graphicsContext.getDashes()), graphicsContext.getDashOffset());
+			s = new BasicStroke();//graphicsContext.getLineWidth(), awtCapStyle, awtJoinStyle, 1.0f, toFloat(graphicsContext.getDashes()), graphicsContext.getDashOffset());
 		} else {
-			s = new BasicStroke(graphicsContext.getLineWidth(), awtCapStyle, awtJoinStyle, 1.0f);
+			s = new BasicStroke();//, awtCapStyle, awtJoinStyle, 1.0f);
 		}
 
 		return s;

@@ -18,7 +18,6 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
-import java.awt.Canvas;
 import java.awt.Frame;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -55,7 +54,7 @@ public class XawtScreen {
 
 	private final Frame _frame = new Frame();
 	private final XawtWindow _rootWindowListener;
-	private final Canvas _canvas = new MyCanvas();
+	private final MyCanvas _canvas = new MyCanvas();
 
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
 
@@ -71,6 +70,7 @@ public class XawtScreen {
 
 		final Window rootWindow = screen.getRootWindow();
 
+		_canvas.setRootWindow(rootWindow);
 		_canvas.setBounds(
 				rootWindow.getX(),
 				rootWindow.getY(),

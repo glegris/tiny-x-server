@@ -18,14 +18,12 @@
  */
 package com.liaquay.tinyx.model.eventfactories;
 
-public interface EventFactories {
-	public DestroyNotifyFactory getDestroyNotifyFactory();
-	public MapNotifyFactory getMapNotifyFactory();
-	public MapRequestFactory getMapRequestFactory();
-	public ButtonFactory getButtonPressFactory();
-	public ButtonFactory getButtonReleaseFactory();
-	public KeyFactory getKeyPressFactory();
-	public KeyFactory getKeyReleaseFactory();
-	public MappingNotifyFactory getMappingNotifyFactory();
-	public ExposureFactory getExposureFactory();
+import com.liaquay.tinyx.model.Event;
+import com.liaquay.tinyx.model.Window;
+
+public interface DestroyNotifyFactory {
+	
+	public Event create(
+			final Window event,
+			final Window window);
 }

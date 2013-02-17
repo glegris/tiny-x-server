@@ -72,7 +72,7 @@ public class ConfigureWindow implements RequestHandler {
 			inputStream.skip(2);
 		}		
 		if((mask & 0x10) != 0) {
-			height = inputStream.readUnsignedShort();
+			borderWidth = inputStream.readUnsignedShort();
 			inputStream.skip(2);
 		}
 		if((mask & 0x20) != 0) {
@@ -102,6 +102,6 @@ public class ConfigureWindow implements RequestHandler {
 					request.getSequenceNumber()));		
 		}
 		
-		window.setSize(x, y, width, height, borderWidth);
+		window.setSize(x, y, width, height, borderWidth, stackMode);
 	}
 }

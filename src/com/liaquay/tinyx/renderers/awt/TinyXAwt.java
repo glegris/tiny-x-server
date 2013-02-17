@@ -160,7 +160,7 @@ public class TinyXAwt {
 		});
 
 		final Depths depths = new Depths();
-		depths.add(visual);   
+		depths.add(visual);
 
 		final ColorMap defaultColorMap = server.createColorMap(new ResourceFactory<ColorMap>() {
 			@Override

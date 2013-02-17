@@ -42,12 +42,15 @@ public class BorderPixmap extends WindowAttributeHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int pixmapResourceId = inputStream.readInt();
 		switch(pixmapResourceId){
-		case 0: // Copy from parent
+		case 0: //None
+			window.setBorderPixmap(null);
+			break;
+		case 1: 	// Copy from parent
 			if(window.getParent() == null) {
 				response.error(ErrorCode.Match, window.getId());
 			}
 			else {
-				window.setBorderPixmap(window.getParent().getBorderPixmap());
+				window.setBorderParent();
 			}
 			break;
 		default: // Just set it

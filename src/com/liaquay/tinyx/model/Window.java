@@ -35,15 +35,16 @@ public class Window extends Drawable {
 
 	public interface Listener extends Drawable.Listener {
 		public void childCreated(Window child);
-		public void mapped(boolean mapped);
-		public void visible(boolean visible);
 		public void setCursor(Cursor cursor);
+		public void setBackgroundPixmap(final Pixmap pixmap);
 		public void drawString(GraphicsContext graphicsContext, String str, int x, int y);
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
 		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean fill);
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public int getPixel(int x, int y);
 		public void clearArea(int x, int y, int width, int height);
+		public void drawBorder();
+		public void setBorderPixmap(Pixmap pixmap);
 	}
 
 	/**
@@ -56,77 +57,34 @@ public class Window extends Drawable {
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY) {}
 		@Override
 		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] data, int width, int height, int destinationX, int destinationY, int leftPad, int depth) {}
-
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str,
-				int x, int y, int bx, int by, int bw, int bh) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void drawString(GraphicsContext graphicsContext, String str,int x, int y, int bx, int by, int bw, int bh) {}
 		@Override
-		public void childCreated(Window child) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void childCreated(Window child) {}
 		@Override
-		public void mapped(boolean mapped) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void setCursor(Cursor cursor) {}
 		@Override
-		public void visible(boolean visible) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void drawString(GraphicsContext graphicsContext, String str,int x, int y) {}
 		@Override
-		public void setCursor(Cursor cursor) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str,
-				int x, int y) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyRect(GraphicsContext graphicsContext, int x, int y,int width, int height, boolean fill) {}
 		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, int angle1, int angle2, boolean fill) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {}
 		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean fill) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {}
 		@Override
-		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,int x2, int y2) {}
 		@Override
-		public void polyLine(GraphicsContext graphicsContext, int[] x, int[] y) {
-			// TODO Auto-generated method stub
-			
-		}
+		public int getPixel(int x, int y) {return 0;}
 		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-				int x2, int y2) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void clearArea(int x, int y, int width, int height) {}
 		@Override
-		public int getPixel(int x, int y) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
+		public void setBackgroundPixmap(Pixmap pixmap) {}
 		@Override
-		public void clearArea(int x, int y, int width, int height) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void drawBorder() {}
+		@Override
+		public void setBorderPixmap(Pixmap pixmap) {}
 	}
 
 	private static final Listener NULL_LISTENER = new NullListener();
@@ -331,37 +289,44 @@ public class Window extends Drawable {
 	private final Properties _properties = new Properties();
 	private final List<ClientWindowAssociation> _clientWindowAssociations = new ArrayList<ClientWindowAssociation>(2);
 
-	private final int _depth;		/* depth of window */
-	private int _x, _y;			/* relative location of window */
-	private int _absX, _absY;      /* absolute location of window */
+	private final int _depth;				/* depth of window */
+	private int _x, _y;						/* relative location of window */
+	private int _absX, _absY;				/* absolute location of window */
 
-	private Cursor _cursor;			/* The cursor to use when the mouse is within this window */
-	private int _clipX, _clipY;    /* clip location of window */
-	private int _clipW, _clipH;    /* clip size of window */
+	private Cursor _cursor = null;			/* The cursor to use when the mouse is within this window */
+	private int _clipX, _clipY;				/* clip location of window */
+	private int _clipW, _clipH;				/* clip size of window */
 
 	private int _widthPixels, _heightPixels;	/* width and height of window in pixels */
 	private int _borderWidth;		/* border width of window */
 	private WindowClass _windowClass;
 
-	private int _backgroundPixel = 0;
-	private boolean _backgroundPixelSet = false;
-	
-	private int _borderPixel = 0; // TODO Default value
-	private Pixmap _borderPixmap = null;
 
 	private boolean _mapped = false;
 	private boolean _viewable = false;
-	// TODO values are rubbish
-	private int _backingPlanes = 0;
-	private int _backingPixel = 0;
-	private boolean _saveUnder= false;
-	private boolean _overrideRedirect = false;
-	private ColorMap _colorMap = null;
-	private int _doNotPropagateMask = 0;
-	private Pixmap _backgroundPixmap = null;
-	private boolean _parentRelativeBackgroundPixmap = false;
+
+	private int _backingPlanes = -1;			// Default: All ones
+	private int _backingPixel = 0;				// Default: Zero
+	private boolean _saveUnder = false;			// Default: false
+	private boolean _overrideRedirect = false;	// Default: false
+	private ColorMap _colorMap = null;			// Default: Copy-from-parent
+	private int _doNotPropagateMask = 0; 		// Default: Empty set
 	private final EventFactories _eventFactories;
 	private final Map<ButtonGrab.Trigger, ButtonGrab> _buttonGrabs = new HashMap<ButtonGrab.Trigger, ButtonGrab>(4);
+	
+	public enum StackMode {
+		Above,
+		Below,
+		TopIf,
+		BottomIf,
+		Opposite;
+
+		public static StackMode getFromIndex(final int index) {
+			final StackMode[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+	}
 
 	public Window(
 			final int resourceId, 
@@ -464,23 +429,13 @@ public class Window extends Drawable {
 		}
 	}
 
-	// TODO Work out difference between visible and exposed.
 	private void updateVisibility() {
 
 		final boolean newVisibility = isMappedToRoot() && nonZeroClippedArea() && !isInputOnly();
 
 		if(!_viewable && newVisibility) {
-			// Expose
-			_listener.visible(true);
-
-			// TODO issue visibility event
-			//			final Event mapNotifyEvent = _eventFactories.getMapNotifyFactory().create()
-		}
-		else if(_viewable && !newVisibility){
-			// Hide
-			_listener.visible(false);
-
-			// TODO issue visibility event
+			_viewable = newVisibility;
+			redraw();
 		}
 
 		_viewable = newVisibility;
@@ -554,6 +509,8 @@ public class Window extends Drawable {
 	}
 
 	public void free() {
+		unmap();
+		
 		for(int i = _clientWindowAssociations.size()-1; i>=0; --i) {
 			_clientWindowAssociations.get(i).free();
 		}
@@ -612,43 +569,37 @@ public class Window extends Drawable {
 				deliver(mapNotifyEvent, Event.SubstructureNotifyMask);
 			}
 
-			if(isMappedToRoot()) {
-				
-				
-				// TODO check for visibility changes 
-				// TODO Send visibility events 
-				
-				_listener.mapped(true);
-				exposed();
-				tellListenerAboutMappedChildren();
-			}
-
 			updateVisibility();
-		}
-	}
-	
-	private void tellListenerAboutMappedChildren() {
-		for(int i = 0; i < getChildCount(); i++) {
-			final Window child = getChild(i);
-			if(child._mapped) {
-				child._listener.mapped(true);
-				child.exposed();
-				child.tellListenerAboutMappedChildren();
-			}
 		}
 	}
 	
 	public EventFactories getEventFactories() {
 		return _eventFactories;
 	}
-
-	private void exposed() {
-		if(!isInputOnly() && wouldDeliver(Event.ExposureMask)) {
-			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
-			deliver(exposeEvent, Event.ExposureMask);
+	
+	private void redraw() {
+		if(isViewable()){
+			_listener.drawBorder();
+			redrawContents();
 		}
 	}
 	
+	private void redrawContents() {
+		if(isViewable()){
+			 _listener.clearArea(0, 0, _widthPixels, _heightPixels);
+			 
+			for(int i = 0; i < _children.size() ; ++i) {
+				final Window c = _children.get(i);
+				c.redraw();
+			}
+				
+			if(wouldDeliver(Event.ExposureMask)) {
+				final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
+				deliver(exposeEvent, Event.ExposureMask);
+			}
+		}
+	}
+
 	/**
 	 * Determine if all the window up to the root window are mapped,
 	 * in which case this window is mapped and displayable.
@@ -730,11 +681,10 @@ public class Window extends Drawable {
 	public void unmap() {
 		if(_mapped) {
 			_mapped = false;
-			
-			_listener.mapped(false);
+			_viewable = false;
 			
 			if(_parent != null && _parent.isViewable()) {
-				_parent.exposed();
+				_parent.redrawContents();
 			}
 		}
 	}
@@ -770,7 +720,19 @@ public class Window extends Drawable {
 
 	public MappedState getMappedState() {
 		if(_mapped) {
-			return isViewable() ? MappedState.IsViewable : MappedState.IsUnviewable;
+			MappedState state = isViewable() ? MappedState.IsViewable : MappedState.IsUnviewable;
+			
+			Window w = this;
+			while (w.getId() != w.getRootWindow().getId()) {
+				if (!w.isMapped()) {
+					// A window is Unviewable if it is mapped but some ancestor is unmapped (GetWindowAttributes docs)
+					state = MappedState.IsUnviewable;
+				}
+				
+				w = w.getParent();
+			}
+			
+			return state;
 		}
 		else {
 			return MappedState.IsUnmapped;
@@ -881,23 +843,6 @@ public class Window extends Drawable {
 		return _borderWidth;
 	}
 
-	public void setBackgroundPixel(final int backGroundPixel) {
-		_backgroundPixel = backGroundPixel;
-		_backgroundPixelSet = true;
-	}
-
-	public boolean isBackgroundPixelSet() {
-		return _backgroundPixelSet;
-	}
-	
-	public int getBackgroundPixel() {
-		return _backgroundPixel;
-	}
-
-	public void setBorderPixel(final int borderPixel) {
-		_borderPixel = borderPixel;
-	}
-
 	public void setBitGravity(final BitGravity gravity) {
 		_bitGravity = gravity;
 	}
@@ -910,16 +855,71 @@ public class Window extends Drawable {
 		_colorMap = colorMap;
 	}
 
-	public void setBackgroundPixmap(final Pixmap pixmap, boolean relative) {
-		_backgroundPixmap = pixmap;
-		_parentRelativeBackgroundPixmap = relative;
-		_backgroundPixelSet = false;
+	//
+	// Window background handling
+	//
+	public enum BackgroundMode {
+		None,
+		Pixel,
+		Pixmap,
+		Parent
+	}
+	
+	private BackgroundMode _backgroundMode = BackgroundMode.None;
+	private int _backgroundPixel = 0;
+
+	public BackgroundMode getBackgroundMode() {
+		return _backgroundMode;
+	}
+	
+	public int getBackgroundPixel() {
+		return _backgroundPixel;
 	}
 
-	public Pixmap getBackgroundPixmap() {
-		return _backgroundPixmap;
+	public void setBackgroundPixel(final int backGroundPixel) {
+		final boolean changed = _backgroundPixel != backGroundPixel;
+		_backgroundPixel = backGroundPixel;
+		_backgroundMode = BackgroundMode.Pixel;
+		
+		// Redraw the window
+		if(changed) redrawContents();
+	}
+	
+	public void setBackgroundPixmap(final Pixmap pixmap) {
+		_backgroundMode = pixmap == null ? BackgroundMode.None : BackgroundMode.Pixmap;
+		
+		// Redraw the window
+		_listener.setBackgroundPixmap(pixmap);
+		redrawContents();
 	}
 
+	public void setBackgroundParent() {
+		_backgroundMode = BackgroundMode.Parent;
+		
+		// Redraw the window
+		redrawContents();
+	}
+	
+	public Window getBackgroundWindow() {
+		for(Window w = this; w != null; w = w._parent) {
+			if(!w._backgroundMode.equals(BackgroundMode.Parent)) {
+				return w;
+			}
+		}
+		return null;
+	}
+	
+	// 
+	// Window Border handling
+	//
+	private BackgroundMode _borderMode = BackgroundMode.None;
+	private int _borderPixel = 0;
+	private Pixmap _borderPixmap = null;
+
+	public BackgroundMode getBorderMode() {
+		return _borderMode;
+	}
+	
 	public Pixmap getBorderPixmap() {
 		return _borderPixmap;
 	}
@@ -928,10 +928,56 @@ public class Window extends Drawable {
 		return _borderPixel;
 	}	
 
-	public void setBorderPixmap(final Pixmap borderPixmap) {
-		_borderPixmap = borderPixmap;
+	public void setBorderPixel(final int borderPixel) {
+		final boolean changed = _borderPixel != borderPixel;
+		_borderPixel = borderPixel;
+		_borderMode = BackgroundMode.Pixel;
+		
+		// Redraw the border
+		if(changed) {
+			redrawBorder();
+		}
+	}
+	
+	public void setBorderPixmap(final Pixmap pixmap) {
+		_borderMode = pixmap == null ? BackgroundMode.None : BackgroundMode.Pixmap;
+		
+		// Redraw the window
+		_listener.setBorderPixmap(pixmap);
+		redrawBorder();
 	}
 
+	public void setBorderParent() {
+		_borderMode = BackgroundMode.Parent;
+		
+		// Redraw the window
+		redrawBorder();
+	}
+	
+	public Window getBorderWindow() {
+		for(Window w = this; w != null; w = w._parent) {
+			if(!w._borderMode.equals(BackgroundMode.Parent)) {
+				return w;
+			}
+		}
+		return null;
+	}
+
+	private void redrawBorder() {
+		if(!isViewable()) return;
+		_listener.drawBorder();
+		for(int i = 0; i < _children.size() ; ++i) {
+			final Window c = _children.get(i);
+			if(c._borderMode.equals(BackgroundMode.Parent)) {
+				c.redrawBorder();
+			}
+		}
+	}
+	
+	//
+	// End Border Handling
+	//
+	
 	public void setBackingPixel(final int backingPixel) {
 		_backingPixel = backingPixel;
 	}
@@ -1040,12 +1086,15 @@ public class Window extends Drawable {
 		_listener.putImage(graphicsContext, imageType, data, width, height, destinationX, destinationY, leftPad, depth);
 	}
 	
-	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth) {
+	public void setSize(final int x, final int y, final int width, final int height, final int borderWidth, final int stackMode) {
 		_x = x;
 		_y = y;
 		_widthPixels = width;
 		_heightPixels = height;
 		_borderWidth = borderWidth;
+		
+		//TODO: Determine the stacking code.
+		StackMode stackingMode = StackMode.getFromIndex(stackMode);
 		
 		updateLocation();
 		
@@ -1056,4 +1105,5 @@ public class Window extends Drawable {
 	public Drawable.Listener getDrawableListener() {
 		return _listener;
 	}
+
 }

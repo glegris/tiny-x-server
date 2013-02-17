@@ -43,7 +43,7 @@ public class BackgroundPixmap extends WindowAttributeHandler {
 		final int pixmapResourceId = inputStream.readInt();
 		switch(pixmapResourceId){
 		case 0: // None
-			window.setBackgroundPixmap(null,false);
+			window.setBackgroundPixmap(null);
 			break;
 		
 		case 1: // Parent relative
@@ -51,7 +51,7 @@ public class BackgroundPixmap extends WindowAttributeHandler {
 				response.error(ErrorCode.Match, window.getId());
 			}
 			else {
-				window.setBackgroundPixmap(window.getParent().getBackgroundPixmap(), true);
+				window.setBackgroundParent();
 			}
 			break;
 		default: // Just set a background
@@ -60,7 +60,7 @@ public class BackgroundPixmap extends WindowAttributeHandler {
 				response.error(Response.ErrorCode.Pixmap, pixmapResourceId);
 				return;
 			}
-			window.setBackgroundPixmap(pixmap, false);
+			window.setBackgroundPixmap(pixmap);
 		}
 	}
 }

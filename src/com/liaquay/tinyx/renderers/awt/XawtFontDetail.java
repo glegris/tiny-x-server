@@ -22,7 +22,7 @@ public abstract class XawtFontDetail extends FontDetailAdaptor {
 			final int color) {
 
 		final XawtDrawableListener drawableListener = (XawtDrawableListener)drawable.getDrawableListener();
-		final Graphics2D graphics = drawableListener.getGraphics();
+		final Graphics2D graphics = drawableListener.getGraphics(null);
 		final int rgb = drawable.getColorMap().getRGB(color);
 		drawString(graphics, text, xs, ys, rgb);
 		
@@ -50,7 +50,7 @@ public abstract class XawtFontDetail extends FontDetailAdaptor {
 		System.out.println("Text: '" + text + "'");
 		
 		final XawtDrawableListener drawableListener = (XawtDrawableListener)drawable.getDrawableListener();
-		final Graphics2D graphics = drawableListener.getGraphics();
+		final Graphics2D graphics = drawableListener.getGraphics(null);
 		graphics.setColor(new Color(drawable.getColorMap().getRGB(bgColor)));
 		graphics.fillRect(bx, by, bw, bh);
 		final int rgb = drawable.getColorMap().getRGB(color);

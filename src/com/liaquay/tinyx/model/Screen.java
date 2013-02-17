@@ -58,6 +58,8 @@ public class Screen extends Window {
 		_widthMM = widthMM;
 		_heightMM = heightMM;
 		_depths = depths;
+		
+		setBackgroundPixel(defaultColorMap.getBlackPixel());
 	}
 
 	public ColorMap getDefaultColorMap() {
