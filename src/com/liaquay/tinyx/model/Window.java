@@ -1070,36 +1070,6 @@ public class Window extends Drawable {
 		_buttonGrabs.remove(buttonGrab.getTrigger());
 	}	
 
-	// TODO Move to Drawable?
-	public void drawLine(
-			final GraphicsContext graphicsContext, 
-			final int x1, 
-			final int y1,
-			final int x2,
-			final int y2) {
-		
-		_listener.drawLine(graphicsContext, x1, y1, x2, y2);
-	}
-
-	
-	public Listener getListener() {
-		return _listener;
-	}
-
-	// TODO Move to Drawable?
-	public void putImage(
-			final GraphicsContext graphicsContext, 
-			final ImageType imageType,
-			final byte[] data,
-			final int width, 
-			final int height, 
-			final int destinationX, 
-			final int destinationY,
-			final int leftPad, 
-			final int depth) {
-
-		_listener.putImage(graphicsContext, imageType, data, width, height, destinationX, destinationY, leftPad, depth);
-	}
 	
 	public void setSize(
 			final int x, 

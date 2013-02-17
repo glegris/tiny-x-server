@@ -89,6 +89,7 @@ public class FillPoly implements RequestHandler {
 			}
 		}
 		
+		// TODO dont directly call drawable
 		drawable.getDrawableListener().polyFill(graphicsContext, xCoords, yCoords);
 	}
 }

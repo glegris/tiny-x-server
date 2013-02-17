@@ -18,8 +18,6 @@
  */
 package com.liaquay.tinyx.model;
 
-import java.awt.image.BufferedImage;
-
 import com.liaquay.tinyx.model.Image.ImageType;
 
 
@@ -147,18 +145,13 @@ public abstract class Drawable implements Resource {
 		}
 
 		@Override
-		public void free() {
-			// TODO Auto-generated method stub
-			
-		}
-		
+		public void free() {}
 		@Override
 		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
 
 	}
 
-
-	public abstract com.liaquay.tinyx.model.Drawable.Listener getDrawableListener();
+	public abstract Listener getDrawableListener();
 
 	public abstract Screen getScreen();
 
@@ -177,13 +170,6 @@ public abstract class Drawable implements Resource {
 	public abstract int getBorderWidth();
 
 	public abstract ColorMap getColorMap();
-	
-//	abstract Graphics getGraphics();
-	//	  abstract void restoreClip();
-
-	//	  abstract Graphics getGraphics(GC gc, int mask);   
-	//	  abstract Colormap getColormap();
-//	abstract Image getImage(GraphicsContext gc, int x, int y, int width, int height);
 	
 	public void drawString(
 			final GraphicsContext graphicsContext, 
@@ -213,20 +199,71 @@ public abstract class Drawable implements Resource {
 		getDrawableListener().polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
 	}
 	
-	public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {
+	public void drawLine(
+			final GraphicsContext graphicsContext, 
+			final int x1, 
+			final int y1,
+			final int x2,
+			final int y2) {
+		
+		getDrawableListener().drawLine(graphicsContext, x1, y1, x2, y2);
+	}
+	
+	public void putImage(
+			final GraphicsContext graphicsContext, 
+			final ImageType imageType,
+			final byte[] data,
+			final int width, 
+			final int height, 
+			final int destinationX, 
+			final int destinationY,
+			final int leftPad, 
+			final int depth) {
+
+		getDrawableListener().putImage(graphicsContext, imageType, data, width, height, destinationX, destinationY, leftPad, depth);
+	}	
+	
+	public void drawString(
+			final GraphicsContext graphicsContext, 
+			final String str, 
+			final int x,
+			final int y) {
 
 		final Font font = graphicsContext.getFont();
 		final FontDetail fontDetail = font.getFontDetail();
 		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour());
 	}
 	
-	public void polyRect(GraphicsContext graphicsContext, int x, int y,
-			int width, int height, boolean fill) {
+	public void polyRect(
+			final GraphicsContext graphicsContext, 
+			final int x, 
+			final int y,
+			final int width, 
+			final int height,
+			final boolean fill) {
+		
 		getDrawableListener().polyRect(graphicsContext, x, y, width, height, fill);
 	}
 
-	public void polyLine(GraphicsContext graphicsContext, int x[], int y[]) {
+	public void polyLine(
+			final GraphicsContext graphicsContext,
+			final int x[], 
+			final int y[]) {
+		
 		getDrawableListener().polyLine(graphicsContext, x, y);
+	}
+
+	public void copyArea(
+			final Drawable source,
+			final GraphicsContext graphicsContext, 
+			final int srcX,
+			final int srcY,
+			final int width, 
+			final int height, 
+			final int dstX, 
+			final int dstY) {
+		
+		getDrawableListener().copyArea(source, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
 
 }

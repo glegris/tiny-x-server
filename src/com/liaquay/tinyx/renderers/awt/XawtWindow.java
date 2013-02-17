@@ -262,7 +262,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			updateCanvas(x, y, width, height);
 		}
 		else if(mode.equals(BackgroundMode.Pixmap)) {
-			final XawtWindow awtBackgroundWindow = (XawtWindow)backgroundWindow.getListener();
+			final XawtWindow awtBackgroundWindow = (XawtWindow)backgroundWindow.getWindowListener();
 			final Image image = awtBackgroundWindow._backgroundImage;
 			final int tileOriginX = backgroundWindow.getAbsX() - _window.getAbsX();
 			final int tileOriginY = backgroundWindow.getAbsY() - _window.getAbsY();
@@ -448,7 +448,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			updateCanvas(x, y, width, height);
 		}
 		else if(mode.equals(BackgroundMode.Pixmap)) {
-			final XawtWindow awtBorderWindow = (XawtWindow)borderWindow.getListener();
+			final XawtWindow awtBorderWindow = (XawtWindow)borderWindow.getWindowListener();
 			final Image image = awtBorderWindow._borderImage;
 			final int tileOriginX = borderWindow.getAbsX() - borderWindow.getBorderWidth() - _window.getAbsX() + _window.getBorderWidth();
 			final int tileOriginY = borderWindow.getAbsY() - borderWindow.getBorderWidth() - _window.getAbsY() + _window.getBorderWidth();

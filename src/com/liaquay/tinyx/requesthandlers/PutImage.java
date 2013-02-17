@@ -34,7 +34,8 @@ import com.liaquay.tinyx.model.Server;
 public class PutImage implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
@@ -87,6 +88,8 @@ public class PutImage implements RequestHandler {
 		}
 
 			// The drawable is the thing we are writing into. The image data we are writing is present in this request!
+		
+		// TODO dont directly call drawable
 		destDrawable.getDrawableListener().putImage(graphicsContext, imageType, buffer, width, height, destinationX, destinationY, leftPad, depth);
 
 			//			Pixmap p = new Pixmap(1, null, depth, width, height);

@@ -65,10 +65,7 @@ public class PolyFillArc implements RequestHandler {
 			int angle1 = inputStream.readSignedShort();
 			int angle2 = inputStream.readSignedShort();
 
-			if (drawable instanceof Window) {
-				((Window) drawable).polyArc(graphicsContext, x, y, width, height, angle1, angle2, true);
-			}
-
+			drawable.polyArc(graphicsContext, x, y, width, height, angle1, angle2, true);
 		}
 	}
 }
