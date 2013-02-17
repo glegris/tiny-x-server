@@ -25,7 +25,6 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
 
@@ -58,17 +57,6 @@ public class ClearArea implements RequestHandler {
 			height = window.getHeight();
 		}
 		
-		window.clearArea(x,y,width,height);
-		
-		if (exposures) {
-			final Event exposeEvent = window.getEventFactories().getExposureFactory().create(
-					window.getId(), 
-					window.getX(), 
-					window.getY(),
-					window.getClipWidth(), 
-					window.getClipHeight(),
-					0);
-			window.deliver(exposeEvent, Event.ExposureMask);
-		}
+		window.clearArea(x,y,width,height, exposures);
 	}
 }

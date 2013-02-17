@@ -1002,8 +1002,25 @@ public class Window extends Drawable {
 		_saveUnder = saveUnder;
 	}
 
-	public void clearArea(final int x, final int y, final int width, final int height) {
+	public void clearArea(
+			final int x, 
+			final int y, 
+			final int width, 
+			final int height, 
+			final boolean exposures) {
+		
 		_listener.clearArea(x, y, width, height);
+		
+		if (exposures) {
+			final Event exposeEvent = getEventFactories().getExposureFactory().create(
+					getId(), 
+					x, 
+					y,
+					width, 
+					height,
+					0);
+			deliver(exposeEvent, Event.ExposureMask);
+		}
 	}
 
 	public void add(final ClientWindowAssociation assoc) {

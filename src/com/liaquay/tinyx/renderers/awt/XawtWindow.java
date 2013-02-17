@@ -232,54 +232,6 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		return graphics;
 	}
 
-	private void paintWindow() {
-//		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
-//
-//		graphics.setClip(
-//				_window.getClipX(), 
-//				_window.getClipY(),
-//				_window.getClipWidth(), 
-//				_window.getClipHeight());
-//
-//		final int borderWidth = _window.getBorderWidth();
-//		graphics.translate(_window.getAbsX()-borderWidth, _window.getAbsY()-borderWidth);
-//
-//		paintBorder(graphics);
-//
-//		final int borderWidthX2 = borderWidth + borderWidth;
-//
-//		graphics.setClip(
-//				borderWidth, 
-//				borderWidth, 
-//				_window.getClipWidth() - borderWidthX2, 
-//				_window.getClipHeight() - borderWidthX2);
-//
-//		graphics.translate(borderWidth, borderWidth);
-//
-//		paintContent(graphics);
-//
-//		graphics.translate(
-//				-_window.getAbsX() - borderWidth, 
-//				-_window.getAbsY() - borderWidth);
-//		updateCanvas();
-	}
-
-	private void paintBorder(final Graphics2D graphics) {
-		final int rgb = _window.getColorMap().getRGB(_window.getBorderPixel());
-		graphics.setColor(new Color(rgb));
-		graphics.fillRect(
-				0, 
-				0,
-				_window.getWidth() + (2*_window.getBorderWidth()), 
-				_window.getHeight() + (2*_window.getBorderWidth()));
-	}
-
-	private void paintContent(final Graphics2D graphics) {
-		final int rgb = _window.getColorMap().getRGB(_window.getBackgroundPixel());
-		graphics.setColor(new Color(rgb));
-		graphics.fillRect(0, 0, _window.getWidth(), _window.getHeight());
-	}
-
 	private BufferedImage _backgroundImage = null;
 
 	@Override
