@@ -29,10 +29,14 @@ import com.liaquay.tinyx.model.Server;
 public class ListInstalledColormaps implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
+		// TODO implement
+
 		// TODO logging
 		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
 				request.getMajorOpCode(), 

@@ -32,24 +32,28 @@ import com.liaquay.tinyx.model.Server;
 public class SetScreenSaver implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-//	     1     107                             opcode
-//	     1                                     unused
-//	     2     3                               request length
-//	     2     INT16                           timeout
-//	     2     INT16                           interval
-//	     1                                     prefer-blanking
-//	          0     No
-//	          1     Yes
-//	          2     Default
-//	     1                                     allow-exposures
-//	          0     No
-//	          1     Yes
-//	          2     Default
-//	     2                                     unused
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+		
+		// TODO Complete implementation
+		
+		//	     1     107                             opcode
+		//	     1                                     unused
+		//	     2     3                               request length
+		//	     2     INT16                           timeout
+		//	     2     INT16                           interval
+		//	     1                                     prefer-blanking
+		//	          0     No
+		//	          1     Yes
+		//	          2     Default
+		//	     1                                     allow-exposures
+		//	          0     No
+		//	          1     Yes
+		//	          2     Default
+		//	     2                                     unused
 
 		final ScreenSaver ss = server.getScreenSaver();
 
@@ -66,7 +70,7 @@ public class SetScreenSaver implements RequestHandler {
 		} else {
 			// Must be positive numbers
 			ss.setEnabled(true);
-			
+
 		}
 		final int interval = inputStream.readSignedShort();
 		if (interval == -1) {
@@ -77,7 +81,7 @@ public class SetScreenSaver implements RequestHandler {
 
 		final int blanking = inputStream.readUnsignedByte();
 		ss.setBlanking(blanking);
-		
+
 		final int allowExposures = inputStream.readUnsignedByte();
 		ss.setAllowExposures(allowExposures);
 	}

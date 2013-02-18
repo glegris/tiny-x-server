@@ -73,6 +73,6 @@ public class PolyLine implements RequestHandler {
 			}
 		}
 
-		drawable.getDrawableListener().polyLine(graphicsContext, xCoords, yCoords);
+		drawable.polyLine(graphicsContext, xCoords, yCoords);
 	}
 }

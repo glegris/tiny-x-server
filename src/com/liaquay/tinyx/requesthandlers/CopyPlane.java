@@ -32,11 +32,12 @@ import com.liaquay.tinyx.model.Server;
 public class CopyPlane implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();		
 
 		final int srcDrawable = inputStream.readInt();
@@ -60,17 +61,17 @@ public class CopyPlane implements RequestHandler {
 			return;
 		}
 
-		int srcX = inputStream.readSignedShort();
-		int srcY = inputStream.readSignedShort();
+		final int srcX = inputStream.readSignedShort();
+		final int srcY = inputStream.readSignedShort();
 
-		int dstX = inputStream.readSignedShort();
-		int dstY = inputStream.readSignedShort();
+		final int dstX = inputStream.readSignedShort();
+		final int dstY = inputStream.readSignedShort();
 
-		int width = inputStream.readUnsignedShort();
-		int height = inputStream.readUnsignedShort();
+		final int width = inputStream.readUnsignedShort();
+		final int height = inputStream.readUnsignedShort();
 
-		int bitplane = inputStream.readInt();
+		final int bitplane = inputStream.readInt();
 
-		d.getDrawableListener().copyPlane(s, graphicsContext, bitplane, srcX, srcY, width, height, dstX, dstY);
+		d.copyPlane(s, graphicsContext, bitplane, srcX, srcY, width, height, dstX, dstY);
 	}
 }

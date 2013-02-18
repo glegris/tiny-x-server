@@ -52,18 +52,18 @@ public class PolyArc implements RequestHandler {
 			return;
 		}
 
-		int lne = request.getLength();
+		final int lne = request.getLength();
 
 		for (int i=0; i < ((lne-12)/12); i++) {
 
-			int x = inputStream.readSignedShort();
-			int y = inputStream.readSignedShort();
+			final int x = inputStream.readSignedShort();
+			final int y = inputStream.readSignedShort();
 
-			int width = inputStream.readUnsignedShort();
-			int height = inputStream.readUnsignedShort();
+			final int width = inputStream.readUnsignedShort();
+			final int height = inputStream.readUnsignedShort();
 
-			int angle1 = inputStream.readSignedShort();
-			int angle2 = inputStream.readSignedShort();
+			final int angle1 = inputStream.readSignedShort();
+			final int angle2 = inputStream.readSignedShort();
 
 			drawable.polyArc(graphicsContext, x, y, width, height, angle1, angle2, false);
 		}

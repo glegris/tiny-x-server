@@ -32,12 +32,13 @@ import com.liaquay.tinyx.model.Server;
 public class PolyPoint implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
-
+		// TODO What should this be used for??
 		final CoordMode coordsMode = CoordMode.getFromIndex(request.getData());
 
 		final XInputStream inputStream = request.getInputStream();
@@ -57,7 +58,7 @@ public class PolyPoint implements RequestHandler {
 		final int len = request.getLength();
 
 		final int numCoords = ((len-12)/4);
-		
+
 		final int xCoords[] = new int[numCoords];
 		final int yCoords[] = new int[numCoords];
 
@@ -65,7 +66,7 @@ public class PolyPoint implements RequestHandler {
 			xCoords[i] = inputStream.readSignedShort();
 			yCoords[i] = inputStream.readSignedShort();
 		}
-		
-		drawable.getDrawableListener().polyPoint(graphicsContext, xCoords, yCoords);
+
+		drawable.polyPoint(graphicsContext, xCoords, yCoords);
 	}
 }

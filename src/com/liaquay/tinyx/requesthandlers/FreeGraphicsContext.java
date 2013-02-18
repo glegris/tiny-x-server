@@ -31,11 +31,12 @@ import com.liaquay.tinyx.model.Server;
 public class FreeGraphicsContext implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();
 		final int graphicsContextResourceId = inputStream.readInt();
 		final GraphicsContext graphicsContext = server.getResources().remove(graphicsContextResourceId, GraphicsContext.class);

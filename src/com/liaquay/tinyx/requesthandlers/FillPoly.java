@@ -64,7 +64,7 @@ public class FillPoly implements RequestHandler {
 			return;
 		}
 
-		//TODO Implement
+		//TODO Implement shape
 		final Shape shape = Shape.getFromIndex(inputStream.readUnsignedByte());
 		final CoordMode coordMode = CoordMode.getFromIndex(inputStream.readUnsignedByte());
 
@@ -89,7 +89,6 @@ public class FillPoly implements RequestHandler {
 			}
 		}
 		
-		// TODO dont directly call drawable
-		drawable.getDrawableListener().polyFill(graphicsContext, xCoords, yCoords);
+		drawable.polyFill(graphicsContext, xCoords, yCoords);
 	}
 }

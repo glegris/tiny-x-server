@@ -32,11 +32,12 @@ import com.liaquay.tinyx.model.Server;
 public class PolyFillRectangle implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-		
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+
 		final XInputStream inputStream = request.getInputStream();
 		final int drawableResourceId = inputStream.readInt();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
@@ -51,16 +52,16 @@ public class PolyFillRectangle implements RequestHandler {
 			return;
 		}
 
-		int len = request.getLength();
+		final int len = request.getLength();
 
 		for (int i=0; i < ((len-12)/8); i++) {
-			int x = inputStream.readSignedShort();
-			int y = inputStream.readSignedShort();
+			final int x = inputStream.readSignedShort();
+			final int y = inputStream.readSignedShort();
 
-			int width = inputStream.readUnsignedShort();
-			int height = inputStream.readUnsignedShort();
+			final int width = inputStream.readUnsignedShort();
+			final int height = inputStream.readUnsignedShort();
 
-			drawable.getDrawableListener().polyRect(graphicsContext, x, y, width, height, true);
+			drawable.polyRect(graphicsContext, x, y, width, height, true);
 		}
 	}
 }

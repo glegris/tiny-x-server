@@ -29,126 +29,49 @@ public abstract class Drawable implements Resource {
 		public void copyArea(Drawable d, GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY);
 		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer, int width, int height,int destinationX, int destinationY, int leftPad, int depth);
 		public void createImage(Drawable drawable);
-
-		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
-				int width, int height, int dstX, int dstY);
-
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean b);
-
+		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,int width, int height, int dstX, int dstY);
+		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean b);
 		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
-
-		public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
-				int[] yCoords);
-		
+		public void polyLine(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords);
 		public void drawLine(GraphicsContext graphicsContext, int[] xCoords1, int[] yCoords1, int[] xCoords2, int[] yCoords2);
-
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
-		
-		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
-				int[] yCoords);
-
-		public byte[] getImageData(int x, int y, int width, int height,
-				 ImageType imageType, int planeMask);
-		
+		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords);
+		public byte[] getImageData(int x, int y, int width, int height, ImageType imageType, int planeMask);
 		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
-		
 		public void free();
 	}
 	
 	protected static class NullListener implements Listener {
-
 		@Override
 		public void copyArea(Drawable s, GraphicsContext graphicsContext, int srcX, int srcY, int width, int height, int dstX, int dstY) {}
 		@Override
-		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer,
-				int width, int height, int destinationX, int destinationY,
-				int leftPad, int depth) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer, int width, int height, int destinationX, int destinationY, int leftPad, int depth) {}
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str,
-				int x, int y, int bx, int by, int bw, int bh) {
-			// TODO Auto-generated method stub
-			
-		}
-
-
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y, int bx, int by, int bw, int bh) {}
 		@Override
-		public void createImage(Drawable drawable) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void createImage(Drawable drawable) {}
 		@Override
-		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,
-				int width, int height, int dstX, int dstY) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY, int width, int height, int dstX, int dstY) {}
 		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y,
-				int width, int height, boolean b) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean b) {}
 		@Override
-		public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
-				int[] yCoords) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void polyLine(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords) {}
 		@Override
-		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords,
-				int[] yCoords) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords) {}
 		@Override
-		public byte[] getImageData(int x, int y, int width, int height,
-				 ImageType imageType, int planeMask) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
+		public byte[] getImageData(int x, int y, int width, int height, ImageType imageType, int planeMask) { return null; }
 		@Override
-		public void drawLine(GraphicsContext graphicsContext, int[] xCoords1,
-				int[] yCoords1, int[] xCoords2, int[] yCoords2) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void drawLine(GraphicsContext graphicsContext, int[] xCoords1, int[] yCoords1, int[] xCoords2, int[] yCoords2) {}
 		@Override
-		public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
-				int x2, int y2) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2) {}
 		@Override
-		public void drawString(GraphicsContext graphicsContext, String str,
-				int x, int y) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void drawString(GraphicsContext graphicsContext, String str, int x, int y) {}
 		@Override
-		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {}
 		@Override
 		public void free() {}
 		@Override
 		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
-
 	}
 
 	public abstract Listener getDrawableListener();
@@ -266,4 +189,33 @@ public abstract class Drawable implements Resource {
 		getDrawableListener().copyArea(source, graphicsContext, srcX, srcY, width, height, dstX, dstY);
 	}
 
+	public void polyPoint(
+			final GraphicsContext graphicsContext, 
+			final int[] xCoords,
+			final int[] yCoords) {
+		
+		getDrawableListener().polyPoint(graphicsContext, xCoords, yCoords);
+	}
+
+	public void copyPlane(
+			final Drawable s, 
+			final GraphicsContext graphicsContext,
+			final int bitplane,
+			final int srcX, 
+			final int srcY, 
+			final int width, 
+			final int height, 
+			final int dstX,
+			final int dstY) {
+		
+		getDrawableListener().copyPlane(s, graphicsContext, bitplane, srcX, srcY, width, height, dstX, dstY);
+	}
+
+	public void polyFill(
+			final GraphicsContext graphicsContext, 
+			final int[] xCoords,
+			final int[] yCoords) {
+		
+		getDrawableListener().polyFill(graphicsContext, xCoords, yCoords);
+	}
 }
