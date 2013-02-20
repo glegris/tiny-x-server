@@ -421,7 +421,7 @@ public class Window extends Drawable {
 
 		if(!_viewable && newVisibility) {
 			_viewable = newVisibility;
-			redraw(true);
+			redraw();
 		}
 
 		_viewable = newVisibility;
@@ -563,26 +563,22 @@ public class Window extends Drawable {
 		return _eventFactories;
 	}
 	
-	private void redraw(final boolean exposures) {
+	private void redraw() {
 		if(isViewable()){
 			_listener.drawBorder();
-			redrawContents(exposures);
+			redrawContents();
 		}
 	}
 	
-	private void redrawContents(final boolean exposures) {
+	private void redrawContents() {
 		if(isViewable()){
 			 _listener.clearArea(0, 0, _widthPixels, _heightPixels);
 			 
-			for(int i = _children.size()-1; i >= 0 ; --i) {
+			for(int i = 0; i < _children.size() ; ++i) {
 				final Window c = _children.get(i);
-				c.redraw(exposures);
+				c.redraw();
 			}
-				
-			if(exposures && wouldDeliver(Event.ExposureMask)) {
-				final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
-				deliver(exposeEvent, Event.ExposureMask);
-			}
+			sendExposeEvent();
 		}
 	}
 
@@ -670,7 +666,7 @@ public class Window extends Drawable {
 			_viewable = false;
 			
 			if(_parent != null && _parent.isViewable()) {
-				_parent.redrawContents(true);
+				_parent.redrawContents();
 			}
 		}
 	}
@@ -868,7 +864,7 @@ public class Window extends Drawable {
 		_backgroundMode = BackgroundMode.Pixel;
 		
 		// Redraw the window
-		if(changed) redrawContents(true);
+		if(changed) redrawContents();
 	}
 	
 	public void setBackgroundPixmap(final Pixmap pixmap) {
@@ -876,14 +872,14 @@ public class Window extends Drawable {
 		
 		// Redraw the window
 		_listener.setBackgroundPixmap(pixmap);
-		redrawContents(true);
+		redrawContents();
 	}
 
 	public void setBackgroundParent() {
 		_backgroundMode = BackgroundMode.Parent;
 		
 		// Redraw the window
-		redrawContents(true);
+		redrawContents();
 	}
 	
 	public Window getBackgroundWindow() {
@@ -1015,12 +1011,21 @@ public class Window extends Drawable {
 		
 		_listener.clearArea(x, y, width, height);
 		
-		for(int i = _children.size()-1; i >= 0 ; --i) {
+		if(exposures) sendExposeEvent();
+		
+		for(int i = 0; i < _children.size() ; ++i) {
 			final Window c = _children.get(i);
 			if(c.overlaps(x, y, width, height)) {
-				c.redraw(exposures);
+				c.redraw();
 			}
 		}
+	}
+	
+	private void sendExposeEvent() {
+		if(wouldDeliver(Event.ExposureMask)) {
+			final Event exposeEvent = _eventFactories.getExposureFactory().create(this.getId(), getX(), getY(), getClipWidth(), getClipHeight(), 0);
+			deliver(exposeEvent, Event.ExposureMask);
+		}		
 	}
 
 	public void add(final ClientWindowAssociation assoc) {
@@ -1091,7 +1096,7 @@ public class Window extends Drawable {
 		updateLocation();
 		
 		// TODO Events eyc.
-		_parent.redraw(true); // TODO somewhat over the top!
+		_parent.redraw(); // TODO somewhat over the top!
 	}
 
 	@Override
