@@ -22,10 +22,12 @@ import java.io.IOException;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.Response.ErrorCode;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.io.XOutputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
 
 public class ClipMask implements GraphicsAttributeHandler {
@@ -40,13 +42,18 @@ public class ClipMask implements GraphicsAttributeHandler {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int clipMask = inputStream.readInt();
-		//TODO: Quick validation that clipPixmap references a known pixmap?
-		graphicsContext.setClipMask(clipMask);
+		
+		final Pixmap p = server.getResources().get(clipMask, Pixmap.class);
+		if (p != null) {
+			graphicsContext.setClipMask(p);
+		} else {
+			response.error(ErrorCode.Pixmap, clipMask);
+		}
 	}
 
 	@Override
 	public void write(final XOutputStream outputStream, final GraphicsContext graphicsContext) throws IOException {
-		outputStream.writeInt(graphicsContext.getClipMask());
+		outputStream.writeInt(graphicsContext.getClipMask().getId());
 	}
 	
 

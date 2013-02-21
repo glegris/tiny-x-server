@@ -34,7 +34,7 @@ import com.liaquay.tinyx.requesthandlers.gcattribhandlers.GraphicsContextAttribu
 import com.liaquay.tinyx.requesthandlers.winattribhandlers.WindowAttributeHandlers;
 
 public class RequestHandlerMap implements RequestHandler {
-	
+
 	private final static Logger LOGGER = Logger.getLogger(RequestHandlerMap.class.getName());
 
 	private RequestHandler[] _handlers = new RequestHandler[256];
@@ -45,16 +45,16 @@ public class RequestHandlerMap implements RequestHandler {
 			final int eventCodeCount, 
 			final int errorCodeCount,
 			final RequestHandler requestHandler) {
-		
+
 		final Extension extension = extensions.createExtension(extensionName, errorCodeCount, eventCodeCount);
 		_handlers[extension.getMajorOpCode()] = requestHandler;
 	}
 
 	public RequestHandlerMap(final Extensions extensions) {
 		addExtension(extensions, "BIG-REQUESTS", 0,0, new BigRequestHandler());
-//		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
-		
-//		addExtension(extensions, "RENDER", 0,0, new RenderHandler());
+		//		addExtension(extensions, "SHAPE", 0,0, new ShapeExtensionHandler());
+
+		//		addExtension(extensions, "RENDER", 0,0, new RenderHandler());
 
 		final GraphicsContextAttributeHandlers graphicsContextAttributeHandlers = new GraphicsContextAttributeHandlers();
 		final WindowAttributeHandlers windowAttributeHandlers = new WindowAttributeHandlers();
@@ -71,6 +71,7 @@ public class RequestHandlerMap implements RequestHandler {
 		_handlers[10] = new UnmapWindow();
 		_handlers[11] = new UnmapSubwindows();
 		_handlers[12] = new ConfigureWindow();
+		_handlers[13] = new CirculateWindow();
 		_handlers[14] = new GetGeometry();
 		_handlers[15] = new QueryTree();
 		_handlers[16] = new InternAtom();
@@ -192,8 +193,12 @@ public class RequestHandlerMap implements RequestHandler {
 			throw new RuntimeException("Impossible majorOpCode " + majorOpCode);
 		}
 		final RequestHandler requestHandler = _handlers[majorOpCode];
-		LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "... opCode: " + majorOpCode);
+		if (requestHandler != null) {
+			LOGGER.log(Level.INFO, "Processing " + requestHandler.getClass().getSimpleName() + "... opCode: " + majorOpCode);
 
-		requestHandler.handleRequest(server, client, request, response);
+			requestHandler.handleRequest(server, client, request, response);
+		} else {
+			LOGGER.log(Level.SEVERE, "Request: " + majorOpCode + " not implemented yet");
+		}
 	}
 }

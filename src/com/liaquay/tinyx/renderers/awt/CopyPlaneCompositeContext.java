@@ -48,7 +48,7 @@ public class CopyPlaneCompositeContext implements CompositeContext {
                 int outPixel = comp.getBgColor();
                 		
                 if ((srcPixel & comp.getBitplane()) > 0) {
-        			outPixel = comp.getFgColor();
+        			outPixel = comp.getBitplane();//comp.getFgColor();
                 }
 
                 Object data = dstCM.getDataElements(outPixel, null);

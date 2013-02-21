@@ -23,8 +23,11 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.model.Atom;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class ConvertSelection implements RequestHandler {
 
@@ -39,5 +42,39 @@ public class ConvertSelection implements RequestHandler {
 				request.getData(),
 				request.getLength(),
 				request.getSequenceNumber()));		
+		
+		final XInputStream inputStream = request.getInputStream();
+
+		final int windowId = inputStream.readInt(); 		
+		final Window window = server.getResources().get(windowId, Window.class);
+		if(window == null) {
+			response.error(Response.ErrorCode.Window, windowId);			
+			return;
+		}
+
+		final int selectionId = inputStream.readInt(); 		
+		final Atom selection = server.getAtoms().get(selectionId);
+		if(selection == null) {
+			response.error(Response.ErrorCode.Atom, windowId);			
+			return;
+		}
+		
+		final int targetId = inputStream.readInt(); 		
+		final Atom target = server.getAtoms().get(targetId);
+		if(target == null) {
+			response.error(Response.ErrorCode.Atom, windowId);			
+			return;
+		}
+
+		final int propertyId = inputStream.readInt(); 		
+		final Atom property = server.getAtoms().get(propertyId);
+		if(target == null) {
+			response.error(Response.ErrorCode.Atom, windowId);			
+			return;
+		}
+
+		final int timestamp = inputStream.readInt();
+//	     4     TIMESTAMP                       time
+//	          0     CurrentTime
 	}
 }

@@ -42,6 +42,7 @@
 #include <iostream>
 #include <assert.h>
 #include <cstring>
+#include <strings.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -530,17 +531,38 @@ main()
       XSync(dpy, False); // Make the next request starts at the beginning of a packet
 
       // PolyText8
+      XTextItem textItems[3];
+      textItems[0].chars = "toto";
+      textItems[0].nchars = strlen(textItems[0].chars);
+      textItems[0].delta = -3;
+      textItems[0].font = fs->fid;
+      textItems[1].chars = "titi";
+      textItems[1].nchars = strlen(textItems[1].chars);
+      textItems[1].delta = 3;
+      textItems[1].font = None;
+      textItems[2].chars = "tutu";
+      textItems[2].nchars = strlen(textItems[2].chars);
+      textItems[2].delta = 0;
+      textItems[2].font = fs->fid;
 
-#define STRINGL(x) x, strlen(x)
-      XTextItem items[] = { STRINGL("toto"), -3, fs -> fid, 
-			    STRINGL("titi"), 3, None,
-			    STRINGL("tutu"), 0, fs -> fid };
-      XDrawText(dpy, w, gc, 10, 10, items, SIZEOF(items));
+      XDrawText(dpy, w, gc, 10, 10, textItems, 3);
 
-      XTextItem items2[] = { STRINGL("totox"), -3, fs -> fid, 
-			    STRINGL("titi"), 3, None,
-			    STRINGL("tutu"), 0, fs -> fid };
-      XDrawText(dpy, w, gc, 10, 10, items2, SIZEOF(items2));
+
+      XTextItem textItems2[3];
+      textItems2[0].chars = "totox";
+      textItems2[0].nchars = strlen(textItems2[0].chars);
+      textItems2[0].delta = -3;
+      textItems2[0].font = fs->fid;
+      textItems2[1].chars = "titi";
+      textItems2[1].nchars = strlen(textItems2[1].chars);
+      textItems2[1].delta = 3;
+      textItems2[1].font = None;
+      textItems2[2].chars = "tutu";
+      textItems2[2].nchars = strlen(textItems2[2].chars);
+      textItems2[2].delta = 0;
+      textItems2[2].font = fs->fid;
+
+      XDrawText(dpy, w, gc, 10, 10, textItems2, 3);
 
       // PolyText16
 

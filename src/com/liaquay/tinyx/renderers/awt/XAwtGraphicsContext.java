@@ -21,38 +21,6 @@ import com.liaquay.tinyx.requesthandlers.gcattribhandlers.JoinStyle.JoinStyleTyp
 
 public class XAwtGraphicsContext {
 
-	public static void tile(final Graphics2D graphics, final GraphicsContext graphicsContext) {
-		final Pixmap p = graphicsContext.getTile();
-		if (p != null) {
-			final XawtPixmap awtPixmap = (XawtPixmap)p.getListener();
-			TexturePaint tp = new TexturePaint(awtPixmap.getImage(), new Rectangle(0, 0, p.getWidth(), p.getHeight()));
-			graphics.setPaint(tp);
-		}
-	}
-
-	public static void stipple(final Graphics2D graphics, final GraphicsContext graphicsContext) {
-		
-		final Pixmap stipplePixmap = graphicsContext.getStipple();
-		final XawtPixmap awtStipplePixmap = (XawtPixmap)stipplePixmap.getListener();
-
-		if (stipplePixmap != null) {
-			final AlphaFilter filter = new AlphaFilter(graphicsContext);
-			final BufferedImage srcImage = createCompatibleImage(awtStipplePixmap.getImage());
-
-			XawtDrawableListener.writeImage(srcImage, "test-src.png");
-
-			final FilteredImageSource filteredSrc = new FilteredImageSource(srcImage.getSource(), filter);
-			final Image newImage = Toolkit.getDefaultToolkit().createImage(filteredSrc);
-
-			
-			final BufferedImage bufImage = imageToBufferedImage(newImage,  stipplePixmap.getWidth(), stipplePixmap.getHeight());
-			XawtDrawableListener.writeImage(bufImage, "test-filter.png");
-			
-			final TexturePaint tp = new TexturePaint(bufImage, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
-			graphics.setPaint(tp);
-		}
-	}
-	
 	static BufferedImage createCompatibleImage(final BufferedImage image)
 	{
 		final GraphicsConfiguration gc = GraphicsEnvironment.

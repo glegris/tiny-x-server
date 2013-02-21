@@ -209,6 +209,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			ImageType imageType, int planeMask) {
 
 		System.out.println("GetImageData: " + imageType.name() + " Depth: " + _drawable.getDepth());
+		
 		if (planeMask == 0xffffffff && imageType.equals(ImageType.ZPixmap)) {
 
 			int size = (width * height * _drawable.getDepth())/8;
@@ -372,7 +373,22 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
 			graphics.setPaint(tp);
-		}	
+		}
+		
+
+		//TODO: This needs to clip and not just the same as the others!
+		Pixmap clipPixmap = graphicsContext.getClipMask();
+
+		if (clipPixmap != null) {
+
+			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
+			final BufferedImage srcImage = awtDrawable.getImage();
+
+			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext));
+
+			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
+			graphics.setPaint(tp);
+		}
 
 		if (fill) {
 			graphics.fillRect(x, y, width, height);

@@ -52,8 +52,7 @@ public class GraphicsContext extends AbstractResource {
 	private int _tileStippleXOrigin = 0;		// Default: Zero
 	private int _tileStippleYOrigin = 0;		// Default: Zero
 	
-	/** Weird X seems to imply that this can either be a pixmap or a bunch of rectanges.. */
-	private int _clipMask = 0;				// Default: None
+	private Pixmap _clipMask = null;				// Default: None
 
 	private int _clipXOrigin = 0;				// Default: Zero
 	private int _clipYOrigin = 0;				// Default: Zero
@@ -217,11 +216,11 @@ public class GraphicsContext extends AbstractResource {
 		return this._clipYOrigin;
 	}
 
-	public void setClipMask(final int clipMask) {
+	public void setClipMask(final Pixmap clipMask) {
 		_clipMask = clipMask;
 	}
 	
-	public int getClipMask() {
+	public Pixmap getClipMask() {
 		return this._clipMask;
 	}
 
