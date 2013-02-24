@@ -31,6 +31,7 @@ import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.BackgroundMode;
+import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
 
 /**
  *
@@ -51,7 +52,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		//TODO: Map the depth
 		//	window.getDepth();
 		if (window.getRootWindow().equals(window)) {
-			BufferedImage image = new BufferedImage(window.getWidth() + (window.getBorderWidth() * 2), window.getHeight() + (window.getBorderWidth() * 2), BufferedImage.TYPE_INT_BGR);
+			BufferedImage image = new BufferedImage(window.getWidth() + (window.getBorderWidth() * 2), window.getHeight() + (window.getBorderWidth() * 2), BufferedImage.TYPE_INT_ARGB);
 			_image = image;
 		}
 	}
@@ -71,36 +72,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final Pixmap p = cursor.getSourcePixmap();
 			final Pixmap m = cursor.getMaskPixmap();
 
-			// Buffered image that has transparency.
-			//			final Image image = p.getImage();//new BufferedImage(p.getWidth(), p.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-			//			image.getListener();
-			//leRaster newImage = p.getImage();//image.getRaster();
-
-			//			// This seems horribly inefficient, but will probably do for the time being.
-			//			int i = 0;
-			//			for (int y = 0; y < p.getHeight() - 1; y++) {
-			//				for (int x = 0; x < (p.getWidth()/8); x++) {
-			//					final int source = 0x00ff & p.getData()[i];
-			//					final int mask = 0x00ff & m.getData()[i++];
-			//
-			//					for (int a = 0; a < 8; a++) {
-			//						final byte sourcePixel = (byte) ((source >> 7-a) & 0x01);
-			//						final byte maskPixel = (byte) ((mask>> 7-a) & 0x01);
-			//
-			//						if (sourcePixel > 0) {
-			//							newImage.setSample((x*8)+a, y, 0, cursor.getForegroundColorRed());		// Red
-			//							newImage.setSample((x*8)+a, y, 1, cursor.getForegroundColorGreen());	// Green
-			//							newImage.setSample((x*8)+a, y, 2, cursor.getForegroundColorBlue());	// Blue
-			//						} else {
-			//							newImage.setSample((x*8)+a, y, 0, cursor.getBackgroundColorRed());		// Red
-			//							newImage.setSample((x*8)+a, y, 1, cursor.getBackgroundColorGreen());	// Green
-			//							newImage.setSample((x*8)+a, y, 2, cursor.getBackgroundColorBlue());	// Blue
-			//						}
-			//						newImage.setSample((x*8)+a, y, 3, maskPixel);	// Alpha
-			//					}
-			//				}
-			//			}
-
+			//TODO: Create graphicsContext just to aid in the creation of the cursor image correctly.
+			
 			//			if (image != null) {
 			//				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
 			//				final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
@@ -198,7 +171,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
 		Graphics2D g = getGraphics();
 		if (graphicsContext != null) {
-			g.setComposite(new GraphicsContextComposite(graphicsContext));
+			g.setComposite(new GraphicsContextComposite(graphicsContext, _drawable));
 		}		
 		return g;
 	}
@@ -378,6 +351,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	@Override
 	public void free() {
+		_image = null;
 	}
 	
 	private void tileArea(

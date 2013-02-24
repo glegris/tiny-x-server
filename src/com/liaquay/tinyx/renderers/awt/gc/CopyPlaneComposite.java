@@ -1,4 +1,4 @@
-package com.liaquay.tinyx.renderers.awt;
+package com.liaquay.tinyx.renderers.awt.gc;
 
 import java.awt.Composite;
 import java.awt.CompositeContext;

@@ -87,23 +87,6 @@ public class PutImage implements RequestHandler {
 			bytesRead+=inputStream.read(buffer, bytesRead, buffer.length - bytesRead);
 		}
 
-			// The drawable is the thing we are writing into. The image data we are writing is present in this request!
-		
-		// TODO dont directly call drawable
-		destDrawable.getDrawableListener().putImage(graphicsContext, imageType, buffer, width, height, destinationX, destinationY, leftPad, depth);
-
-			//			Pixmap p = new Pixmap(1, null, depth, width, height);
-			//			p.putImage(graphicsContext, buffer, width, height, destinationX, destinationY, leftPad, depth);
-			//			
-			//			w.renderDrawable(p, graphicsContext, 0,
-			//					0,
-			//					width,
-			//					height, 
-			//					destinationX,
-			//					destinationY);
-			//			
-			//			// Drawable is not a pixmap.. Is it a window?
-			//			System.out.println("Put image to a " + destDrawable.getClass());
-
+		destDrawable.putImage(graphicsContext, imageType, buffer, width, height, destinationX, destinationY, leftPad, depth);
 	}
 }

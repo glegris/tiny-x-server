@@ -26,13 +26,18 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
+import java.awt.image.RasterFormatException;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +51,8 @@ import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.renderers.awt.gc.CopyPlaneComposite;
+import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
@@ -80,17 +87,17 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		}
 	}
 
-
-	public static  BufferedImage canvasToImage(Canvas cnvs) {
-		int w = cnvs.getWidth();
-		int h = cnvs.getHeight();
-		int type = BufferedImage.TYPE_INT_BGR;
-		BufferedImage image = new BufferedImage(w,h,type);
-		Graphics2D g2 = image.createGraphics();
-		cnvs.paint(g2);
-		g2.dispose();
-		return image;
-	}
+//
+//	public static  BufferedImage canvasToImage(Canvas cnvs) {
+//		int w = cnvs.getWidth();
+//		int h = cnvs.getHeight();
+//		int type = BufferedImage.TYPE_INT_BGR;
+//		BufferedImage image = new BufferedImage(w,h,type);
+//		Graphics2D g2 = image.createGraphics();
+//		cnvs.paint(g2);
+//		g2.dispose();
+//		return image;
+//	}
 
 	@Override
 	public abstract void createImage(Drawable drawable);
@@ -107,8 +114,13 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int dstY) {
 
 		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
-		final BufferedImage srcImage = awtDrawable.getImage();
-		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
+		final BufferedImage srcImage = awtDrawable.getImage().getSubimage(_drawable.getX() + srcX, _drawable.getY() + srcY, width, height);
+
+		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, 0, 0, width, height, null);//, srcY, srcX + width, srcY + height, null);
+		
+//		final BufferedImage srcImage = awtDrawable.getImage();
+//		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
+
 	}
 
 	@Override
@@ -147,38 +159,95 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		BufferedImage image = null;
 
 		LOGGER.info("Put image with type: " + imageType.name() + " Width: " + width + " Height: " + height + " and depth " + depth + " leftpad: " + leftPad);
-		if (depth == 1) {
-			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
-			WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
-			byte[] arr = {(byte)0x00, (byte)0xff};
-			IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
-			image = new BufferedImage(colorModel, raster, false, null);
+//		int newDepth = depth;
 
-		} else if (depth == 32) {
-			// Only 3 bytes per pixel appear to be sent..
-			DataBufferByte db = new DataBufferByte(buffer, buffer.length);
+//		int planeSize = width * height;
+//		int planes = (buffer.length * 8) / planeSize ;
+//		if (depth == 1 && planes == 4) {
+//			try {
+//				byte[] buffer2 = newBuffer(buffer);
+//
+//				DataBufferByte db = new DataBufferByte(buffer2, buffer.length);
+//				WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
+//
+//				byte[] arr = {(byte)0x00, (byte)0xff};
+//				IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
+//				image = new BufferedImage(colorModel, raster, false, null);
+////				writeImage(image, "test-fishy");
+//			} catch (RasterFormatException e) {
+//				LOGGER.warning("putImage: " + e.getMessage());
+//			}
+//		} else 
 
-			WritableRaster raster = Raster.createInterleavedRaster(db, // dataBuffer
-					width, // width
-					height, // height
-					width * 3, // scanlineStride
-					3, // pixelStride
-					new int[]{2, 1, 0}, // bandOffsets
-					null); // location
+			if (depth == 1) {
 
-			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
-			image.setData(raster);
+				DataBufferByte db = new DataBufferByte(buffer, buffer.length);
+				WritableRaster raster = Raster.createPackedRaster(db, width, height, 1, null);
 
-		} else {
-			LOGGER.severe("PutImage doesn't currently support a depth of " + depth);
+				byte[] arr = {(byte)0x00, (byte)0xff};
+				IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
+				image = new BufferedImage(colorModel, raster, false, null);
+
+			} else if (depth == 32) {
+				// Only 3 bytes per pixel appear to be sent..
+				DataBufferByte db = new DataBufferByte(buffer, buffer.length);
+
+				WritableRaster raster = Raster.createInterleavedRaster(db, // dataBuffer
+						width, // width
+						height, // height
+						width * 3, // scanlineStride
+						3, // pixelStride
+						new int[]{2, 1, 0}, // bandOffsets
+						null); // location
+
+				image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
+				image.setData(raster);
+
+			} else {
+				LOGGER.severe("PutImage doesn't currently support a depth of " + depth);
+			}
+
+			BufferedImage newImage = createCompatibleImage(image, new GraphicsContextComposite(graphicsContext, _drawable));
+
+//			writeImage(newImage, "test");
+			Graphics sg = getGraphics(graphicsContext);
+			sg.drawImage(newImage, destinationX, destinationY, width, height, null);
+	}
+
+	/** nibbles in.. bytes out */
+	byte[] newBuffer(byte[] buffer) {
+		byte[] newBuffer = new byte[buffer.length/4];
+
+		int a = 0;
+		int i = 0;
+		while (i < buffer.length) {
+			// For each nibble in the source stream, convert to a single bit in the output stream
+			byte out = 0;
+
+			out+= (byte) (buffer[i] & 16) << 3;
+			out+= (byte) (buffer[i] & 1) << 6;
+			i++;
+
+			out+= (byte) (buffer[i] & 16) << 1;
+			out+= (byte) (buffer[i] & 1) << 4;
+			i++;
+
+			out+= (byte) (buffer[i] & 16) >> 1;
+			out+= (byte) (buffer[i] & 1) << 2;
+			i++;
+
+			out+= (byte) (buffer[i] & 16) >> 3;
+			out+= (byte) (buffer[i] & 1);
+			i++;
+
+			newBuffer[a++] = out;
 		}
 
-		BufferedImage newImage = createCompatibleImage(image, new GraphicsContextComposite(graphicsContext));
+		return newBuffer;
 
-		Graphics sg = getGraphics(graphicsContext);
-		sg.drawImage(newImage, destinationX, destinationY, width, height, null);
 	}
+
 
 	BufferedImage createCompatibleImage(BufferedImage image, Composite composite)
 	{
@@ -189,8 +258,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		BufferedImage newImage = gc.createCompatibleImage(
 				image.getWidth(), 
-				image.getHeight(), 
-				Transparency.TRANSLUCENT);
+				image.getHeight(), Transparency.TRANSLUCENT);
 
 		Graphics2D g = newImage.createGraphics();
 
@@ -209,7 +277,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			ImageType imageType, int planeMask) {
 
 		System.out.println("GetImageData: " + imageType.name() + " Depth: " + _drawable.getDepth());
-		
+
 		if (planeMask == 0xffffffff && imageType.equals(ImageType.ZPixmap)) {
 
 			int size = (width * height * _drawable.getDepth())/8;
@@ -254,9 +322,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		//		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
-		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
-		//		graphics.draw(stroke.createStrokedShape(s));
+//		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
+//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+//		graphics.draw(stroke.createStrokedShape(s));
 		graphics.drawPolygon(xCoords, yCoords, xCoords.length);
 	}
 
@@ -272,11 +340,11 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		//		XAwtGraphicsContext.tile(graphics, graphicsContext);
 
-		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
 
 		for (int i = 0; i < x1.length; i++) {
-			//			Shape l = new Line2D.Float(x1[i], y1[i], x2[i], y2[i]);
-			//			graphics.draw(stroke.createStrokedShape(l));
+//						Shape l = new Line2D.Float(x1[i], y1[i], x2[i], y2[i]);
+//						graphics.draw(stroke.createStrokedShape(l));
 			graphics.drawLine(x1[i], y1[i], x2[i], y2[i]);
 		}
 	}
@@ -349,46 +417,34 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		Pixmap stipplePixmap = graphicsContext.getStipple();
-
-		if (stipplePixmap != null && (FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Stippled)) {
-
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener)stipplePixmap.getDrawableListener();
-			final BufferedImage srcImage = awtDrawable.getImage();
-
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext));
-
-			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
-			graphics.setPaint(tp);
-		}	
 
 		Pixmap tilePixmap = graphicsContext.getTile();
 
 		if (tilePixmap != null && (FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Tiled)) {
 
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener)stipplePixmap.getDrawableListener();
+			final XawtDrawableListener awtDrawable = (XawtDrawableListener) tilePixmap.getDrawableListener();
 			final BufferedImage srcImage = awtDrawable.getImage();
 
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext));
+			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
 
-			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), stipplePixmap.getWidth(), stipplePixmap.getHeight()));
+			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
 			graphics.setPaint(tp);
 		}
-		
+
 
 		//TODO: This needs to clip and not just the same as the others!
-		Pixmap clipPixmap = graphicsContext.getClipMask();
-
-		if (clipPixmap != null) {
-
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
-			final BufferedImage srcImage = awtDrawable.getImage();
-
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext));
-
-			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
-			graphics.setPaint(tp);
-		}
+//		Pixmap clipPixmap = graphicsContext.getClipMask();
+//
+//		if (clipPixmap != null) {
+//
+//			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
+//			final BufferedImage srcImage = awtDrawable.getImage();
+//
+//			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, x, y));
+//
+//			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
+//			graphics.setPaint(tp);
+//		}
 
 		if (fill) {
 			graphics.fillRect(x, y, width, height);
