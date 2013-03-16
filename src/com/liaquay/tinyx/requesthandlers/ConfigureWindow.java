@@ -85,7 +85,14 @@ public class ConfigureWindow implements RequestHandler {
 		}	
 		if((mask & 0x40) != 0) {
 			stackMode = inputStream.readUnsignedByte();
-			inputStream.skip(2);
+			inputStream.skip(3);
+			// 0 - Above
+			// 1 - Below
+			// 2 - TopIf
+			// 3 - BottomIf
+			// 4 - Opposite
+			//
+			//
 			
 			System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
 					request.getMajorOpCode(), 
