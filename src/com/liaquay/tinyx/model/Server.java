@@ -44,8 +44,15 @@ public class Server extends Client {
 
 	private static final byte[] VENDOR = "Liaquay".getBytes();
 
+	// Formats pilfered from XFree86 and validated against tinyx output
 	private static Format[] FORMATS = new Format[] {
-		new Format (32, 24, 8)
+		new Format (1, 1, 32),
+		new Format (4, 8, 32),
+		new Format (8, 8, 32),
+		new Format (15, 16, 32),
+		new Format (16, 16, 32),
+		new Format (24, 32, 32),
+		new Format (32, 32, 32)
 	};
 
 	private final AccessControls _accessControl = new AccessControls();
@@ -55,10 +62,10 @@ public class Server extends Client {
 	private final List<Screen> _screens = new ArrayList<Screen>(2);
 	private final Resources _resources = new Resources();
 	private final Atoms _atoms = new Atoms();
-	private final ByteOrder _imageByteOrder = ByteOrder.LSB;
-	private final ByteOrder _bitmapBitOrder = ByteOrder.MSB;
-	private final int _bitmapScanLineUnit = 8; 
-	private final int _bitmapScanLinePad = 8;
+	private final ByteOrder _imageByteOrder = ByteOrder.MSB;		// XFree was LSB
+	private final ByteOrder _bitmapBitOrder = ByteOrder.LSB;
+	private final int _bitmapScanLineUnit = 32; 
+	private final int _bitmapScanLinePad = 32; 
 
 	private final boolean _handlesBigRequests = true;
 	private final int _maximumRequestLength = 32000;
@@ -359,7 +366,7 @@ public class Server extends Client {
 		return VENDOR;
 	}
 
-	public Format[] getFormats() {
+	public static Format[] getFormats() {
 		return FORMATS;
 	}
 

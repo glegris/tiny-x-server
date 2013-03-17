@@ -60,26 +60,28 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 				int srcPixel =  srcCM.getRGB(src.getDataElements(x, y, null));
 				int destPixel = dstCM.getRGB(dstIn.getDataElements(x, y, null));
 
-				// Process the function
-				int outPixel = FunctionFilter.processPixel(srcPixel, destPixel, x, y, gc);
-
 				// Do we draw the pixel?
 				boolean drawPixel = ClipFilter.drawPixel(x, y, gc);
 
+				int outPixel = 0xff000000;
+				
+				if (drawPixel) {
 
-				int stipplePixel = StippleFilter.process(x, y, gc);
-				if (stipplePixel > 0) {
-					outPixel = stipplePixel;
+					int stipplePixel = StippleFilter.process(x, y, gc);
+					if (stipplePixel > 0) {
+						outPixel = stipplePixel;
+					}
 
+					// Process the function
+					outPixel = FunctionFilter.processPixel(srcPixel, destPixel, x, y, gc);
 
+					outPixel =  (outPixel & gc.getGC().getPlaneMask()) | (destPixel & ~gc.getGC().getPlaneMask());
+//					outPixel = srcPixel;
+						
 				} else {
-
-
-					if (drawPixel)
-						outPixel =  (outPixel & gc.getGC().getPlaneMask()) | (destPixel & ~gc.getGC().getPlaneMask());
-					else 
-						outPixel = destPixel;
+					outPixel = destPixel;
 				}
+					
 				Object data = dstCM.getDataElements(outPixel, null);
 				dstOut.setDataElements(x, y, data);
 			}

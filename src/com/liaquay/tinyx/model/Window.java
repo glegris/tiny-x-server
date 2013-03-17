@@ -105,7 +105,7 @@ public class Window extends Drawable {
 		}
 	}
 
-	private BackingStoreHint _backingStoreHint = BackingStoreHint.BackingStoreAlways; // TODO Check default value
+	private BackingStoreHint _backingStoreHint = BackingStoreHint.BackingStoreNever; // TODO Check default value
 
 	public enum WinGravity {
 		/*

@@ -59,10 +59,8 @@ public class GetImage implements RequestHandler {
 
 		final int planeMask = inputStream.readInt();
 
-		final XOutputStream outputStream = response.respond(1);
-
 		// Depth of the drawable for which we are going to send back data.
-		outputStream.writeByte(drawableRes.getDepth());
+		final XOutputStream outputStream = response.respond(drawableRes.getDepth());
 
 		outputStream.writeInt(drawableRes.getVisual().getId());
 		outputStream.writePad(20);

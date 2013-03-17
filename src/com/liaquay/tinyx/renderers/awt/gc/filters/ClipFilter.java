@@ -9,18 +9,14 @@ public class ClipFilter {
 	public static boolean drawPixel(int x, int y,
 			GraphicsContextComposite gc) {
 
-		int translatedX = gc.getDrawable().getX() + x;
-		int translatedY = gc.getDrawable().getY() + y;
+		int translatedX = gc.getGC().getGraphicsOperationX() ;
+		int translatedY = gc.getGC().getGraphicsOperationY() ;
 
 		Pixmap clipMask =  gc.getGC().getClipMask();
 
-		if (clipMask != null) {
-			if (translatedX >= gc.getGC().getClipXOrigin() &&  translatedX < gc.getGC().getClipXOrigin() + clipMask.getWidth()) {
-				if (translatedY >= gc.getGC().getClipYOrigin() &&  translatedY < gc.getGC().getClipYOrigin() + clipMask.getHeight()) {
-					return ((XawtPixmap) clipMask.getDrawableListener()).getImage().getRGB(x, y) == 0;
-				}
-			}
-		}
+//		if (clipMask != null) {
+//			return ((XawtPixmap) clipMask.getDrawableListener()).getImage().getRGB(x - translatedX + gc.getGC().getClipXOrigin(), y - translatedY + gc.getGC().getClipYOrigin()) == -1;
+//		}
 
 		return true;
 	}

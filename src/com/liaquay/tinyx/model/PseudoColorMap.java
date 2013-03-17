@@ -18,9 +18,9 @@
  */
 package com.liaquay.tinyx.model;
 
-public class TrueColorMap extends ColorMap {
+public class PseudoColorMap extends ColorMap {
 
-	public TrueColorMap(final int id) {
+	public PseudoColorMap(final int id) {
 		super(id);
 	}
 
@@ -55,7 +55,6 @@ public class TrueColorMap extends ColorMap {
 	public int getExactBlue(final int pixel) {
 		final int b = pixel & 0x0000ff;
 		return b | (b << 8);
-
 	}
 
 	@Override

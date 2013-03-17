@@ -25,47 +25,44 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
-import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
-import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Visual;
 
 public class CreatePixmap implements RequestHandler {
 
 	@Override
 	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int depth = request.getData();
-	    final int pixmapResourceId = inputStream.readInt();
-	    final int drawableResourceId = inputStream.readInt();
-	    final int width = inputStream.readUnsignedShort();
-	    final int height = inputStream.readUnsignedShort();
+		final int pixmapResourceId = inputStream.readInt();
+		final int drawableResourceId = inputStream.readInt();
+		final int width = inputStream.readUnsignedShort();
+		final int height = inputStream.readUnsignedShort();
 		final Drawable drawable = server.getResources().get(drawableResourceId, Drawable.class);
 		if(drawable == null) {
 			response.error(Response.ErrorCode.Drawable, drawableResourceId);
 			return;
 		}
-		
+
 		if(width==0 || height==0){
 			response.error(Response.ErrorCode.Value, 0);
 			return;
 		}
 
-//		if(depth != 1){
-//			final Screen screen = drawable.getScreen();
-//			final Depths depths = screen.getDepths();
-//// TODO This test causes lots of errors and I don't know why			
-//			if(depths.get(depth) == null) {
-//				response.error(Response.ErrorCode.Match, depth);
-//				return;
-//			}
+//		final Visual visual = drawable.getVisual();
+//
+//		// Check to see if we have a visual that can handle this depth
+//		if(visual.getDepth() != depth) {
+//			response.error(Response.ErrorCode.Match, depth);
+//			return;
 //		}
-		
+
 		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);
 		server.pixmapCreated(pixmap);
 	}

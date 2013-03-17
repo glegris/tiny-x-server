@@ -62,9 +62,51 @@ public class GraphicsContext extends AbstractResource {
 	private Font _font;	// TODO: Server dependent font
 	
 	private List<Integer> _dashes = new ArrayList<Integer>();		// Default (4,4) Added in constructor
-			
 
+	/** 
+	 * These values have been tagged in to allow for additional information from polyfillrect, etc to pass relevant drawing information
+	 * in the graphics context
+	 */
+	private int graphicsOperationX;
+	private int graphicsOperationY;
+	private int graphicsOperationWidth;
+	private int graphicsOperationHeight;
 	
+	
+	
+	
+	public int getGraphicsOperationX() {
+		return graphicsOperationX;
+	}
+
+	public void setGraphicsOperationX(int graphicsOperationX) {
+		this.graphicsOperationX = graphicsOperationX;
+	}
+
+	public int getGraphicsOperationY() {
+		return graphicsOperationY;
+	}
+
+	public void setGraphicsOperationY(int graphicsOperationY) {
+		this.graphicsOperationY = graphicsOperationY;
+	}
+
+	public int getGraphicsOperationWidth() {
+		return graphicsOperationWidth;
+	}
+
+	public void setGraphicsOperationWidth(int graphicsOperationWidth) {
+		this.graphicsOperationWidth = graphicsOperationWidth;
+	}
+
+	public int getGraphicsOperationHeight() {
+		return graphicsOperationHeight;
+	}
+
+	public void setGraphicsOperationHeight(int graphicsOperationHeight) {
+		this.graphicsOperationHeight = graphicsOperationHeight;
+	}
+
 	public void setForegroundColour(final int value) {
 		_foregroundColour = value;
 	}

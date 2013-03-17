@@ -69,10 +69,10 @@ public class PutImage implements RequestHandler {
 		inputStream.skip(2);
 
 		// TODO This test does not seem correct (Weird X doesn't do this check!)
-		//		if(depth != drawable.getDepth() && (imageType.equals(ImageType.XYPixmap) || imageType.equals(ImageType.ZPixmap))) {
-		//			response.error(Response.ErrorCode.Match, drawableResourceId);/
-		//			return;
-		//		}
+//		if(depth != destDrawable.getDepth() && (imageType.equals(ImageType.XYPixmap) || imageType.equals(ImageType.ZPixmap))) {
+//			response.error(Response.ErrorCode.Match, drawableResourceId);
+//			return;
+//		}
 
 		// Image must also be in XY Format?
 		if (imageType.equals(ImageType.BitMap) && depth != 1) {

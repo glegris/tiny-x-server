@@ -19,6 +19,8 @@
 package com.liaquay.tinyx.renderers.awt;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.liaquay.tinyx.TinyXServer;
 import com.liaquay.tinyx.events.EventFactoriesImpl;
@@ -142,7 +144,42 @@ public class TinyXAwt {
 			}
 		});
 		
-		final Visual visual = server.createVisual(new ResourceFactory<Visual>() {
+		final Visual trueColor24 = server.createVisual(new ResourceFactory<Visual>() {
+			@Override
+			public Visual create(final int resourceId) {
+				return new Visual(
+						resourceId, 
+						24,
+						BackingStoreSupport.BackingStoreNever,
+						VisualClass.TrueColor, 
+						8,  // Bits Per RGB
+						256, // TODO How do colour maps relate to visuals
+						0x00ff0000, // Red mask
+						0x0000ff00, // Green mask
+						0x000000ff  // Blue mask
+						);
+			}
+		});
+
+		final Visual directColor24 = server.createVisual(new ResourceFactory<Visual>() {
+			@Override
+			public Visual create(final int resourceId) {
+				return new Visual(
+						resourceId, 
+						24,
+						BackingStoreSupport.BackingStoreNever,
+						VisualClass.DirectColor, 
+						8,  // Bits Per RGB
+						256, // TODO How do colour maps relate to visuals
+						0x00ff0000, // Red mask
+						0x0000ff00, // Green mask
+						0x000000ff  // Blue mask
+						);
+			}
+		});
+
+
+		final Visual directColor32 = server.createVisual(new ResourceFactory<Visual>() {
 			@Override
 			public Visual create(final int resourceId) {
 				return new Visual(
@@ -159,9 +196,19 @@ public class TinyXAwt {
 			}
 		});
 
+	
 		final Depths depths = new Depths();
-		depths.add(visual);
+		
+		depths.add(new Depths.Depth(1));
+		depths.add(new Depths.Depth(4));
+		depths.add(new Depths.Depth(8));
+		depths.add(new Depths.Depth(15));
+		depths.add(new Depths.Depth(16));
+		depths.add(trueColor24);
+		depths.add(directColor24);
+		depths.add(directColor32);
 
+		
 		final ColorMap defaultColorMap = server.createColorMap(new ResourceFactory<ColorMap>() {
 			@Override
 			public ColorMap create(final int resourceId) {
@@ -175,8 +222,8 @@ public class TinyXAwt {
 				return new Screen(
 						resourceId, 
 						defaultColorMap,
-						visual,
-						32,
+						trueColor24,
+						24,
 						1024,
 						800,
 						1024,
