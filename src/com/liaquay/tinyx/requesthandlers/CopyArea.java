@@ -55,11 +55,12 @@ public class CopyArea implements RequestHandler {
 			return;	
 		}
 
-		// Both drawables need to have the same depth
-		if (s.getDepth() != d.getDepth()) {
-			response.error(ErrorCode.Match, d.getId());
-			return;	
-		}
+		//TODO: Re-enable at some point!!
+//		// Both drawables need to have the same depth
+//		if (s.getDepth() != d.getDepth()) {
+//			response.error(ErrorCode.Match, d.getId());
+//			return;	
+//		}
 
 		// Both drawables need to be on the same root window
 		if (!s.getScreen().getRootWindow().equals(d.getScreen().getRootWindow())) {
