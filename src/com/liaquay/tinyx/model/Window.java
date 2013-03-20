@@ -1075,28 +1075,112 @@ public class Window extends Drawable {
 		_buttonGrabs.remove(buttonGrab.getTrigger());
 	}	
 
+	public int getChildWindowIndex(final Window child) {
+		int childIndex = 0;
+		for(; childIndex < _children.size() ; ++childIndex) {
+			final Window c =  _children.get(childIndex);
+			if(c == child) break;
+		}
+		if(childIndex < _children.size()) {
+			return childIndex;
+		}
+		else {
+			return -1;
+		}
+	}
 	
-	public void setSize(
+	public void configure(
 			final int x, 
 			final int y, 
 			final int width, 
 			final int height, 
 			final int borderWidth, 
-			final int stackMode) {
+			final StackMode stackMode,
+			final Window siblingWindow) {
 		
 		_x = x;
 		_y = y;
 		_widthPixels = width;
 		_heightPixels = height;
 		_borderWidth = borderWidth;
-		
-		//TODO: Determine the stacking code.
-		final StackMode stackingMode = StackMode.getFromIndex(stackMode);
-		
+
+		if(stackMode != null && _parent != null) {
+
+			if(siblingWindow != null && _parent.getChildWindowIndex(siblingWindow) > 0) {
+
+				switch(stackMode) {
+				case Above: {
+					_parent._children.remove(this);
+					final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+					_parent._children.add(siblingIndex+1, this);
+					break;
+				}
+				case Below: {
+					_parent._children.remove(this);
+					final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+					_parent._children.add(siblingIndex, this);
+					break;
+				}
+				case BottomIf:{
+					// TODO
+					break;
+				}
+				case Opposite:{
+					// TODO
+					break;
+				}
+				case TopIf:{
+					// TODO
+					break;
+				}
+				}
+
+
+			}
+			else {
+				switch(stackMode) {
+				case Above: {
+					_parent._children.remove(this);
+					_parent._children.add(this);
+					break;
+				}
+				case Below: {
+					_parent._children.remove(this);
+					_parent._children.add(0, this);
+					break;
+				}
+				case BottomIf:{
+					for(int i = 0; i < _parent._children.size() ; ++i) {
+						final Window c = _parent._children.get(i);
+						if(c != this && c.overlaps(this)) {
+							_parent._children.remove(this);
+							_parent._children.add(0, this);
+							break;
+						}
+					}
+					break;
+				}
+				case Opposite:{
+					// TODO
+					break;
+				}
+				case TopIf:{
+					// TODO
+					break;
+				}
+				}				
+			}
+		}
+
 		updateLocation();
 		
-		// TODO Events eyc.
+		// TODO Events etc.
 		_parent.redraw(); // TODO somewhat over the top!
+	}
+
+	private boolean overlaps(final Window window) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override

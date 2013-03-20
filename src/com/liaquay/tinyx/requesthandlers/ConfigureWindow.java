@@ -27,6 +27,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.model.Window.StackMode;
 
 public class ConfigureWindow implements RequestHandler {
 
@@ -53,7 +54,7 @@ public class ConfigureWindow implements RequestHandler {
 		int height = window.getHeight();
 		int borderWidth = window.getBorderWidth();
 		Window siblingWindow = null;
-		int stackMode = 0;
+		StackMode stackMode = null;
 		
 		if((mask & 0x01) != 0) {
 			x = inputStream.readSignedShort();
@@ -84,15 +85,15 @@ public class ConfigureWindow implements RequestHandler {
 			}
 		}	
 		if((mask & 0x40) != 0) {
-			stackMode = inputStream.readUnsignedByte();
+			final int stackModeIndex = inputStream.readUnsignedByte();
 			inputStream.skip(3);
-			// 0 - Above
-			// 1 - Below
-			// 2 - TopIf
-			// 3 - BottomIf
-			// 4 - Opposite
-			//
-			//
+
+			stackMode = StackMode.getFromIndex(stackModeIndex);
+			
+			if(stackMode == null) {
+				response.error(Response.ErrorCode.Match, stackModeIndex);			
+				return;
+			}
 			
 			System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
 					request.getMajorOpCode(), 
@@ -101,11 +102,6 @@ public class ConfigureWindow implements RequestHandler {
 					request.getSequenceNumber()));		
 		}	
 		
-		if(siblingWindow != null) {
-
-			System.out.println("ConfigureWindow stacking/sibling handling needs to be implemented");
-		}
-		
-		window.setSize(x, y, width, height, borderWidth, stackMode);
+		window.configure(x, y, width, height, borderWidth, stackMode, siblingWindow);
 	}
 }

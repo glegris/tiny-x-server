@@ -62,8 +62,8 @@ public class Server extends Client {
 	private final List<Screen> _screens = new ArrayList<Screen>(2);
 	private final Resources _resources = new Resources();
 	private final Atoms _atoms = new Atoms();
-	private final ByteOrder _imageByteOrder = ByteOrder.MSB;		// XFree was LSB
-	private final ByteOrder _bitmapBitOrder = ByteOrder.LSB;
+	private final ByteOrder _imageByteOrder = ByteOrder.LSB;		// XFree was LSB
+	private final ByteOrder _bitmapBitOrder = ByteOrder.MSB;
 	private final int _bitmapScanLineUnit = 32; 
 	private final int _bitmapScanLinePad = 32; 
 

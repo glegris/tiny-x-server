@@ -26,10 +26,10 @@ public class ByteImage extends ImageBase implements TinyXImage {
 
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
+					byte a = (byte) bais.read();
 					byte r = (byte) bais.read();
 					byte g = (byte) bais.read();
 					byte b = (byte) bais.read();
-					byte a = (byte) bais.read();
 					image[pos++] = (byte) (255 - a);		// Alpha
 					image[pos++] = (byte) b;		// Blue
 					image[pos++] = (byte) g;		// Green
