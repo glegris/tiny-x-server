@@ -94,13 +94,7 @@ public class ConfigureWindow implements RequestHandler {
 				response.error(Response.ErrorCode.Match, stackModeIndex);			
 				return;
 			}
-			
-			System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-					request.getMajorOpCode(), 
-					request.getData(),
-					request.getLength(),
-					request.getSequenceNumber()));		
-		}	
+		}
 		
 		window.configure(x, y, width, height, borderWidth, stackMode, siblingWindow);
 	}
