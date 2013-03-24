@@ -1089,6 +1089,134 @@ public class Window extends Drawable {
 		}
 	}
 	
+	private boolean above(final Window siblingWindow) {
+		final int childIndex = _parent.getChildWindowIndex(this);
+		_parent._children.remove(this);
+		final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+		_parent._children.add(siblingIndex+1, this);
+		return childIndex !=  _parent.getChildWindowIndex(this);
+	}
+	
+	private boolean below(final Window siblingWindow) {
+		final int childIndex = _parent.getChildWindowIndex(this);
+		_parent._children.remove(this);
+		final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+		_parent._children.add(siblingIndex, this);
+		return childIndex !=  _parent.getChildWindowIndex(this);
+	}
+	
+	private boolean bottomIf(final Window siblingWindow) {
+		if(siblingWindow.overlaps(this)) {
+			final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+			final int childIndex = _parent.getChildWindowIndex(this);
+			if(childIndex>siblingIndex) {
+				_parent._children.remove(this);
+				_parent._children.add(0, this);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean opposite(final Window siblingWindow) {
+		if(siblingWindow.overlaps(this)) {
+			final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+			final int childIndex = _parent.getChildWindowIndex(this);
+			if(childIndex<siblingIndex) {
+				_parent._children.remove(this);
+				_parent._children.add(this);
+				return true;
+			}
+			else {
+				_parent._children.remove(this);
+				_parent._children.add(0, this);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean topIf(final Window siblingWindow) {
+		if(siblingWindow.overlaps(this)) {
+			final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
+			final int childIndex = _parent.getChildWindowIndex(this);
+			if(childIndex<siblingIndex) {
+				_parent._children.remove(this);
+				_parent._children.add(this);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean above() {
+		final int childIndex = _parent.getChildWindowIndex(this);
+		if(childIndex == _parent._children.size() -1) return false;
+		_parent._children.remove(this);
+		_parent._children.add(this);
+		return true;
+	}
+
+	private boolean below() {
+		final int childIndex = _parent.getChildWindowIndex(this);
+		if(childIndex == 0) return false;
+		_parent._children.remove(this);
+		_parent._children.add(0, this);
+		return true;
+	}	
+	private boolean bottomIf() {
+		for(int i = 0; i < _parent._children.size() ; ++i) {
+			final Window c = _parent._children.get(i);
+			if(c == this) break;
+			if(c.overlaps(this)) {
+				_parent._children.remove(this);
+				_parent._children.add(0, this);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean opposite() {
+		boolean underThis = false;
+		for(int i = _parent._children.size()-1; i >= 0 ; --i) {
+			final Window c = _parent._children.get(i);
+			if(c == this) { 
+				underThis = false;
+			}
+			else {
+				if(c.overlaps(this)) {
+					if(underThis) {
+						// If the window occludes any sibling, then the window is placed at the bottom of the stack
+						_parent._children.remove(this);
+						_parent._children.add(0, this);
+						return true;
+					}
+					else {
+						// If any sibling occludes window, then the window is placed at the top of the stack. 
+						_parent._children.remove(this);
+						_parent._children.add(this);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean topIf() {
+		final int childIndex = _parent.getChildWindowIndex(this);
+		for(int i = childIndex+1; i < _parent._children.size() ; ++i) {
+			final Window c = _parent._children.get(i);
+			if(c.overlaps(this)) {
+				_parent._children.remove(this);
+				_parent._children.add(this);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void configure(
 			final int x, 
 			final int y, 
@@ -1097,6 +1225,13 @@ public class Window extends Drawable {
 			final int borderWidth, 
 			final StackMode stackMode,
 			final Window siblingWindow) {
+		
+		boolean changed = 
+				_x != x ||
+				_y != y ||
+				_widthPixels != width ||
+				_heightPixels != height ||
+				_borderWidth != borderWidth;
 		
 		_x = x;
 		_y = y;
@@ -1110,52 +1245,23 @@ public class Window extends Drawable {
 
 				switch(stackMode) {
 				case Above: {
-					_parent._children.remove(this);
-					final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
-					_parent._children.add(siblingIndex+1, this);
+					changed |= above(siblingWindow);
 					break;
 				}
 				case Below: {
-					_parent._children.remove(this);
-					final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
-					_parent._children.add(siblingIndex, this);
+					changed |= below(siblingWindow);
 					break;
 				}
 				case BottomIf:{
-					if(siblingWindow.overlaps(this)) {
-						final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
-						final int childIndex = _parent.getChildWindowIndex(this);
-						if(childIndex>siblingIndex) {
-							_parent._children.remove(this);
-							_parent._children.add(0, this);
-						}
-					}
+					changed |= bottomIf(siblingWindow);
 					break;
 				}
 				case Opposite:{
-					if(siblingWindow.overlaps(this)) {
-						final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
-						final int childIndex = _parent.getChildWindowIndex(this);
-						if(childIndex<siblingIndex) {
-							_parent._children.remove(this);
-							_parent._children.add(this);
-						}
-						else {
-							_parent._children.remove(this);
-							_parent._children.add(0, this);
-						}
-					}
+					changed |= opposite(siblingWindow);
 					break;
 				}
 				case TopIf:{
-					if(siblingWindow.overlaps(this)) {
-						final int siblingIndex = _parent.getChildWindowIndex(siblingWindow);
-						final int childIndex = _parent.getChildWindowIndex(this);
-						if(childIndex<siblingIndex) {
-							_parent._children.remove(this);
-							_parent._children.add(this);
-						}
-					}
+					changed |= topIf(siblingWindow);
 					break;
 				}
 				}
@@ -1163,73 +1269,35 @@ public class Window extends Drawable {
 			else {
 				switch(stackMode) {
 				case Above: {
-					_parent._children.remove(this);
-					_parent._children.add(this);
+					changed |= above();
 					break;
 				}
 				case Below: {
-					_parent._children.remove(this);
-					_parent._children.add(0, this);
+					changed |= below();
 					break;
 				}
 				case BottomIf:{
-					for(int i = 0; i < _parent._children.size() ; ++i) {
-						final Window c = _parent._children.get(i);
-						if(c == this) break;
-						if(c.overlaps(this)) {
-							_parent._children.remove(this);
-							_parent._children.add(0, this);
-							break;
-						}
-					}
+					changed |= bottomIf();
 					break;
 				}
 				case Opposite:{
-					boolean underThis = false;
-					for(int i = _parent._children.size()-1; i >= 0 ; --i) {
-						final Window c = _parent._children.get(i);
-						if(c == this) { 
-							underThis = false;
-						}
-						else {
-							if(c.overlaps(this)) {
-								if(underThis) {
-									// If the window occludes any sibling, then the window is placed at the bottom of the stack
-									_parent._children.remove(this);
-									_parent._children.add(0, this);
-									break;
-								}
-								else {
-									// If any sibling occludes window, then the window is placed at the top of the stack. 
-									_parent._children.remove(this);
-									_parent._children.add(this);
-									break;
-								}
-							}
-						}
-					}
+					changed |= opposite();
 					break;
 				}
 				case TopIf:{
-					final int childIndex = _parent.getChildWindowIndex(this);
-					for(int i = childIndex+1; i < _parent._children.size() ; ++i) {
-						final Window c = _parent._children.get(i);
-						if(c.overlaps(this)) {
-							_parent._children.remove(this);
-							_parent._children.add(this);
-							break;
-						}
-					}
+					changed |= topIf();
 					break;
 				}
 				}
 			}
 		}
 
-		updateLocation();
-		
-		// TODO Events etc.
-		_parent.redraw(); // TODO somewhat over the top!
+		if(changed) {
+			updateLocation();
+
+			// TODO Events etc.
+			_parent.redraw(); // TODO somewhat over the top!
+		}
 	}
 
 	private boolean overlaps(final Window window) {
