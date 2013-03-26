@@ -25,7 +25,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -33,6 +32,7 @@ import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -43,6 +43,7 @@ import com.liaquay.tinyx.model.Format;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
+import com.liaquay.tinyx.model.Rectangle;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.renderers.awt.gc.CopyPlaneComposite;
 import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
@@ -181,43 +182,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		ByteImage bi = new ByteImage(width, height, planes);
 		bi.setData(buffer);
 
-		Graphics sg = getGraphics();//graphicsContext);
+		Graphics sg = getGraphics(graphicsContext);
 		sg.drawImage(ImageConverter.convertByteImage(bi), destinationX, destinationY, width, height, null);
 	}
-
-	//	/** nibbles in.. bytes out */
-	//	byte[] newBuffer(byte[] buffer) {
-	//		byte[] newBuffer = new byte[buffer.length/4];
-	//
-	//		int a = 0;
-	//		int i = 0;
-	//		while (i < buffer.length) {
-	//			// For each nibble in the source stream, convert to a single bit in the output stream
-	//			byte out = 0;
-	//
-	//			out+= (byte) (buffer[i] & 16) << 3;
-	//			out+= (byte) (buffer[i] & 1) << 6;
-	//			i++;
-	//
-	//			out+= (byte) (buffer[i] & 16) << 1;
-	//			out+= (byte) (buffer[i] & 1) << 4;
-	//			i++;
-	//
-	//			out+= (byte) (buffer[i] & 16) >> 1;
-	//			out+= (byte) (buffer[i] & 1) << 2;
-	//			i++;
-	//
-	//			out+= (byte) (buffer[i] & 16) >> 3;
-	//			out+= (byte) (buffer[i] & 1);
-	//			i++;
-	//
-	//			newBuffer[a++] = out;
-	//		}
-	//
-	//		return newBuffer;
-	//
-	//	}
-
 
 	BufferedImage createCompatibleImage(BufferedImage image, Composite composite)
 	{
@@ -274,9 +241,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 					bpp = f.getBpp();
 				}
 			}
-			
+
 			int size = (width * height * bpp)/8;
-			
+
 			LOGGER.severe("Size in bytes: " + size + " Depth: " + bpp +  Integer.toHexString(size));
 
 			byte[] byteArr = new byte[size];
@@ -378,12 +345,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	@Override
-	public void polyRect(
+	public void polyRectangle(
 			final GraphicsContext graphicsContext,
-			final int x,
-			final int y,
-			final int width,
-			final int height, 
+			final Collection<Rectangle> rectangles,
 			final boolean fill) {
 
 		//		            function: Copy
@@ -393,10 +357,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		//		          fill-style: Stippled
 		//		             stipple: PXM 0040000a
 
-		graphicsContext.setGraphicsOperationX(x);
-		graphicsContext.setGraphicsOperationY(y);
-		graphicsContext.setGraphicsOperationHeight(height);
-		graphicsContext.setGraphicsOperationWidth(width);
+		//		graphicsContext.setGraphicsOperationX(x);
+		//		graphicsContext.setGraphicsOperationY(y);
+		//		graphicsContext.setGraphicsOperationHeight(height);
+		//		graphicsContext.setGraphicsOperationWidth(width);
 
 		final Graphics2D graphics = getGraphics(graphicsContext);
 
@@ -413,29 +377,31 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
 
-			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
+			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
 			graphics.setPaint(tp);
 		}
 
 
-		//TODO: This needs to clip and not just the same as the others!
-		//		Pixmap clipPixmap = graphicsContext.getClipMask();
-		//
-		//		if (clipPixmap != null) {
-		//
-		//			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
-		//			final BufferedImage srcImage = awtDrawable.getImage();
-		//
-		//			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, x, y));
-		//
-		//			TexturePaint tp = new TexturePaint(output, new Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
-		//			graphics.setPaint(tp);
-		//		}
+		//				TODO: This needs to clip and not just the same as the others!
+		Pixmap clipPixmap = graphicsContext.getClipMask();
 
-		if (fill) {
-			graphics.fillRect(x, y, width, height);
-		} else {
-			graphics.drawRect(x, y, width, height);
+		if (clipPixmap != null) {
+
+			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
+			final BufferedImage srcImage = awtDrawable.getImage();
+
+			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
+
+			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
+			graphics.setPaint(tp);
+		}
+
+		for (Rectangle r : rectangles) {
+			if (fill) {
+				graphics.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+			} else {
+				graphics.drawRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+			}
 		}
 	}
 
@@ -478,4 +444,6 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		graphics.fillPolygon(x, y, x.length);
 	}
+
+
 }

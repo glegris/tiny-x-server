@@ -18,6 +18,8 @@
  */
 package com.liaquay.tinyx.model;
 
+import java.util.Collection;
+
 import com.liaquay.tinyx.model.Image.ImageType;
 
 
@@ -30,7 +32,7 @@ public abstract class Drawable implements Resource {
 		public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer, int width, int height,int destinationX, int destinationY, int leftPad, int depth);
 		public void createImage(Drawable drawable);
 		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY,int width, int height, int dstX, int dstY);
-		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean b);
+		public void polyRectangle(GraphicsContext graphicsContext, Collection<Rectangle> rectangles, boolean b);
 		public void polyFill(GraphicsContext graphicsContext, int x[], int y[]);
 		public void polyLine(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords);
 		public void drawLine(GraphicsContext graphicsContext, int[] xCoords1, int[] yCoords1, int[] xCoords2, int[] yCoords2);
@@ -53,7 +55,7 @@ public abstract class Drawable implements Resource {
 		@Override
 		public void copyPlane(Drawable s, GraphicsContext graphicsContext, int bitplane, int srcX, int srcY, int width, int height, int dstX, int dstY) {}
 		@Override
-		public void polyRect(GraphicsContext graphicsContext, int x, int y, int width, int height, boolean b) {}
+		public void polyRectangle(GraphicsContext graphicsContext, Collection<Rectangle> rectangles, boolean b) {}
 		@Override
 		public void polyLine(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords) {}
 		@Override
@@ -157,15 +159,12 @@ public abstract class Drawable implements Resource {
 		fontDetail.drawString(this, str, x, y, graphicsContext.getForegroundColour());
 	}
 	
-	public void polyRect(
+	public void polyRectangle(
 			final GraphicsContext graphicsContext, 
-			final int x, 
-			final int y,
-			final int width, 
-			final int height,
+			final Collection<Rectangle> rectangles, 
 			final boolean fill) {
 		
-		getDrawableListener().polyRect(graphicsContext, x, y, width, height, fill);
+		getDrawableListener().polyRectangle(graphicsContext, rectangles, fill);
 	}
 
 	public void polyLine(
@@ -218,4 +217,5 @@ public abstract class Drawable implements Resource {
 		
 		getDrawableListener().polyFill(graphicsContext, xCoords, yCoords);
 	}
+
 }

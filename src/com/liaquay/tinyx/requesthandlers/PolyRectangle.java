@@ -19,6 +19,8 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -27,6 +29,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Rectangle;
 import com.liaquay.tinyx.model.Server;
 
 public class PolyRectangle implements RequestHandler {
@@ -52,16 +55,19 @@ public class PolyRectangle implements RequestHandler {
 			return;
 		}
 
-		final int len = request.getLength();
+		final Collection<Rectangle> rectangles = new ArrayList<Rectangle>();
 
+		final int len = request.getLength();
 		for (int i=0; i < ((len-12)/8); i++) {
 			final int x = inputStream.readSignedShort();
 			final int y = inputStream.readSignedShort();
 
 			final int width = inputStream.readUnsignedShort();
 			final int height = inputStream.readUnsignedShort();
-
-			drawable.polyRect(graphicsContext, x, y, width, height, false);
+			
+			rectangles.add(new Rectangle(x, y, width, height));
 		}
+
+		drawable.polyRectangle(graphicsContext, rectangles, false);
 	}
 }

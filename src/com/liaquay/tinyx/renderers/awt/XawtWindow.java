@@ -23,10 +23,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Rectangle;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
@@ -73,7 +75,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final Pixmap m = cursor.getMaskPixmap();
 
 			//TODO: Create graphicsContext just to aid in the creation of the cursor image correctly.
-			
+
 			//			if (image != null) {
 			//				final Point hotSpot = new Point(cursor.getX(),cursor.getY());
 			//				final java.awt.Cursor c = toolkit.createCustomCursor(image, hotSpot, cursor.getId() + "");
@@ -111,19 +113,26 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 	@Override
-	public void polyRect(
-			final GraphicsContext graphicsContext, 
-			final int x, 
-			final int y,
-			final int width, 
-			final int height,
-			final boolean fill) {
+	public void polyRectangle(GraphicsContext graphicsContext, Collection<Rectangle> rectangles, boolean fill) {
+		super.polyRectangle(graphicsContext, rectangles, fill);
 
-		super.polyRect(graphicsContext, x, y, width, height, fill);
+		int x[] = new int[rectangles.size() * 2];
+		int xpos = 0;
+		
+		int y[] = new int[rectangles.size() * 2];
+		int ypos = 0;
+		
+		for (Rectangle r : rectangles) {
+			x[xpos++] = r.getX();
+			x[xpos++] = r.getX() + r.getWidth();
+			
+			y[ypos++] = r.getY();
+			y[ypos++] = r.getY() + r.getHeight();
+		}
 
-
-		updateCanvas(x, y, width, height);
+		updateCanvas(x, y);
 	}
+
 
 	@Override
 	public void polyFill(
@@ -180,13 +189,13 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	public Graphics2D getGraphics() {
 		final Graphics2D graphics = getBorderGraphics();
 		final int borderWidth = _window.getBorderWidth();
-		
+
 		graphics.setClip(
 				borderWidth, 
 				borderWidth,
 				_window.getWidthPixels(), 
 				_window.getHeightPixels());
-		
+
 		graphics.translate(borderWidth, borderWidth);
 		return graphics;
 	}
@@ -194,13 +203,13 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	private Graphics2D getBorderGraphics() {
 		final Graphics2D graphics = (Graphics2D) getImage().getGraphics();
 		final int borderWidth = _window.getBorderWidth();
-		
+
 		graphics.setClip(
 				_window.getClipX(), 
 				_window.getClipY(),
 				_window.getClipWidth(), 
 				_window.getClipHeight());
-		
+
 		graphics.translate(_window.getAbsX() - borderWidth, _window.getAbsY() - borderWidth);
 		return graphics;
 	}
@@ -252,9 +261,9 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		super.copyArea(destDrawable, graphicsContext, srcX, srcY, width, height, dstX,
 				dstY);
 
-//		if (graphicsContext.getGraphicsExposures()) {
-			updateCanvas(dstX, dstY, width, height);
-//		}
+		//		if (graphicsContext.getGraphicsExposures()) {
+		updateCanvas(dstX, dstY, width, height);
+		//		}
 	}
 
 
@@ -353,7 +362,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	public void free() {
 		_image = null;
 	}
-	
+
 	private void tileArea(
 			final int originX,
 			final int originY,
@@ -363,7 +372,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int height,
 			final Graphics2D graphics,
 			final Image image) {
-		
+
 		final int iw = image.getWidth(null);
 		final int ih = image.getHeight(null);
 		final int xm = x-originX % iw;
@@ -392,7 +401,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		drawBorder(graphics, w-borderWidth,borderWidth,borderWidth,_window.getHeight(),borderWindow);
 		drawBorder(graphics, 0,h-borderWidth,w,borderWidth,borderWindow);
 	}
-	
+
 	private BufferedImage _borderImage = null;
 
 	@Override
