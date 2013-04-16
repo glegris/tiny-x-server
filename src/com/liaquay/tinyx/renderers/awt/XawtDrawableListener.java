@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import com.liaquay.tinyx.model.Arc;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Format;
@@ -44,6 +45,7 @@ import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Rectangle;
+import com.liaquay.tinyx.model.Segment;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.renderers.awt.gc.CopyPlaneComposite;
 import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
@@ -423,16 +425,17 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		}
 	}
 
-	public void polyArc(GraphicsContext graphicsContext, int x, int y,
-			int width, int height, int angle1, int angle2, boolean fill) {
-		final Graphics2D graphics = getGraphics();
+	public void polyArc(GraphicsContext graphicsContext, Collection<Arc> arcs, boolean fill) {
+		final Graphics2D graphics = getGraphics(graphicsContext);
 		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 		graphics.setColor(new Color(rgb));
 
-		if (fill) {
-			graphics.fillArc(x, y, width, height, angle1, angle2);
-		} else {
-			graphics.drawArc(x, y, width, height, angle1, angle2);
+		for (Arc a : arcs) {
+			if (fill) {
+				graphics.fillArc(a.getX(), a.getY(), a.getWidth(), a.getHeight(), a.getAngle1(), a.getAngle2());
+			} else {
+				graphics.drawArc(a.getX(), a.getY(), a.getWidth(), a.getHeight(), a.getAngle1(), a.getAngle2());
+			}
 		}
 	}
 
@@ -443,6 +446,24 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		graphics.setColor(new Color(rgb));
 
 		graphics.fillPolygon(x, y, x.length);
+	}
+
+	@Override
+	public void drawSegments(GraphicsContext graphicsContext,
+			Collection<Segment> segments) {
+
+		final Graphics2D graphics = getGraphics(graphicsContext);
+		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+		graphics.setColor(new Color(rgb));
+
+		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+		//		Shape l = new Line2D.Float(x1, y1, x2, y2);
+		//		graphics.draw(stroke.createStrokedShape(l));
+		
+		for (Segment s : segments) {
+			graphics.drawLine(s.getX1(), s.getY1(), s.getX2(), s.getY2());
+		}		
 	}
 
 

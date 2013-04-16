@@ -39,8 +39,10 @@ public abstract class Drawable implements Resource {
 		public void drawLine(GraphicsContext graphicsContext, int x1, int y1, int x2, int y2);
 		public void polyPoint(GraphicsContext graphicsContext, int[] xCoords, int[] yCoords);
 		public byte[] getImageData(int x, int y, int width, int height, ImageType imageType, int planeMask);
-		public void polyArc(GraphicsContext graphicsContext, int x, int y, int width, int height, int angle1, int angle2, boolean fill);
+		public void polyArc(GraphicsContext graphicsContext, Collection<Arc> arcs, boolean fill);
 		public void free();
+		public void drawSegments(GraphicsContext graphicsContext,
+				Collection<Segment> segments);
 	}
 	
 	protected static class NullListener implements Listener {
@@ -73,7 +75,13 @@ public abstract class Drawable implements Resource {
 		@Override
 		public void free() {}
 		@Override
-		public void polyArc(GraphicsContext graphicsContext, int x, int y,int width, int height, int angle1, int angle2, boolean fill) {}
+		public void polyArc(GraphicsContext graphicsContext, Collection<Arc> arcs, boolean fill) {}
+		@Override
+		public void drawSegments(GraphicsContext graphicsContext,
+				Collection<Segment> segments) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	public abstract Listener getDrawableListener();
@@ -113,15 +121,10 @@ public abstract class Drawable implements Resource {
 	
 	public void polyArc(
 			final GraphicsContext graphicsContext, 
-			final int x, 
-			final int y,
-			final int width,
-			final int height, 
-			final int angle1, 
-			final int angle2, 
+			final Collection<Arc> arcs,
 			final boolean fill) {
 		
-		getDrawableListener().polyArc(graphicsContext, x, y, width, height, angle1, angle2,fill);
+		getDrawableListener().polyArc(graphicsContext, arcs, fill);
 	}
 	
 	public void drawLine(
@@ -216,6 +219,12 @@ public abstract class Drawable implements Resource {
 			final int[] yCoords) {
 		
 		getDrawableListener().polyFill(graphicsContext, xCoords, yCoords);
+	}
+
+	public void drawSegments(GraphicsContext graphicsContext,
+			Collection<Segment> segments) {
+		
+		getDrawableListener().drawSegments(graphicsContext, segments);
 	}
 
 }

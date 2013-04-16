@@ -19,11 +19,14 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
+import com.liaquay.tinyx.model.Arc;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
@@ -52,9 +55,10 @@ public class PolyArc implements RequestHandler {
 			return;
 		}
 
-		final int lne = request.getLength();
-
-		for (int i=0; i < ((lne-12)/12); i++) {
+		final Collection<Arc> arcs = new ArrayList<Arc>();
+		
+		final int len = request.getLength();
+		for (int i=0; i < ((len-12)/12); i++) {
 
 			final int x = inputStream.readSignedShort();
 			final int y = inputStream.readSignedShort();
@@ -65,7 +69,9 @@ public class PolyArc implements RequestHandler {
 			final int angle1 = inputStream.readSignedShort();
 			final int angle2 = inputStream.readSignedShort();
 
-			drawable.polyArc(graphicsContext, x, y, width, height, angle1, angle2, false);
+			arcs.add(new Arc(x, y, width, height, angle1, angle2));
 		}
+		
+		drawable.polyArc(graphicsContext, arcs, false);
 	}
 }

@@ -96,21 +96,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		updateCanvas();
 	}
 
-	@Override
-	public void polyArc(
-			final GraphicsContext graphicsContext, 
-			final int x, 
-			final int y,
-			final int width,
-			final int height,
-			final int angle1, 
-			final int angle2,
-			final boolean fill) {
-
-		super.polyArc(graphicsContext, x, y, width, height, angle1, angle2, fill);
-
-		updateCanvas(x, y, width, height);
-	}
+//	@Override
+//	public void polyArc(
+//			final GraphicsContext graphicsContext, 
+//			final Collection<Arc> arcs,
+//			final boolean fill) {
+//
+//		super.polyArc(graphicsContext, arcs, fill);
+//
+////		updateCanvas(x, y, width, height);
+//	}
 
 	@Override
 	public void polyRectangle(GraphicsContext graphicsContext, Collection<Rectangle> rectangles, boolean fill) {

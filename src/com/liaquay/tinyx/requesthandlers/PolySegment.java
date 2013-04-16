@@ -19,6 +19,8 @@
 package com.liaquay.tinyx.requesthandlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
@@ -27,6 +29,7 @@ import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Segment;
 import com.liaquay.tinyx.model.Server;
 
 public class PolySegment implements RequestHandler {
@@ -56,20 +59,17 @@ public class PolySegment implements RequestHandler {
 
 		final int numSegments = ((len-12)/8);
 
-		final int xCoords1[] = new int[numSegments];
-		final int yCoords1[] = new int[numSegments];
-		final int xCoords2[] = new int[numSegments];
-		final int yCoords2[] = new int[numSegments];
-
+		Collection<Segment> segments = new ArrayList<Segment>();
 		for (int i=0; i < numSegments; i++) {
-			xCoords1[i] = inputStream.readSignedShort();
-			yCoords1[i] = inputStream.readSignedShort();
-			xCoords2[i] = inputStream.readSignedShort();
-			yCoords2[i] = inputStream.readSignedShort();
+			Segment s = new Segment();
+			s.setX1(inputStream.readSignedShort());
+			s.setY1(inputStream.readSignedShort());
+			s.setX2(inputStream.readSignedShort());
+			s.setY2(inputStream.readSignedShort());
+			
+			segments.add(s);
 		}
 
-		for (int i=0; i < numSegments; i++) {
-			drawable.drawLine(graphicsContext, xCoords1[i], yCoords1[i], xCoords2[i], yCoords2[i]);
-		}
+		drawable.drawSegments(graphicsContext, segments);
 	}
 }
