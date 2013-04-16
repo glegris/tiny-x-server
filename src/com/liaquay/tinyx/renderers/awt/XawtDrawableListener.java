@@ -58,8 +58,6 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	final Drawable _drawable;
 
-	public abstract Graphics2D getGraphics(GraphicsContext gc);
-
 	public abstract Graphics2D getGraphics();
 
 	public abstract BufferedImage getImage();
@@ -108,6 +106,61 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		}
 	}
 
+	public Graphics2D getGraphics(GraphicsContext graphicsContext,
+			int supportedModes) {
+
+		Graphics2D g = getGraphics();
+		
+		Pixmap tilePixmap = graphicsContext.getTile();
+
+		if (tilePixmap != null && (supportedModes & GCTile) > 0 && (FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Tiled)) {
+
+			final XawtDrawableListener awtDrawable = (XawtDrawableListener) tilePixmap.getDrawableListener();
+			final BufferedImage srcImage = awtDrawable.getImage();
+
+			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
+
+			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
+			g.setPaint(tp);
+		}
+		
+
+		//				TODO: This needs to clip and not just the same as the others!
+		Pixmap clipPixmap = graphicsContext.getClipMask();
+
+		if (clipPixmap != null && (supportedModes & GCClipMask) > 0) {
+			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
+			final BufferedImage srcImage = awtDrawable.getImage();
+
+			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
+
+			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
+			g.setPaint(tp);
+		}
+
+		
+		if ((supportedModes & GCForeground) > 0) {
+			final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+			g.setColor(new Color(rgb));
+		}
+		
+		if ((supportedModes & GCBackground) > 0) {
+			final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour());
+			g.setBackground(new Color(rgb));
+		}
+
+		if (graphicsContext != null) {
+			g.setComposite(new GraphicsContextComposite(graphicsContext, _drawable));
+		}		
+
+		
+		return g;
+	}
+
+	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
+		return getGraphics(graphicsContext, 0);
+	}
+	
 	@Override
 	public abstract void createImage(Drawable drawable);
 
@@ -219,6 +272,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		if (planeMask == 0xffffffff && imageType.equals(ImageType.ZPixmap)) {
 
+			//		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
+			//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+			//		graphics.draw(stroke.createStrokedShape(s));
+
 			int size = (width * height * _drawable.getDepth())/8;
 
 			byte[] byteArr = new byte[size];
@@ -264,17 +321,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
 			int[] yCoords) {
-		final Graphics2D graphics = getGraphics(graphicsContext);
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | GCDashList;
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
-		//		XAwtGraphicsContext.tile(graphics, graphicsContext);
-
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		//		Shape s = new Polygon(xCoords, yCoords, xCoords.length);
-		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
-		//		graphics.draw(stroke.createStrokedShape(s));
 		graphics.drawPolygon(xCoords, yCoords, xCoords.length);
 	}
 
@@ -282,19 +331,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void drawLine(GraphicsContext graphicsContext, int[] x1, int[] y1,
 			int[] x2, int[] y2) {
 
-		final Graphics2D graphics = getGraphics(graphicsContext);
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-		//		XAwtGraphicsContext.tile(graphics, graphicsContext);
-
-		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | GCDashList;
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
 		for (int i = 0; i < x1.length; i++) {
-			//						Shape l = new Line2D.Float(x1[i], y1[i], x2[i], y2[i]);
-			//						graphics.draw(stroke.createStrokedShape(l));
 			graphics.drawLine(x1[i], y1[i], x2[i], y2[i]);
 		}
 	}
@@ -302,14 +342,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	@Override
 	public void drawLine(GraphicsContext graphicsContext, int x1, int y1,
 			int x2, int y2) {
-		final Graphics2D graphics = getGraphics(graphicsContext);
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | GCDashList;
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
-		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
-		//		Shape l = new Line2D.Float(x1, y1, x2, y2);
-		//		graphics.draw(stroke.createStrokedShape(l));
 		graphics.drawLine(x1, y1, x2, y2);
 	}
 
@@ -364,39 +400,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		//		graphicsContext.setGraphicsOperationHeight(height);
 		//		graphicsContext.setGraphicsOperationWidth(width);
 
-		final Graphics2D graphics = getGraphics(graphicsContext);
-
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
-
-
-		Pixmap tilePixmap = graphicsContext.getTile();
-
-		if (tilePixmap != null && (FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Tiled)) {
-
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener) tilePixmap.getDrawableListener();
-			final BufferedImage srcImage = awtDrawable.getImage();
-
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
-
-			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
-			graphics.setPaint(tp);
-		}
-
-
-		//				TODO: This needs to clip and not just the same as the others!
-		Pixmap clipPixmap = graphicsContext.getClipMask();
-
-		if (clipPixmap != null) {
-
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
-			final BufferedImage srcImage = awtDrawable.getImage();
-
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
-
-			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
-			graphics.setPaint(tp);
-		}
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | 
+				GCDashList | GCFunction | GCPlaneMask | GCLineWidth | GCLineStyle | GCCapStyle | GCJoinStyle | GCFillStyle | GCSubwindowMode | GCClipXOrigin | GCClipYOrigin | GCClipMask;
+		
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
 		for (Rectangle r : rectangles) {
 			if (fill) {
@@ -412,10 +419,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			int[] yCoords) {
 
 		int supportedModes = GCFunction | GCPlaneMask | GCForeground | GCSubwindowMode | GCClipXOrigin | GCClipYOrigin | GCClipMask;
-
-		final Graphics2D graphics = getGraphics();
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
 		for (int i=0; i < xCoords.length; i++) {
 			int x = xCoords[i];
@@ -426,9 +430,8 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	public void polyArc(GraphicsContext graphicsContext, Collection<Arc> arcs, boolean fill) {
-		final Graphics2D graphics = getGraphics(graphicsContext);
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | GCDashList;
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
 		for (Arc a : arcs) {
 			if (fill) {
@@ -440,10 +443,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	public void polyFill(GraphicsContext graphicsContext, int[] x, int[] y) {
-		final Graphics2D graphics = getGraphics();
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin ;
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
 		graphics.fillPolygon(x, y, x.length);
 	}
@@ -452,15 +454,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public void drawSegments(GraphicsContext graphicsContext,
 			Collection<Segment> segments) {
 
-		final Graphics2D graphics = getGraphics(graphicsContext);
-		//graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-		graphics.setColor(new Color(rgb));
+		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | GCDashList;
+		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
-		//		Stroke stroke = XAwtGraphicsContext.lineSetup(graphics, graphicsContext);
-		//		Shape l = new Line2D.Float(x1, y1, x2, y2);
-		//		graphics.draw(stroke.createStrokedShape(l));
-		
 		for (Segment s : segments) {
 			graphics.drawLine(s.getX1(), s.getY1(), s.getX2(), s.getY2());
 		}		

@@ -29,6 +29,7 @@ import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Rectangle;
+import com.liaquay.tinyx.model.Segment;
 import com.liaquay.tinyx.model.Image.ImageType;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
@@ -140,6 +141,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		updateCanvas(xCoords, yCoords);
 	}
 
+
+	@Override
+	public void drawSegments(GraphicsContext graphicsContext,
+			Collection<Segment> segments) {
+
+		super.drawSegments(graphicsContext, segments);
+
+		updateCanvas(segments);
+	}
+	
 	@Override
 	public void polyLine(
 			final GraphicsContext graphicsContext, 
@@ -171,13 +182,10 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		updateCanvas(topLeftX, topLeftY, Math.max(1, botRightX - topLeftX) , Math.max(1, botRightY - topLeftY));
 	}
 
+
 	@Override
 	public Graphics2D getGraphics(GraphicsContext graphicsContext) {
-		Graphics2D g = getGraphics();
-		if (graphicsContext != null) {
-			g.setComposite(new GraphicsContextComposite(graphicsContext, _drawable));
-		}		
-		return g;
+		return getGraphics(graphicsContext, 0);
 	}
 
 	@Override
@@ -338,6 +346,21 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 			blx = Math.max(blx, xCoords[i]);
 			bly = Math.max(bly, yCoords[i]);
+		}
+
+		updateCanvas(tlx, tly, (blx - tlx), (bly - tly));
+	}
+	
+	private void updateCanvas(Collection<Segment> segments) {
+		int tlx=_window.getWidth(),tly=_window.getHeight();
+		int blx=0,bly=0;
+
+		for (Segment s : segments) {
+			tlx = Math.min(tlx, s.getX1());
+			tly = Math.min(tly, s.getY1());
+
+			blx = Math.max(blx, s.getX2());
+			bly = Math.max(bly, s.getY2());
 		}
 
 		updateCanvas(tlx, tly, (blx - tlx), (bly - tly));

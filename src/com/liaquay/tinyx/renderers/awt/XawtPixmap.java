@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -39,15 +40,6 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 	public void createImage(final Drawable drawable) {
 		final BufferedImage image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		setImage(image);
-	}
-
-	@Override
-	public Graphics2D getGraphics(final GraphicsContext graphicsContext) {
-		final Graphics2D g = getGraphics();
-		if (graphicsContext != null) {
-			g.setComposite(new GraphicsContextComposite(graphicsContext, _drawable));
-		}
-		return g;
 	}
 	
 	@Override
