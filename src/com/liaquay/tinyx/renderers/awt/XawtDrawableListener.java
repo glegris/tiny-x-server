@@ -111,45 +111,44 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		Graphics2D g = getGraphics();
 		
-		Pixmap tilePixmap = graphicsContext.getTile();
+		if(graphicsContext != null) {
+			Pixmap tilePixmap = graphicsContext.getTile();
 
-		if (tilePixmap != null && (supportedModes & GCTile) > 0 && (FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Tiled)) {
+			if (tilePixmap != null && (supportedModes & GCTile) > 0 && (FillStyleType.getFromIndex(graphicsContext.getFillStyle()) == FillStyleType.Tiled)) {
 
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener) tilePixmap.getDrawableListener();
-			final BufferedImage srcImage = awtDrawable.getImage();
+				final XawtDrawableListener awtDrawable = (XawtDrawableListener) tilePixmap.getDrawableListener();
+				final BufferedImage srcImage = awtDrawable.getImage();
 
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
+				BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
 
-			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
-			g.setPaint(tp);
-		}
-		
+				TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getTileStippleXOrigin(), graphicsContext.getTileStippleYOrigin(), tilePixmap.getWidth(), tilePixmap.getHeight()));
+				g.setPaint(tp);
+			}
 
-		//				TODO: This needs to clip and not just the same as the others!
-		Pixmap clipPixmap = graphicsContext.getClipMask();
 
-		if (clipPixmap != null && (supportedModes & GCClipMask) > 0) {
-			final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
-			final BufferedImage srcImage = awtDrawable.getImage();
+			//				TODO: This needs to clip and not just the same as the others!
+			Pixmap clipPixmap = graphicsContext.getClipMask();
 
-			BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
+			if (clipPixmap != null && (supportedModes & GCClipMask) > 0) {
+				final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipPixmap.getDrawableListener();
+				final BufferedImage srcImage = awtDrawable.getImage();
 
-			TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
-			g.setPaint(tp);
-		}
+				BufferedImage output = createCompatibleImage(srcImage, new GraphicsContextComposite(graphicsContext, _drawable));
 
-		
-		if ((supportedModes & GCForeground) > 0) {
-			final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-			g.setColor(new Color(rgb));
-		}
-		
-		if ((supportedModes & GCBackground) > 0) {
-			final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour());
-			g.setBackground(new Color(rgb));
-		}
+				TexturePaint tp = new TexturePaint(output, new java.awt.Rectangle(graphicsContext.getClipXOrigin(), graphicsContext.getClipYOrigin(), clipPixmap.getWidth(), clipPixmap.getHeight()));
+				g.setPaint(tp);
+			}
 
-		if (graphicsContext != null) {
+			if ((supportedModes & GCForeground) > 0) {
+				final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+				g.setColor(new Color(rgb));
+			}
+
+			if ((supportedModes & GCBackground) > 0) {
+				final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour());
+				g.setBackground(new Color(rgb));
+			}
+
 			g.setComposite(new GraphicsContextComposite(graphicsContext, _drawable));
 		}		
 
