@@ -26,8 +26,8 @@ public abstract class AbstractXInputStream implements XInputStream {
 
 	private final static Logger LOGGER = Logger.getLogger(AbstractXInputStream.class.getName());
 
-	private final InputStream _inputStream;
-	private int _counter = 0;
+	final InputStream _inputStream;
+	int _counter = 0;
 
 	@Override
 	public final int getCounter() {
@@ -92,7 +92,6 @@ public abstract class AbstractXInputStream implements XInputStream {
 		_inputStream.close();
 	}
 
-	private char[] _stringBuffer = new char[64];
 	
 	public String readString() throws IOException {
 		final int length = readUnsignedShort();
@@ -102,15 +101,19 @@ public abstract class AbstractXInputStream implements XInputStream {
 	    return text;
 	}
 	
+	private byte[] _stringBuffer = new byte[64];
+	
 	public String readString(final int length) throws IOException {
-	    final char[] buffer;
+	    final byte[] buffer;
 	    if(length <= _stringBuffer.length) {
 	    	buffer = _stringBuffer;
 	    }
 	    else {
-	    	buffer = new char[length];
+	    	buffer = new byte[length];
 	    }
-	    for(int i = 0; i < length; ++i) buffer[i] = (char)readUnsignedByte();
+	    _inputStream.read(buffer, 0, length);
+		_counter += length;
+		
 	    return new String(buffer, 0, length);
 	}
 	
@@ -123,7 +126,7 @@ public abstract class AbstractXInputStream implements XInputStream {
 	}
 	
 	public String readString16(final int length) throws IOException {
-	    final char[] buffer = new char[length];;
+	    final char[] buffer = new char[length];
 	    for(int i = 0; i < length; ++i) {
 			final int ah = readUnsignedByte();
 			final int al = readUnsignedByte();
@@ -132,11 +135,16 @@ public abstract class AbstractXInputStream implements XInputStream {
 	    return new String(buffer, 0, length);
 	}	
 	
+	//TODO: Is this always the same order? LSB/MSB doesn't make a difference?
 	public int readInlineFontId() throws IOException {
-		final int b4 = readUnsignedByte();
-		final int b3 = readUnsignedByte();
-		final int b2 = readUnsignedByte();
-		final int b1 = readUnsignedByte();
+		byte[] bytes = new byte[4];
+		_inputStream.read(bytes, 0, 4);
+		_counter += 4;
+
+		final int b4 = (int) bytes[0] & 0xFF;
+		final int b3 = (int) bytes[1] & 0xFF;
+		final int b2 = (int) bytes[2] & 0xFF;
+		final int b1 = (int) bytes[3] & 0xFF;
 		return b1 | (b2 << 8) | (b3 << 16) | (b4 <<24);
 	}
 }

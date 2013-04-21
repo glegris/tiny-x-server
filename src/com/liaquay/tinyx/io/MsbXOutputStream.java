@@ -29,22 +29,26 @@ public class MsbXOutputStream extends AbstractXOutputStream {
 	
 	@Override
 	public void writeShort(final int s) throws IOException {
-		final int b2 = s & 0xff;
-		final int b1 = (s>>8) & 0xff;
-		writeByte(b1);
-		writeByte(b2);
+		byte[] bytes = new byte[2];
+
+		bytes[1] = (byte) (s & 0xff);
+		bytes[0] = (byte) ((s>>8) & 0xff);
+
+		_outputStream.write(bytes);
+		_counter += 2;
 	}
 
 	@Override
 	public void writeInt(final int i) throws IOException {
-		final int b4 = i & 0xff;
-		final int b3 = (i>>8) & 0xff;
-		final int b2 = (i>>16) & 0xff;
-		final int b1 = (i>>24) & 0xff;
-		writeByte(b1);
-		writeByte(b2);
-		writeByte(b3);
-		writeByte(b4);
+		byte[] bytes = new byte[4];
+		
+		bytes[3] = (byte) (i & 0xff);
+		bytes[2] = (byte) ((i>>8) & 0xff);
+		bytes[1] = (byte) ((i>>16) & 0xff);
+		bytes[0] = (byte) ((i>>24) & 0xff);
+		
+		_outputStream.write(bytes);
+		_counter += 4;		
 	}
 
 	@Override

@@ -26,8 +26,8 @@ import java.io.OutputStream;
  */
 public abstract class AbstractXOutputStream implements XOutputStream {
 
-	private final OutputStream _outputStream;
-	private int _counter = 0;
+	final OutputStream _outputStream;
+	int _counter = 0;
 
 	@Override
 	public final int getCounter() {
