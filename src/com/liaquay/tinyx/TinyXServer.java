@@ -64,7 +64,7 @@ public class TinyXServer {
 							final InputStream inputStream = new BufferedInputStream(socket.getInputStream());
 							final OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 							final InetAddress address = socket.getInetAddress();
-							socket.setTcpNoDelay(false);
+							socket.setTcpNoDelay(true);
 							
 							final Executable client = clientFactory.createClient(inputStream, outputStream, address);
 							if(client != null) {
