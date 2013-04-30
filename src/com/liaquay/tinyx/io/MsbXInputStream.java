@@ -29,7 +29,6 @@ public class MsbXInputStream  extends AbstractXInputStream  {
 	
 	@Override
 	public int readUnsignedShort() throws IOException {
-		byte bytes[] = new byte[2];
 		_inputStream.read(bytes, 0, 2);
 		_counter+=2;
 		
@@ -41,7 +40,6 @@ public class MsbXInputStream  extends AbstractXInputStream  {
 
 	@Override
 	public int readSignedShort() throws IOException {
-		byte bytes[] = new byte[2];
 		_inputStream.read(bytes, 0, 2);
 		_counter+=2;
 		
@@ -52,9 +50,10 @@ public class MsbXInputStream  extends AbstractXInputStream  {
 		return s1 > 0x8000 ? s1 | 0xffff0000 : s1;
 	}
 
+	byte bytes[] = new byte[4];
+	
 	@Override
 	public int readInt() throws IOException {
-		byte bytes[] = new byte[4];
 		_inputStream.read(bytes, 0, 4);
 		_counter+=4;
 		

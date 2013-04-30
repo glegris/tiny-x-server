@@ -22,8 +22,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
@@ -41,16 +43,18 @@ import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
  */
 public class XawtWindow extends XawtDrawableListener implements Window.Listener {
 
+	private final static Logger LOGGER = Logger.getLogger(XawtWindow.class.getName());
+
 	private final Window _window;
-	private final MyCanvas _canvas;
+	private final MyJPanel _jPanel;
 	private BufferedImage _image = null;
 
 
-	public XawtWindow(final Window window, MyCanvas canvas) {
+	public XawtWindow(final Window window, MyJPanel jPanel) {
 		super(window);
 
 		_window = window;
-		_canvas = canvas;
+		_jPanel = jPanel;
 
 		//TODO: Map the depth
 		//	window.getDepth();
@@ -62,7 +66,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	@Override
 	public void childCreated(final Window child) {
-		final XawtWindow listener = new XawtWindow(child, _canvas);
+		final XawtWindow listener = new XawtWindow(child, _jPanel);
 		child.setListener(listener);
 	}
 
@@ -278,7 +282,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 		super.putImage(graphicsContext, imageType, buffer, width, height, destinationX,
 				destinationY, leftPad, depth);
 
-		updateCanvas(destinationX, destinationY, width, height);
+//		updateCanvas(destinationX, destinationY, width, height);
 	}
 
 
@@ -316,22 +320,25 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 
 	public void updateCanvas() {
 		//		_canvas.getGraphics().setClip(0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight());
-		if(_window.isMapped()) _canvas.getGraphics().drawImage(getImage(), 0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
+		if(_window.isMapped()) _jPanel.repaint();//getGraphics().drawImage(getImage(), 0, 0, _window.getRootWindow().getWidth(), _window.getRootWindow().getHeight(), null);
 	}
 
 	private void updateCanvas(int x, int y, int width, int height) {
+		LOGGER.info("Update Canvas: X:" + x + " Y: " + y + " Width: " + width + " Height: " + height);
 		if(_window.isMapped()) {
-			_canvas.getGraphics().drawImage(
-					getImage(),
+//			BufferStrategy bs = _canvas.getBufferStrategy();
+			_jPanel.repaint(
 					_window.getAbsX() + x, 
 					_window.getAbsY() + y, 
 					_window.getAbsX() + x + width, 
-					_window.getAbsY() + y + height, 
-					_window.getAbsX() + x, 
-					_window.getAbsY() + y,
-					_window.getAbsX() + x + width, 
-					_window.getAbsY() + y + height, 
-					null);
+					_window.getAbsY() + y + height
+//					_window.getAbsX() + x, 
+//					_window.getAbsY() + y,
+//					_window.getAbsX() + x + width, 
+//					_window.getAbsY() + y + height
+					);
+//			bs.show();
+			
 		}
 	}
 

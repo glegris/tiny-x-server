@@ -29,25 +29,25 @@ public class LsbXOutputStream extends AbstractXOutputStream {
 
 	@Override
 	public void writeShort(final int s) throws IOException {
-		byte[] bytes = new byte[2];
 
 		bytes[0] = (byte) (s & 0xff);
 		bytes[1] = (byte) ((s>>8) & 0xff);
 
-		_outputStream.write(bytes);
+		_outputStream.write(bytes, 0, 2);
 		_counter += 2;
 	}
 
+	byte[] bytes = new byte[4];
+	
 	@Override
 	public void writeInt(final int i) throws IOException {
-		byte[] bytes = new byte[4];
 		
 		bytes[0] = (byte) (i & 0xff);
 		bytes[1] = (byte) ((i>>8) & 0xff);
 		bytes[2] = (byte) ((i>>16) & 0xff);
 		bytes[3] = (byte) ((i>>24) & 0xff);
 		
-		_outputStream.write(bytes);
+		_outputStream.write(bytes, 0, 4);
 		_counter += 4;
 	}
 

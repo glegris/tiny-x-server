@@ -83,8 +83,12 @@ public abstract class AbstractXOutputStream implements XOutputStream {
 		_outputStream.close();
 	}
 
+	byte[] blankBuffer = new byte[1024];
+	
 	@Override
 	public void writePad(final int i) throws IOException {
-		for(int j = 0; j< i; j++) writeByte(0);
+		_outputStream.write(blankBuffer, 0, i);
+		_counter += i;
+//		for(int j = 0; j< i; j++) writeByte(0);
 	}
 }

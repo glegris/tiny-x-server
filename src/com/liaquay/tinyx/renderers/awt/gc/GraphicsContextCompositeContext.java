@@ -61,7 +61,7 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 				int destPixel = dstCM.getRGB(dstIn.getDataElements(x, y, null));
 
 				// Do we draw the pixel?
-				boolean drawPixel = ClipFilter.drawPixel(x, y, gc);
+				boolean drawPixel = true;//ClipFilter.drawPixel(x, y, gc);
 
 				int outPixel = 0xff000000;
 				
@@ -76,8 +76,6 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 					outPixel = FunctionFilter.processPixel(srcPixel, destPixel, x, y, gc);
 
 					outPixel =  (outPixel & gc.getGC().getPlaneMask()) | (destPixel & ~gc.getGC().getPlaneMask());
-//					outPixel = srcPixel;
-						
 				} else {
 					outPixel = destPixel;
 				}

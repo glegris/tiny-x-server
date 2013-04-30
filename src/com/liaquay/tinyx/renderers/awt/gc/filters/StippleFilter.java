@@ -1,5 +1,7 @@
 package com.liaquay.tinyx.renderers.awt.gc.filters;
 
+import java.awt.Rectangle;
+import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Pixmap;
@@ -11,7 +13,7 @@ public class StippleFilter {
 
 	public static int process(int x, int y, GraphicsContextComposite gc) {
 		int drawPixel = 0x00000000;
-
+//
 //		if (gc.getGC().getStipple() != null && (FillStyleType.getFromIndex(gc.getGC().getFillStyle()) == FillStyleType.Stippled)) {
 //			if (srcPixel == gc.getGC().getBackgroundColour()) {
 //				srcPixel = gc.getGC().getForegroundColour();

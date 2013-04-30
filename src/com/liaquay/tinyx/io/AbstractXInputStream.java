@@ -134,10 +134,11 @@ public abstract class AbstractXInputStream implements XInputStream {
 	    }
 	    return new String(buffer, 0, length);
 	}	
-	
+
+	byte[] bytes = new byte[4];
+
 	//TODO: Is this always the same order? LSB/MSB doesn't make a difference?
 	public int readInlineFontId() throws IOException {
-		byte[] bytes = new byte[4];
 		_inputStream.read(bytes, 0, 4);
 		_counter += 4;
 

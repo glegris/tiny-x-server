@@ -18,6 +18,7 @@
  */
 package com.liaquay.tinyx.renderers.awt;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -27,6 +28,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.JFrame;
 
 import com.liaquay.tinyx.model.Screen;
 import com.liaquay.tinyx.model.Window;
@@ -52,14 +55,36 @@ public class XawtScreen {
 		return _listeners;
 	}
 
-	private final Frame _frame = new Frame();
+	private final JFrame _frame;
 	private final XawtWindow _rootWindowListener;
-	private final MyCanvas _canvas = new MyCanvas();
+	private final MyJPanel _jPanel;
 
 	public XawtScreen(final TinyXAwt server, final Screen screen) {
 
-		_frame.setResizable(true);
+		_jPanel = new MyJPanel();
+		
+		final Window rootWindow = screen.getRootWindow();
 
+
+		_jPanel.setRootWindow(rootWindow);
+		_jPanel.setBounds(
+				rootWindow.getX(),
+				rootWindow.getY(),
+				rootWindow.getWidthPixels() + rootWindow.getBorderWidth() + rootWindow.getBorderWidth(), 
+				rootWindow.getHeightPixels() + rootWindow.getBorderWidth() + rootWindow.getBorderWidth());
+
+		_jPanel.getAccessibleContext();
+		
+//		_canvas.createBufferStrategy(2);
+
+		_frame = new JFrame();
+		_frame.setPreferredSize(new Dimension(1024, 800));
+		_frame.add(_jPanel);
+		_frame.pack();
+		_frame.setResizable(true);
+		_frame.setVisible(true);
+		_frame.setIgnoreRepaint(true);
+		
 		_frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent arg0) {
@@ -68,27 +93,15 @@ public class XawtScreen {
 			}
 		});
 
-		final Window rootWindow = screen.getRootWindow();
 
-		_canvas.setRootWindow(rootWindow);
-		_canvas.setBounds(
-				rootWindow.getX(),
-				rootWindow.getY(),
-				rootWindow.getWidthPixels() + rootWindow.getBorderWidth() + rootWindow.getBorderWidth(), 
-				rootWindow.getHeightPixels() + rootWindow.getBorderWidth() + rootWindow.getBorderWidth());
 
-		_canvas.getAccessibleContext();
 
-		_frame.add(_canvas);
-		_frame.pack();
-		_frame.setVisible(true);
-
-		_rootWindowListener = new XawtWindow(rootWindow, _canvas);
+		_rootWindowListener = new XawtWindow(rootWindow, _jPanel);
 		rootWindow.setListener(_rootWindowListener);
 
 		screen.map();
 
-		_canvas.addMouseListener(new MouseListener() {
+		_jPanel.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
 				final Window evw = rootWindow.windowAt(e.getX(), e.getY());
@@ -134,7 +147,7 @@ public class XawtScreen {
 			}
 		});
 
-		_canvas.addKeyListener(new KeyAdapter() {
+		_jPanel.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(final KeyEvent e) {
 				System.out.println("Released ");
