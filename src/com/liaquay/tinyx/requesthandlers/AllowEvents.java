@@ -23,16 +23,49 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
 
 public class AllowEvents implements RequestHandler {
-
+	
+	enum Mode {
+		AsyncPointer,
+		SyncPointer,
+		ReplayPointer,
+		AsyncKeyboard,
+		SyncKeyboard,
+		ReplayKeyboard,
+		AsyncBoth,
+		SyncBoth;
+		
+		public static Mode getFromIndex(final int index) {
+			final Mode[] values = values();
+			if (index<values.length && index>=0) return values[index];
+			return null;
+		}
+	}
+	
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+		
+		final Mode mode = Mode.getFromIndex(request.getData());
+		final XInputStream inputStream = request.getInputStream();
+		final int timestamp = inputStream.readInt();
+		final int servertime = server.getTimestamp();
+		// Time of 0 means use current server time.
+		final int time = timestamp == 0 ?servertime : timestamp;
+
+		
+		
+		
+		
+		
+		
 		// TODO logging
 		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
 				request.getMajorOpCode(), 
