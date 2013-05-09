@@ -88,7 +88,7 @@ public class GrabPointer implements RequestHandler {
 		}
 		else {
 			cursor = server.getResources().get(cursorId, Cursor.class);
-			if(confineToWindow == null) {
+			if(cursor == null) {
 				response.error(Response.ErrorCode.Cursor, cursorId);
 				return;
 			}
