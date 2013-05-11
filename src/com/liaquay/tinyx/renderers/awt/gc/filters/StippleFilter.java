@@ -1,7 +1,5 @@
 package com.liaquay.tinyx.renderers.awt.gc.filters;
 
-import java.awt.Rectangle;
-import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 
 import com.liaquay.tinyx.model.Pixmap;

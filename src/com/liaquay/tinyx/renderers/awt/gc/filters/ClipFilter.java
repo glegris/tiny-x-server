@@ -13,12 +13,24 @@ public class ClipFilter {
 		int translatedY = gc.getGC().getGraphicsOperationY() ;
 
 		Pixmap clipMask =  gc.getGC().getClipMask();
+		Pixmap stippleMask = gc.getGC().getStipple();
+		Pixmap tile = gc.getGC().getTile();
+		
+		boolean drawPixel = false;
+		if (clipMask != null) {
+			drawPixel = ((XawtPixmap) clipMask.getDrawableListener()).getImage().getRGB(x,y) > 0;
+		}
+		
+		if (stippleMask != null) {
+			drawPixel |= ((XawtPixmap) stippleMask.getDrawableListener()).getImage().getRGB(x,y) > 0;
+			// - translatedX + gc.getGC().getClipXOrigin(), y - translatedY + gc.getGC().getClipYOrigin()) == -1;
+		}
 
-//		if (clipMask != null) {
-//			return ((XawtPixmap) clipMask.getDrawableListener()).getImage().getRGB(x - translatedX + gc.getGC().getClipXOrigin(), y - translatedY + gc.getGC().getClipYOrigin()) == -1;
-//		}
+		if (tile != null) {
+			drawPixel = ((XawtPixmap) tile.getDrawableListener()).getImage().getRGB(x,y) > 0;
+		}
 
-		return true;
+		return drawPixel;
 	}
 
 }

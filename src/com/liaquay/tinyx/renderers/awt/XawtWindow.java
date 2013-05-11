@@ -274,16 +274,16 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	}
 
 
-	@Override
-	public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer,
-			int width, int height, int destinationX, int destinationY,
-			int leftPad, int depth) {
-
-		super.putImage(graphicsContext, imageType, buffer, width, height, destinationX,
-				destinationY, leftPad, depth);
-
-//		updateCanvas(destinationX, destinationY, width, height);
-	}
+//	@Override
+//	public void putImage(GraphicsContext graphicsContext, ImageType imageType, byte[] buffer,
+//			int width, int height, int destinationX, int destinationY,
+//			int leftPad, int depth) {
+//
+//		super.putImage(graphicsContext, imageType, buffer, width, height, destinationX,
+//				destinationY, leftPad, depth);
+//
+////		updateCanvas(destinationX, destinationY, width, height);
+//	}
 
 
 	@Override
@@ -326,18 +326,11 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 	private void updateCanvas(int x, int y, int width, int height) {
 		LOGGER.info("Update Canvas: X:" + x + " Y: " + y + " Width: " + width + " Height: " + height);
 		if(_window.isMapped()) {
-//			BufferStrategy bs = _canvas.getBufferStrategy();
 			_jPanel.repaint(
 					_window.getAbsX() + x, 
 					_window.getAbsY() + y, 
 					_window.getAbsX() + x + width, 
-					_window.getAbsY() + y + height
-//					_window.getAbsX() + x, 
-//					_window.getAbsY() + y,
-//					_window.getAbsX() + x + width, 
-//					_window.getAbsY() + y + height
-					);
-//			bs.show();
+					_window.getAbsY() + y + height);
 			
 		}
 	}

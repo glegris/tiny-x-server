@@ -8,6 +8,8 @@ import java.awt.image.WritableRaster;
 
 import sun.java2d.loops.CompositeType;
 
+import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.renderers.awt.XawtDrawableListener;
 import com.liaquay.tinyx.renderers.awt.gc.filters.ClipFilter;
 import com.liaquay.tinyx.renderers.awt.gc.filters.FunctionFilter;
 import com.liaquay.tinyx.renderers.awt.gc.filters.StippleFilter;
@@ -61,25 +63,37 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 				int destPixel = dstCM.getRGB(dstIn.getDataElements(x, y, null));
 
 				// Do we draw the pixel?
-				boolean drawPixel = true;//ClipFilter.drawPixel(x, y, gc);
-
-				int outPixel = 0xff000000;
+				boolean drawPixel = true;
 				
+//				if (((gc.getSupportedModes() & XawtDrawableListener.GCClipMask) > 0) ||
+//						((gc.getSupportedModes() & XawtDrawableListener.GCStipple) > 0) ||
+//						((gc.getSupportedModes() & XawtDrawableListener.GCTile) > 0)
+//					) {
+//
+//					drawPixel = ClipFilter.drawPixel(x, y, gc);
+//				}
+
+				int outPixel = srcPixel;
+
 				if (drawPixel) {
 
-					int stipplePixel = StippleFilter.process(x, y, gc);
-					if (stipplePixel > 0) {
-						outPixel = stipplePixel;
-					}
+//					if () {
+//						int stipplePixel = StippleFilter.process(x, y, gc);
+//						if (stipplePixel > 0) {
+//							outPixel = stipplePixel;
+//						}
+//					}
 
-					// Process the function
-					outPixel = FunctionFilter.processPixel(srcPixel, destPixel, x, y, gc);
+					if ((gc.getSupportedModes() & XawtDrawableListener.GCFunction) > 0) {
+						// Process the function
+						outPixel = FunctionFilter.processPixel(outPixel, destPixel, x, y, gc);
+					}
 
 					outPixel =  (outPixel & gc.getGC().getPlaneMask()) | (destPixel & ~gc.getGC().getPlaneMask());
 				} else {
-					outPixel = destPixel;
+					outPixel = 0xffff0000;
 				}
-					
+
 				Object data = dstCM.getDataElements(outPixel, null);
 				dstOut.setDataElements(x, y, data);
 			}

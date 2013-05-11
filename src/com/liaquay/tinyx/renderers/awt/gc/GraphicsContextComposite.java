@@ -12,8 +12,10 @@ public class GraphicsContextComposite implements Composite {
 
 	GraphicsContext gc;
 	Drawable drawable;
+	int _supportedModes;
 
-	public GraphicsContextComposite(final GraphicsContext gc, Drawable drawable) {
+	public GraphicsContextComposite(final GraphicsContext gc, int supportedModes, Drawable drawable) {
+		this._supportedModes = supportedModes;
 		this.gc = gc;
 		this.drawable = drawable;
 	}
@@ -24,6 +26,10 @@ public class GraphicsContextComposite implements Composite {
 	
 	public Drawable getDrawable() {
 		return this.drawable;
+	}
+
+	public int getSupportedModes() {
+		return this._supportedModes;
 	}
 	
 	@Override

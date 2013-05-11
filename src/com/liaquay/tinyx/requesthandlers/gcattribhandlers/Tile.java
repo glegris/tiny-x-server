@@ -43,6 +43,7 @@ public class Tile implements GraphicsAttributeHandler {
 		final XInputStream inputStream = request.getInputStream();
 		final int tilePixmap = inputStream.readInt();
 		final Pixmap p = server.getResources().get(tilePixmap, Pixmap.class);
+
 		if (p != null) {
 			graphicsContext.setTile(p);
 		} else {

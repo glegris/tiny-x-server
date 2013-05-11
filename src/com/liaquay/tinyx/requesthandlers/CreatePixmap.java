@@ -25,6 +25,7 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Depths;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Server;
@@ -55,13 +56,13 @@ public class CreatePixmap implements RequestHandler {
 			return;
 		}
 
-//		final Visual visual = drawable.getVisual();
-//
-//		// Check to see if we have a visual that can handle this depth
-//		if(visual.getDepth() != depth) {
-//			response.error(Response.ErrorCode.Match, depth);
-//			return;
-//		}
+		final Depths depths = drawable.getScreen().getDepths();
+
+		// Check to see if we have a visual that can handle this depth
+		if(depths.get(depth) == null) {
+			response.error(Response.ErrorCode.Match, depth);
+			return;
+		}
 
 		final Pixmap pixmap = new Pixmap(pixmapResourceId, drawable, depth, width, height);
 		server.pixmapCreated(pixmap);

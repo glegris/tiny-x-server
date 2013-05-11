@@ -24,8 +24,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
@@ -43,14 +41,11 @@ import com.liaquay.tinyx.model.Font;
 import com.liaquay.tinyx.model.Format;
 import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.model.Image.ImageType;
-import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Rectangle;
 import com.liaquay.tinyx.model.Segment;
 import com.liaquay.tinyx.model.Server;
-import com.liaquay.tinyx.renderers.awt.gc.CopyPlaneComposite;
 import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
 import com.liaquay.tinyx.renderers.generic.ByteImage;
-import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
 
 public abstract class XawtDrawableListener implements Drawable.Listener {
 
@@ -66,15 +61,15 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	public static final int GCFunction           =(1<<0);
 	public static final int GCPlaneMask          =(1<<1);
 	public static final int GCForeground         =(1<<2);
-	static final int GCBackground         =(1<<3);
+	public static final int GCBackground         =(1<<3);
 	static final int GCLineWidth          =(1<<4);
 	static final int GCLineStyle          =(1<<5);
 	static final int GCCapStyle           =(1<<6);
 	static final int GCJoinStyle		=(1<<7);
 	static final int GCFillStyle		=(1<<8);
 	static final int GCFillRule		=(1<<9);
-	static final int GCTile		=(1<<10);
-	static final int GCStipple		=(1<<11);
+	public static final int GCTile		=(1<<10);
+	public static final int GCStipple		=(1<<11);
 	static final int GCTileStipXOrigin	=(1<<12);
 	static final int GCTileStipYOrigin	=(1<<13);
 	static final int GCFont 		=(1<<14);
@@ -160,7 +155,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 				g.setBackground(new Color(rgb));
 			}
 
-//			g.setComposite(new GraphicsContextComposite(graphicsContext, _drawable));
+			g.setComposite(new GraphicsContextComposite(graphicsContext, supportedModes, _drawable));
 		}		
 
 		
@@ -185,11 +180,13 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int dstX, 
 			final int dstY) {
 
+		int supportedModes =  GCFunction | GCPlaneMask | GCSubwindowMode | GCGraphicsExposures | GCClipXOrigin | GCClipYOrigin | GCClipMask;
+
 		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
 		try {
 			final BufferedImage srcImage = awtDrawable.getImage();//.getSubimage(_drawable.getX() + srcX, _drawable.getY() + srcY, width, height);
 
-			getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, 0, 0, width, height, null);//, srcY, srcX + width, srcY + height, null);
+			getGraphics(graphicsContext, supportedModes).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, 0, 0, width, height, null);//, srcY, srcX + width, srcY + height, null);
 		} catch (RasterFormatException e) {
 			e.printStackTrace();
 		}
@@ -213,7 +210,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
 		final BufferedImage srcImage = awtDrawable.getImage();//.getSubimage(_drawable.getX() + srcX, _drawable.getY() + srcY, width, height);		
 
-		//		final BufferedImage destImage = createCompatibleImage(srcImage, new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
+//		final BufferedImage destImage = createCompatibleImage(srcImage, new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
 
 		final Graphics2D g = getGraphics(graphicsContext);
 		g.drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, 0, 0, width, height, null);
@@ -244,14 +241,14 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		int planeSize = width * height;
 		byte planes = (byte) ((buffer.length * 8) / planeSize);
 
-		ByteImage bi = new ByteImage(width, height, planes);
+		ByteImage bi = new ByteImage(width, height, (byte) depth);//planes);
 		bi.setData(buffer);
 
 		int supportedModes =  GCFunction | GCPlaneMask | GCSubwindowMode | GCClipXOrigin | GCClipYOrigin | GCClipMask | GCForeground | GCBackground;
 		
 		Graphics sg = getGraphics(graphicsContext, supportedModes);
 
-		sg.drawImage(ImageConverter.convertByteImage(bi), destinationX, destinationY, width, height, null);
+		sg.drawImage(ImageConverter.convertByteImage(bi, imageType, graphicsContext), destinationX, destinationY, width, height, null);
 	}
 
 	BufferedImage createCompatibleImage(BufferedImage image, Composite composite)
