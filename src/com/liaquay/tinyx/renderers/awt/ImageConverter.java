@@ -1,6 +1,5 @@
 package com.liaquay.tinyx.renderers.awt;
 
-import java.awt.GraphicsConfiguration;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -22,7 +21,7 @@ public class ImageConverter {
 		DataBufferByte db = new DataBufferByte(imageData, imageData.length);
 		BufferedImage retImage = null;
 
-		if (image.getPlanes() == 32) {
+		if (image.getFormat().getBpp() == 32) {
 			WritableRaster raster = Raster.createInterleavedRaster(db, // dataBuffer
 					image.getWidth(), // width
 					image.getHeight(), // height
@@ -33,7 +32,7 @@ public class ImageConverter {
 
 			retImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			retImage.setData(raster);
-		} else if (image.getPlanes() == 24) {
+		} else if (image.getFormat().getBpp() == 24) {
 			WritableRaster raster = Raster.createInterleavedRaster(db, // dataBuffer
 					image.getWidth(), // width
 					image.getHeight(), // height
@@ -45,7 +44,7 @@ public class ImageConverter {
 			retImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 			retImage.setData(raster);
 
-		} else if (image.getPlanes() == 1) {
+		} else if (image.getFormat().getBpp() == 1) {
 			// We are a bitmap (Probably a clip mask or a stipple mask)
 				WritableRaster raster = Raster.createPackedRaster(db, image.getWidth(), image.getHeight(), 1, null);
 	
@@ -53,7 +52,7 @@ public class ImageConverter {
 				IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
 				retImage = new BufferedImage(colorModel, raster, false, null);
 		} else {
-			LOGGER.severe("Unsupported depth for ImageConverter.convertByteImage: " + image.getPlanes());
+			LOGGER.severe("Unsupported depth for ImageConverter.convertByteImage: " + image.getFormat().getBpp());
 		}
 
 //		XawtDrawableListener.writeImage(retImage,  "testImage31231");

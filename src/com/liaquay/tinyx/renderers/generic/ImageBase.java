@@ -1,17 +1,18 @@
 package com.liaquay.tinyx.renderers.generic;
 
+import com.liaquay.tinyx.model.Format;
+
 public class ImageBase {
 	int width = 0;
 
 	int height = 0;
 
-	int planes = 0;
+	Format format = null;
 
-
-	public ImageBase(int width, int height, int planes) {
+	public ImageBase(int width, int height, Format format) {
 		this.width = width;
 		this.height = height;
-		this.planes = planes;
+		this.format = format;
 	}
 
 
@@ -23,12 +24,7 @@ public class ImageBase {
 		return width;
 	}
 
-
-	public int getPlanes() {
-		return planes;
-	}
-	
-	public void setPlanes(int planes) {
-		this.planes = planes;
+	public Format getFormat() {
+		return format;
 	}
 }

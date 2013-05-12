@@ -254,10 +254,13 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int leftPad, 
 			final int depth) { 
 
-//		int planeSize = width * height;  // Bits per plane
-//		byte planes = (byte) ((buffer.length * 8) / planeSize);
+		
 
-		ByteImage bi = new ByteImage(width, height, depth);
+		Format f = lookupFormat(depth);
+
+		LOGGER.warning("Depth: " + depth + " BPP: " + f.getBpp());
+
+		ByteImage bi = new ByteImage(width, height, f);
 		bi.setData(buffer);
 
 		int supportedModes =  GCFunction | GCPlaneMask | GCSubwindowMode | GCClipXOrigin | GCClipYOrigin | GCClipMask | GCForeground | GCBackground;
@@ -265,6 +268,17 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		Graphics sg = getGraphics(graphicsContext, supportedModes);
 
 		sg.drawImage(ImageConverter.convertByteImage(bi, imageType, graphicsContext), destinationX, destinationY, width, height, null);
+	}
+
+	private Format lookupFormat(int depth) {
+		Format format = null;
+		for (Format f : Server.getFormats()) {
+			if (f.getDepth() == depth) {
+				format = f;
+				break;
+			}
+		}
+		return format;
 	}
 
 	BufferedImage createCompatibleImage(final BufferedImage image, final Composite composite)
