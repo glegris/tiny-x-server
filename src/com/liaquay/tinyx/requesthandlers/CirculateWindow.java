@@ -31,15 +31,15 @@ import com.liaquay.tinyx.model.Window;
 public class CirculateWindow implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
-
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
 
-		int direction = request.getData();
+		final int direction = request.getData();
 //	     1                                     direction
 //         0     RaiseLowest
 //         1     LowerHighest
@@ -52,5 +52,11 @@ public class CirculateWindow implements RequestHandler {
 		}
 
 		//TODO: circulate the windows (Somehow!)
+		
+		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+				request.getMajorOpCode(), 
+				request.getData(),
+				request.getLength(),
+				request.getSequenceNumber()));		
 	}
 }

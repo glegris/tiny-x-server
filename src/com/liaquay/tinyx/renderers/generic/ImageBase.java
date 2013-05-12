@@ -5,10 +5,10 @@ public class ImageBase {
 
 	int height = 0;
 
-	byte planes = 0;
+	int planes = 0;
 
 
-	public ImageBase(int width, int height, byte planes) {
+	public ImageBase(int width, int height, int planes) {
 		this.width = width;
 		this.height = height;
 		this.planes = planes;
@@ -26,5 +26,9 @@ public class ImageBase {
 
 	public int getPlanes() {
 		return planes;
+	}
+	
+	public void setPlanes(int planes) {
+		this.planes = planes;
 	}
 }

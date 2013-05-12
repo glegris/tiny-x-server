@@ -114,4 +114,14 @@ public class Pixmap extends Drawable {
 	public ColorMap getColorMap() {
 		return _drawable.getColorMap();
 	}
+
+	@Override
+	public int getAbsX() {
+		return 0;
+	}
+
+	@Override
+	public int getAbsY() {
+		return 0;
+	}
 }

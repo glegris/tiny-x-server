@@ -60,7 +60,7 @@ public class GrabPointer implements RequestHandler {
 			response.respond(GrabResponse.NotViewable.ordinal());
 			return;
 		}
-		final int eventMask = inputStream.readInt();
+		final int eventMask = inputStream.readUnsignedShort();
 		final boolean pointerSynchronous = inputStream.readUnsignedByte() == 0;
 		final boolean keyboardSynchronous = inputStream.readUnsignedByte() == 0;
 		
@@ -88,7 +88,7 @@ public class GrabPointer implements RequestHandler {
 		}
 		else {
 			cursor = server.getResources().get(cursorId, Cursor.class);
-			if(confineToWindow == null) {
+			if(cursor == null) {
 				response.error(Response.ErrorCode.Cursor, cursorId);
 				return;
 			}

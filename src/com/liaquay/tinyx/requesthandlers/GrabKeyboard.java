@@ -23,8 +23,12 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Keyboard;
+import com.liaquay.tinyx.model.KeyboardGrab;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
 
 public class GrabKeyboard implements RequestHandler {
 	
@@ -43,11 +47,54 @@ public class GrabKeyboard implements RequestHandler {
 			final Request request, 
 			final Response response) throws IOException {
 		
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		final XInputStream inputStream = request.getInputStream();
+		final boolean ownerEvents = request.getData() != 0;
+		final int windowId = inputStream.readInt();
+		final Window grabWindow = server.getResources().get(windowId, Window.class);
+		if(grabWindow == null) {
+			response.error(Response.ErrorCode.Window, windowId);
+			return;
+		}
+		if(!grabWindow.isViewable()) {
+			response.respond(GrabResponse.NotViewable.ordinal());
+			return;
+		}
+		final int timestamp = inputStream.readInt();
+		final int servertime = server.getTimestamp();
+		// Time of 0 means use current server time.
+		final int time = timestamp == 0 ?servertime : timestamp;
+		final boolean pointerSynchronous = inputStream.readUnsignedByte() == 0;
+		final boolean keyboardSynchronous = inputStream.readUnsignedByte() == 0;
+		final Keyboard keyboard = server.getKeyboard();
+		final KeyboardGrab currnetKeyboardGrab = keyboard.getKeyboardGrab();
+		
+		if(currnetKeyboardGrab != null) {
+			if(currnetKeyboardGrab.getClient() == client) {
+				if(time - currnetKeyboardGrab.getTimestamp() < 0 || servertime - time < 0) {
+					response.respond(GrabResponse.InvalidTime.ordinal());
+					return;					
+				}
+			}
+			else {
+				response.respond(
+						currnetKeyboardGrab.isKeyboardSynchronous() ?
+								GrabResponse.Frozen.ordinal() :
+								GrabResponse.AlreadyGrabbed.ordinal()
+						);
+			}
+			return;
+		}
+				
+		final KeyboardGrab keyboardGrab = new KeyboardGrab(
+				client,
+				ownerEvents,
+				grabWindow,
+				pointerSynchronous,
+				keyboardSynchronous,
+				time);
+		
+		server.setKeyboardGrab(keyboardGrab);
+
+		response.respond(GrabResponse.Success.ordinal());
 	}
 }

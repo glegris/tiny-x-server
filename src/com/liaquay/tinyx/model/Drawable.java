@@ -95,7 +95,11 @@ public abstract class Drawable implements Resource {
 	public abstract int getX();
 
 	public abstract int getY();
-
+	
+	public abstract int getAbsX();
+	
+	public abstract int getAbsY();
+	
 	public abstract int getWidth();
 
 	public abstract int getHeight();

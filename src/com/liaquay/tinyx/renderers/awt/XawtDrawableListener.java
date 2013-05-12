@@ -184,15 +184,23 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
 		try {
-			final BufferedImage srcImage = awtDrawable.getImage();//.getSubimage(_drawable.getX() + srcX, _drawable.getY() + srcY, width, height);
-
-			getGraphics(graphicsContext, supportedModes).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, 0, 0, width, height, null);//, srcY, srcX + width, srcY + height, null);
-		} catch (RasterFormatException e) {
+			final BufferedImage srcImage = awtDrawable.getImage();
+			
+			getGraphics(graphicsContext, supportedModes).drawImage(
+					srcImage, 
+					dstX, 
+					dstY, 
+					dstX + width, 
+					dstY + height, 
+					srcDrawable.getAbsX() + srcX, 
+					srcDrawable.getAbsY() + srcY, 
+					srcDrawable.getAbsX() + srcX + width,
+					srcDrawable.getAbsY() + srcY + height, 
+					null);//, srcY, srcX + width, srcY + height, null);
+			
+		} catch (final RasterFormatException e) {
 			e.printStackTrace();
 		}
-		//		final BufferedImage srcImage = awtDrawable.getImage();
-		//		getGraphics(graphicsContext).drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, srcX, srcY, srcX + width, srcY + height, null);
-
 	}
 
 	@Override
@@ -213,8 +221,18 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 //		final BufferedImage destImage = createCompatibleImage(srcImage, new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
 
 		final Graphics2D g = getGraphics(graphicsContext);
-		g.drawImage(srcImage, dstX, dstY, dstX + width, dstY + height, 0, 0, width, height, null);
-	}
+		g.drawImage(
+				srcImage, 
+				dstX, 
+				dstY, 
+				dstX + width, 
+				dstY + height, 
+				srcDrawable.getAbsX() + srcX, 
+				srcDrawable.getAbsY() + srcY, 
+				srcDrawable.getAbsX() + srcX + width,
+				srcDrawable.getAbsY() + srcY + height, 
+				null);
+		}
 
 	//	public int lookupColor(int color) {
 	//		if (color > 8) {
@@ -236,12 +254,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			final int leftPad, 
 			final int depth) { 
 
-//		LOGGER.info("Put image with type: " + imageType.name() + " Width: " + width + " Height: " + height + " and depth " + depth + " leftpad: " + leftPad);
+//		int planeSize = width * height;  // Bits per plane
+//		byte planes = (byte) ((buffer.length * 8) / planeSize);
 
-		int planeSize = width * height;
-		byte planes = (byte) ((buffer.length * 8) / planeSize);
-
-		ByteImage bi = new ByteImage(width, height, (byte) depth);//planes);
+		ByteImage bi = new ByteImage(width, height, depth);
 		bi.setData(buffer);
 
 		int supportedModes =  GCFunction | GCPlaneMask | GCSubwindowMode | GCClipXOrigin | GCClipYOrigin | GCClipMask | GCForeground | GCBackground;
@@ -251,7 +267,7 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		sg.drawImage(ImageConverter.convertByteImage(bi, imageType, graphicsContext), destinationX, destinationY, width, height, null);
 	}
 
-	BufferedImage createCompatibleImage(BufferedImage image, Composite composite)
+	BufferedImage createCompatibleImage(final BufferedImage image, final Composite composite)
 	{
 		GraphicsConfiguration gc = GraphicsEnvironment.
 				getLocalGraphicsEnvironment().
@@ -329,8 +345,10 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 	}
 
 	@Override
-	public void polyLine(GraphicsContext graphicsContext, int[] xCoords,
-			int[] yCoords) {
+	public void polyLine(
+			final GraphicsContext graphicsContext, 
+			final int[] xCoords,
+			final int[] yCoords) {
 		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | GCDashList;
 		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
