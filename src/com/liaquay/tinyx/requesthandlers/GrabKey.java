@@ -23,16 +23,40 @@ import java.io.IOException;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
+import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.model.Window;
+import com.liaquay.tinyx.requesthandlers.GrabPointer.GrabResponse;
 
 public class GrabKey implements RequestHandler {
 
 	@Override
-	public void handleRequest(final Server server, 
-			                   final Client client, 
-			                   final Request request, 
-			                   final Response response) throws IOException {
+	public void handleRequest(
+			final Server server, 
+			final Client client, 
+			final Request request, 
+			final Response response) throws IOException {
+		
+		final XInputStream inputStream = request.getInputStream();
+		final boolean ownerEvents = request.getData() != 0;
+		final int windowId = inputStream.readInt();
+		final Window grabWindow = server.getResources().get(windowId, Window.class);
+		if(grabWindow == null) {
+			response.error(Response.ErrorCode.Window, windowId);
+			return;
+		}
+		if(!grabWindow.isViewable()) {
+			response.respond(GrabResponse.NotViewable.ordinal());
+			return;
+		}
+		final int keyMask = inputStream.readUnsignedShort(); // #x8000 AnyModifier
+		final int keyCode = inputStream.readUnsignedByte();  // 0 AnyKey
+		final boolean pointerSynchronous = inputStream.readUnsignedByte() == 0;
+		final boolean keyboardSynchronous = inputStream.readUnsignedByte() == 0;
+
+		
+		
 		// TODO logging
 		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
 				request.getMajorOpCode(), 

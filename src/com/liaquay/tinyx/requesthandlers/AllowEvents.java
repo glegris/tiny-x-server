@@ -61,7 +61,32 @@ public class AllowEvents implements RequestHandler {
 		final int time = timestamp == 0 ?servertime : timestamp;
 
 		
-		
+		switch(mode) {
+		case AsyncBoth: {
+			
+		}
+		case AsyncKeyboard:{
+			
+		}
+		case AsyncPointer:{
+			
+		}
+		case ReplayKeyboard:{
+			
+		}
+		case ReplayPointer:{
+			
+		}
+		case SyncBoth:{
+			
+		}
+		case SyncKeyboard:{
+			
+		}
+		case SyncPointer:{
+			
+		}
+		}
 		
 		
 		
