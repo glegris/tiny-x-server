@@ -1,8 +1,12 @@
 package com.liaquay.tinyx.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liaquay.tinyx.model.Server.ResourceFactory;
+import com.liaquay.tinyx.renderers.awt.XawtDrawableListener;
+import com.liaquay.tinyx.renderers.awt.XawtPixmap;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.ArcMode.ArcModeType;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.CapStyle.CapStyleType;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillRule.FillRuleType;
@@ -15,17 +19,39 @@ import com.liaquay.tinyx.requesthandlers.gcattribhandlers.SubWindowMode.SubWindo
 public class GraphicsContext extends AbstractResource {
 
 	private final Drawable _drawable;
-	
+
 	public GraphicsContext(
 			final int resourceId, 
 			final Drawable drawable, 
-			final Font font) {
-		
+			final Server server) {
+
 		super(resourceId);
-		
+
 		_drawable = drawable;
-		_font = font;
+		try {
+			_font = server.getFixedFont();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Create the pixmap and register the listener.
+		Pixmap bitmap = server.createPixmap(new ResourceFactory<Pixmap>() {
+			@Override
+			public Pixmap create(int resourceId) {
+				if (_drawable instanceof Pixmap) {
+					return new Pixmap(resourceId, _drawable, _drawable.getDepth(), drawable.getWidth(), _drawable.getHeight());
+				} else {
+					return new Pixmap(resourceId, _drawable, 1, 1, 1);
+				}
+			}
+		});
+		server.pixmapCreated(bitmap);
+
+//		XawtDrawableListener.writeImage(((XawtPixmap) bitmap.getDrawableListener()).getImage(), "BitmapCreation");
 		
+		_stipple = bitmap;
+
 		// Default (4,4)
 		_dashes.add(4);
 		_dashes.add(4);
@@ -42,7 +68,7 @@ public class GraphicsContext extends AbstractResource {
 	private int _fillStyle = FillStyleType.Solid.ordinal();		// Default: Solid
 	private int _fillRule = FillRuleType.EvenOdd.ordinal();		// Default: EvenOdd
 	private int _arcMode = ArcModeType.PieSlice.ordinal();		// Default: PieSlice
-	
+
 	private int _subWindowMode = SubWindowModeType.ClipByChildren.ordinal(); // Default: ClipByChildren
 	private boolean _graphicsExposures = true;					// Default: true
 
@@ -51,16 +77,16 @@ public class GraphicsContext extends AbstractResource {
 
 	private int _tileStippleXOrigin = 0;		// Default: Zero
 	private int _tileStippleYOrigin = 0;		// Default: Zero
-	
-	private Pixmap _clipMask = null;				// Default: None
+
+	private Pixmap _clipMask = null;			// Default: None
 
 	private int _clipXOrigin = 0;				// Default: Zero
 	private int _clipYOrigin = 0;				// Default: Zero
-	
+
 	private int _dashOffset = 0;				// Default: Zero
-	
+
 	private Font _font;	// TODO: Server dependent font
-	
+
 	private List<Integer> _dashes = new ArrayList<Integer>();		// Default (4,4) Added in constructor
 
 	/** 
@@ -71,10 +97,10 @@ public class GraphicsContext extends AbstractResource {
 	private int graphicsOperationY;
 	private int graphicsOperationWidth;
 	private int graphicsOperationHeight;
-	
-	
-	
-	
+
+
+
+
 	public int getGraphicsOperationX() {
 		return graphicsOperationX;
 	}
@@ -122,11 +148,11 @@ public class GraphicsContext extends AbstractResource {
 	public int getBackgroundColour() {
 		return _backgroundColour;
 	}
-	
+
 	public void setPlaneMask(final int planeMask) {
 		_planeMask = planeMask;
 	}
-	
+
 	public int getPlaneMask() {
 		return _planeMask;
 	}
@@ -177,11 +203,11 @@ public class GraphicsContext extends AbstractResource {
 	public void setGraphicsExposures(final boolean graphicsExposures) {
 		_graphicsExposures = graphicsExposures;
 	}
-	
+
 	public void setArcMode(final int arcMode) {
 		_arcMode = arcMode;
 	}
-	
+
 	public int getArcMode() {
 		return _arcMode;
 	}
@@ -189,15 +215,15 @@ public class GraphicsContext extends AbstractResource {
 	public void setJoinStyle(final int joinStyle) {
 		_joinStyle = joinStyle;
 	}
-	
+
 	public int getJoinStyle() {
 		return _joinStyle;
 	}
-	
+
 	public void setFillStyle(final int fillStyle) {
 		_fillStyle = fillStyle;
 	}
-	
+
 	public int getFillStyle() {
 		return _fillStyle;
 	}
@@ -205,31 +231,31 @@ public class GraphicsContext extends AbstractResource {
 	public void setFillRule(final int fillRule) {
 		_fillRule = fillRule;
 	}
-	
+
 	public int getFillRule() {
 		return _fillRule;
 	}
-	
+
 	public void setTile(final Pixmap tilePixmap) {
 		_tilePixmap = tilePixmap;
 	}
-	
+
 	public Pixmap getTile() {
 		return _tilePixmap;
 	}
-	
+
 	public void setStipple(final Pixmap stipple) {
 		_stipple = stipple;
 	}
-	
+
 	public Pixmap getStipple() {
 		return _stipple;
 	}
-	
+
 	public void setTileStippleXOrigin(final int tileStippleXOrigin) {
 		_tileStippleXOrigin = tileStippleXOrigin;
 	}	
-	
+
 	public int getTileStippleXOrigin() {
 		return _tileStippleXOrigin;
 	}
@@ -237,7 +263,7 @@ public class GraphicsContext extends AbstractResource {
 	public void setTileStippleYOrigin(final int clipYOrigin) {
 		this._tileStippleYOrigin = clipYOrigin;
 	}	
-	
+
 	public int getTileStippleYOrigin() {
 		return _tileStippleYOrigin;
 	}
@@ -245,7 +271,7 @@ public class GraphicsContext extends AbstractResource {
 	public void setClipXOrigin(final int clipXOrigin) {
 		_clipXOrigin = clipXOrigin;
 	}
-	
+
 	public int getClipXOrigin() {
 		return this._clipXOrigin;
 	}
@@ -253,7 +279,7 @@ public class GraphicsContext extends AbstractResource {
 	public void setClipYOrigin(final int clipYOrigin) {
 		_clipYOrigin = clipYOrigin;
 	}
-	
+
 	public int getClipYOrigin() {
 		return this._clipYOrigin;
 	}
@@ -261,7 +287,7 @@ public class GraphicsContext extends AbstractResource {
 	public void setClipMask(final Pixmap clipMask) {
 		_clipMask = clipMask;
 	}
-	
+
 	public Pixmap getClipMask() {
 		return this._clipMask;
 	}
@@ -273,11 +299,11 @@ public class GraphicsContext extends AbstractResource {
 	public int getDashOffset() {
 		return _dashOffset;
 	}
-	
+
 	public void setFont(final Font font) {
 		_font = font;
 	}
-	
+
 	public Font getFont() {
 		return _font;
 	}
@@ -285,7 +311,7 @@ public class GraphicsContext extends AbstractResource {
 	public void setDashes(List<Integer> dashes) {
 		_dashes = dashes;
 	}
-	
+
 	public List<Integer> getDashes() {
 		return _dashes;
 	}

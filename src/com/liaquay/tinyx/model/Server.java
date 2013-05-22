@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.ByteOrder;
+import com.liaquay.tinyx.model.Server.ResourceFactory;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 
@@ -201,7 +202,10 @@ public class Server extends Client {
 	}
 
 	/**
-	 * Un-grab the server.
+	 * Un-grab the server.			@Override
+			public void pixmapCreated(final Pixmap pixmap) {
+				pixmap.setListener(new XawtPixmap(pixmap));
+			}
 	 * Allows other clients to process requests.
 	 * 
 	 * @param client The client grabbing the server
@@ -331,6 +335,13 @@ public class Server extends Client {
 		final Visual visual = factory.create(resourceId);
 		_resources.add(visual);
 		return visual;
+	}
+	
+	public Pixmap createPixmap(final ResourceFactory<Pixmap> factory) {
+		final int resourceId = allocateResourceId();
+		final Pixmap pixmap = factory.create(resourceId);
+		_resources.add(pixmap);
+		return pixmap;
 	}
 
 	public Screen addScreen(final ResourceFactory<Screen> factory) {
@@ -834,4 +845,5 @@ public class Server extends Client {
 		_prtFrozen = pointer;
 		dequeueAll();
 	}
+
 }

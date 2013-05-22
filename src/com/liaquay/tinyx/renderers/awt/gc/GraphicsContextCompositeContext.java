@@ -65,11 +65,7 @@ public class GraphicsContextCompositeContext implements CompositeContext {
 				// Do we draw the pixel?
 				boolean drawPixel = true;
 				
-//				if (((gc.getSupportedModes() & XawtDrawableListener.GCClipMask) > 0) ||
-//						((gc.getSupportedModes() & XawtDrawableListener.GCStipple) > 0) ||
-//						((gc.getSupportedModes() & XawtDrawableListener.GCTile) > 0)
-//					) {
-//
+//				if ((gc.getSupportedModes() & XawtDrawableListener.GCClipMask) > 0) {
 //					drawPixel = ClipFilter.drawPixel(x, y, gc);
 //				}
 

@@ -38,6 +38,11 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 		BufferedImage image = null;
 		if (drawable.getDepth() == 1) {
 			image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+			for (int x=0; x < drawable.getWidth(); x++) {
+				for (int y=0; y < drawable.getHeight(); y++) {
+					image.setRGB(x, y, Integer.MAX_VALUE);
+				}
+			}
 		} else {
 			image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		}
