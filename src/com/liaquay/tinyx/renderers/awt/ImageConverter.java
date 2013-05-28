@@ -46,16 +46,10 @@ public class ImageConverter {
 
 		} else if (image.getFormat().getBpp() == 1) {
 			// We are a bitmap (Probably a clip mask or a stipple mask)
-			//				WritableRaster raster = Raster.createPackedRaster(db, image.getWidth(), image.getHeight(), 1, null);
-
-			//				byte[] arr = {(byte)gc.getForegroundColour(), (byte)gc.getBackgroundColour()};
-			//				IndexColorModel colorModel = new IndexColorModel(1, 2, arr, arr, arr);
-			//				retImage = new BufferedImage(colorModel, raster, false, null);
-			//				retImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);//colorModel, raster, false, null);
-
-
-
-			retImage = new BufferedImage(image.getWidth(),image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+			byte arr[] = { (byte) 0x0, (byte) 0xff};
+			IndexColorModel cm = new IndexColorModel(1, 2, arr, arr, arr, arr);
+			
+			retImage = new BufferedImage(image.getWidth(),image.getHeight(), BufferedImage.TYPE_BYTE_BINARY, cm);
 			WritableRaster raster = retImage.getRaster();
 
 
@@ -63,8 +57,8 @@ public class ImageConverter {
 			int imageWidth = image.getWidth() + imagePad; // 3 + 5 = 8;
 
 
-			int height = image.getHeight()-1;
-			int width = image.getWidth() - 1;
+			int height = image.getHeight();
+			int width = image.getWidth();
 
 			int pos = 0;
 
@@ -75,21 +69,15 @@ public class ImageConverter {
 
 					for (int x = 0; x<8;x++) {
 						if (byteNum*8+x < width) {
-							raster.setSample(byteNum*8 + x, y, 0, toProcess >> 8-x); // 0,1 on last pixel
+							raster.setSample(byteNum*8 + x, y, 0, toProcess >> 7-x); // 0,1 on last pixel
 						}
 					}
 				}
 				pos+=imageWidth/8;
 			}
-
 		} else {
 			LOGGER.severe("Unsupported depth for ImageConverter.convertByteImage: " + image.getFormat().getBpp());
 		}
-
-		//		XawtDrawableListener.writeImage(retImage,  "testImage31231");
-		//		Raster r = new IntegerComponentRaster(arg0, arg1)
-		//		retImage.setData(r)
-
 
 		return retImage;
 	}
