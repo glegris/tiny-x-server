@@ -166,6 +166,7 @@ public class XawtScreen {
 				server.getServer().keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));
 			}
 		});
+	_jPanel.grabFocus();
 	}
 }
 

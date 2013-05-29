@@ -64,27 +64,36 @@ public class AllowEvents implements RequestHandler {
 		switch(mode) {
 		case AsyncBoth: {
 			
+			break;
 		}
 		case AsyncKeyboard:{
-			
+			server.allowKeyboardEvents(client, false, time);
+			break;
 		}
 		case AsyncPointer:{
 			
+			break;
 		}
 		case ReplayKeyboard:{
 			
+			break;
 		}
 		case ReplayPointer:{
 			
+			break;
 		}
 		case SyncBoth:{
+			server.allowKeyboardEvents(client, true, time);
 			
+			break;
 		}
 		case SyncKeyboard:{
-			
+			server.allowKeyboardEvents(client, true, time);
+			break;
 		}
 		case SyncPointer:{
 			
+			break;
 		}
 		}
 		

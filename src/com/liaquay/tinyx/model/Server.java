@@ -595,9 +595,12 @@ public class Server extends Client {
 		_pointer.setPointerGrab(pointerGrab);
 
 		// TODO set the cursor
+		// HACK
+		_prtInputState =  pointerGrab.isPointerSynchronous() ? InputQueueState.Frozen : InputQueueState.Normal;
+		dequeueAll();
 
 		// Freeze/thaw input queues
-		setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
+		//setFreezeState(pointerGrab.isKeyboardSynchronous(), pointerGrab.isPointerSynchronous());
 	}
 
 	public void releasePointerGrab() {
@@ -606,7 +609,9 @@ public class Server extends Client {
 
 		// Thaw input queues
 		// TODO what state do we set these to if there is a keyboard grab?
-		setFreezeState(false, false);
+		//setFreezeState(false, false);
+		_prtInputState = InputQueueState.Normal;  // Probably need to set it to any real grab state??
+		dequeueAll();
 
 		// TODO  It also generates EnterNotify and LeaveNotify events.
 	}
@@ -790,24 +795,35 @@ public class Server extends Client {
 	// TODO worry about these getting too large
 	private Queue<InputEvent> _keyEventQueue = new ArrayDeque<InputEvent>(100);
 	private Queue<InputEvent> _ptrEventQueue = new ArrayDeque<InputEvent>(100);
-	private boolean _keyFrozen = false;
-	private boolean _prtFrozen = false;
+	
+	enum InputQueueState {
+		Normal, 
+		Frozen,
+		Single
+	}
+	
+	private InputQueueState _keyInputState = InputQueueState.Normal;
+	private InputQueueState _prtInputState = InputQueueState.Normal;
 
 	/**
 	 * Dequeue events in the correct order
 	 */
 	private boolean dequeue() {
-		final boolean haveKeyEvents = !_keyEventQueue.isEmpty() && !_keyFrozen;
-		final boolean havePtrEvents = !_ptrEventQueue.isEmpty() && !_prtFrozen;
+		final boolean haveKeyEvents = !_keyEventQueue.isEmpty() && !_keyInputState.equals(InputQueueState.Frozen);
+		final boolean havePtrEvents = !_ptrEventQueue.isEmpty() && !_prtInputState.equals(InputQueueState.Frozen);
 		if(haveKeyEvents && !havePtrEvents) {
 			final InputEvent keyEvent = _keyEventQueue.remove();
+			if(_keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
 			keyEvent.deliver();
 		}
 		else if(!haveKeyEvents && havePtrEvents) {
 			final InputEvent ptrEvent = _ptrEventQueue.remove();
+			if(_prtInputState.equals(InputQueueState.Single)) _prtInputState = InputQueueState.Frozen;
 			ptrEvent.deliver();
 		}
 		else if(haveKeyEvents && havePtrEvents) {
+			if(_keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
+			if(_prtInputState.equals(InputQueueState.Single)) _prtInputState = InputQueueState.Frozen;
 			final InputEvent keyEvent = _keyEventQueue.remove();
 			final InputEvent ptrEvent = _ptrEventQueue.remove();
 			if(keyEvent.getWhen() - ptrEvent.getWhen() > 0) {
@@ -830,8 +846,27 @@ public class Server extends Client {
 	}
 
 	public void setFreezeState(final boolean keyboard, final boolean pointer) {
-		_keyFrozen = keyboard;
-		_prtFrozen = pointer;
+		_keyInputState = keyboard ? InputQueueState.Frozen : InputQueueState.Normal;
+		_prtInputState = pointer ? InputQueueState.Frozen : InputQueueState.Normal;
 		dequeueAll();
+	}
+	
+	public void allowKeyboardEvents(final Client client, final boolean sync, final int time) {
+		final KeyboardGrab grab = getKeyboard().getKeyboardGrab();
+		if(grab == null) return;
+		if(grab.getClient() != client) return;
+		if(time < grab.getTimestamp()) return;
+		if(sync && _keyInputState.equals(InputQueueState.Frozen)) {
+			_keyInputState = InputQueueState.Single;
+			dequeueAll();
+		}
+		else {
+			_keyInputState = InputQueueState.Normal;
+			dequeueAll();
+		}
+	}	
+	
+	public void allowPointerEvents(final Client client, final boolean sync, final int time) {
+		
 	}
 }
