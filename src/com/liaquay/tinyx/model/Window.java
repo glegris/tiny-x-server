@@ -564,21 +564,29 @@ public class Window extends Drawable {
 	}
 	
 	private void redraw() {
+		redraw(true);
+	}
+	
+	private void redraw(final boolean exposures) {
 		if(isViewable()){
 			_listener.drawBorder();
-			redrawContents();
+			redrawContents(exposures);
 		}
 	}
 	
 	private void redrawContents() {
+		redrawContents(true);
+	}
+
+	private void redrawContents(final boolean exposures) {
 		if(isViewable()){
 			 _listener.clearArea(0, 0, _widthPixels, _heightPixels);
 			 
 			for(int i = 0; i < _children.size() ; ++i) {
 				final Window c = _children.get(i);
-				c.redraw();
+				c.redraw(exposures);
 			}
-			sendExposeEvent();
+			if(exposures) sendExposeEvent();
 		}
 	}
 
@@ -1016,7 +1024,7 @@ public class Window extends Drawable {
 		for(int i = 0; i < _children.size() ; ++i) {
 			final Window c = _children.get(i);
 			if(c.overlaps(x, y, width, height)) {
-				c.redraw();
+				c.redraw(exposures);
 			}
 		}
 	}

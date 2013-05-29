@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.ByteOrder;
+import com.liaquay.tinyx.model.Server.ResourceFactory;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 
@@ -201,7 +202,10 @@ public class Server extends Client {
 	}
 
 	/**
-	 * Un-grab the server.
+	 * Un-grab the server.			@Override
+			public void pixmapCreated(final Pixmap pixmap) {
+				pixmap.setListener(new XawtPixmap(pixmap));
+			}
 	 * Allows other clients to process requests.
 	 * 
 	 * @param client The client grabbing the server
@@ -331,6 +335,13 @@ public class Server extends Client {
 		final Visual visual = factory.create(resourceId);
 		_resources.add(visual);
 		return visual;
+	}
+	
+	public Pixmap createPixmap(final ResourceFactory<Pixmap> factory) {
+		final int resourceId = allocateResourceId();
+		final Pixmap pixmap = factory.create(resourceId);
+		_resources.add(pixmap);
+		return pixmap;
 	}
 
 	public Screen addScreen(final ResourceFactory<Screen> factory) {
@@ -512,7 +523,10 @@ public class Server extends Client {
 						buttonDownPointerGrab.setExitWhenAllReleased();
 
 						// Set the grab on the server
-						setPointerGrab(buttonDownPointerGrab);
+						_pointer.setPointerGrab(buttonDownPointerGrab);
+
+						// TODO set the cursor
+						dequeueAll();
 
 						grab = buttonDownPointerGrab;
 					}
@@ -608,10 +622,7 @@ public class Server extends Client {
 		_pointer.setPointerGrab(null);
 
 		// Thaw input queues
-		// TODO what state do we set these to if there is a keyboard grab?
-		//setFreezeState(false, false);
-		_prtInputState = InputQueueState.Normal;  // Probably need to set it to any real grab state??
-		dequeueAll();
+		setFreezeState();
 
 		// TODO  It also generates EnterNotify and LeaveNotify events.
 	}
@@ -775,8 +786,7 @@ public class Server extends Client {
 		_keyboard.setKeyboardGrab(null);
 
 		// Thaw input queues
-		// TODO what state do we set these to if there is a pointer grab?
-		setFreezeState(false, false);
+		setFreezeState();
 
 		// TODO  It also generates EnterNotify and LeaveNotify events.
 	}
@@ -845,7 +855,36 @@ public class Server extends Client {
 		while(dequeue());
 	}
 
-	public void setFreezeState(final boolean keyboard, final boolean pointer) {
+	private void setFreezeState() {
+		final Grab grab;
+		final Grab pointerGrab = _pointer.getPointerGrab();
+		final Grab keyboardGrab = _keyboard.getKeyboardGrab();
+		if(pointerGrab != null && keyboardGrab != null) {
+			if(pointerGrab.getTimestamp() > keyboardGrab.getTimestamp()) {
+				grab = pointerGrab;
+			}
+			else {
+				grab = keyboardGrab;
+			}
+		}
+		else if (pointerGrab != null) {
+			grab = pointerGrab;
+		}
+		else if (keyboardGrab != null) {
+			grab = keyboardGrab;
+		}
+		else {
+			grab = null;
+		}
+		if(grab == null) {
+			setFreezeState(false, false);
+		}
+		else {
+			setFreezeState(grab.isKeyboardSynchronous(), grab.isPointerSynchronous());
+		}
+	}
+	
+	private void setFreezeState(final boolean keyboard, final boolean pointer) {
 		_keyInputState = keyboard ? InputQueueState.Frozen : InputQueueState.Normal;
 		_prtInputState = pointer ? InputQueueState.Frozen : InputQueueState.Normal;
 		dequeueAll();
@@ -869,4 +908,5 @@ public class Server extends Client {
 	public void allowPointerEvents(final Client client, final boolean sync, final int time) {
 		
 	}
+
 }

@@ -160,7 +160,7 @@ public class XawtScreen {
 			@Override
 			public void keyPressed(final KeyEvent e) {
 				System.out.println("Pressed ");
-				System.out.println("KupdateCanvaseycode " + e.getKeyCode());
+				System.out.println("Keycode " + e.getKeyCode());
 				System.out.println("Location " + e.getKeyLocation());
 				System.out.println("Modifiers " + e.getModifiersEx());
 				server.getServer().keyPressed(e.getKeyCode(), (int)(e.getWhen()&0xffffffff));

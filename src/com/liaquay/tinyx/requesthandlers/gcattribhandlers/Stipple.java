@@ -42,7 +42,7 @@ public class Stipple implements GraphicsAttributeHandler {
 
 		final XInputStream inputStream = request.getInputStream();
 		final int stipplePixmap = inputStream.readInt();
-		final Pixmap p = server.getResources().get(stipplePixmap, Pixmap.class);
+		final Pixmap p = (Pixmap) server.getResources().get(stipplePixmap, Pixmap.class);
 		if (p != null) {
 			graphicsContext.setStipple(p);
 		} else {

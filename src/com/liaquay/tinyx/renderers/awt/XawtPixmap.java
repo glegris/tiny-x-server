@@ -20,6 +20,7 @@ package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.Pixmap;
@@ -37,7 +38,10 @@ public class XawtPixmap extends XawtDrawableListener implements Pixmap.Listener 
 	public void createImage(final Drawable drawable) {
 		BufferedImage image = null;
 		if (drawable.getDepth() == 1) {
-			image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+			byte arr[] = { (byte) 0x0, (byte) 0xff};
+			IndexColorModel cm = new IndexColorModel(1, 2, arr, arr, arr, arr);
+			
+			image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_BYTE_BINARY, cm);
 		} else {
 			image = new BufferedImage(drawable.getWidth(), drawable.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		}

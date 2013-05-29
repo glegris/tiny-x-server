@@ -82,7 +82,6 @@ public class GrabKeyboard implements RequestHandler {
 								GrabResponse.AlreadyGrabbed.ordinal()
 						);
 			}
-			return;
 		}
 				
 		final KeyboardGrab keyboardGrab = new KeyboardGrab(

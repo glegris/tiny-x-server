@@ -32,7 +32,7 @@ public class ByteImage extends ImageBase implements TinyXImage {
 	public void setData(byte[] imageData) {
 		int pos = 0;
 
-		if (format.getDepth() == 32) {
+		if (format.getBpp() == 32) {
 			ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
 
 			for (int x = 0; x < width; x++) {
@@ -49,23 +49,7 @@ public class ByteImage extends ImageBase implements TinyXImage {
 					//					LOGGER.warning("Blue: " + b + " Green: " + g + " Red: " + r + " Alpha: " + a);
 				}
 			}
-		} else if (format.getDepth() == 24 && format.getBpp() == 32) {
-			ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
-
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					byte r = (byte) bais.read();
-					byte g = (byte) bais.read();
-					byte b = (byte) bais.read();
-//					image[pos++] = (byte) 255;		// Alpha
-					image[pos++] = (byte) b;		// Blue
-					image[pos++] = (byte) g;		// Green
-					image[pos++] = (byte) r;
-
-					//						LOGGER.warning("Blue: " + b + " Green: " + g + " Red: " + r + " Alpha: " + a);
-				}
-			}
-		} else if (format.getDepth() == 24) {
+		} else if (format.getBpp() == 24) {
 			ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
 
 			for (int x = 0; x < width; x++) {
