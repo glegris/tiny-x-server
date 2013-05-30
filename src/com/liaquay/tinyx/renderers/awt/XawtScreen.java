@@ -79,6 +79,10 @@ public class XawtScreen {
 
 		_frame = new JFrame();
 		_frame.setPreferredSize(new Dimension(1024, 800));
+
+		_rootWindowListener = new XawtWindow(rootWindow, _jPanel);
+		rootWindow.setListener(_rootWindowListener);
+		
 		_frame.add(_jPanel);
 		_frame.pack();
 		_frame.setResizable(true);
@@ -92,13 +96,7 @@ public class XawtScreen {
 				_frame.dispose();
 			}
 		});
-
-
-
-
-		_rootWindowListener = new XawtWindow(rootWindow, _jPanel);
-		rootWindow.setListener(_rootWindowListener);
-
+		
 		screen.map();
 
 		_jPanel.addMouseListener(new MouseListener() {
