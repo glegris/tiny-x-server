@@ -35,7 +35,7 @@ public class KeyReleaseFactoryImpl extends KeyFactoryImpl implements KeyFactory 
 			final int when) {
 		
 		return create(
-				Event.KeyPress,
+				Event.KeyRelease,
 				focusWindow,
 				child,
 				pointer,

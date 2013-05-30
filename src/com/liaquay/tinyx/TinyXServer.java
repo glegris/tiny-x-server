@@ -74,6 +74,9 @@ public class TinyXServer {
 								try {
 									client.run();
 								}
+								catch(final Exception e) {
+									LOGGER.log(Level.SEVERE, "Error... ", e);
+								}
 								finally {
 									synchronized (_executables) {
 										_executables.add(client);

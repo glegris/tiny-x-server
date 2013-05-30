@@ -766,7 +766,8 @@ public class Server extends Client {
 				}
 				else {
 					// TODO probably rubbish
-					grab.getClient().getPostBox().send(event, null);
+					// TODO deal with owner events
+					grab.getClient().getPostBox().send(event, grab.getGrabWindow());
 				}
 			}
 		});
