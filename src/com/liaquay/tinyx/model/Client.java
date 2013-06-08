@@ -102,6 +102,10 @@ public class Client {
 		_clientWindowAssociations.put(assoc.getWindow().getId(), assoc);
 	}
 	
+	public ClientWindowAssociation getClientWindowAssociation(final Window window) {
+		return _clientWindowAssociations.get(window.getId());
+	}
+	
 	public void remove(final ClientWindowAssociation assoc) {
 		_clientWindowAssociations.remove(assoc.getWindow().getId());
 	}

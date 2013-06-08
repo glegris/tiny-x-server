@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.ByteOrder;
-import com.liaquay.tinyx.model.Server.ResourceFactory;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 
@@ -716,10 +715,14 @@ public class Server extends Client {
 				if(grab == null) {
 					w.deliver(event, Event.KeyPressMask);
 				}
-				else {
-					// TODO probably rubbish
-					grab.getClient().getPostBox().send(event, grab.getGrabWindow());
+				boolean delivered = false;
+				if(grab.isOwnerEvents()) {
+					delivered =  w.deliver(event, Event.KeyPressMask, grab.getClient());
 				}
+				if(!delivered) {
+					delivered = grab.getGrabWindow().deliver(event, Event.KeyPressMask, grab.getClient());
+				}
+				if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
 			}
 		});
 	}
@@ -765,9 +768,15 @@ public class Server extends Client {
 					w.deliver(event, Event.KeyReleaseMask);
 				}
 				else {
-					// TODO probably rubbish
-					// TODO deal with owner events
-					grab.getClient().getPostBox().send(event, grab.getGrabWindow());
+					
+					boolean delivered = false;
+					if(grab.isOwnerEvents()) {
+						delivered =  w.deliver(event, Event.KeyReleaseMask, grab.getClient());
+					}
+					if(!delivered) {
+						delivered = grab.getGrabWindow().deliver(event, Event.KeyReleaseMask, grab.getClient());
+					}
+					if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
 				}
 			}
 		});
@@ -824,7 +833,6 @@ public class Server extends Client {
 		final boolean havePtrEvents = !_ptrEventQueue.isEmpty() && !_prtInputState.equals(InputQueueState.Frozen);
 		if(haveKeyEvents && !havePtrEvents) {
 			final InputEvent keyEvent = _keyEventQueue.remove();
-			if(_keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
 			keyEvent.deliver();
 		}
 		else if(!haveKeyEvents && havePtrEvents) {
@@ -833,7 +841,6 @@ public class Server extends Client {
 			ptrEvent.deliver();
 		}
 		else if(haveKeyEvents && havePtrEvents) {
-			if(_keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
 			if(_prtInputState.equals(InputQueueState.Single)) _prtInputState = InputQueueState.Frozen;
 			final InputEvent keyEvent = _keyEventQueue.remove();
 			final InputEvent ptrEvent = _ptrEventQueue.remove();

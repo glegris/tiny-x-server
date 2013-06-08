@@ -637,6 +637,20 @@ public class Window extends Drawable {
 		return null;
 	}
 
+	public boolean deliver(final Event event, final int mask, final Client client) {
+		final ClientWindowAssociation assoc = client.getClientWindowAssociation(this);
+		if(assoc != null) {
+			if((assoc.getEventMask() & mask) != 0) {
+				client.getPostBox().send(event, assoc.getWindow());
+				return true;
+			}
+		}
+		if((_doNotPropagateMask & mask) == 0 && _parent != null) {
+			return _parent.deliver(event, mask, client);
+		}
+		return false;
+	}
+	
 	public void deliver(final Event event, final int mask){
 		deliver(event, mask, new BitSet(Resource.MAXCLIENTS));
 	}
