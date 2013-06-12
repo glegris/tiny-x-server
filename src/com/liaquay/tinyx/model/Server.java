@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import com.liaquay.tinyx.io.ByteOrder;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
+import com.liaquay.tinyx.model.eventfactories.KeyFactory;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
 
 /**
@@ -674,7 +675,41 @@ public class Server extends Client {
 
 		return focusWindow;
 	}
+	
+	private void deliverKeyEvent(
+			final int keycode, 
+			final int when,
+			final int eventMask,
+			final KeyFactory eventFactory) {
+		
+		final Window focusWindow = getKeyFocusWindow(eventMask);
+		final Window child = _pointer.childWindowAt();
+		final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
 
+		final Event event = eventFactory.create(
+				focusWindow,
+				child,
+				_pointer, 
+				keycode,
+				when);
+
+		final KeyboardGrab grab = _keyboard.getKeyboardGrab();
+
+		if(grab == null) {
+			w.deliver(event, eventMask);
+		}
+		else {
+			
+			boolean delivered = false;
+			if(grab.isOwnerEvents()) {
+				delivered =  w.deliver(event, eventMask, grab.getClient());
+			}
+			if(!delivered) {
+				delivered = grab.getGrabWindow().deliver(event, eventMask, grab.getClient());
+			}
+			if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
+		}
+	}
 	/**
 	 * Called by implementation to deliver a key press to the server
 	 * 
@@ -698,31 +733,7 @@ public class Server extends Client {
 			@Override
 			public void deliver() {
 				_keyboard.keyPressed(keycode, when);
-
-				final Window focusWindow = getKeyFocusWindow(Event.KeyPressMask);
-				final Window child = _pointer.childWindowAt();
-				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
-
-				final Event event = _eventFactories.getKeyPressFactory().create(
-						focusWindow,
-						child,
-						_pointer, 
-						keycode,
-						when);
-
-				final KeyboardGrab grab = _keyboard.getKeyboardGrab();
-
-				if(grab == null) {
-					w.deliver(event, Event.KeyPressMask);
-				}
-				boolean delivered = false;
-				if(grab.isOwnerEvents()) {
-					delivered =  w.deliver(event, Event.KeyPressMask, grab.getClient());
-				}
-				if(!delivered) {
-					delivered = grab.getGrabWindow().deliver(event, Event.KeyPressMask, grab.getClient());
-				}
-				if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
+				deliverKeyEvent(keycode, when, Event.KeyPressMask, _eventFactories.getKeyPressFactory());
 			}
 		});
 	}
@@ -750,34 +761,7 @@ public class Server extends Client {
 			@Override
 			public void deliver() {
 				_keyboard.keyReleased(keycode, when);
-
-				final Window focusWindow = getKeyFocusWindow(Event.KeyReleaseMask);
-				final Window child = _pointer.childWindowAt();
-				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
-
-				final Event event = _eventFactories.getKeyReleaseFactory().create(
-						focusWindow,
-						child,
-						_pointer, 
-						keycode,
-						when);
-
-				final KeyboardGrab grab = _keyboard.getKeyboardGrab();
-
-				if(grab == null) {
-					w.deliver(event, Event.KeyReleaseMask);
-				}
-				else {
-					
-					boolean delivered = false;
-					if(grab.isOwnerEvents()) {
-						delivered =  w.deliver(event, Event.KeyReleaseMask, grab.getClient());
-					}
-					if(!delivered) {
-						delivered = grab.getGrabWindow().deliver(event, Event.KeyReleaseMask, grab.getClient());
-					}
-					if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
-				}
+				deliverKeyEvent(keycode, when, Event.KeyReleaseMask, _eventFactories.getKeyReleaseFactory());
 			}
 		});
 	}	
