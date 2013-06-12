@@ -542,8 +542,15 @@ public class Server extends Client {
 							child,
 							getKeyButtonMask(), 
 							when);
-
-					grab.getClient().getPostBox().send(event, null);
+					
+					boolean delivered = false;
+					if(grab.isOwnerEvents()) {
+						delivered =  child.deliver(event, Event.ButtonPressMask, grab.getClient());
+					}
+					if(!delivered) {
+						delivered = grab.getGrabWindow().deliver(event, Event.ButtonPressMask, grab.getClient());
+					}
+					if(delivered && _ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
 				}
 			}
 		});
@@ -591,8 +598,16 @@ public class Server extends Client {
 							getKeyButtonMask(), 
 							when);
 
-					grab.getClient().getPostBox().send(event, null);
-
+					
+					boolean delivered = false;
+					if(grab.isOwnerEvents()) {
+						delivered =  child.deliver(event, Event.ButtonPressMask, grab.getClient());
+					}
+					if(!delivered) {
+						delivered = grab.getGrabWindow().deliver(event, Event.ButtonPressMask, grab.getClient());
+					}
+					if(delivered && _ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
+					
 					if(grab.getExitWhenAllReleased()) {
 						if(_pointer.getButtonMask() == 0) {
 							releasePointerGrab();
@@ -610,7 +625,7 @@ public class Server extends Client {
 
 		// TODO set the cursor
 		// HACK
-		_prtInputState =  pointerGrab.isPointerSynchronous() ? InputQueueState.Frozen : InputQueueState.Normal;
+		_ptrInputState =  pointerGrab.isPointerSynchronous() ? InputQueueState.Frozen : InputQueueState.Normal;
 		dequeueAll();
 
 		// Freeze/thaw input queues
@@ -807,25 +822,25 @@ public class Server extends Client {
 	}
 	
 	private InputQueueState _keyInputState = InputQueueState.Normal;
-	private InputQueueState _prtInputState = InputQueueState.Normal;
+	private InputQueueState _ptrInputState = InputQueueState.Normal;
 
 	/**
 	 * Dequeue events in the correct order
 	 */
 	private boolean dequeue() {
 		final boolean haveKeyEvents = !_keyEventQueue.isEmpty() && !_keyInputState.equals(InputQueueState.Frozen);
-		final boolean havePtrEvents = !_ptrEventQueue.isEmpty() && !_prtInputState.equals(InputQueueState.Frozen);
+		final boolean havePtrEvents = !_ptrEventQueue.isEmpty() && !_ptrInputState.equals(InputQueueState.Frozen);
 		if(haveKeyEvents && !havePtrEvents) {
 			final InputEvent keyEvent = _keyEventQueue.remove();
 			keyEvent.deliver();
 		}
 		else if(!haveKeyEvents && havePtrEvents) {
 			final InputEvent ptrEvent = _ptrEventQueue.remove();
-			if(_prtInputState.equals(InputQueueState.Single)) _prtInputState = InputQueueState.Frozen;
+			if(_ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
 			ptrEvent.deliver();
 		}
 		else if(haveKeyEvents && havePtrEvents) {
-			if(_prtInputState.equals(InputQueueState.Single)) _prtInputState = InputQueueState.Frozen;
+			if(_ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
 			final InputEvent keyEvent = _keyEventQueue.remove();
 			final InputEvent ptrEvent = _ptrEventQueue.remove();
 			if(keyEvent.getWhen() - ptrEvent.getWhen() > 0) {
@@ -878,7 +893,7 @@ public class Server extends Client {
 	
 	private void setFreezeState(final boolean keyboard, final boolean pointer) {
 		_keyInputState = keyboard ? InputQueueState.Frozen : InputQueueState.Normal;
-		_prtInputState = pointer ? InputQueueState.Frozen : InputQueueState.Normal;
+		_ptrInputState = pointer ? InputQueueState.Frozen : InputQueueState.Normal;
 		dequeueAll();
 	}
 	
@@ -889,16 +904,25 @@ public class Server extends Client {
 		if(time < grab.getTimestamp()) return;
 		if(sync && _keyInputState.equals(InputQueueState.Frozen)) {
 			_keyInputState = InputQueueState.Single;
-			dequeueAll();
 		}
 		else {
 			_keyInputState = InputQueueState.Normal;
-			dequeueAll();
 		}
+		dequeueAll();
 	}	
 	
 	public void allowPointerEvents(final Client client, final boolean sync, final int time) {
-		
+		final PointerGrab grab = getPointer().getPointerGrab();
+		if(grab == null) return;
+		if(grab.getClient() != client) return;
+		if(time < grab.getTimestamp()) return;
+		if(sync && _ptrInputState.equals(InputQueueState.Frozen)) {
+			_ptrInputState = InputQueueState.Single;
+		}
+		else {
+			_ptrInputState = InputQueueState.Normal;
+		}
+		dequeueAll();		
 	}
 
 }

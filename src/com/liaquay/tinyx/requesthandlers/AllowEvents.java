@@ -59,11 +59,11 @@ public class AllowEvents implements RequestHandler {
 		final int servertime = server.getTimestamp();
 		// Time of 0 means use current server time.
 		final int time = timestamp == 0 ?servertime : timestamp;
-
 		
 		switch(mode) {
 		case AsyncBoth: {
-			
+			server.allowPointerEvents(client, false, time);
+			server.allowKeyboardEvents(client, false, time);
 			break;
 		}
 		case AsyncKeyboard:{
@@ -71,20 +71,30 @@ public class AllowEvents implements RequestHandler {
 			break;
 		}
 		case AsyncPointer:{
-			
+			server.allowPointerEvents(client, false, time);
 			break;
 		}
 		case ReplayKeyboard:{
-			
+			// TODO logging
+			System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+					request.getMajorOpCode(), 
+					request.getData(),
+					request.getLength(),
+					request.getSequenceNumber()));
 			break;
 		}
 		case ReplayPointer:{
-			
+			// TODO logging
+			System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
+					request.getMajorOpCode(), 
+					request.getData(),
+					request.getLength(),
+					request.getSequenceNumber()));
 			break;
 		}
 		case SyncBoth:{
 			server.allowKeyboardEvents(client, true, time);
-			
+			server.allowPointerEvents(client, true, time);
 			break;
 		}
 		case SyncKeyboard:{
@@ -92,19 +102,9 @@ public class AllowEvents implements RequestHandler {
 			break;
 		}
 		case SyncPointer:{
-			
+			server.allowPointerEvents(client, true, time);
 			break;
 		}
 		}
-		
-		
-		
-		
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
 	}
 }
