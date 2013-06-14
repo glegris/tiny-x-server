@@ -580,13 +580,15 @@ public class Window extends Drawable {
 
 	private void redrawContents(final boolean exposures) {
 		if(isViewable()){
-			 _listener.clearArea(0, 0, _widthPixels, _heightPixels);
+			_listener.clearArea(0, 0, _widthPixels, _heightPixels);
+			if(exposures) {
+				sendExposeEvent();
+			}
 			 
 			for(int i = 0; i < _children.size() ; ++i) {
 				final Window c = _children.get(i);
 				c.redraw(exposures);
 			}
-			if(exposures) sendExposeEvent();
 		}
 	}
 
@@ -1318,7 +1320,7 @@ public class Window extends Drawable {
 			updateLocation();
 
 			// TODO Events etc.
-			_parent.redraw(); // TODO somewhat over the top!
+//			_parent.redraw(); // TODO somewhat over the top!
 		}
 	}
 
