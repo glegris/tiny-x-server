@@ -115,7 +115,6 @@ public class GrabPointer implements RequestHandler {
 								GrabResponse.AlreadyGrabbed.ordinal()
 						);
 			}
-			return;
 		}
 				
 		final PointerGrab pointerGrab = new PointerGrab(
