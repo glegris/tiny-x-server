@@ -25,6 +25,8 @@ import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
+import com.liaquay.tinyx.model.Keyboard;
+import com.liaquay.tinyx.model.KeyboardGrab;
 import com.liaquay.tinyx.model.Server;
 
 public class UngrabKeyboard implements RequestHandler {
@@ -38,13 +40,12 @@ public class UngrabKeyboard implements RequestHandler {
 		
 		final XInputStream inputStream = request.getInputStream();
 		final int time = inputStream.readInt();
-		
-		
-		// TODO logging
-		System.out.println(String.format("ERROR: unimplemented request request code %d, data %d, length %d, seq %d", 
-				request.getMajorOpCode(), 
-				request.getData(),
-				request.getLength(),
-				request.getSequenceNumber()));		
+		final Keyboard keyboard = server.getKeyboard();
+		final KeyboardGrab keyboardGrab = keyboard.getKeyboardGrab();
+		if(keyboardGrab == null) return;
+		if((time - keyboardGrab.getTimestamp()) < 0) return;
+
+		// TODO Should we check there are no keys pressed?
+		server.releaseKeyboardGrab();
 	}
 }

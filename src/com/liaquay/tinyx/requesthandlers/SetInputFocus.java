@@ -48,24 +48,36 @@ public class SetInputFocus implements RequestHandler {
 			response.error(Response.ErrorCode.Value, windowId);		
 			return;			
 		}
-		final Window window = server.getResources().get(windowId, Window.class);
-		if(window == null) {
-			response.error(Response.ErrorCode.Window, windowId);		
-			return;
-		}
-		
-		// The specified focus window must be viewable at the time XSetInputFocus() is called, or a BadMatch error results. 
-		if(!window.isViewable()) {
-			response.error(Response.ErrorCode.Match, windowId);		
-			return;
-		}
 		
 		final int timestamp = inputStream.readInt();
 		final Focus.Mode mode;
+		final Window window; 
 		switch (windowId) {
-		case 0: mode = Focus.Mode.None;break;
-		case 1: mode = Focus.Mode.PointerRoot;break;
-		default: mode = Focus.Mode.Window; break;
+		case 0: {
+			window = null;
+			mode = Focus.Mode.None;
+			break;
+		}
+		case 1: {
+			window = server.getPointer().getScreen().getRootWindow();
+			mode = Focus.Mode.PointerRoot;
+			break;
+		}
+		default:{ 
+			mode = Focus.Mode.Window; 
+			window = server.getResources().get(windowId, Window.class);
+			if(window == null) {
+				response.error(Response.ErrorCode.Window, windowId);		
+				return;
+			}
+			
+			break;
+		}
+		}
+		// The specified focus window must be viewable at the time XSetInputFocus() is called, or a BadMatch error results. 
+		if(window != null && !window.isViewable()) {
+			response.error(Response.ErrorCode.Match, windowId);		
+			return;
 		}
 		final Focus focus = server.getFocus();
 		focus.set(mode, window, revertTo, timestamp);
