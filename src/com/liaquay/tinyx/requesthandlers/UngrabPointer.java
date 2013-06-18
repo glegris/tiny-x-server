@@ -39,7 +39,10 @@ public class UngrabPointer implements RequestHandler {
 			final Response response) throws IOException {
 
 		final XInputStream inputStream = request.getInputStream();
-		final int time = inputStream.readInt();
+		final int timestamp = inputStream.readInt();
+		final int servertime = server.getTimestamp();
+		// Time of 0 means use current server time.
+		final int time = timestamp == 0 ? servertime : timestamp;
 		final Pointer pointer = server.getPointer();
 		final PointerGrab pointerGrab = pointer.getPointerGrab();
 		if(pointerGrab == null) return;
