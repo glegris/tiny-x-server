@@ -32,6 +32,7 @@ public class KeyPressFactoryImpl extends KeyFactoryImpl implements KeyFactory {
 			final Window child,
 			final Pointer pointer,
 			final int key,
+			final int keyButtonMask,
 			final int when) {
 		
 		return create(
@@ -40,6 +41,7 @@ public class KeyPressFactoryImpl extends KeyFactoryImpl implements KeyFactory {
 				child,
 				pointer,
 				key,
+				keyButtonMask,
 				when);
 	}
 }

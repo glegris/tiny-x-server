@@ -706,6 +706,7 @@ public class Server extends Client {
 				child,
 				_pointer, 
 				keycode,
+				getKeyButtonMask(),
 				when);
 
 		final KeyboardGrab grab = _keyboard.getKeyboardGrab();

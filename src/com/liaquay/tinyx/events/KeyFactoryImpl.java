@@ -34,6 +34,7 @@ public class KeyFactoryImpl {
 			final Window child,
 			final Pointer pointer,
 			final int key,
+			final int keyButMask,
 			final int when) {
 
 		// Obtain the root window for the event.
@@ -70,7 +71,7 @@ public class KeyFactoryImpl {
 				outputStream.writeShort (rootY);
 				outputStream.writeShort (eventX);
 				outputStream.writeShort (eventY);
-				outputStream.writeShort (key);
+				outputStream.writeShort (keyButMask);
 				outputStream.writeByte (sameScreen ? 1 : 0);
 			}
 		};

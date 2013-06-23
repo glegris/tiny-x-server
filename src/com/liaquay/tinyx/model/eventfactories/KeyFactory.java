@@ -29,5 +29,6 @@ public interface KeyFactory {
 			final Window child, 
 			final Pointer pointer,
 			final int key,
+			final int keyButtonMask,
 			final int when);
 }

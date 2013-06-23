@@ -581,10 +581,11 @@ public class Window extends Drawable {
 	private void redrawContents(final boolean exposures) {
 		if(isViewable()){
 			_listener.clearArea(0, 0, _widthPixels, _heightPixels);
+			 
 			if(exposures) {
 				sendExposeEvent();
 			}
-			 
+			
 			for(int i = 0; i < _children.size() ; ++i) {
 				final Window c = _children.get(i);
 				c.redraw(exposures);
@@ -1262,7 +1263,7 @@ public class Window extends Drawable {
 		_widthPixels = width;
 		_heightPixels = height;
 		_borderWidth = borderWidth;
-
+		
 		if(stackMode != null && _parent != null) {
 
 			if(siblingWindow != null && _parent.getChildWindowIndex(siblingWindow) > 0) {
@@ -1318,9 +1319,13 @@ public class Window extends Drawable {
 
 		if(changed) {
 			updateLocation();
-
-			// TODO Events etc.
-//			_parent.redraw(); // TODO somewhat over the top!
+			
+//			if(_parent != null) {
+//				_parent.redraw();
+//			}
+//			else {
+//				redraw();
+//			}
 		}
 	}
 
