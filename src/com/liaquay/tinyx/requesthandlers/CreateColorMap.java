@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import com.liaquay.tinyx.Request;
 import com.liaquay.tinyx.RequestHandler;
 import com.liaquay.tinyx.Response;
-import com.liaquay.tinyx.io.AbstractXInputStream;
 import com.liaquay.tinyx.io.XInputStream;
 import com.liaquay.tinyx.model.Client;
 import com.liaquay.tinyx.model.ColorMap;
@@ -32,14 +31,14 @@ import com.liaquay.tinyx.model.PseudoColorMap;
 import com.liaquay.tinyx.model.Server;
 import com.liaquay.tinyx.model.TrueColorMap;
 import com.liaquay.tinyx.model.Visual;
-import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.Window;
 
 public class CreateColorMap implements RequestHandler {
 	private final static Logger LOGGER = Logger.getLogger(CreateColorMap.class.getName());
 
 	@Override
-	public void handleRequest(final Server server, 
+	public void handleRequest(
+			final Server server, 
 			final Client client, 
 			final Request request, 
 			final Response response) throws IOException {
@@ -65,15 +64,21 @@ public class CreateColorMap implements RequestHandler {
 			return;			
 		}
 
-		ColorMap map = null;
+		final ColorMap map;
 
-		if (visual.getVisualClass().equals(VisualClass.TrueColor)) {
+		switch(visual.getVisualClass()) {
+		case TrueColor:
 			map = new TrueColorMap(colorMapResourceId);
-		} else if (visual.getVisualClass().equals(VisualClass.PseudoColor)) {
+			break;
+		case PseudoColor:
 			map = new PseudoColorMap(colorMapResourceId);
-		} else {
+			break;
+		// TODO Support for direct color 
+		default:
+			map = null;
 			LOGGER.warning("Color map type: " + visual.getVisualClass() + " not yet supported by create");
 		}
+		
 		if (map != null) {
 			server.getResources().add(map);
 		}

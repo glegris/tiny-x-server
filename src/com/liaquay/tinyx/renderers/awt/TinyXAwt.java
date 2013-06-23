@@ -160,7 +160,26 @@ public class TinyXAwt {
 						);
 			}
 		});
-
+		
+		final Visual trueColor32 = server.createVisual(new ResourceFactory<Visual>() {
+			@Override
+			public Visual create(final int resourceId) {
+				return new Visual(
+						resourceId, 
+						32,
+						BackingStoreSupport.BackingStoreNever,
+						VisualClass.TrueColor, 
+						8,  // Bits Per RGB
+						256, // TODO How do colour maps relate to visuals
+						0x00ff0000, // Red mask
+						0x0000ff00, // Green mask
+						0x000000ff  // Blue mask
+						);
+			}
+		});
+		
+		// Note Direct color is not yet supported.
+		// Direct color required a dynamically modifiable colour-map
 		final Visual directColor24 = server.createVisual(new ResourceFactory<Visual>() {
 			@Override
 			public Visual create(final int resourceId) {
@@ -179,6 +198,8 @@ public class TinyXAwt {
 		});
 
 
+		// Note Direct color is not yet supported
+		// Direct color required a dynamically modifiable colour-map
 		final Visual directColor32 = server.createVisual(new ResourceFactory<Visual>() {
 			@Override
 			public Visual create(final int resourceId) {
@@ -205,8 +226,10 @@ public class TinyXAwt {
 		depths.add(new Depths.Depth(15));
 		depths.add(new Depths.Depth(16));
 		depths.add(trueColor24);
-		depths.add(directColor24);
-		depths.add(directColor32);
+		depths.add(trueColor32);
+// Direct color required a dynamically modifiable colour-map
+//		depths.add(directColor24);
+//		depths.add(directColor32);
 
 		
 		final ColorMap defaultColorMap = server.createColorMap(new ResourceFactory<ColorMap>() {
