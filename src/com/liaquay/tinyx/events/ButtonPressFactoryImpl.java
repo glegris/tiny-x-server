@@ -24,7 +24,7 @@ import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
 
-public class ButtonPressFactoryImpl extends ButtonFactoryImpl implements ButtonFactory {
+public class ButtonPressFactoryImpl extends PointerFactoryImpl implements ButtonFactory {
 
 	public static ButtonFactory FACTORY = new ButtonPressFactoryImpl();
 	

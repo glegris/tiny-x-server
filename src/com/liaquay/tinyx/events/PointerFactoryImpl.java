@@ -28,7 +28,7 @@ import com.liaquay.tinyx.model.Pointer;
 import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
 
-public class ButtonFactoryImpl {
+public class PointerFactoryImpl {
 	
 	public Event create(
 			final int event,
@@ -41,7 +41,9 @@ public class ButtonFactoryImpl {
 			final int when) {
 
 		// Obtain the root window for the event.
-		final Window rootWindow = grab.getGrabWindow().getRootWindow();
+		final Window rootWindow = grab == null ?
+				pointer.getScreen().getRootWindow() :
+				grab.getGrabWindow().getRootWindow();
 		
 		final int rootWindowId = rootWindow.getId ();
 
@@ -57,7 +59,10 @@ public class ButtonFactoryImpl {
 			public void writeTimestampedBody(final XOutputStream outputStream, final Client client, final Window w) throws IOException {
 				
 				final Window eventWindow;
-				if(child == null) {
+				if(grab == null) {
+					eventWindow = w;
+				}
+				else if(child == null) {
 					eventWindow = grab.getGrabWindow();
 				}
 				else if(grab.isOwnerEvents()) {

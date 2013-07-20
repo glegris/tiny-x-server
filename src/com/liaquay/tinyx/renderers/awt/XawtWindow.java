@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -30,13 +29,11 @@ import java.util.logging.Logger;
 import com.liaquay.tinyx.model.Cursor;
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.GraphicsContext;
+import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Rectangle;
 import com.liaquay.tinyx.model.Segment;
-import com.liaquay.tinyx.model.Image.ImageType;
-import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.Window.BackgroundMode;
-import com.liaquay.tinyx.renderers.awt.gc.GraphicsContextComposite;
 
 /**
  *

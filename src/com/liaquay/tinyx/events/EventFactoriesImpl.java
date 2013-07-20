@@ -26,6 +26,7 @@ import com.liaquay.tinyx.model.eventfactories.KeyFactory;
 import com.liaquay.tinyx.model.eventfactories.MapNotifyFactory;
 import com.liaquay.tinyx.model.eventfactories.MapRequestFactory;
 import com.liaquay.tinyx.model.eventfactories.MappingNotifyFactory;
+import com.liaquay.tinyx.model.eventfactories.MotionFactory;
 
 public final class EventFactoriesImpl implements EventFactories {
 
@@ -72,5 +73,10 @@ public final class EventFactoriesImpl implements EventFactories {
 	@Override
 	public DestroyNotifyFactory getDestroyNotifyFactory() {
 		return DestroyNotifyFactoryImpl.FACTORY;
+	}
+
+	@Override
+	public MotionFactory getMotionFactory() {
+		return MotionFactoryImpl.FACTORY;
 	}
 }

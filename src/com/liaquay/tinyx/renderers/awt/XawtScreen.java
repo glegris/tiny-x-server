@@ -19,11 +19,11 @@
 package com.liaquay.tinyx.renderers.awt;
 
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashSet;
@@ -99,47 +99,50 @@ public class XawtScreen {
 		
 		screen.map();
 
+		_jPanel.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(final MouseEvent e) {
+				System.out.println(String.format("Moved x=%d y=%d", e.getX(),e.getY()));
+
+				// TODO pass in correct screen index
+				server.getServer().pointerMoved(0, e.getX(), e.getY(), (int)(e.getWhen()&0xffffffff));
+			}
+			
+			@Override
+			public void mouseDragged(final MouseEvent e) {
+				System.out.println(String.format("Moved x=%d y=%d", e.getX(),e.getY()));
+				
+				// TODO pass in correct screen index
+				server.getServer().pointerMoved(0, e.getX(), e.getY(), (int)(e.getWhen()&0xffffffff));
+			}
+		});
+		
 		_jPanel.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final Window evw = rootWindow.windowAt(e.getX(), e.getY());
-				System.out.println(String.format("Button %d, x=%d y=%d", e.getButton(), e.getX(),e.getY()));
-				if (evw != null) {
-					System.out.println(String.format("window=%x08", evw.getId()));
-				}
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
+			public void mouseEntered(final MouseEvent arg0) {
 			}
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
+			public void mouseExited(final MouseEvent arg0) {
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
-				final Window evw = rootWindow.windowAt(e.getX(), e.getY());
+			public void mousePressed(final MouseEvent e) {
 				System.out.println(String.format("Button pressed %d, x=%d y=%d", e.getButton(), e.getX(),e.getY()));
-				if (evw != null) {
-					System.out.println(String.format("window=%x08", evw.getId()));
-				}
 
 				// TODO pass in correct screen index
 				server.getServer().buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				final Window evw = rootWindow.windowAt(e.getX(), e.getY());
+			public void mouseReleased(final MouseEvent e) {
 				System.out.println(String.format("Button release %d, x=%d y=%d",  e.getButton(), e.getX(),e.getY()));
-				if (evw != null) {
-					System.out.println(String.format("window=%x08", evw.getId()));
-				}
+
 				// TODO pass in correct screen index
 				server.getServer().buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
 			}

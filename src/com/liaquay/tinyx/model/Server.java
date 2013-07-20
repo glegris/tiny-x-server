@@ -446,7 +446,59 @@ public class Server extends Client {
 	//
 	// TODO should the following be part of an input device adapter?_listener
 	//
+	
 
+	public void pointerMoved(
+			final int screenIndex, 
+			final int x, 
+			final int y, 
+			final int when) {
+		
+		enqueuePtr(new InputEvent() {
+			
+			@Override
+			public long getWhen() {
+				return when;
+			}
+			
+			@Override
+			public void deliver() {
+
+				// Update pointer position
+				_pointer.set(_screens.get(screenIndex), x, y);
+
+				final PointerGrab grab = _pointer.getPointerGrab();
+				
+				final int eventMask = Event.MotionMask;
+				final Window focusWindow = getKeyFocusWindow(eventMask);
+				final Window child = _pointer.childWindowAt();
+				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
+
+				final Event event = _eventFactories.getMotionFactory().create(
+						grab, 
+						_pointer, 
+						child,
+						getKeyButtonMask(), 
+						when);
+
+
+				if(grab == null) {
+					w.deliver(event, eventMask);
+				}
+				else {
+					
+					boolean delivered = false;
+					if(grab.isOwnerEvents()) {
+						delivered =  w.deliver(event, eventMask, grab.getClient());
+					}
+					if(!delivered) {
+						delivered = grab.getGrabWindow().deliver(event, eventMask, grab.getClient());
+					}
+					if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
+				}
+			}
+		});
+	}	
 	/**
 	 * Called by implementation to deliver a pointer button press to the server
 	 * 
@@ -726,6 +778,7 @@ public class Server extends Client {
 			if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
 		}
 	}
+	
 	/**
 	 * Called by implementation to deliver a key press to the server
 	 * 

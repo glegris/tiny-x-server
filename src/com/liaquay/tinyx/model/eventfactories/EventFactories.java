@@ -28,4 +28,5 @@ public interface EventFactories {
 	public KeyFactory getKeyReleaseFactory();
 	public MappingNotifyFactory getMappingNotifyFactory();
 	public ExposureFactory getExposureFactory();
+	public MotionFactory getMotionFactory();
 }

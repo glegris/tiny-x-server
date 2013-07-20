@@ -22,25 +22,24 @@ import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Pointer;
 import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
+import com.liaquay.tinyx.model.eventfactories.MotionFactory;
 
-public class ButtonReleaseFactoryImpl extends PointerFactoryImpl implements ButtonFactory {
+public class MotionFactoryImpl extends PointerFactoryImpl implements MotionFactory {
 
-	public static ButtonFactory FACTORY = new ButtonReleaseFactoryImpl();
-
+	public static MotionFactory FACTORY = new MotionFactoryImpl();
+	
 	@Override
 	public Event create(
-			final int button,
 			final PointerGrab grab, 
 			final Pointer pointer,
 			final Window child,
 			final int keyButtonMask,
 			final int when) {
-
-		return create(
-				Event.ButtonRelease,
-				Event.ButtonReleaseMask,
-				button,
+		
+		return  create(
+				Event.MotionNotify,
+				Event.MotionMask,
+				0,
 				grab,
 				pointer,
 				child,

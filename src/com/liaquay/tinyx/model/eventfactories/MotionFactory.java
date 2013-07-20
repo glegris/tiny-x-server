@@ -16,35 +16,19 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.events;
+package com.liaquay.tinyx.model.eventfactories;
 
 import com.liaquay.tinyx.model.Event;
 import com.liaquay.tinyx.model.Pointer;
 import com.liaquay.tinyx.model.PointerGrab;
 import com.liaquay.tinyx.model.Window;
-import com.liaquay.tinyx.model.eventfactories.ButtonFactory;
 
-public class ButtonReleaseFactoryImpl extends PointerFactoryImpl implements ButtonFactory {
+public interface MotionFactory {
 
-	public static ButtonFactory FACTORY = new ButtonReleaseFactoryImpl();
-
-	@Override
 	public Event create(
-			final int button,
-			final PointerGrab grab, 
+			final PointerGrab grab,
 			final Pointer pointer,
-			final Window child,
+			final Window child, 
 			final int keyButtonMask,
-			final int when) {
-
-		return create(
-				Event.ButtonRelease,
-				Event.ButtonReleaseMask,
-				button,
-				grab,
-				pointer,
-				child,
-				keyButtonMask,
-				when);
-	}
+			final int when);
 }
