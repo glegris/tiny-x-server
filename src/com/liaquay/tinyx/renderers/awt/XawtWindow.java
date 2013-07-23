@@ -326,8 +326,8 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			_jPanel.repaint(
 					_window.getAbsX() + x, 
 					_window.getAbsY() + y, 
-					_window.getAbsX() + x + width, 
-					_window.getAbsY() + y + height);
+					width, 
+					height);
 			
 		}
 	}

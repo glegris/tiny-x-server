@@ -29,7 +29,6 @@ import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RasterFormatException;
 import java.io.File;
@@ -50,6 +49,7 @@ import com.liaquay.tinyx.model.Pixmap;
 import com.liaquay.tinyx.model.Rectangle;
 import com.liaquay.tinyx.model.Segment;
 import com.liaquay.tinyx.model.Server;
+import com.liaquay.tinyx.renderers.awt.gc.CopyPlaneComposite;
 import com.liaquay.tinyx.renderers.generic.ByteImage;
 import com.liaquay.tinyx.requesthandlers.gcattribhandlers.FillStyle.FillStyleType;
 
@@ -150,15 +150,15 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 			//				g.setPaint(tp);
 			//			}
 
-			//			if ((supportedModes & GCForeground) > 0) {
-			//				final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
-			//				g.setColor(new Color(rgb));
-			//			}
-			//
-			//			if ((supportedModes & GCBackground) > 0) {
-			//				final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour());
-			//				g.setBackground(new Color(rgb));
-			//			}
+						if ((supportedModes & GCForeground) > 0) {
+							final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+							g.setColor(new Color(rgb));
+						}
+			
+						if ((supportedModes & GCBackground) > 0) {
+							final int rgb = _drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour());
+							g.setBackground(new Color(rgb));
+						}
 
 //			g.setComposite(new GraphicsContextComposite(graphicsContext, supportedModes, _drawable));
 		}		
@@ -195,12 +195,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 					srcImage, 
 					dstX, 
 					dstY, 
-					dstX + width, 
-					dstY + height, 
+					dstX + width - 1, 
+					dstY + height - 1, 
 					srcDrawable.getAbsX() + srcX, 
 					srcDrawable.getAbsY() + srcY, 
-					srcDrawable.getAbsX() + srcX + width,
-					srcDrawable.getAbsY() + srcY + height, 
+					srcDrawable.getAbsX() + srcX + width - 1,
+					srcDrawable.getAbsY() + srcY + height - 1, 
 					null);//, srcY, srcX + width, srcY + height, null);
 
 		} catch (final RasterFormatException e) {
@@ -223,19 +223,19 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		final XawtDrawableListener awtDrawable = (XawtDrawableListener)srcDrawable.getDrawableListener();
 		final BufferedImage srcImage = awtDrawable.getImage();//.getSubimage(_drawable.getX() + srcX, _drawable.getY() + srcY, width, height);		
 
-		//		final BufferedImage destImage = createCompatibleImage(srcImage, new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
+		final BufferedImage destImage = createCompatibleImage(srcImage, new CopyPlaneComposite(bitplane, graphicsContext.getForegroundColour(), graphicsContext.getBackgroundColour()));
 
 		final Graphics2D g = getGraphics(graphicsContext);
 		g.drawImage(
-				srcImage, 
+				destImage, 
 				dstX, 
 				dstY, 
-				dstX + width, 
-				dstY + height, 
+				dstX + width - 1, 
+				dstY + height - 1, 
 				srcDrawable.getAbsX() + srcX, 
 				srcDrawable.getAbsY() + srcY, 
-				srcDrawable.getAbsX() + srcX + width,
-				srcDrawable.getAbsY() + srcY + height, 
+				srcDrawable.getAbsX() + srcX + width - 1,
+				srcDrawable.getAbsY() + srcY + height - 1, 
 				null);
 	}
 
@@ -287,16 +287,16 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 	BufferedImage createCompatibleImage(final BufferedImage image, final Composite composite)
 	{
-		GraphicsConfiguration gc = GraphicsEnvironment.
+		final GraphicsConfiguration gc = GraphicsEnvironment.
 				getLocalGraphicsEnvironment().
 				getDefaultScreenDevice().
 				getDefaultConfiguration();
 
-		BufferedImage newImage = gc.createCompatibleImage(
+		final BufferedImage newImage = gc.createCompatibleImage(
 				image.getWidth(), 
-				image.getHeight(), Transparency.TRANSLUCENT);
+				image.getHeight(), Transparency.OPAQUE);
 
-		Graphics2D g = newImage.createGraphics();
+		final Graphics2D g = newImage.createGraphics();
 
 		if (composite != null) {
 			g.setComposite(composite);
@@ -505,12 +505,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 			BufferedImage stage2 = new BufferedImage(r.getWidth(), r.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics2D stage2Gfx = (Graphics2D) stage2.getGraphics();
-
+			final int foregroundRgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
 			if (graphicsContext.getFillStyle() == FillStyleType.Solid.ordinal()) {
 				for (int x=0; x<r.getWidth(); x++) {
 					for (int y=0; y<r.getHeight();y++) {
 //						if (sourcePixels.getRGB(x, y)==0xffffffff) {
-							stage2.setRGB(x, y, 0xff000000 | graphicsContext.getForegroundColour());
+							stage2.setRGB(x, y, 0xff000000 | foregroundRgb);
 //						}
 					}
 				}

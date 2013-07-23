@@ -8,11 +8,8 @@ import java.awt.image.WritableRaster;
 
 import sun.java2d.loops.CompositeType;
 
-import com.liaquay.tinyx.model.GraphicsContext;
 import com.liaquay.tinyx.renderers.awt.XawtDrawableListener;
-import com.liaquay.tinyx.renderers.awt.gc.filters.ClipFilter;
 import com.liaquay.tinyx.renderers.awt.gc.filters.FunctionFilter;
-import com.liaquay.tinyx.renderers.awt.gc.filters.StippleFilter;
 
 public class GraphicsContextCompositeContext implements CompositeContext {
 

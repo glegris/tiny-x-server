@@ -5,8 +5,6 @@ import java.awt.CompositeContext;
 import java.awt.RenderingHints;
 import java.awt.image.ColorModel;
 
-import com.liaquay.tinyx.model.GraphicsContext;
-
 public class CopyPlaneComposite implements Composite {
 
 	int bitplane;
