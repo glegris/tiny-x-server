@@ -195,12 +195,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 					srcImage, 
 					dstX, 
 					dstY, 
-					dstX + width - 1, 
-					dstY + height - 1, 
-					srcDrawable.getAbsX() + srcX, 
+					dstX + width, 
+					dstY + height, 
+					srcDrawable.getAbsX() + srcX,
 					srcDrawable.getAbsY() + srcY, 
-					srcDrawable.getAbsX() + srcX + width - 1,
-					srcDrawable.getAbsY() + srcY + height - 1, 
+					srcDrawable.getAbsX() + srcX + width,
+					srcDrawable.getAbsY() + srcY + height, 
 					null);//, srcY, srcX + width, srcY + height, null);
 
 		} catch (final RasterFormatException e) {
@@ -230,12 +230,12 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 				destImage, 
 				dstX, 
 				dstY, 
-				dstX + width - 1, 
-				dstY + height - 1, 
-				srcDrawable.getAbsX() + srcX, 
+				dstX + width, 
+				dstY + height, 
+				srcDrawable.getAbsX() + srcX,
 				srcDrawable.getAbsY() + srcY, 
-				srcDrawable.getAbsX() + srcX + width - 1,
-				srcDrawable.getAbsY() + srcY + height - 1, 
+				srcDrawable.getAbsX() + srcX + width,
+				srcDrawable.getAbsY() + srcY + height, 
 				null);
 	}
 
@@ -446,26 +446,26 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 		//		graphicsContext.setGraphicsOperationHeight(height);
 		//		graphicsContext.setGraphicsOperationWidth(width);
 
-		int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | 
+		final int supportedModes = GCForeground | GCBackground | GCTile | GCStipple | GCTileStipXOrigin | GCTileStipYOrigin | GCDashOffset | 
 				GCDashList | GCFunction | GCPlaneMask | GCLineWidth | GCLineStyle | GCCapStyle | GCJoinStyle | GCFillStyle | GCSubwindowMode | GCClipXOrigin | GCClipYOrigin | GCClipMask;
 
 		final Graphics2D graphics = getGraphics(graphicsContext, supportedModes);
 
+		final byte arr[] = { (byte) 0x0, (byte) 0xff};
+		final IndexColorModel cm = new IndexColorModel(1, 2, arr, arr, arr, arr);
 
-		for (Rectangle r : rectangles) {
+		for (final Rectangle r : rectangles) {
 
-			byte arr[] = { (byte) 0x0, (byte) 0xff};
-			IndexColorModel cm = new IndexColorModel(1, 2, arr, arr, arr, arr);
-			
 			// Step 1. Select source pixels
-			BufferedImage clipImage = new BufferedImage(r.getWidth(), r.getHeight(), BufferedImage.TYPE_BYTE_BINARY, cm);
-
 			
-			Pixmap clipMask = graphicsContext.getClipMask();
+			final int iw = r.getWidth() + 1;
+			final int ih = r.getHeight() + 1;
+			final BufferedImage clipImage = new BufferedImage(iw, ih, BufferedImage.TYPE_BYTE_BINARY, cm);
+
+			final Pixmap clipMask = graphicsContext.getClipMask();
 			if (clipMask != null && (supportedModes & GCClipMask) > 0) {
 					final XawtDrawableListener awtDrawable = (XawtDrawableListener) clipMask.getDrawableListener();
 					final BufferedImage srcImage = awtDrawable.getImage();
-
 
 					int startX = 0;
 					if ((supportedModes & GCClipXOrigin) > 0) {
@@ -476,17 +476,17 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 						startY = graphicsContext.getClipYOrigin();
 					}
 
-					Rectangle2D r1 = new java.awt.Rectangle(startX, startY, r.getWidth(), r.getHeight());//srcImage.getHeight(), startY + srcImage.getWidth());
-					TexturePaint tp = new TexturePaint(srcImage, r1);
+					final Rectangle2D r1 = new java.awt.Rectangle(startX, startY, r.getWidth(), r.getHeight());//srcImage.getHeight(), startY + srcImage.getWidth());
+					final TexturePaint tp = new TexturePaint(srcImage, r1);
 					graphics.setPaint(tp);
 					
-					Graphics2D gr = (Graphics2D) clipImage.getGraphics();
+					final Graphics2D gr = (Graphics2D) clipImage.getGraphics();
 					gr.setPaint(tp);
-					gr.fillRect(0, 0, r.getWidth(), r.getHeight());
+					gr.fillRect(0, 0, iw, ih);
 
 			} else {
-				for (int x=0; x<r.getWidth(); x++) {
-					for (int y=0; y<r.getHeight(); y++) {
+				for (int x=0; x<iw; x++) {
+					for (int y=0; y<ih; y++) {
 						clipImage.setRGB(x, y, 0xffffffff);
 					}
 				}
@@ -503,27 +503,28 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 			// If fill_style is fillsolid, then the foreground colour should be used for all pixels set to 1 in the source image.
 
-			BufferedImage stage2 = new BufferedImage(r.getWidth(), r.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			Graphics2D stage2Gfx = (Graphics2D) stage2.getGraphics();
-			final int foregroundRgb = _drawable.getColorMap().getRGB(graphicsContext.getForegroundColour());
+			final BufferedImage stage2 = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_ARGB);
+			final Graphics2D stage2Gfx = (Graphics2D) stage2.getGraphics();
+			final int backgroundRgb = _drawable.getColorMap().getRGB(graphicsContext.getBackgroundColour());
 			if (graphicsContext.getFillStyle() == FillStyleType.Solid.ordinal()) {
-				for (int x=0; x<r.getWidth(); x++) {
-					for (int y=0; y<r.getHeight();y++) {
+				for (int x=0; x<iw; x++) {
+					for (int y=0; y<ih;y++) {
 //						if (sourcePixels.getRGB(x, y)==0xffffffff) {
-							stage2.setRGB(x, y, 0xff000000 | foregroundRgb);
+							stage2.setRGB(x, y, 0xff000000 | backgroundRgb);
 //						}
 					}
 				}
-
+				stage2Gfx.setColor(new Color(_drawable.getColorMap().getRGB(graphicsContext.getForegroundColour())));
+				stage2Gfx.drawRect(0, 0, r.getWidth(), r.getHeight()); // TODO Worry about line styles!
 			} else if (graphicsContext.getFillStyle() == FillStyleType.Stippled.ordinal()) {
 
-				Pixmap stipple = graphicsContext.getStipple();
+				final Pixmap stipple = graphicsContext.getStipple();
 
 				if (stipple != null) {
 					final XawtDrawableListener awtDrawable = (XawtDrawableListener) stipple.getDrawableListener();
 					final BufferedImage srcImage = awtDrawable.getImage();
 					
-					BufferedImage newSrcImage = new BufferedImage(srcImage.getWidth(), srcImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+					BufferedImage newSrcImage = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_ARGB);
 
 					// Map the colours so that the foreground is the stipple 1's
 					for (int x=0; x<srcImage.getWidth(); x++) {
@@ -561,9 +562,9 @@ public abstract class XawtDrawableListener implements Drawable.Listener {
 
 			// Clip to the clipImage
 			stage2Gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_IN));
-			stage2Gfx.drawImage(clipImage, 0, 0, r.getWidth(),  r.getHeight(), null);
+			stage2Gfx.drawImage(clipImage, 0, 0, iw,  ih, null);
 			
-			graphics.drawImage(stage2, r.getX(), r.getY(), r.getWidth(), r.getHeight(), null);
+			graphics.drawImage(stage2, r.getX(), r.getY(), iw, ih, null);
 
 		}
 	}
