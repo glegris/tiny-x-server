@@ -371,6 +371,12 @@ public class Server extends Client {
 		_clients.free(client);
 		_resources.free(client);
 		ungrab(client);
+		if(_pointer.getPointerGrab() != null && _pointer.getPointerGrab().getClient() == client) {
+			releasePointerGrab();
+		}
+		if(_keyboard.getKeyboardGrab() != null && _keyboard.getKeyboardGrab().getClient() == client) {
+			releaseKeyboardGrab();
+		}
 	}
 
 	public byte[] getVendor() {
@@ -448,64 +454,112 @@ public class Server extends Client {
 	//
 	
 
+	private abstract class PointerInputEvent implements InputEvent {
+		private final int _when;
+		private final int _screenIndex;
+		private final int _x;
+		private final int _y;
+		
+		public PointerInputEvent(
+				final int screenIndex, 
+				final int x, 
+				final int y, 
+				final int when) {
+			
+			_screenIndex = screenIndex;
+			_x = x;
+			_y = y;
+			_when = when;
+		}
+		
+		@Override
+		public long getWhen() {
+			return _when;
+		}
+		
+		private Window _child = null;
+		
+		@Override
+		public void deliver() {
+			_pointer.set(_screens.get(_screenIndex), _x, _y);
+
+			final PointerGrab grab = _pointer.getPointerGrab();
+			
+			_child = _pointer.childWindowAt();
+
+			deliver(grab, _child, _x, _y);
+		}
+		
+		protected abstract void deliver(
+				final PointerGrab grab,
+				final Window child,
+				final int x,
+				final int y);
+		
+		protected final void send(final Event event, final int eventMask) {
+			final PointerGrab grab = _pointer.getPointerGrab();
+			if(grab == null) {
+				_child.deliver(event, eventMask);
+			}
+			else {
+				
+				boolean delivered = false;
+				if(grab.isOwnerEvents()) {
+					delivered =  _child.deliver(event, eventMask, grab.getClient());
+				}
+				if(!delivered) {
+					delivered = grab.getGrabWindow().deliver(event, eventMask, grab.getClient());
+				}
+				if(delivered && _ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
+				
+				if(grab.getExitWhenAllReleased()) {
+					if(_pointer.getButtonMask() == 0) {
+						releasePointerGrab();
+					}
+				}
+			}
+		}
+	}
+	
 	public void pointerMoved(
 			final int screenIndex, 
 			final int x, 
 			final int y, 
 			final int when) {
 		
-		enqueuePtr(new InputEvent() {
+		enqueuePtr(new PointerInputEvent(screenIndex, x, y, when) {
 			
 			@Override
-			public long getWhen() {
-				return when;
-			}
-			
-			@Override
-			public void deliver() {
-
-				// Update pointer position
-				_pointer.set(_screens.get(screenIndex), x, y);
-
-				final PointerGrab grab = _pointer.getPointerGrab();
+			protected void deliver(
+						final PointerGrab grab,
+						final Window child,
+						final int x,
+						final int y){
 				
-				final int eventMask = Event.MotionMask;
-				final Window focusWindow = getKeyFocusWindow(eventMask);
-				final Window child = _pointer.childWindowAt();
-				final Window w = focusWindow == null || child.hasAncestor(focusWindow) ? child : focusWindow;
-
 				final Event event = _eventFactories.getMotionFactory().create(
 						grab, 
 						_pointer, 
 						child,
 						getKeyButtonMask(), 
 						when);
-
-
-				if(grab == null) {
-					w.deliver(event, eventMask);
-				}
-				else {
-					
-					boolean delivered = false;
-					if(grab.isOwnerEvents()) {
-						delivered =  w.deliver(event, eventMask, grab.getClient());
-					}
-					if(!delivered) {
-						delivered = grab.getGrabWindow().deliver(event, eventMask, grab.getClient());
-					}
-					if(delivered && _keyInputState.equals(InputQueueState.Single)) _keyInputState = InputQueueState.Frozen;
-				}
+				
+				send(event, Event.MotionMask);
 			}
 		});
-	}	
+	}
+	
 	/**
 	 * Called by implementation to deliver a pointer button press to the server
 	 * 
 	 * @param buttonNumber code representing physical button in the range 1-5
 	 * @param when time in milliseconds
 	 */
-	public void buttonPressed(final int screenIndex, final int x, final int y, final int buttonNumber, final int when) {
+	public void buttonPressed(
+			final int screenIndex, 
+			final int x, 
+			final int y, 
+			final int buttonNumber, 
+			final int when) {
 
 		if(buttonNumber < 1 || buttonNumber > 5) {
 			final String message = "Button number " + buttonNumber + " out of range";
@@ -513,21 +567,17 @@ public class Server extends Client {
 			throw new RuntimeException(message);
 		}
 
-		enqueuePtr(new InputEvent() {
+		enqueuePtr(new PointerInputEvent(screenIndex, x, y, when) {
+			
 			@Override
-			public long getWhen() {
-				return when;
-			}
-
-			@Override
-			public void deliver() {
+			protected void deliver(
+						PointerGrab grab,
+						final Window child,
+						final int x,
+						final int y){
+				
 				// Update the pressed buttons
 				_pointer.buttonPressed(buttonNumber-1);
-
-				// Update pointer position
-				_pointer.set(_screens.get(screenIndex), x, y);
-
-				PointerGrab grab = _pointer.getPointerGrab();
 
 				if(grab == null) {
 					// There is no current grab on the pointer so consider activating a passive grab...
@@ -546,8 +596,6 @@ public class Server extends Client {
 						grab = pointerGrab;
 					}
 				}
-
-				final Window child = _pointer.childWindowAt();
 
 				// There are no grabs so create an active grab!
 				if(grab == null) {
@@ -595,14 +643,7 @@ public class Server extends Client {
 							getKeyButtonMask(), 
 							when);
 					
-					boolean delivered = false;
-					if(grab.isOwnerEvents()) {
-						delivered =  child.deliver(event, Event.ButtonPressMask, grab.getClient());
-					}
-					if(!delivered) {
-						delivered = grab.getGrabWindow().deliver(event, Event.ButtonPressMask, grab.getClient());
-					}
-					if(delivered && _ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
+					send(event, Event.ButtonPressMask);
 				}
 			}
 		});
@@ -622,25 +663,19 @@ public class Server extends Client {
 			throw new RuntimeException(message);
 		}
 
-		enqueuePtr(new InputEvent() {
+		enqueuePtr(new PointerInputEvent(screenIndex, x, y, when) {
+			
 			@Override
-			public long getWhen() {
-				return when;
-			}
-
-			@Override
-			public void deliver() {
+			protected void deliver(
+						PointerGrab grab,
+						final Window child,
+						final int x,
+						final int y){
+				
 				_pointer.buttonReleased(buttonNumber-1);
-
-				// Update pointer position
-				_pointer.set(_screens.get(screenIndex), x, y);
-
-				final PointerGrab grab = _pointer.getPointerGrab();
 
 				// All buttons are delivered in the context of a grab
 				if(grab != null) {
-
-					final Window child = _pointer.childWindowAt();
 
 					final Event event = _eventFactories.getButtonReleaseFactory().create(
 							buttonNumber, 
@@ -649,22 +684,8 @@ public class Server extends Client {
 							child,
 							getKeyButtonMask(), 
 							when);
-
 					
-					boolean delivered = false;
-					if(grab.isOwnerEvents()) {
-						delivered =  child.deliver(event, Event.ButtonPressMask, grab.getClient());
-					}
-					if(!delivered) {
-						delivered = grab.getGrabWindow().deliver(event, Event.ButtonPressMask, grab.getClient());
-					}
-					if(delivered && _ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
-					
-					if(grab.getExitWhenAllReleased()) {
-						if(_pointer.getButtonMask() == 0) {
-							releasePointerGrab();
-						}
-					}
+					send(event, Event.ButtonPressMask);
 				}
 			}
 		});
