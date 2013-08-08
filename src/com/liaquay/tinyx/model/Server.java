@@ -673,20 +673,16 @@ public class Server extends Client {
 						final int y){
 				
 				_pointer.buttonReleased(buttonNumber-1);
+				
+				final Event event = _eventFactories.getButtonReleaseFactory().create(
+						buttonNumber, 
+						grab, 
+						_pointer, 
+						child,
+						getKeyButtonMask(), 
+						when);
 
-				// All buttons are delivered in the context of a grab
-				if(grab != null) {
-
-					final Event event = _eventFactories.getButtonReleaseFactory().create(
-							buttonNumber, 
-							grab, 
-							_pointer, 
-							child,
-							getKeyButtonMask(), 
-							when);
-					
-					send(event, Event.ButtonPressMask);
-				}
+				send(event, Event.ButtonPressMask);
 			}
 		});
 	}
@@ -911,11 +907,9 @@ public class Server extends Client {
 		}
 		else if(!haveKeyEvents && havePtrEvents) {
 			final InputEvent ptrEvent = _ptrEventQueue.remove();
-			if(_ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
 			ptrEvent.deliver();
 		}
 		else if(haveKeyEvents && havePtrEvents) {
-			if(_ptrInputState.equals(InputQueueState.Single)) _ptrInputState = InputQueueState.Frozen;
 			final InputEvent keyEvent = _keyEventQueue.remove();
 			final InputEvent ptrEvent = _ptrEventQueue.remove();
 			if(keyEvent.getWhen() - ptrEvent.getWhen() > 0) {

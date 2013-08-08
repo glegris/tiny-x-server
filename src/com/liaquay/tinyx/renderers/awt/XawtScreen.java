@@ -103,7 +103,6 @@ public class XawtScreen {
 			
 			@Override
 			public void mouseMoved(final MouseEvent e) {
-				System.out.println(String.format("Moved x=%d y=%d", e.getX(),e.getY()));
 
 				// TODO pass in correct screen index
 				server.getServer().pointerMoved(0, e.getX(), e.getY(), (int)(e.getWhen()&0xffffffff));
@@ -111,7 +110,6 @@ public class XawtScreen {
 			
 			@Override
 			public void mouseDragged(final MouseEvent e) {
-				System.out.println(String.format("Moved x=%d y=%d", e.getX(),e.getY()));
 				
 				// TODO pass in correct screen index
 				server.getServer().pointerMoved(0, e.getX(), e.getY(), (int)(e.getWhen()&0xffffffff));
@@ -133,7 +131,6 @@ public class XawtScreen {
 
 			@Override
 			public void mousePressed(final MouseEvent e) {
-				System.out.println(String.format("Button pressed %d, x=%d y=%d", e.getButton(), e.getX(),e.getY()));
 
 				// TODO pass in correct screen index
 				server.getServer().buttonPressed(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
@@ -141,7 +138,6 @@ public class XawtScreen {
 
 			@Override
 			public void mouseReleased(final MouseEvent e) {
-				System.out.println(String.format("Button release %d, x=%d y=%d",  e.getButton(), e.getX(),e.getY()));
 
 				// TODO pass in correct screen index
 				server.getServer().buttonReleased(0, e.getX(), e.getY(), e.getButton(), (int)(e.getWhen()&0xffffffff));
