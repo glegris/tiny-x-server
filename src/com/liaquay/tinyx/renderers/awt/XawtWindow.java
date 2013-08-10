@@ -443,7 +443,7 @@ public class XawtWindow extends XawtDrawableListener implements Window.Listener 
 			final int rgb = borderWindow.getColorMap().getRGB(_window.getBorderPixel());
 			graphics.setBackground(new Color(rgb));
 			graphics.clearRect(x, y, width, height);
-			updateCanvas(x, y, width, height);
+			updateCanvas(x-_window.getBorderWidth(), y-_window.getBorderWidth(), width, height);
 		}
 		else if(mode.equals(BackgroundMode.Pixmap)) {
 			final XawtWindow awtBorderWindow = (XawtWindow)borderWindow.getWindowListener();
