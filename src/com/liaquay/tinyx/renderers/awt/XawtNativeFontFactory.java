@@ -10,6 +10,9 @@ import com.liaquay.tinyx.font.FontFactoryAdaptor;
 import com.liaquay.tinyx.model.FontDetail;
 import com.liaquay.tinyx.model.FontInfo;
 import com.liaquay.tinyx.model.FontMatch;
+import com.liaquay.tinyx.x11font.ArrayFontMapping;
+import com.liaquay.tinyx.x11font.EncodingFontDetail;
+import com.liaquay.tinyx.x11font.FontEncoding;
 
 public class XawtNativeFontFactory extends FontFactoryAdaptor {
 	

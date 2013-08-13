@@ -92,61 +92,72 @@ public abstract class AbstractXInputStream implements XInputStream {
 		_inputStream.close();
 	}
 
-	
+
 	public String readString() throws IOException {
 		final int length = readUnsignedShort();
-	    skip(-_counter & 3);
-	    final String text = readString(length);
-	    skip((-length) & 3);
-	    return text;
+		skip(-_counter & 3);
+		final String text = readString(length);
+		skip((-length) & 3);
+		return text;
 	}
-	
+
 	private byte[] _stringBuffer = new byte[64];
-	
+	private char[] _stringBuffer2 = new char[64];
+
 	public String readString(final int length) throws IOException {
-	    final byte[] buffer;
-	    if(length <= _stringBuffer.length) {
-	    	buffer = _stringBuffer;
-	    }
-	    else {
-	    	buffer = new byte[length];
-	    }
-	    _inputStream.read(buffer, 0, length);
+		final byte[] buffer;
+		final char[] buffer2;
+		if(length <= _stringBuffer.length) {
+			buffer = _stringBuffer;
+			buffer2 = _stringBuffer2;
+		}
+		else {
+			buffer = new byte[length];
+			buffer2 = new char[length];
+		}
+
+
+
+		_inputStream.read(buffer, 0, length);
 		_counter += length;
-		
-	    return new String(buffer, 0, length);
+
+		for(int i = 0; i < length; ++i) {
+			buffer2[i] = (char)(buffer[i] & 0xff);
+		}		
+
+		return new String(buffer2, 0, length);
 	}
-	
+
 	public String readString16() throws IOException {
 		final int length = readUnsignedShort();
-	    skip(-_counter & 3);
-	    final String text = readString16(length);
-	    skip((-length) & 3);
-	    return text;
+		skip(-_counter & 3);
+		final String text = readString16(length);
+		skip((-length) & 3);
+		return text;
 	}
-	
+
 	public String readString16(final int length) throws IOException {
-	    final char[] buffer = new char[length];
-	    for(int i = 0; i < length; ++i) {
+		final char[] buffer = new char[length];
+		for(int i = 0; i < length; ++i) {
 			final int ah = readUnsignedByte();
 			final int al = readUnsignedByte();
-	    	buffer[i] = (char) (ah<<8 | al);
-	    }
-	    return new String(buffer, 0, length);
+			buffer[i] = (char) (ah<<8 | al);
+		}
+		return new String(buffer, 0, length);
 	}	
 
 	byte[] bytes = new byte[4];
 
 	//TODO: Is this always the same order? LSB/MSB doesn't make a difference?
-	public int readInlineFontId() throws IOException {
-		_inputStream.read(bytes, 0, 4);
-		_counter += 4;
+			public int readInlineFontId() throws IOException {
+				_inputStream.read(bytes, 0, 4);
+				_counter += 4;
 
-		final int b4 = (int) bytes[0] & 0xFF;
-		final int b3 = (int) bytes[1] & 0xFF;
-		final int b2 = (int) bytes[2] & 0xFF;
-		final int b1 = (int) bytes[3] & 0xFF;
-		return b1 | (b2 << 8) | (b3 << 16) | (b4 <<24);
-	}
+				final int b4 = (int) bytes[0] & 0xFF;
+				final int b3 = (int) bytes[1] & 0xFF;
+				final int b2 = (int) bytes[2] & 0xFF;
+				final int b1 = (int) bytes[3] & 0xFF;
+				return b1 | (b2 << 8) | (b3 << 16) | (b4 <<24);
+			}
 }
 

@@ -60,7 +60,7 @@ public class ImageText16 implements RequestHandler {
 
 		final int length = request.getData();
 		final String text = inputStream.readString16(length);
-		
+
 		final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();
 		final TextExtents textExtents = fontDetail.getTextExtents(text);
 

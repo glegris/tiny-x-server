@@ -16,12 +16,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.liaquay.tinyx.font;
+package com.liaquay.tinyx.x11font;
 
 import com.liaquay.tinyx.model.Drawable;
 import com.liaquay.tinyx.model.FontDetail;
 import com.liaquay.tinyx.model.TextExtents;
-import com.liaquay.tinyx.x11font.FontEncoding;
 
 public class EncodingFontDetail implements FontDetail {
 

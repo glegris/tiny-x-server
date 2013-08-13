@@ -76,7 +76,6 @@ public class PolyText8 implements RequestHandler {
 				final int delta = inputStream.readUnsignedByte();
 				final String text = inputStream.readString(len);
 				x += delta;
-
 				drawable.drawString(graphicsContext, text, x, y);
 				
 				final FontDetail fontDetail = graphicsContext.getFont().getFontDetail();

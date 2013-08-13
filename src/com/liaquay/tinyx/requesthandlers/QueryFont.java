@@ -55,7 +55,6 @@ public class QueryFont implements RequestHandler {
 		final String fontName = font.getFontDetail().getName();
 		
 		LOGGER.log(Level.INFO, "QueryFont for name: " + fontName);
-		
 		final XOutputStream outputStream = response.respond(1);
 		
 		final int[] prop=new int[2];
@@ -64,6 +63,8 @@ public class QueryFont implements RequestHandler {
 		
 		final FontDetail fontDetail = font.getFontDetail();
 		
+		System.out.println("MIN EXTENTS: " + fontDetail.getMinBounds());
+		System.out.println("MAX EXTENTS: " + fontDetail.getMinBounds());
 		// Min-bounds
 		write(outputStream, fontDetail.getMinBounds());
 

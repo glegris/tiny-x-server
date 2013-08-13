@@ -19,14 +19,11 @@
 package com.liaquay.tinyx.renderers.awt;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import com.liaquay.tinyx.TinyXServer;
 import com.liaquay.tinyx.events.EventFactoriesImpl;
 import com.liaquay.tinyx.font.CompoundFontFactory;
 import com.liaquay.tinyx.font.DealiasingFontFactory;
-import com.liaquay.tinyx.font.EncodingFontFactory;
 import com.liaquay.tinyx.font.FontManager;
 import com.liaquay.tinyx.model.ColorMap;
 import com.liaquay.tinyx.model.Depths;
@@ -45,6 +42,7 @@ import com.liaquay.tinyx.model.Visual.VisualClass;
 import com.liaquay.tinyx.model.Window;
 import com.liaquay.tinyx.model.eventfactories.EventFactories;
 import com.liaquay.tinyx.renderers.awt.XawtScreen.Listener;
+import com.liaquay.tinyx.x11font.EncodingFontFactory;
 import com.liaquay.tinyx.x11font.FileFontEncodingFactory;
 import com.liaquay.tinyx.x11font.FontDirReader;
 
